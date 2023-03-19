@@ -29,10 +29,10 @@
 
 void
 stroll_assert_fail(const char * __restrict prefix,
-             const char * __restrict expr,
-             const char * __restrict file,
-             unsigned int            line,
-             const char * __restrict func)
+                   const char * __restrict expr,
+                   const char * __restrict file,
+                   unsigned int            line,
+                   const char * __restrict func)
 {
 	fflush(NULL);
 

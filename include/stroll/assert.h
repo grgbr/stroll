@@ -46,7 +46,8 @@ stroll_assert_fail(const char * __restrict prefix,
                    const char * __restrict file,
                    unsigned int            line,
                    const char * __restrict func) __nonull(1, 2, 3, 5)
-                                                 __noreturn;
+                                                 __noreturn
+						 __leaf;
 
 /**
  * Check an assertion.
@@ -59,10 +60,10 @@ stroll_assert_fail(const char * __restrict prefix,
 #define stroll_assert(_prefix, _expr) \
 	((_expr) ? \
 	 (void)(0) : \
-	 uassert_fail(_prefix, \
-	              __STRING(_expr), \
-	              __FILE__, \
-	              __LINE__, \
-	              __FUNCTION__))
+	 stroll_assert_fail(_prefix, \
+	                    __STRING(_expr), \
+	                    __FILE__, \
+	                    __LINE__, \
+	                    __FUNCTION__))
 
 #endif /* _STROLL_ASSERT_H */

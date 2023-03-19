@@ -34,6 +34,7 @@
 #include <stddef.h>
 #include <values.h>
 #include <sys/cdefs.h>
+#include <assert.h>
 
 /**
  * Tell compiler that a function, variable, type or (goto) label may possibly
@@ -348,11 +349,6 @@
 	({ \
 		((_type *)((char *)(_ptr) - offsetof(_type, _member))); \
 	 })
-
-#define choose_sized_expr(_const_expr, _size, _true_expr, _false_expr) \
-	__builtin_choose_expr((sizeof(_const_expr) * CHAR_BIT) == (_size), \
-	                      _true_expr, \
-	                      _false_expr)
 
 #define uabs(_a) \
 	({ \
