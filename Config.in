@@ -1,0 +1,62 @@
+config STROLL_ASSERT
+	bool "Assertion"
+	default n
+	help
+	  Build stroll library assertion framework.
+
+config STROLL_ASSERT_API
+	bool "API assertion"
+	select STROLL_ASSERT
+	default n
+	help
+	  Build stroll library with high-level API assertions enabled.
+
+config STROLL_ASSERT_INTERNAL
+	bool "Internal assertion"
+	select STROLL_ASSERT
+	default n
+	help
+	  Build stroll library with internal assertions enabled.
+
+config STROLL_BITOPS
+	bool "Bit operations"
+	default y
+	help
+	  Build stroll library bit operations framework.
+
+config STROLL_ATOMIC
+	bool "Atomic operations"
+	default y
+	help
+	  Build stroll library atomic operations framework.
+
+config STROLL_POW2
+	bool "Power of 2 operations"
+	default y
+	help
+	  Build stroll library power of 2 operations framework.
+
+config STROLL_BITMAP
+	bool "Bitmap"
+	default y
+	select STROLL_BITOPS
+	help
+	  Build stroll library with bitmap framework.
+
+config STROLL_DLIST
+	bool "Doubly linked list"
+	default y
+	help
+	  Build stroll library with doubly linked list support.
+
+config STROLL_SLIST
+	bool "Singly linked list"
+	default y
+	help
+	  Build stroll library with singly linked list support.
+
+config STROLL_LVSTR
+	bool "Length-value strings"
+	default y
+	help
+	  Build stroll library with length-value string support.
