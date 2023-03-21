@@ -11,9 +11,25 @@ stroll_bops_utest_fls32(void ** state __unused)
 	uint32_t     word;
 	unsigned int bit;
 
+	expect_assert_failure(stroll_bops_fls32(0));
+
 	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
 		word = (uint32_t)1 << bit;
 		assert_int_equal(stroll_bops_fls32(word), bit + 1);
+	}
+}
+
+static void
+stroll_bops_utest_uint_fls(void ** state __unused)
+{
+	unsigned int word;
+	unsigned int bit;
+
+	expect_assert_failure(stroll_bops_fls(0));
+
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		word = 1U << bit;
+		assert_int_equal(stroll_bops_fls(word), bit + 1);
 	}
 }
 
@@ -30,14 +46,42 @@ stroll_bops_utest_ffs32(void ** state __unused)
 }
 
 static void
+stroll_bops_utest_uint_ffs(void ** state __unused)
+{
+	unsigned int word;
+	unsigned int bit;
+
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		word = 1U << bit;
+		assert_int_equal(stroll_bops_ffs(word), bit + 1);
+	}
+}
+
+static void
 stroll_bops_utest_fls64(void ** state __unused)
 {
 	uint64_t     word;
 	unsigned int bit;
 
+	expect_assert_failure(stroll_bops_fls64(0));
+
 	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
 		word = (uint64_t)1 << bit;
 		assert_int_equal(stroll_bops_fls64(word), bit + 1);
+	}
+}
+
+static void
+stroll_bops_utest_ulong_fls(void ** state __unused)
+{
+	unsigned long word;
+	unsigned int  bit;
+
+	expect_assert_failure(stroll_bops_fls(0));
+
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		word = 1UL << bit;
+		assert_int_equal(stroll_bops_fls(word), bit + 1);
 	}
 }
 
@@ -53,11 +97,27 @@ stroll_bops_utest_ffs64(void ** state __unused)
 	}
 }
 
+static void
+stroll_bops_utest_ulong_ffs(void ** state __unused)
+{
+	unsigned long word;
+	unsigned int  bit;
+
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		word = 1UL << bit;
+		assert_int_equal(stroll_bops_ffs(word), bit + 1);
+	}
+}
+
 static const struct CMUnitTest stroll_bops_utests[] = {
 	cmocka_unit_test(stroll_bops_utest_fls32),
+	cmocka_unit_test(stroll_bops_utest_uint_fls),
 	cmocka_unit_test(stroll_bops_utest_ffs32),
+	cmocka_unit_test(stroll_bops_utest_uint_ffs),
 	cmocka_unit_test(stroll_bops_utest_fls64),
-	cmocka_unit_test(stroll_bops_utest_ffs64)
+	cmocka_unit_test(stroll_bops_utest_ulong_fls),
+	cmocka_unit_test(stroll_bops_utest_ffs64),
+	cmocka_unit_test(stroll_bops_utest_ulong_ffs)
 };
 
 int

@@ -11,21 +11,26 @@
 #define stroll_bops_assert_api(_expr) \
 	stroll_assert("stroll: bops", _expr)
 
+/* Functions using assertions are not __const. */
+#define __stroll_const
+
 #else /* !defined(CONFIG_STROLL_ASSERT_API) */
 
 #define stroll_bops_assert_api(_expr)
 
+#define __stroll_const __const
+
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
-static inline unsigned int __const __nothrow
+static inline unsigned int __stroll_const __nothrow
 stroll_bops_fls32(uint32_t mask)
 {
-	stroll_bops_assert_api(mask);
+	stroll_bops_assert_api(mask != 0);
 
 	return (sizeof(mask) * CHAR_BIT) - __builtin_clz(mask);
 }
 
-static inline unsigned int __const __nothrow
+static inline unsigned int __stroll_const __nothrow
 stroll_bops_ffs32(uint32_t mask)
 {
 	return __builtin_ffs(mask);
@@ -33,15 +38,15 @@ stroll_bops_ffs32(uint32_t mask)
 
 #if __WORDSIZE == 64
 
-static inline unsigned int __const __nothrow
+static inline unsigned int __stroll_const __nothrow
 stroll_bops_fls64(uint64_t mask)
 {
-	stroll_bops_assert_api(mask);
+	stroll_bops_assert_api(mask != 0);
 
 	return (sizeof(mask) * CHAR_BIT) - __builtin_clzl(mask);
 }
 
-static inline unsigned int __const __nothrow
+static inline unsigned int __stroll_const __nothrow
 stroll_bops_ffs64(uint64_t mask)
 {
 	return __builtin_ffsl(mask);
@@ -49,15 +54,15 @@ stroll_bops_ffs64(uint64_t mask)
 
 #elif __WORDSIZE == 32
 
-static inline unsigned int __const __nothrow
+static inline unsigned int __stroll_const __nothrow
 stroll_bops_fls64(uint64_t mask)
 {
-	stroll_bops_assert_api(mask);
+	stroll_bops_assert_api(mask != 0);
 
 	return (sizeof(mask) * CHAR_BIT) - __builtin_clzll(mask);
 }
 
-static inline unsigned int __const __nothrow
+static inline unsigned int __stroll_const __nothrow
 stroll_bops_ffs64(uint64_t mask)
 {
 	return __builtin_ffsll(mask);
