@@ -25,7 +25,7 @@
 static inline unsigned int __stroll_const __nothrow
 stroll_bops_fls32(uint32_t mask)
 {
-	stroll_bops_assert_api(mask != 0);
+	stroll_bops_assert_api(mask);
 
 	return (sizeof(mask) * CHAR_BIT) - __builtin_clz(mask);
 }
@@ -41,7 +41,7 @@ stroll_bops_ffs32(uint32_t mask)
 static inline unsigned int __stroll_const __nothrow
 stroll_bops_fls64(uint64_t mask)
 {
-	stroll_bops_assert_api(mask != 0);
+	stroll_bops_assert_api(mask);
 
 	return (sizeof(mask) * CHAR_BIT) - __builtin_clzl(mask);
 }
@@ -57,7 +57,7 @@ stroll_bops_ffs64(uint64_t mask)
 static inline unsigned int __stroll_const __nothrow
 stroll_bops_fls64(uint64_t mask)
 {
-	stroll_bops_assert_api(mask != 0);
+	stroll_bops_assert_api(mask);
 
 	return (sizeof(mask) * CHAR_BIT) - __builtin_clzll(mask);
 }

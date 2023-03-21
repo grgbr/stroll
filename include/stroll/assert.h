@@ -66,7 +66,7 @@ mock_assert(const int          result,
             const int          line);
 
 #define stroll_assert(_prefix, _expr) \
-	 mock_assert((int)(_expr), \
+	 mock_assert(!!(_expr), \
 	             "{utest assert}" _prefix ": " __STRING(_expr), \
 	             __FILE__, \
 	             __LINE__)
