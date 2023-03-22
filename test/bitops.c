@@ -17,6 +17,12 @@ stroll_bops_utest_fls32(void ** state __unused)
 		word = (uint32_t)1 << bit;
 		assert_int_equal(stroll_bops_fls32(word), bit + 1);
 	}
+
+	word = 0;
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		word = (word << 1) | 1;
+		assert_int_equal(stroll_bops_fls32(word), bit + 1);
+	}
 }
 
 static void
@@ -31,6 +37,12 @@ stroll_bops_utest_uint_fls(void ** state __unused)
 		word = 1U << bit;
 		assert_int_equal(stroll_bops_fls(word), bit + 1);
 	}
+
+	word = 0;
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		word = (word << 1) | 1;
+		assert_int_equal(stroll_bops_fls(word), bit + 1);
+	}
 }
 
 static void
@@ -42,6 +54,12 @@ stroll_bops_utest_ffs32(void ** state __unused)
 	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
 		word = (uint32_t)1 << bit;
 		assert_int_equal(stroll_bops_ffs32(word), bit + 1);
+	}
+
+	word = UINT32_MAX;
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		assert_int_equal(stroll_bops_ffs32(word), bit + 1);
+		word <<= 1;
 	}
 }
 
@@ -55,6 +73,12 @@ stroll_bops_utest_uint_ffs(void ** state __unused)
 		word = 1U << bit;
 		assert_int_equal(stroll_bops_ffs(word), bit + 1);
 	}
+
+	word = UINT32_MAX;
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		assert_int_equal(stroll_bops_ffs(word), bit + 1);
+		word <<= 1;
+	}
 }
 
 static void
@@ -67,6 +91,12 @@ stroll_bops_utest_fls64(void ** state __unused)
 
 	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
 		word = (uint64_t)1 << bit;
+		assert_int_equal(stroll_bops_fls64(word), bit + 1);
+	}
+
+	word = 0;
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		word = (word << 1) | 1;
 		assert_int_equal(stroll_bops_fls64(word), bit + 1);
 	}
 }
@@ -83,6 +113,12 @@ stroll_bops_utest_ulong_fls(void ** state __unused)
 		word = 1UL << bit;
 		assert_int_equal(stroll_bops_fls(word), bit + 1);
 	}
+
+	word = 0;
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		word = (word << 1) | 1;
+		assert_int_equal(stroll_bops_fls(word), bit + 1);
+	}
 }
 
 static void
@@ -95,6 +131,12 @@ stroll_bops_utest_ffs64(void ** state __unused)
 		word = (uint64_t)1 << bit;
 		assert_int_equal(stroll_bops_ffs64(word), bit + 1);
 	}
+
+	word = UINT64_MAX;
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		assert_int_equal(stroll_bops_ffs64(word), bit + 1);
+		word <<= 1;
+	}
 }
 
 static void
@@ -106,6 +148,12 @@ stroll_bops_utest_ulong_ffs(void ** state __unused)
 	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
 		word = 1UL << bit;
 		assert_int_equal(stroll_bops_ffs(word), bit + 1);
+	}
+
+	word = ULONG_MAX;
+	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
+		assert_int_equal(stroll_bops_ffs(word), bit + 1);
+		word <<= 1;
 	}
 }
 
