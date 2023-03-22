@@ -120,7 +120,7 @@ stroll_bops_fls64(uint64_t mask)
 
 #elif __WORDSIZE == 32
 
-static inline unsigned int __const __nothrow
+static inline unsigned int __stroll_const __nothrow
 stroll_bops_fls64(uint64_t mask)
 {
 	stroll_bops_assert_api(mask);
