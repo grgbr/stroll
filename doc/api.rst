@@ -90,6 +90,12 @@ These are:
       * :c:func:`stroll_bops_fls64`
       * :c:func:`stroll_bops_fls`
 
+   * Find number of set bits (Hammimg weight):
+
+      * :c:func:`stroll_bops_hweight32`
+      * :c:func:`stroll_bops_hweight64`
+      * :c:func:`stroll_bops_hweight`
+
 Atomic operations
 =================
 
@@ -123,7 +129,7 @@ __const
 *******
 
 .. doxygendefine:: __const
-   
+
 __ctor
 ******
 
@@ -178,10 +184,10 @@ __warn_result
 *************
 
 .. doxygendefine:: __warn_result
-   
+
 array_nr
 ********
-   
+
 .. doxygendefine:: array_nr
 
 compile_eval
@@ -198,6 +204,21 @@ stroll_assert
 *************
 
 .. doxygendefine:: stroll_assert
+
+stroll_bops_ffs
+***************
+
+.. doxygendefine:: stroll_bops_ffs
+
+stroll_bops_fls
+***************
+
+.. doxygendefine:: stroll_bops_fls
+
+stroll_bops_hweight
+*******************
+
+.. doxygendefine:: stroll_bops_hweight
 
 Enumerations
 ------------
@@ -222,28 +243,28 @@ stroll_bops_ffs32
 *****************
 
 .. doxygenfunction:: stroll_bops_ffs32
-   
+
 stroll_bops_ffs64
 *****************
 
 .. doxygenfunction:: stroll_bops_ffs64
 
-stroll_bops_ffs
-***************
-
-.. doxygenfunction:: stroll_bops_ffs
-
 stroll_bops_fls32
 *****************
 
 .. doxygenfunction:: stroll_bops_fls32
-   
+
 stroll_bops_fls64
 *****************
 
 .. doxygenfunction:: stroll_bops_fls64
-   
-stroll_bops_fls
-***************
 
-.. doxygenfunction:: stroll_bops_fls
+stroll_bops_hweight32
+*********************
+
+.. doxygenfunction:: stroll_bops_hweight32
+
+stroll_bops_hweight64
+*********************
+
+.. doxygenfunction:: stroll_bops_hweight64
