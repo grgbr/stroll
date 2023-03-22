@@ -22,7 +22,9 @@ you can refer to for further details :
 * `Doubly linked lists`_,
 * `Singly linked lists`_,
 * `Length-value strings`_.
-  
+
+.. index:: common definitions, cdefs
+
 Common definitions
 ==================
 
@@ -30,18 +32,18 @@ Stroll library exposes various C preprocessor macros used to implement Stroll
 internals and meant for application development purposes. These are:
 
 .. hlist::
-   
+
    * Compile time assertions :
-     
+
       * :c:macro:`compile_assert`
       * :c:macro:`compile_eval`
 
    * Various
-     
+
       * :c:macro:`array_nr`
 
    * Attribute wrappers :
-     
+
       * :c:macro:`__align`
       * :c:macro:`__const`
       * :c:macro:`__ctor`
@@ -55,15 +57,38 @@ internals and meant for application development purposes. These are:
       * :c:macro:`__returns_nonull`
       * :c:macro:`__unused`
       * :c:macro:`__warn_result`
-        
+
+.. index:: assertions
+
 Assertions
 ==========
 
-Stroll library exposes the :c:macro:`stroll_assert` macro so that developper may
-perform standard assertion checking.
+When compiled with the :c:macro:CONFIG_STROLL_ASSERT build configuration option
+enabled, the Stroll library exposes the :c:macro:`stroll_assert` macro so that
+developper may perform standard assertion checking.
+
+.. index:: bit operations, bitops
 
 Bit operations
 ==============
+
+When compiled with the :c:macro:CONFIG_STROLL_BITOPS build configuration option
+enabled, the Stroll library provides support for bit manipulation operations.
+These are:
+
+.. hlist::
+
+   * Find First bit Set:
+
+      * :c:func:`stroll_bops_ffs32`
+      * :c:func:`stroll_bops_ffs64`
+      * :c:func:`stroll_bops_ffs`
+
+   * Find Last bit Set:
+
+      * :c:func:`stroll_bops_fls32`
+      * :c:func:`stroll_bops_fls64`
+      * :c:func:`stroll_bops_fls`
 
 Atomic operations
 =================
@@ -193,7 +218,32 @@ enbox_bind_entry
 Functions
 ---------
 
-enbox_change_ids()
-******************
+stroll_bops_ffs32
+*****************
 
-.. doxygenfunction:: enbox_change_ids
+.. doxygenfunction:: stroll_bops_ffs32
+   
+stroll_bops_ffs64
+*****************
+
+.. doxygenfunction:: stroll_bops_ffs64
+
+stroll_bops_ffs
+***************
+
+.. doxygenfunction:: stroll_bops_ffs
+
+stroll_bops_fls32
+*****************
+
+.. doxygenfunction:: stroll_bops_fls32
+   
+stroll_bops_fls64
+*****************
+
+.. doxygenfunction:: stroll_bops_fls64
+   
+stroll_bops_fls
+***************
+
+.. doxygenfunction:: stroll_bops_fls

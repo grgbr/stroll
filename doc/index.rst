@@ -62,6 +62,5 @@ Welcome to Enbox documentation
    .. toctree::
       :caption: Appendix
 
-      glossary
       todo
       genindex
