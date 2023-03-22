@@ -23,8 +23,8 @@
  * along with this program; if not, If not, see <http://www.gnu.org/licenses/>.
  * @licenseend
  */
-#ifndef _STROLL_H
-#define _STROLL_H
+#ifndef _STROLL_CDEFS_H
+#define _STROLL_CDEFS_H
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -75,7 +75,8 @@
 #define __returns_nonull __attribute__((returns_nonnull))
 
 /**
- * Declare to the compiler a function argument should be a non-null pointer.
+ * Declare to the compiler a that function argument should be a non-null
+ * pointer.
  *
  * When applied to a function, tell compiler that the specified arguments must
  * be non-null pointers.
@@ -86,6 +87,29 @@
  */
 #define __nonull(_arg_index, ...) \
 	__attribute__((nonnull(_arg_index, ## __VA_ARGS__)))
+
+/**
+ * @internal
+ *
+ * Declare to the compiler that a Stroll function argument should be a non-null
+ * pointer.
+ *
+ * @note
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option enabled, this
+ * macro expands as empty.
+ *
+ * @see #__nonull
+ */
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+#define __stroll_nonull(_arg_index, ...)
+
+#else /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+#define __stroll_nonull(_arg_index, ...) __nonull(_arg_index, ## __VA_ARGS__)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
 /**
  * Tell compiler to check for printf() style format string argument consistency.
@@ -139,6 +163,29 @@
 #define __pure __attribute__((pure))
 
 /**
+ * @internal
+ *
+ * Declare a Stroll function to the compiler as pure.
+ *
+ * @note
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option enabled, this
+ * macro expands as empty since a function triggering an assertion cannot be
+ * #__pure.
+ *
+ * @see #__pure
+ */
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+#define __stroll_pure
+
+#else /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+#define __stroll_pure __pure
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
+/**
  * Declare a function to the compiler as const.
  *
  * Tell compiler that a function return value is not affected by changes to the
@@ -160,6 +207,29 @@
  * @see [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
  */
 #define __const __attribute__((const))
+
+/**
+ * @internal
+ *
+ * Declare a Stroll function to the compiler as const.
+ *
+ * @note
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option enabled, this
+ * macro expands as empty since a function triggering an assertion cannot be
+ * #__const.
+ *
+ * @see #__const
+ */
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+#define __stroll_const
+
+#else /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+#define __stroll_const __const
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
 /**
  * Declare a variable or type to the compiler as packed.
@@ -446,4 +516,4 @@
 	                  15, 14, 13, 12, 11, 10,  9,  8, \
 	                   7,  6,  5,  4,  3,  2,  1,  0)
 
-#endif /* _STROLL_H */
+#endif /* _STROLL_CDEFS_H */

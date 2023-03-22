@@ -43,25 +43,6 @@
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
 /**
- * Declare a Stroll bit operation function to the compiler as const.
- *
- * @note
- * When compiled with the #CONFIG_STROLL_ASSERT_API build option enabled, this
- * macro expands as empty.
- */
-
-#if defined(CONFIG_STROLL_ASSERT_API)
-
-/* Functions using assertions are not __const. */
-#define __stroll_const
-
-#else /* !defined(CONFIG_STROLL_ASSERT_API) */
-
-#define __stroll_const __const
-
-#endif /* defined(CONFIG_STROLL_ASSERT_API) */
-
-/**
  * Find Last (most-significant) bit Set over 32 bits word.
  *
  * @param[in] mask word to search

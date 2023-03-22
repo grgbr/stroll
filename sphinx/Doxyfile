@@ -2334,7 +2334,9 @@ PREDEFINED             = __restrict= \
                          __nonull(...)= \
                          __nothrow= \
                          __pure= \
+			 __stroll_pure= \
 			 __const= \
+			 __stroll_const= \
 			 __nothrow= \
                          __WORDSIZE=64
 
