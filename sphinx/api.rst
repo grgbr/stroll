@@ -90,7 +90,7 @@ These are:
       * :c:func:`stroll_bops_fls64`
       * :c:func:`stroll_bops_fls`
 
-   * Find number of set bits (Hammimg weight):
+   * Find number of set bits (:index:`Hammimg weight`):
 
       * :c:func:`stroll_bops_hweight32`
       * :c:func:`stroll_bops_hweight64`

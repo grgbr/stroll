@@ -32,11 +32,11 @@ endef
 pkgconfigs        := libstroll.pc
 libstroll.pc-tmpl := libstroll_pkgconf_tmpl
 
-doxyconf  := $(CURDIR)/doc/Doxyfile
+doxyconf  := $(CURDIR)/sphinx/Doxyfile
 doxyenv   := INCDIR="$(patsubst -I%,%,$(filter -I%,$(common-cflags)))" \
              VERSION="$(VERSION)"
 
-sphinxsrc := $(CURDIR)/doc
+sphinxsrc := $(CURDIR)/sphinx
 sphinxenv := VERSION="$(VERSION)"
 
 # vim: filetype=make :
