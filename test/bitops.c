@@ -11,7 +11,9 @@ stroll_bops_utest_fls32(void ** state __unused)
 	uint32_t     word;
 	unsigned int bit;
 
+#if defined(CONFIG_STROLL_ASSERT_API)
 	expect_assert_failure(stroll_bops_fls32(0));
+#endif
 
 	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
 		word = (uint32_t)1 << bit;
@@ -31,7 +33,9 @@ stroll_bops_utest_uint_fls(void ** state __unused)
 	unsigned int word;
 	unsigned int bit;
 
+#if defined(CONFIG_STROLL_ASSERT_API)
 	expect_assert_failure(stroll_bops_fls(0));
+#endif
 
 	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
 		word = 1U << bit;
@@ -51,7 +55,9 @@ stroll_bops_utest_fls64(void ** state __unused)
 	uint64_t     word;
 	unsigned int bit;
 
+#if defined(CONFIG_STROLL_ASSERT_API)
 	expect_assert_failure(stroll_bops_fls64(0));
+#endif
 
 	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
 		word = (uint64_t)1 << bit;
@@ -71,7 +77,9 @@ stroll_bops_utest_ulong_fls(void ** state __unused)
 	unsigned long word;
 	unsigned int  bit;
 
+#if defined(CONFIG_STROLL_ASSERT_API)
 	expect_assert_failure(stroll_bops_fls(0));
+#endif
 
 	for (bit = 0; bit < (sizeof(word) * CHAR_BIT); bit++) {
 		word = 1UL << bit;
