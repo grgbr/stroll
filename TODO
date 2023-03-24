@@ -1,0 +1,2 @@
+* bitops: rename mask argument
+* bmap: rename bmap32 to bmap..._...32 ??

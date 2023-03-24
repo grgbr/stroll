@@ -6,7 +6,6 @@ common-ldflags       := $(common-cflags) $(EXTRA_LDFLAGS)
 
 solibs               := libstroll.so
 libstroll.so-objs    += $(call kconf_enabled,STROLL_ASSERT,shared/assert.o)
-libstroll.so-objs    += $(call kconf_enabled,STROLL_BITMAP,shared/bitmap.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_LVSTR,shared/lvstr.o)
 libstroll.so-cflags   = $(common-cflags) -fpic
 libstroll.so-ldflags  = $(common-ldflags) \
@@ -14,7 +13,6 @@ libstroll.so-ldflags  = $(common-ldflags) \
 
 arlibs               := libstroll.a
 libstroll.a-objs     += $(call kconf_enabled,STROLL_ASSERT,static/assert.o)
-libstroll.a-objs     += $(call kconf_enabled,STROLL_BITMAP,static/bitmap.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_LVSTR,static/lvstr.o)
 libstroll.a-cflags    = $(common-cflags)
 

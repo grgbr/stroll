@@ -58,53 +58,117 @@
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
-static inline bool __stroll_nonull(1) __stroll_pure __nothrow __warn_result
-stroll_bmap32_test(const uint32_t * bmap, unsigned int bit_no)
-{
-	stroll_bmap_assert_api(bmap);
-	stroll_bmap_assert_api(bit_no < stroll_bops_bitsof(*bmap);
-
-	return !!(*bmap & (1U << bit_no));
-}
-
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_mask(unsigned int start_bit, unsigned int bit_count)
 {
-	stroll_bmap_assert_intern(bit_count);
-	stroll_bmap_assert_intern((start_bit + bit_count) <= 32);
-
-	~(0U) >> (32 - (start_bit + bit_count));
-}
-
-static inline bool __stroll_nonull(1) __stroll_pure __nothrow __warn_result
-stroll_bmap32_test_mask(const uint32_t * bmap, uint32_t mask)
-{
-	stroll_bmap_assert_api(bmap);
-	stroll_bmap_assert_api(mask);
-
-	return !!(*bmap & mask);
-}
-
-static inline bool __stroll_nonull(1) __stroll_pure __nothrow __warn_result
-stroll_bmap32_test_range(const uint32_t * bmap,
-                         unsigned int     start_bit,
-                         unsigned int     bit_count)
-{
-	stroll_bmap_assert_api(bmap);
+	/*
+	 * Intel right shift instruction cannot shift more than one less bits
+	 * than the number of available register bits, i.e., here no more than
+	 * 31 bits.
+	 */
 	stroll_bmap_assert_api(bit_count);
 	stroll_bmap_assert_api((start_bit + bit_count) <= 32);
 
-	return stroll_bmap32_test_mask(bmap,
-	                               stroll_bmap32_mask(start_bit,
-	                                                  bit_count));
+	return (~(0U) >> (32 - bit_count)) << start_bit;
 }
 
-static inline bool __stroll_nonull(1) __stroll_pure __nothrow __warn_result
-stroll_bmap32_test_all(const uint32_t * bmap)
+static inline unsigned int __const __nothrow __warn_result
+stroll_bmap32_hweight(uint32_t bmap)
+{
+	return stroll_bops_hweight32(bmap);
+}
+
+static inline uint32_t __const __nothrow __warn_result
+stroll_bmap32_and(uint32_t bmap, uint32_t mask)
+{
+	return bmap & mask;
+}
+
+static inline uint32_t __stroll_const __nothrow __warn_result
+stroll_bmap32_and_range(uint32_t     bmap,
+                        unsigned int start_bit,
+                        unsigned int bit_count)
+{
+	stroll_bmap_assert_api(bit_count);
+	stroll_bmap_assert_api((start_bit + bit_count) <= 32);
+
+	return stroll_bmap32_and(bmap,
+	                         stroll_bmap32_mask(start_bit, bit_count));
+}
+
+static inline uint32_t __const __nothrow __warn_result
+stroll_bmap32_or(uint32_t bmap, uint32_t mask)
+{
+	return bmap | mask;
+}
+
+static inline uint32_t __stroll_const __nothrow __warn_result
+stroll_bmap32_or_range(uint32_t     bmap,
+                       unsigned int start_bit,
+                       unsigned int bit_count)
+{
+	stroll_bmap_assert_api(bit_count);
+	stroll_bmap_assert_api((start_bit + bit_count) <= 32);
+
+	return stroll_bmap32_or(bmap, stroll_bmap32_mask(start_bit, bit_count));
+}
+
+static inline uint32_t __const __nothrow __warn_result
+stroll_bmap32_xor(uint32_t bmap, uint32_t mask)
+{
+	return bmap ^ mask;
+}
+
+static inline uint32_t __stroll_const __nothrow __warn_result
+stroll_bmap32_xor_range(uint32_t     bmap,
+                        unsigned int start_bit,
+                        unsigned int bit_count)
+{
+	stroll_bmap_assert_api(bit_count);
+	stroll_bmap_assert_api((start_bit + bit_count) <= 32);
+
+	return stroll_bmap32_xor(bmap,
+	                         stroll_bmap32_mask(start_bit, bit_count));
+}
+
+static inline bool __const __nothrow __warn_result
+stroll_bmap32_test_mask(uint32_t bmap, uint32_t mask)
+{
+	return !!stroll_bmap32_and(bmap, mask);
+}
+
+static inline bool __stroll_const __nothrow __warn_result
+stroll_bmap32_test(uint32_t bmap, unsigned int bit_no)
+{
+	stroll_bmap_assert_api(bit_no < stroll_bops_bitsof(bmap));
+
+	return stroll_bmap32_test_mask(bmap, 1U << bit_no);
+}
+
+static inline bool __stroll_const __nothrow __warn_result
+stroll_bmap32_test_range(uint32_t     bmap,
+                         unsigned int start_bit,
+                         unsigned int bit_count)
+{
+	stroll_bmap_assert_api(bit_count);
+	stroll_bmap_assert_api((start_bit + bit_count) <= 32);
+
+	return stroll_bmap32_test_mask(bmap, stroll_bmap32_mask(start_bit,
+	                                                        bit_count));
+}
+
+static inline bool __const __nothrow __warn_result
+stroll_bmap32_test_all(uint32_t bmap)
+{
+	return !!bmap;
+}
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap32_set_mask(uint32_t * bmap, uint32_t mask)
 {
 	stroll_bmap_assert_api(bmap);
 
-	return !!*bmap;
+	*bmap = stroll_bmap32_or(*bmap, mask);
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -113,16 +177,7 @@ stroll_bmap32_set(uint32_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 32);
 
-	return *bmap |= 1U << bit_no;
-}
-
-static inline void __stroll_nonull(1) __nothrow
-stroll_bmap32_set_mask(uint32_t * bmap, uint32_t mask)
-{
-	stroll_bmap_assert_api(bmap);
-	stroll_bmap_assert_api(mask);
-
-	*bmap |= mask;
+	stroll_bmap32_set_mask(bmap, 1U << bit_no);
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -134,9 +189,7 @@ stroll_bmap32_set_range(uint32_t *   bmap,
 	stroll_bmap_assert_api(bit_count);
 	stroll_bmap_assert_api((start_bit + bit_count) <= 32);
 
-	return stroll_bmap32_set_mask(bmap,
-	                              stroll_bmap32_mask(start_bit,
-	                                                 bit_count));
+	stroll_bmap32_set_mask(bmap, stroll_bmap32_mask(start_bit, bit_count));
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -144,7 +197,15 @@ stroll_bmap32_set_all(uint32_t * bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
-	return *bmap = ~(0U);
+	*bmap = ~(0U);
+}
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap32_clear_mask(uint32_t * bmap, uint32_t mask)
+{
+	stroll_bmap_assert_api(bmap);
+
+	*bmap = stroll_bmap32_and(*bmap, ~mask);
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -153,16 +214,7 @@ stroll_bmap32_clear(uint32_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 32);
 
-	return *bmap &= ~(1U << bit_no);
-}
-
-static inline void __stroll_nonull(1) __nothrow
-stroll_bmap32_clear_mask(uint32_t * bmap, uint32_t mask)
-{
-	stroll_bmap_assert_api(bmap);
-	stroll_bmap_assert_api(mask);
-
-	*bmap &= ~mask;
+	stroll_bmap32_clear_mask(bmap, ~(1U << bit_no));
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -174,9 +226,8 @@ stroll_bmap32_clear_range(uint32_t *   bmap,
 	stroll_bmap_assert_api(bit_count);
 	stroll_bmap_assert_api((start_bit + bit_count) <= 32);
 
-	return stroll_bmap32_clear_mask(bmap,
-	                                stroll_bmap32_mask(start_bit,
-	                                                   bit_count));
+	stroll_bmap32_clear_mask(bmap,
+	                         stroll_bmap32_mask(start_bit, bit_count));
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -184,7 +235,15 @@ stroll_bmap32_clear_all(uint32_t * bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
-	return *bmap = 0;
+	*bmap = 0;
+}
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap32_toggle_mask(uint32_t * bmap, uint32_t mask)
+{
+	stroll_bmap_assert_api(bmap);
+
+	*bmap = stroll_bmap32_xor(*bmap, mask);
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -193,16 +252,7 @@ stroll_bmap32_toggle(uint32_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 32);
 
-	return *bmap ^= 1U << bit_no;
-}
-
-static inline void __stroll_nonull(1) __nothrow
-stroll_bmap32_toggle_mask(uint32_t * bmap, uint32_t mask)
-{
-	stroll_bmap_assert_api(bmap);
-	stroll_bmap_assert_api(mask);
-
-	return *bmap ^= mask;
+	stroll_bmap32_toggle_mask(bmap, 1U << bit_no);
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -214,9 +264,8 @@ stroll_bmap32_toggle_range(uint32_t *   bmap,
 	stroll_bmap_assert_api(bit_count);
 	stroll_bmap_assert_api((start_bit + bit_count) <= 32);
 
-	return stroll_bmap32_toggle_mask(bmap,
-	                                 stroll_bmap32_mask(start_bit,
-	                                                    bit_count));
+	stroll_bmap32_toggle_mask(bmap,
+	                          stroll_bmap32_mask(start_bit, bit_count));
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -224,18 +273,22 @@ stroll_bmap32_toggle_all(uint32_t * bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
-	return *bmap ^= ~(*bmap);
+	stroll_bmap32_toggle_mask(bmap, ~(*bmap));
 }
 
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_init_set(uint32_t * bmap)
 {
+	stroll_bmap_assert_api(bmap);
+
 	stroll_bmap32_set_all(bmap);
 }
 
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_init_clear(uint32_t * bmap)
 {
+	stroll_bmap_assert_api(bmap);
+
 	stroll_bmap32_clear_all(bmap);
 }
 
@@ -270,12 +323,11 @@ stroll_bmap32_iter_end(const struct stroll_bmap32_iter * iter)
 }
 
 static inline unsigned int __stroll_nonull(1, 2) __nothrow
-stroll_bmap32_init_iter(struct stroll_bmap32_iter * iter, uint32_t * bmap)
+stroll_bmap32_init_iter(struct stroll_bmap32_iter * iter, uint32_t bmap)
 {
 	stroll_bmap_assert_api(iter);
-	stroll_bmap_assert_api(bmap);
 
-	iter->tmp = *bmap;
+	iter->tmp = bmap;
 	iter->diff = stroll_bops_ffs32(iter->tmp);
 
 	return iter->diff - 1;
