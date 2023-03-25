@@ -326,7 +326,6 @@ stroll_bmap32_setup_iter(uint32_t * iter, uint32_t bmap, unsigned int * bit_no)
 	*iter = bmap;
 }
 
-
 #define stroll_bmap32_foreach(_iter, _bmap, _bit_no) \
 	for (stroll_bmap32_setup_iter(_iter, _bmap, _bit_no); \
 	     !stroll_bmap32_step_iter(_iter, _bit_no); \

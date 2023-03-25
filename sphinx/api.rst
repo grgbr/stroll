@@ -90,6 +90,12 @@ These are:
       * :c:func:`stroll_bops64_fls`
       * :c:func:`stroll_bops_fls`
 
+   * Find First bit Cleared:
+
+      * :c:func:`stroll_bops32_ffc`
+      * :c:func:`stroll_bops64_ffc`
+      * :c:func:`stroll_bops_ffc`
+
    * Find number of set bits (:index:`Hammimg weight`):
 
       * :c:func:`stroll_bops32_hweight`
@@ -205,6 +211,11 @@ stroll_assert
 
 .. doxygendefine:: stroll_assert
 
+stroll_bops_ffc
+***************
+
+.. doxygendefine:: stroll_bops_ffc
+
 stroll_bops_ffs
 ***************
 
@@ -238,6 +249,16 @@ enbox_bind_entry
 
 Functions
 ---------
+
+stroll_bops32_ffc
+*****************
+
+.. doxygenfunction:: stroll_bops32_ffc
+
+stroll_bops64_ffc
+*****************
+
+.. doxygenfunction:: stroll_bops64_ffc
 
 stroll_bops32_ffs
 *****************

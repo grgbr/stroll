@@ -51,7 +51,7 @@
  *
  * @param[in] value word to search
  *
- * @return Index of bit starting from 1
+ * @return Index of bit starting from 1, 0 when no set bits were found.
   */
 static inline unsigned int __const __nothrow
 stroll_bops32_ffs(uint32_t value)
@@ -76,7 +76,20 @@ stroll_bops32_fls(uint32_t value)
 {
 	stroll_bops_assert_api(value);
 
-	return (sizeof(value) * CHAR_BIT) - __builtin_clz(value);
+	return 32 - __builtin_clz(value);
+}
+
+/**
+ * Find First (least-significant) bit Cleared over 32 bits word.
+ *
+ * @param[in] value word to search
+ *
+ * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ */
+static inline unsigned int __const __nothrow
+stroll_bops32_ffc(uint32_t value)
+{
+	return stroll_bops32_ffs(value ^ ~(0U));
 }
 
 /**
@@ -100,7 +113,7 @@ stroll_bops32_hweight(uint32_t value)
  *
  * @param[in] value word to search
  *
- * @return Index of bit starting from 1
+ * @return Index of bit starting from 1, 0 when no set bits were found.
  */
 
 #if __WORDSIZE == 64
@@ -141,7 +154,7 @@ stroll_bops64_fls(uint64_t value)
 {
 	stroll_bops_assert_api(value);
 
-	return (sizeof(value) * CHAR_BIT) - __builtin_clzl(value);
+	return 64 - __builtin_clzl(value);
 }
 
 #elif __WORDSIZE == 32
@@ -151,7 +164,33 @@ stroll_bops64_fls(uint64_t value)
 {
 	stroll_bops_assert_api(value);
 
-	return (sizeof(value) * CHAR_BIT) - __builtin_clzll(value);
+	return 64 - __builtin_clzll(value);
+}
+
+#endif
+
+/**
+ * Find First (least-significant) bit Cleared over 64 bits word.
+ *
+ * @param[in] value word to search
+ *
+ * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ */
+
+#if __WORDSIZE == 64
+
+static inline unsigned int __const __nothrow
+stroll_bops64_ffc(uint64_t value)
+{
+	return stroll_bops64_ffs(value ^ ~(0UL));
+}
+
+#elif __WORDSIZE == 32
+
+static inline unsigned int __const __nothrow
+stroll_bops64_ffc(uint64_t value)
+{
+	return stroll_bops64_ffs(value ^ ~(0ULL));
 }
 
 #endif
@@ -188,16 +227,16 @@ stroll_bops64_hweight(uint64_t value)
 #define stroll_bops_bitsof(_expr) \
 	(sizeof(_expr) * CHAR_BIT)
 
-#define _stroll_bops_fls(_value) \
-	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_fls(_value) : \
-	                                      stroll_bops64_fls(_value))
+#define _stroll_bops_ffs(_value) \
+	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_ffs(_value) : \
+	                                       stroll_bops64_ffs(_value))
 
 /**
  * Find First (least-significant) bit Set over a word.
  *
  * @param[in] _value word to search
  *
- * @return Index of bit starting from 1
+ * @return Index of bit starting from 1, 0 when no set bits were found.
  */
 #define stroll_bops_ffs(_value) \
 	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
@@ -205,9 +244,9 @@ stroll_bops64_hweight(uint64_t value)
 	             _stroll_bops_ffs(_value), \
 	             "invalid bitops FFS word size")
 
-#define _stroll_bops_hweight(_value) \
-	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_hweight(_value) : \
-	                                      stroll_bops64_hweight(_value))
+#define _stroll_bops_fls(_value) \
+	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_fls(_value) : \
+	                                       stroll_bops64_fls(_value))
 
 /**
  * Find Last (most-significant) bit over a word
@@ -227,9 +266,27 @@ stroll_bops64_hweight(uint64_t value)
 	             _stroll_bops_fls(_value), \
 	             "invalid bitops FLS word size")
 
-#define _stroll_bops_ffs(_value) \
-	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_ffs(_value) : \
-	                                      stroll_bops64_ffs(_value))
+#define _stroll_bops_ffc(_value) \
+	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_ffc(_value) : \
+	                                       stroll_bops64_ffc(_value))
+
+/**
+ * Find First (least-significant) bit Cleared over a word.
+ *
+ * @param[in] _value word to search
+ *
+ * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ */
+
+#define stroll_bops_ffc(_value) \
+	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
+	             (stroll_bops_bitsof(_value) == 64U), \
+	             _stroll_bops_ffc(_value), \
+	             "invalid bitops FFC word size")
+
+#define _stroll_bops_hweight(_value) \
+	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_hweight(_value) : \
+	                                       stroll_bops64_hweight(_value))
 
 /**
  * Find the number of set bits over a word.
