@@ -7,16 +7,22 @@ test-ldflags   := $(common-cflags) \
                   -L$(BUILDDIR)/../src \
                   $(EXTRA_LDFLAGS)
 
-bins           := $(call kconf_enabled,STROLL_BITOPS,bitops)
-bitops-objs     = $(call kconf_enabled,STROLL_BITOPS,bitops.o)
+bins           :=
+
+ifeq ($(CONFIG_STROLL_BITOPS),y)
+bins           += bitops
+bitops-objs     = bitops.o
 bitops-cflags   = $(test-cflags)
 bitops-ldflags  = $(test-ldflags) -lstroll
 bitops-pkgconf  = cmocka
+endif # ($(CONFIG_STROLL_BITOPS),y)
 
-bins           += $(call kconf_enabled,STROLL_BITMAP,bitmap)
-bitmap-objs     = $(call kconf_enabled,STROLL_BITMAP,bitmap.o)
+ifeq ($(CONFIG_STROLL_BITMAP),y)
+bins           += bitmap
+bitmap-objs     = bitmap.o
 bitmap-cflags   = $(test-cflags)
 bitmap-ldflags  = $(test-ldflags) -lstroll
 bitmap-pkgconf  = cmocka
+endif # ($(CONFIG_STROLL_BITMAP),y)
 
 # vim: filetype=make :
