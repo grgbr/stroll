@@ -45,40 +45,40 @@
 /**
  * Find Last (most-significant) bit Set over 32 bits word.
  *
- * @param[in] mask word to search
+ * @param[in] value word to search
  *
  * @return Index of bit starting from 1
  *
  * @warning
  * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
- * a @p mask is zero, result is undefined. A zero @p mask triggers an assertion
+ * a @p value is zero, result is undefined. A zero @p value triggers an assertion
  * otherwise.
  */
 static inline unsigned int __stroll_const __nothrow
-stroll_bops_fls32(uint32_t mask)
+stroll_bops32_fls(uint32_t value)
 {
-	stroll_bops_assert_api(mask);
+	stroll_bops_assert_api(value);
 
-	return (sizeof(mask) * CHAR_BIT) - __builtin_clz(mask);
+	return (sizeof(value) * CHAR_BIT) - __builtin_clz(value);
 }
 
 /**
  * Find First (least-significant) bit Set over 32 bits word.
  *
- * @param[in] mask word to search
+ * @param[in] value word to search
  *
  * @return Index of bit starting from 1
   */
 static inline unsigned int __const __nothrow
-stroll_bops_ffs32(uint32_t mask)
+stroll_bops32_ffs(uint32_t value)
 {
-	return __builtin_ffs(mask);
+	return __builtin_ffs(value);
 }
 
 /**
  * Find the number of set bits over 32 bits word.
  *
- * @param[in] mask word to search
+ * @param[in] value word to search
  *
  * @return Number of set bits
  *
@@ -86,9 +86,9 @@ stroll_bops_ffs32(uint32_t mask)
  * is the total number of bits set in it.
  */
 static inline unsigned int __const __nothrow
-stroll_bops_hweight32(uint32_t mask)
+stroll_bops32_hweight(uint32_t value)
 {
-	return __builtin_popcount(mask);
+	return __builtin_popcount(value);
 }
 
 #if (__WORDSIZE != 32) && (__WORDSIZE != 64)
@@ -98,34 +98,34 @@ stroll_bops_hweight32(uint32_t mask)
 /**
  * Find Last (most-significant) bit Set over 64 bits word.
  *
- * @param[in] mask word to search
+ * @param[in] value word to search
  *
  * @return Index of bit starting from 1
  *
  * @warning
  * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
- * a @p mask is zero, result is undefined. A zero @p mask triggers an assertion
+ * a @p value is zero, result is undefined. A zero @p value triggers an assertion
  * otherwise.
  */
 
 #if __WORDSIZE == 64
 
 static inline unsigned int __stroll_const __nothrow
-stroll_bops_fls64(uint64_t mask)
+stroll_bops64_fls(uint64_t value)
 {
-	stroll_bops_assert_api(mask);
+	stroll_bops_assert_api(value);
 
-	return (sizeof(mask) * CHAR_BIT) - __builtin_clzl(mask);
+	return (sizeof(value) * CHAR_BIT) - __builtin_clzl(value);
 }
 
 #elif __WORDSIZE == 32
 
 static inline unsigned int __stroll_const __nothrow
-stroll_bops_fls64(uint64_t mask)
+stroll_bops64_fls(uint64_t value)
 {
-	stroll_bops_assert_api(mask);
+	stroll_bops_assert_api(value);
 
-	return (sizeof(mask) * CHAR_BIT) - __builtin_clzll(mask);
+	return (sizeof(value) * CHAR_BIT) - __builtin_clzll(value);
 }
 
 #endif
@@ -133,7 +133,7 @@ stroll_bops_fls64(uint64_t mask)
 /**
  * Find First (least-significant) bit Set over 64 bits word.
  *
- * @param[in] mask word to search
+ * @param[in] value word to search
  *
  * @return Index of bit starting from 1
  */
@@ -141,17 +141,17 @@ stroll_bops_fls64(uint64_t mask)
 #if __WORDSIZE == 64
 
 static inline unsigned int __const __nothrow
-stroll_bops_ffs64(uint64_t mask)
+stroll_bops64_ffs(uint64_t value)
 {
-	return __builtin_ffsl(mask);
+	return __builtin_ffsl(value);
 }
 
 #elif __WORDSIZE == 32
 
 static inline unsigned int __const __nothrow
-stroll_bops_ffs64(uint64_t mask)
+stroll_bops64_ffs(uint64_t value)
 {
-	return __builtin_ffsll(mask);
+	return __builtin_ffsll(value);
 }
 
 #endif
@@ -159,7 +159,7 @@ stroll_bops_ffs64(uint64_t mask)
 /**
  * Find the number of set bits over 64 bits word.
  *
- * @param[in] mask word to search
+ * @param[in] value word to search
  *
  * @return Number of set bits
  *
@@ -170,17 +170,17 @@ stroll_bops_ffs64(uint64_t mask)
 #if __WORDSIZE == 64
 
 static inline unsigned int __const __nothrow
-stroll_bops_hweight64(uint64_t mask)
+stroll_bops64_hweight(uint64_t value)
 {
-	return __builtin_popcountl(mask);
+	return __builtin_popcountl(value);
 }
 
 #elif __WORDSIZE == 32
 
 static inline unsigned int __const __nothrow
-stroll_bops_hweight64(uint64_t mask)
+stroll_bops64_hweight(uint64_t value)
 {
-	return __builtin_popcountll(mask);
+	return __builtin_popcountll(value);
 }
 
 #endif
@@ -188,63 +188,63 @@ stroll_bops_hweight64(uint64_t mask)
 #define stroll_bops_bitsof(_expr) \
 	(sizeof(_expr) * CHAR_BIT)
 
-#define _stroll_bops_fls(_mask) \
-	((stroll_bops_bitsof(_mask) == 32U) ? stroll_bops_fls32(_mask) : \
-	                                      stroll_bops_fls64(_mask))
+#define _stroll_bops_fls(_value) \
+	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_fls(_value) : \
+	                                      stroll_bops64_fls(_value))
 
 /**
  * Find Last (most-significant) bit over a word
  *
- * @param[in] _mask word to search
+ * @param[in] _value word to search
  *
  * @return Index of bit starting from 1
  *
  * @warning
  * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
- * a @p mask is zero, result is undefined. A zero @p mask triggers an assertion
+ * a @p value is zero, result is undefined. A zero @p value triggers an assertion
  * otherwise.
  */
-#define stroll_bops_fls(_mask) \
-	compile_eval((stroll_bops_bitsof(_mask) == 32U) || \
-	             (stroll_bops_bitsof(_mask) == 64U), \
-	             _stroll_bops_fls(_mask), \
+#define stroll_bops_fls(_value) \
+	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
+	             (stroll_bops_bitsof(_value) == 64U), \
+	             _stroll_bops_fls(_value), \
 	             "invalid bitops FLS word size")
 
-#define _stroll_bops_ffs(_mask) \
-	((stroll_bops_bitsof(_mask) == 32U) ? stroll_bops_ffs32(_mask) : \
-	                                      stroll_bops_ffs64(_mask))
+#define _stroll_bops_ffs(_value) \
+	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_ffs(_value) : \
+	                                      stroll_bops64_ffs(_value))
 
 /**
  * Find First (least-significant) bit Set over a word.
  *
- * @param[in] _mask word to search
+ * @param[in] _value word to search
  *
  * @return Index of bit starting from 1
  */
-#define stroll_bops_ffs(_mask) \
-	compile_eval((stroll_bops_bitsof(_mask) == 32U) || \
-	             (stroll_bops_bitsof(_mask) == 64U), \
-	             _stroll_bops_ffs(_mask), \
+#define stroll_bops_ffs(_value) \
+	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
+	             (stroll_bops_bitsof(_value) == 64U), \
+	             _stroll_bops_ffs(_value), \
 	             "invalid bitops FFS word size")
 
-#define _stroll_bops_hweight(_mask) \
-	((stroll_bops_bitsof(_mask) == 32U) ? stroll_bops_hweight32(_mask) : \
-	                                      stroll_bops_hweight64(_mask))
+#define _stroll_bops_hweight(_value) \
+	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_hweight(_value) : \
+	                                      stroll_bops64_hweight(_value))
 
 /**
  * Find the number of set bits over a word.
  *
- * @param[in] mask word to search
+ * @param[in] _value word to search
  *
  * @return Number of set bits
  *
  * Returns the Hamming weight of a word. The Hamming weight of a number is the
  * total number of bits set in it.
  */
-#define stroll_bops_hweight(_mask) \
-	compile_eval((stroll_bops_bitsof(_mask) == 32U) || \
-	             (stroll_bops_bitsof(_mask) == 64U), \
-	             _stroll_bops_hweight(_mask), \
+#define stroll_bops_hweight(_value) \
+	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
+	             (stroll_bops_bitsof(_value) == 64U), \
+	             _stroll_bops_hweight(_value), \
 	             "invalid bitops Hamming weight word size")
 
 #endif /* _STROLL_BITOPS_H */

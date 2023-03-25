@@ -13,11 +13,10 @@ bitops-cflags   = $(test-cflags)
 bitops-ldflags  = $(test-ldflags) -lstroll
 bitops-pkgconf  = cmocka
 
-bins           := $(call kconf_enabled,STROLL_BITMAP,bmap)
-bmap-objs       = $(call kconf_enabled,STROLL_BITMAP,bmap.o)
-bmap-cflags     = $(test-cflags)
-bmap-ldflags    = $(test-ldflags) -lstroll
-bmap-pkgconf    = cmocka
-
+bins           += $(call kconf_enabled,STROLL_BITMAP,bitmap)
+bitmap-objs     = $(call kconf_enabled,STROLL_BITMAP,bitmap.o)
+bitmap-cflags   = $(test-cflags)
+bitmap-ldflags  = $(test-ldflags) -lstroll
+bitmap-pkgconf  = cmocka
 
 # vim: filetype=make :

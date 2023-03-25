@@ -80,20 +80,20 @@ These are:
 
    * Find First bit Set:
 
-      * :c:func:`stroll_bops_ffs32`
-      * :c:func:`stroll_bops_ffs64`
+      * :c:func:`stroll_bops32_ffs`
+      * :c:func:`stroll_bops64_ffs`
       * :c:func:`stroll_bops_ffs`
 
    * Find Last bit Set:
 
-      * :c:func:`stroll_bops_fls32`
-      * :c:func:`stroll_bops_fls64`
+      * :c:func:`stroll_bops32_fls`
+      * :c:func:`stroll_bops64_fls`
       * :c:func:`stroll_bops_fls`
 
    * Find number of set bits (:index:`Hammimg weight`):
 
-      * :c:func:`stroll_bops_hweight32`
-      * :c:func:`stroll_bops_hweight64`
+      * :c:func:`stroll_bops32_hweight`
+      * :c:func:`stroll_bops64_hweight`
       * :c:func:`stroll_bops_hweight`
 
 Atomic operations
@@ -239,32 +239,32 @@ enbox_bind_entry
 Functions
 ---------
 
-stroll_bops_ffs32
+stroll_bops32_ffs
 *****************
 
-.. doxygenfunction:: stroll_bops_ffs32
+.. doxygenfunction:: stroll_bops32_ffs
 
-stroll_bops_ffs64
+stroll_bops64_ffs
 *****************
 
-.. doxygenfunction:: stroll_bops_ffs64
+.. doxygenfunction:: stroll_bops64_ffs
 
-stroll_bops_fls32
+stroll_bops32_fls
 *****************
 
-.. doxygenfunction:: stroll_bops_fls32
+.. doxygenfunction:: stroll_bops32_fls
 
-stroll_bops_fls64
+stroll_bops64_fls
 *****************
 
-.. doxygenfunction:: stroll_bops_fls64
+.. doxygenfunction:: stroll_bops64_fls
 
-stroll_bops_hweight32
+stroll_bops32_hweight
 *********************
 
-.. doxygenfunction:: stroll_bops_hweight32
+.. doxygenfunction:: stroll_bops32_hweight
 
-stroll_bops_hweight64
+stroll_bops64_hweight
 *********************
 
-.. doxygenfunction:: stroll_bops_hweight64
+.. doxygenfunction:: stroll_bops64_hweight

@@ -74,7 +74,7 @@ stroll_bmap32_mask(unsigned int start_bit, unsigned int bit_count)
 static inline unsigned int __const __nothrow __warn_result
 stroll_bmap32_hweight(uint32_t bmap)
 {
-	return stroll_bops_hweight32(bmap);
+	return stroll_bops32_hweight(bmap);
 }
 
 static inline uint32_t __const __nothrow __warn_result
@@ -272,7 +272,7 @@ stroll_bmap32_toggle_all(uint32_t * bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
-	stroll_bmap32_toggle_mask(bmap, ~(*bmap));
+	stroll_bmap32_toggle_mask(bmap, ~(0U));
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -297,44 +297,39 @@ stroll_bmap32_fini(uint32_t * bmap)
 	stroll_bmap_assert_api(bmap);
 }
 
-struct stroll_bmap32_iter {
-	unsigned int tmp;
-	unsigned int diff;
-};
-
-static inline unsigned int __stroll_nonull(1) __nothrow
-stroll_bmap32_step_iter(struct stroll_bmap32_iter * iter, unsigned int bit_no)
+static inline int __stroll_nonull(1, 2) __nothrow
+stroll_bmap32_step_iter(uint32_t * iter, uint32_t * bit_no)
 {
 	stroll_bmap_assert_api(iter);
+	stroll_bmap_assert_api(bit_no);
 
-	iter->tmp >>= iter->diff;
-	iter->diff = stroll_bops_ffs32(iter->tmp);
+	if (*iter) {
+		uint32_t diff = stroll_bops32_ffs(*iter);
 
-	return bit_no + iter->diff;
+		*bit_no += diff;
+		*iter >>= diff;
+
+		return 0;
+	}
+	else
+		return -1;
 }
 
-static inline bool __stroll_nonull(1) __stroll_pure __nothrow
-stroll_bmap32_iter_end(const struct stroll_bmap32_iter * iter)
+static inline void __stroll_nonull(1, 3) __nothrow
+stroll_bmap32_setup_iter(uint32_t * iter, uint32_t bmap, unsigned int * bit_no)
 {
 	stroll_bmap_assert_api(iter);
+	stroll_bmap_assert_api(bit_no);
 
-	return !iter->tmp;
+	/* Will wrap around at next stroll_bmap32_step_iter() call. */
+	*bit_no = -1;
+	*iter = bmap;
 }
 
-static inline unsigned int __stroll_nonull(1, 2) __nothrow
-stroll_bmap32_init_iter(struct stroll_bmap32_iter * iter, uint32_t bmap)
-{
-	stroll_bmap_assert_api(iter);
-
-	iter->tmp = bmap;
-	iter->diff = stroll_bops_ffs32(iter->tmp);
-
-	return iter->diff - 1;
-}
 
 #define stroll_bmap32_foreach(_iter, _bmap, _bit_no) \
-	for ((_bit_no) = stroll_bmap32_init_iter(_iter, _bmap); \
-	     !stroll_bmap32_iter_end(_iter); \
-	     (_bit_no) = stroll_bmap32_step_iter(_iter, _bit_no))
+	for (stroll_bmap32_setup_iter(_iter, _bmap, _bit_no); \
+	     !stroll_bmap32_step_iter(_iter, _bit_no); \
+	    )
 
 #endif /* _STROLL_BITMAP_H */
