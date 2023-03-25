@@ -728,7 +728,6 @@ stroll_bmap32_utest_iter(void ** state __unused)
 	unsigned int b;
 	unsigned int m;
 
-
 #if defined(CONFIG_STROLL_ASSERT_API)
 	expect_assert_failure(stroll_bmap32_setup_iter(NULL, bmp, &b));
 	expect_assert_failure(stroll_bmap32_setup_iter(&iter, bmp, NULL));
