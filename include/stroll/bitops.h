@@ -42,6 +42,23 @@
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
+#if (__WORDSIZE != 32) && (__WORDSIZE != 64)
+#error "Unsupported machine word size !"
+#endif /* !((__WORDSIZE != 32) && (__WORDSIZE != 64)) */
+
+/**
+ * Find First (least-significant) bit Set over 32 bits word.
+ *
+ * @param[in] value word to search
+ *
+ * @return Index of bit starting from 1
+  */
+static inline unsigned int __const __nothrow
+stroll_bops32_ffs(uint32_t value)
+{
+	return __builtin_ffs(value);
+}
+
 /**
  * Find Last (most-significant) bit Set over 32 bits word.
  *
@@ -63,19 +80,6 @@ stroll_bops32_fls(uint32_t value)
 }
 
 /**
- * Find First (least-significant) bit Set over 32 bits word.
- *
- * @param[in] value word to search
- *
- * @return Index of bit starting from 1
-  */
-static inline unsigned int __const __nothrow
-stroll_bops32_ffs(uint32_t value)
-{
-	return __builtin_ffs(value);
-}
-
-/**
  * Find the number of set bits over 32 bits word.
  *
  * @param[in] value word to search
@@ -91,9 +95,31 @@ stroll_bops32_hweight(uint32_t value)
 	return __builtin_popcount(value);
 }
 
-#if (__WORDSIZE != 32) && (__WORDSIZE != 64)
-#error "Unsupported machine word size !"
-#endif /* !((__WORDSIZE != 32) && (__WORDSIZE != 64)) */
+/**
+ * Find First (least-significant) bit Set over 64 bits word.
+ *
+ * @param[in] value word to search
+ *
+ * @return Index of bit starting from 1
+ */
+
+#if __WORDSIZE == 64
+
+static inline unsigned int __const __nothrow
+stroll_bops64_ffs(uint64_t value)
+{
+	return __builtin_ffsl(value);
+}
+
+#elif __WORDSIZE == 32
+
+static inline unsigned int __const __nothrow
+stroll_bops64_ffs(uint64_t value)
+{
+	return __builtin_ffsll(value);
+}
+
+#endif
 
 /**
  * Find Last (most-significant) bit Set over 64 bits word.
@@ -126,32 +152,6 @@ stroll_bops64_fls(uint64_t value)
 	stroll_bops_assert_api(value);
 
 	return (sizeof(value) * CHAR_BIT) - __builtin_clzll(value);
-}
-
-#endif
-
-/**
- * Find First (least-significant) bit Set over 64 bits word.
- *
- * @param[in] value word to search
- *
- * @return Index of bit starting from 1
- */
-
-#if __WORDSIZE == 64
-
-static inline unsigned int __const __nothrow
-stroll_bops64_ffs(uint64_t value)
-{
-	return __builtin_ffsl(value);
-}
-
-#elif __WORDSIZE == 32
-
-static inline unsigned int __const __nothrow
-stroll_bops64_ffs(uint64_t value)
-{
-	return __builtin_ffsll(value);
 }
 
 #endif
@@ -193,6 +193,23 @@ stroll_bops64_hweight(uint64_t value)
 	                                      stroll_bops64_fls(_value))
 
 /**
+ * Find First (least-significant) bit Set over a word.
+ *
+ * @param[in] _value word to search
+ *
+ * @return Index of bit starting from 1
+ */
+#define stroll_bops_ffs(_value) \
+	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
+	             (stroll_bops_bitsof(_value) == 64U), \
+	             _stroll_bops_ffs(_value), \
+	             "invalid bitops FFS word size")
+
+#define _stroll_bops_hweight(_value) \
+	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_hweight(_value) : \
+	                                      stroll_bops64_hweight(_value))
+
+/**
  * Find Last (most-significant) bit over a word
  *
  * @param[in] _value word to search
@@ -213,23 +230,6 @@ stroll_bops64_hweight(uint64_t value)
 #define _stroll_bops_ffs(_value) \
 	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_ffs(_value) : \
 	                                      stroll_bops64_ffs(_value))
-
-/**
- * Find First (least-significant) bit Set over a word.
- *
- * @param[in] _value word to search
- *
- * @return Index of bit starting from 1
- */
-#define stroll_bops_ffs(_value) \
-	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
-	             (stroll_bops_bitsof(_value) == 64U), \
-	             _stroll_bops_ffs(_value), \
-	             "invalid bitops FFS word size")
-
-#define _stroll_bops_hweight(_value) \
-	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_hweight(_value) : \
-	                                      stroll_bops64_hweight(_value))
 
 /**
  * Find the number of set bits over a word.
