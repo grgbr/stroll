@@ -721,7 +721,7 @@ stroll_bmap32_utest_toggle_all(void ** state __unused)
 }
 
 static void
-stroll_bmap32_utest_iter(void ** state __unused)
+stroll_bmap32_utest_set_iter(void ** state __unused)
 {
 	uint32_t     iter;
 	uint32_t     bmp = 0;
@@ -729,8 +729,8 @@ stroll_bmap32_utest_iter(void ** state __unused)
 	unsigned int m;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap32_setup_iter(NULL, bmp, &b));
-	expect_assert_failure(stroll_bmap32_setup_iter(&iter, bmp, NULL));
+	expect_assert_failure(stroll_bmap32_setup_set_iter(NULL, bmp, &b));
+	expect_assert_failure(stroll_bmap32_setup_set_iter(&iter, bmp, NULL));
 	expect_assert_failure(stroll_bmap32_step_iter(NULL, &b));
 	expect_assert_failure(stroll_bmap32_step_iter(&iter, NULL));
 #endif
@@ -740,7 +740,7 @@ stroll_bmap32_utest_iter(void ** state __unused)
 		unsigned int e = 0;
 
 		b = 0;
-		stroll_bmap32_foreach(&iter, bmp, &b) {
+		stroll_bmap32_foreach_set(&iter, bmp, &b) {
 			while ((e < 32) && !(bmp & (1U << e)))
 				e++;
 			assert_int_equal(b, e);
@@ -748,6 +748,40 @@ stroll_bmap32_utest_iter(void ** state __unused)
 		}
 
 		if (!bmp)
+			assert_int_equal(b, (unsigned int)-1);
+		else
+			assert_in_range(b, 0, 31);
+	}
+}
+
+static void
+stroll_bmap32_utest_clear_iter(void ** state __unused)
+{
+	uint32_t     iter;
+	uint32_t     bmp = 0;
+	unsigned int b;
+	unsigned int m;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap32_setup_clear_iter(NULL, bmp, &b));
+	expect_assert_failure(stroll_bmap32_setup_clear_iter(&iter, bmp, NULL));
+	expect_assert_failure(stroll_bmap32_step_iter(NULL, &b));
+	expect_assert_failure(stroll_bmap32_step_iter(&iter, NULL));
+#endif
+
+	for (m = 0; m < array_nr(stroll_bmap32_utest_bmaps); m++) {
+		uint32_t     bmp = stroll_bmap32_utest_bmaps[m];
+		unsigned int e = 0;
+
+		b = 0;
+		stroll_bmap32_foreach_clear(&iter, bmp, &b) {
+			while ((e < 32) && (bmp & (1U << e)))
+				e++;
+			assert_int_equal(b, e);
+			e++;
+		}
+
+		if (bmp == ~(0U))
 			assert_int_equal(b, (unsigned int)-1);
 		else
 			assert_in_range(b, 0, 31);
@@ -812,7 +846,8 @@ static const struct CMUnitTest stroll_bmap32_utests[] = {
 	                                stroll_bmap32_utest_setup_toggle_range,
 	                                stroll_bmap32_utest_teardown),
 	cmocka_unit_test(stroll_bmap32_utest_toggle_all),
-	cmocka_unit_test(stroll_bmap32_utest_iter)
+	cmocka_unit_test(stroll_bmap32_utest_set_iter),
+	cmocka_unit_test(stroll_bmap32_utest_clear_iter),
 };
 
 int

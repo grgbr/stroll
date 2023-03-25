@@ -316,18 +316,38 @@ stroll_bmap32_step_iter(uint32_t * iter, uint32_t * bit_no)
 }
 
 static inline void __stroll_nonull(1, 3) __nothrow
-stroll_bmap32_setup_iter(uint32_t * iter, uint32_t bmap, unsigned int * bit_no)
+stroll_bmap32_setup_set_iter(uint32_t     * iter,
+                             uint32_t       bmap,
+                             unsigned int * bit_no)
 {
 	stroll_bmap_assert_api(iter);
 	stroll_bmap_assert_api(bit_no);
 
-	/* Will wrap around at next stroll_bmap32_step_iter() call. */
+	/* Wrap around at next stroll_bmap32_step_iter() call. */
 	*bit_no = -1;
 	*iter = bmap;
 }
 
-#define stroll_bmap32_foreach(_iter, _bmap, _bit_no) \
-	for (stroll_bmap32_setup_iter(_iter, _bmap, _bit_no); \
+#define stroll_bmap32_foreach_set(_iter, _bmap, _bit_no) \
+	for (stroll_bmap32_setup_set_iter(_iter, _bmap, _bit_no); \
+	     !stroll_bmap32_step_iter(_iter, _bit_no); \
+	    )
+
+static inline void __stroll_nonull(1, 3) __nothrow
+stroll_bmap32_setup_clear_iter(uint32_t     * iter,
+                               uint32_t       bmap,
+                               unsigned int * bit_no)
+{
+	stroll_bmap_assert_api(iter);
+	stroll_bmap_assert_api(bit_no);
+
+	/* Wrap around at next stroll_bmap32_step_iter() call. */
+	*bit_no = -1;
+	*iter = bmap ^ ~(0U);
+}
+
+#define stroll_bmap32_foreach_clear(_iter, _bmap, _bit_no) \
+	for (stroll_bmap32_setup_clear_iter(_iter, _bmap, _bit_no); \
 	     !stroll_bmap32_step_iter(_iter, _bit_no); \
 	    )
 
