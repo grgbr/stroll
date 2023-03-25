@@ -62,9 +62,8 @@ static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_mask(unsigned int start_bit, unsigned int bit_count)
 {
 	/*
-	 * Intel right shift instruction cannot shift more than one less bits
-	 * than the number of available register bits, i.e., here no more than
-	 * 31 bits.
+	 * Intel right shift instruction cannot shift more than the number of
+	 * available register bits minus one, i.e., here no more than 31 bits.
 	 */
 	stroll_bmap_assert_api(bit_count);
 	stroll_bmap_assert_api((start_bit + bit_count) <= 32);
@@ -214,7 +213,7 @@ stroll_bmap32_clear(uint32_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 32);
 
-	stroll_bmap32_clear_mask(bmap, ~(1U << bit_no));
+	stroll_bmap32_clear_mask(bmap, 1U << bit_no);
 }
 
 static inline void __stroll_nonull(1) __nothrow
