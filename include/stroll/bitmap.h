@@ -45,18 +45,14 @@
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
-#if defined(CONFIG_STROLL_ASSERT_INTERNAL)
+#define _is_stroll_bmap32_ptr(_bmap) \
+	_is_same_type(_bmap, uint32_t *)
 
-#include <stroll/assert.h>
+#define _is_stroll_bmap64_ptr(_bmap) \
+	_is_same_type(_bmap, uint64_t *)
 
-#define stroll_bmap_assert_intern(_expr) \
-	stroll_assert("stroll: bmap", _expr)
-
-#else /* !defined(CONFIG_STROLL_ASSERT_API) */
-
-#define stroll_bmap_assert_intern(_expr)
-
-#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+#define _stroll_bmap_check_ptr(_bmap) \
+	(_is_stroll_bmap32_ptr(_bmap) || _is_stroll_bmap64_ptr(_bmap))
 
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_mask(unsigned int start_bit, unsigned int bit_count)
@@ -68,8 +64,31 @@ stroll_bmap32_mask(unsigned int start_bit, unsigned int bit_count)
 	stroll_bmap_assert_api(bit_count);
 	stroll_bmap_assert_api((start_bit + bit_count) <= 32);
 
-	return (~(0U) >> (32 - bit_count)) << start_bit;
+	return (UINT32_MAX >> (32 - bit_count)) << start_bit;
 }
+
+static inline uint64_t __stroll_const __nothrow __warn_result
+stroll_bmap64_mask(unsigned int start_bit, unsigned int bit_count)
+{
+	/*
+	 * Intel right shift instruction cannot shift more than the number of
+	 * available register bits minus one, i.e., here no more than 31 bits.
+	 */
+	stroll_bmap_assert_api(bit_count);
+	stroll_bmap_assert_api((start_bit + bit_count) <= 64);
+
+	return (UINT64_MAX >> (64 - bit_count)) << start_bit;
+}
+
+#define _stroll_bmap_mask(_bmap, _start_bit, _bit_count) \
+	compile_choose(_is_stroll_bops32_type(_bmap), \
+	               stroll_bmap32_mask(_start_bit, _bit_count), \
+	               stroll_bmap64_mask(_start_bit, _bit_count))
+
+#define stroll_bmap_mask(_bmap, _start_bit, _bit_count) \
+	compile_eval(_stroll_bops_check_type(_bmap), \
+	             _stroll_bmap_mask(_bmap, _start_bit, _bit_count), \
+	             "invalid bitmap mask word size")
 
 static inline unsigned int __const __nothrow __warn_result
 stroll_bmap32_hweight(uint32_t bmap)
@@ -196,8 +215,26 @@ stroll_bmap32_set_all(uint32_t * bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
-	*bmap = ~(0U);
+	*bmap = UINT32_MAX;
 }
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap64_set_all(uint64_t * bmap)
+{
+	stroll_bmap_assert_api(bmap);
+
+	*bmap = UINT64_MAX;
+}
+
+#define _stroll_bmap_set_all(_bmap) \
+	compile_choose(_is_stroll_bmap32_ptr(_bmap), \
+	               stroll_bmap32_set_all((uint32_t *)(_bmap)) : \
+	               stroll_bmap64_set_all((uint64_t *)(_bmap)))
+
+#define stroll_bmap_set_all(_bmap) \
+	compile_eval(_stroll_bmap_check_ptr(_bmap), \
+	             _stroll_bmap_set_all(_bmap), \
+	             "invalid bitmap set all word size")
 
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_clear_mask(uint32_t * bmap, uint32_t mask)
@@ -236,6 +273,24 @@ stroll_bmap32_clear_all(uint32_t * bmap)
 
 	*bmap = 0;
 }
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap64_clear_all(uint64_t * bmap)
+{
+	stroll_bmap_assert_api(bmap);
+
+	*bmap = 0;
+}
+
+#define _stroll_bmap_clear_all(_bmap) \
+	compile_choose(_is_stroll_bmap32_ptr(_bmap), \
+	               stroll_bmap32_clear_all((uint32_t *)(_bmap)), \
+	               stroll_bmap64_clear_all((uint64_t *)(_bmap)))
+
+#define stroll_bmap_clear_all(_bmap) \
+	compile_eval(_stroll_bmap_check_ptr(_bmap), \
+	             _stroll_bmap_clear_all(_bmap), \
+	             "invalid bitmap clear all word size")
 
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_toggle_mask(uint32_t * bmap, uint32_t mask)
@@ -284,6 +339,24 @@ stroll_bmap32_init_set(uint32_t * bmap)
 }
 
 static inline void __stroll_nonull(1) __nothrow
+stroll_bmap64_init_set(uint64_t * bmap)
+{
+	stroll_bmap_assert_api(bmap);
+
+	stroll_bmap64_set_all(bmap);
+}
+
+#define _stroll_bmap_init_set(_bmap) \
+	compile_choose(_is_stroll_bmap32_ptr(_bmap), \
+	               stroll_bmap32_init_set((uint32_t *)(_bmap)), \
+	               stroll_bmap64_init_set((uint64_t *)(_bmap)))
+
+#define stroll_bmap_init_set(_bmap) \
+	compile_eval(_stroll_bmap_check_ptr(_bmap), \
+	             _stroll_bmap_init_set(_bmap), \
+	             "invalid bitmap initialization word size")
+
+static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_init_clear(uint32_t * bmap)
 {
 	stroll_bmap_assert_api(bmap);
@@ -292,10 +365,44 @@ stroll_bmap32_init_clear(uint32_t * bmap)
 }
 
 static inline void __stroll_nonull(1) __nothrow
+stroll_bmap64_init_clear(uint64_t * bmap)
+{
+	stroll_bmap_assert_api(bmap);
+
+	stroll_bmap64_clear_all(bmap);
+}
+
+#define _stroll_bmap_init_clear(_bmap) \
+	compile_choose(_is_stroll_bmap32_ptr(_bmap), \
+	               stroll_bmap32_init_clear((uint32_t *)(_bmap)), \
+	               stroll_bmap64_init_clear((uint64_t *)(_bmap)))
+
+#define stroll_bmap_init_clear(_bmap) \
+	compile_eval(_stroll_bmap_check_ptr(_bmap), \
+	             _stroll_bmap_init_clear(_bmap), \
+	             "invalid bitmap initialization word size")
+
+static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_fini(uint32_t * bmap)
 {
 	stroll_bmap_assert_api(bmap);
 }
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap64_fini(uint64_t * bmap)
+{
+	stroll_bmap_assert_api(bmap);
+}
+
+#define _stroll_bmap_fini(_bmap) \
+	compile_choose(_is_stroll_bmap32_ptr(_bmap), \
+	               stroll_bmap32_fini((uint32_t *)(_bmap)), \
+	               stroll_bmap64_fini((uint64_t *)(_bmap)))
+
+#define stroll_bmap_fini(_bmap) \
+	compile_eval(_stroll_bmap_check_ptr(_bmap), \
+	             _stroll_bmap_fini(_bmap), \
+	             "invalid bitmap finalization word size")
 
 static inline int __stroll_nonull(1, 2) __nothrow
 stroll_bmap32_step_iter(uint32_t * iter, uint32_t * bit_no)

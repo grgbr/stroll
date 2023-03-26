@@ -46,6 +46,18 @@
 #error "Unsupported machine word size !"
 #endif /* !((__WORDSIZE != 32) && (__WORDSIZE != 64)) */
 
+#define _is_stroll_bops32_type(_value) \
+	_is_same_type(_value, uint32_t)
+
+#define _is_stroll_bops64_type(_value) \
+	_is_same_type(_value, uint64_t)
+
+#define _stroll_bops_check_type(_value) \
+	(_is_stroll_bops32_type(_value) || _is_stroll_bops64_type(_value))
+
+#define stroll_bops_bitsof(_expr) \
+	(sizeof(_expr) * CHAR_BIT)
+
 /**
  * Find First (least-significant) bit Set over 32 bits word.
  *
@@ -57,55 +69,6 @@ static inline unsigned int __const __nothrow
 stroll_bops32_ffs(uint32_t value)
 {
 	return __builtin_ffs(value);
-}
-
-/**
- * Find Last (most-significant) bit Set over 32 bits word.
- *
- * @param[in] value word to search
- *
- * @return Index of bit starting from 1
- *
- * @warning
- * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
- * a @p value is zero, result is undefined. A zero @p value triggers an assertion
- * otherwise.
- */
-static inline unsigned int __stroll_const __nothrow
-stroll_bops32_fls(uint32_t value)
-{
-	stroll_bops_assert_api(value);
-
-	return 32 - __builtin_clz(value);
-}
-
-/**
- * Find First (least-significant) bit Cleared over 32 bits word.
- *
- * @param[in] value word to search
- *
- * @return Index of bit starting from 1, 0 when no cleared bits were found.
- */
-static inline unsigned int __const __nothrow
-stroll_bops32_ffc(uint32_t value)
-{
-	return stroll_bops32_ffs(value ^ ~(0U));
-}
-
-/**
- * Find the number of set bits over 32 bits word.
- *
- * @param[in] value word to search
- *
- * @return Number of set bits
- *
- * Returns the Hamming weight of a 32 bits word. The Hamming weight of a number
- * is the total number of bits set in it.
- */
-static inline unsigned int __const __nothrow
-stroll_bops32_hweight(uint32_t value)
-{
-	return __builtin_popcount(value);
 }
 
 /**
@@ -133,6 +96,43 @@ stroll_bops64_ffs(uint64_t value)
 }
 
 #endif
+
+#define _stroll_bops_ffs(_value) \
+	compile_choose(_is_stroll_bops32_type(_value), \
+	               stroll_bops32_ffs(_value), \
+	               stroll_bops64_ffs(_value))
+
+/**
+ * Find First (least-significant) bit Set over a word.
+ *
+ * @param[in] _value word to search
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ */
+#define stroll_bops_ffs(_value) \
+	compile_eval(_stroll_bops_check_type(_value), \
+	             _stroll_bops_ffs(_value), \
+	             "invalid bitops FFS word size")
+
+/**
+ * Find Last (most-significant) bit Set over 32 bits word.
+ *
+ * @param[in] value word to search
+ *
+ * @return Index of bit starting from 1
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ * a @p value is zero, result is undefined. A zero @p value triggers an assertion
+ * otherwise.
+ */
+static inline unsigned int __stroll_const __nothrow
+stroll_bops32_fls(uint32_t value)
+{
+	stroll_bops_assert_api(value);
+
+	return 32 - __builtin_clz(value);
+}
 
 /**
  * Find Last (most-significant) bit Set over 64 bits word.
@@ -169,6 +169,41 @@ stroll_bops64_fls(uint64_t value)
 
 #endif
 
+#define _stroll_bops_fls(_value) \
+	compile_choose(_is_stroll_bops32_type(_value), \
+	               stroll_bops32_fls(_value), \
+	               stroll_bops64_fls(_value))
+
+/**
+ * Find Last (most-significant) bit over a word
+ *
+ * @param[in] _value word to search
+ *
+ * @return Index of bit starting from 1
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ * a @p value is zero, result is undefined. A zero @p value triggers an assertion
+ * otherwise.
+ */
+#define stroll_bops_fls(_value) \
+	compile_eval(_stroll_bops_check_type(_value), \
+	             _stroll_bops_fls(_value), \
+	             "invalid bitops FLS word size")
+
+/**
+ * Find First (least-significant) bit Cleared over 32 bits word.
+ *
+ * @param[in] value word to search
+ *
+ * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ */
+static inline unsigned int __const __nothrow
+stroll_bops32_ffc(uint32_t value)
+{
+	return stroll_bops32_ffs(value ^ ~(0U));
+}
+
 /**
  * Find First (least-significant) bit Cleared over 64 bits word.
  *
@@ -194,6 +229,40 @@ stroll_bops64_ffc(uint64_t value)
 }
 
 #endif
+
+#define _stroll_bops_ffc(_value) \
+	compile_choose(_is_stroll_bops32_type(_value), \
+	               stroll_bops32_ffc(_value), \
+	               stroll_bops64_ffc(_value))
+
+/**
+ * Find First (least-significant) bit Cleared over a word.
+ *
+ * @param[in] _value word to search
+ *
+ * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ */
+
+#define stroll_bops_ffc(_value) \
+	compile_eval(_stroll_bops_check_type(_value), \
+	             _stroll_bops_ffc(_value), \
+	             "invalid bitops FFC word size")
+
+/**
+ * Find the number of set bits over 32 bits word.
+ *
+ * @param[in] value word to search
+ *
+ * @return Number of set bits
+ *
+ * Returns the Hamming weight of a 32 bits word. The Hamming weight of a number
+ * is the total number of bits set in it.
+ */
+static inline unsigned int __const __nothrow
+stroll_bops32_hweight(uint32_t value)
+{
+	return __builtin_popcount(value);
+}
 
 /**
  * Find the number of set bits over 64 bits word.
@@ -224,69 +293,10 @@ stroll_bops64_hweight(uint64_t value)
 
 #endif
 
-#define stroll_bops_bitsof(_expr) \
-	(sizeof(_expr) * CHAR_BIT)
-
-#define _stroll_bops_ffs(_value) \
-	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_ffs(_value) : \
-	                                       stroll_bops64_ffs(_value))
-
-/**
- * Find First (least-significant) bit Set over a word.
- *
- * @param[in] _value word to search
- *
- * @return Index of bit starting from 1, 0 when no set bits were found.
- */
-#define stroll_bops_ffs(_value) \
-	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
-	             (stroll_bops_bitsof(_value) == 64U), \
-	             _stroll_bops_ffs(_value), \
-	             "invalid bitops FFS word size")
-
-#define _stroll_bops_fls(_value) \
-	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_fls(_value) : \
-	                                       stroll_bops64_fls(_value))
-
-/**
- * Find Last (most-significant) bit over a word
- *
- * @param[in] _value word to search
- *
- * @return Index of bit starting from 1
- *
- * @warning
- * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
- * a @p value is zero, result is undefined. A zero @p value triggers an assertion
- * otherwise.
- */
-#define stroll_bops_fls(_value) \
-	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
-	             (stroll_bops_bitsof(_value) == 64U), \
-	             _stroll_bops_fls(_value), \
-	             "invalid bitops FLS word size")
-
-#define _stroll_bops_ffc(_value) \
-	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_ffc(_value) : \
-	                                       stroll_bops64_ffc(_value))
-
-/**
- * Find First (least-significant) bit Cleared over a word.
- *
- * @param[in] _value word to search
- *
- * @return Index of bit starting from 1, 0 when no cleared bits were found.
- */
-
-#define stroll_bops_ffc(_value) \
-	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
-	             (stroll_bops_bitsof(_value) == 64U), \
-	             _stroll_bops_ffc(_value), \
-	             "invalid bitops FFC word size")
-
 #define _stroll_bops_hweight(_value) \
-	((stroll_bops_bitsof(_value) == 32U) ? stroll_bops32_hweight(_value) : \
-	                                       stroll_bops64_hweight(_value))
+	compile_choose(_is_stroll_bops32_type(_value), \
+	               stroll_bops32_hweight(_value), \
+	               stroll_bops64_hweight(_value))
 
 /**
  * Find the number of set bits over a word.
@@ -299,8 +309,7 @@ stroll_bops64_hweight(uint64_t value)
  * total number of bits set in it.
  */
 #define stroll_bops_hweight(_value) \
-	compile_eval((stroll_bops_bitsof(_value) == 32U) || \
-	             (stroll_bops_bitsof(_value) == 64U), \
+	compile_eval(_stroll_bops_check_type(_value), \
 	             _stroll_bops_hweight(_value), \
 	             "invalid bitops Hamming weight word size")
 

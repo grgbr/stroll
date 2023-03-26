@@ -309,6 +309,31 @@
 #define __dtor(_prio) \
 	__attribute__((destructor(_prio)))
 
+/**
+ * Evaluate code depending on the result of a constant expression.
+ *
+ * @param[in] _expr       constant conditional expression
+ * @param[in] _true_stmt  statement to evaluate if @p _expr is true / nonzero
+ * @param[in] _false_stmt statement to evaluate if @p _expr is false / zero
+ *
+ * @return value of selected statement evaluation
+ *
+ * Use compile_choose() to evaluate code depending on the value @p _expr
+ * constant expression. This returns @p _true_stmt if @p _expr, which is an
+ * integer constant expression, is nonzero. Otherwise it returns @p _false_stmt.
+ *
+ * This built-in function is analogous to the ‘? :’ operator in C, except that
+ * the expression returned has its type unaltered by promotion rules. Also, the
+ * compile_choose() does not evaluate the expression that is not chosen.
+ *
+ * @note
+ * the unused statement may still generate syntax errors.
+ *
+ * @see [GCC Other Built-in Functions](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html)
+ */
+#define compile_choose(_expr, _true_stmt, _false_stmt) \
+	__builtin_choose_expr(_expr, _true_stmt, _false_stmt)
+
 #define _compile_eval(_expr, _msg) \
 	(!!sizeof(struct { static_assert(_expr, _msg); int _dummy; }))
 

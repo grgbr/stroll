@@ -36,6 +36,7 @@ internals and meant for application development purposes. These are:
    * Compile time assertions :
 
       * :c:macro:`compile_assert`
+      * :c:macro:`compile_choose`
       * :c:macro:`compile_eval`
 
    * Various
@@ -205,6 +206,11 @@ compile_assert
 **************
 
 .. doxygendefine:: compile_assert
+
+compile_choose
+**************
+
+.. doxygendefine:: compile_choose
 
 stroll_assert
 *************

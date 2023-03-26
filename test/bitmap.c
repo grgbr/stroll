@@ -5,6 +5,10 @@
 #include <setjmp.h>
 #include <cmocka.h>
 
+/******************************************************************************
+ * Unsigned 32-bits support
+ ******************************************************************************/
+
 static const uint32_t stroll_bmap32_utest_bmaps[] = {
 	0x00000000,
 	0xffff0000,
@@ -31,7 +35,7 @@ static const uint32_t stroll_bmap32_utest_masks[] = {
 	0x005500aa
 };
 
-static const struct {
+static const struct stroll_bmap_utest_range {
 	uint32_t     mask;
 	unsigned int start;
 	unsigned int count;
@@ -157,7 +161,7 @@ stroll_bmap32_utest_init(void ** state __unused)
 	expect_assert_failure(stroll_bmap32_init_set(NULL));
 #endif
 	stroll_bmap32_init_set(&bmp);
-	assert_int_equal(bmp, ~(0U));
+	assert_int_equal(bmp, UINT32_MAX);
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 	expect_assert_failure(stroll_bmap32_init_clear(NULL));
@@ -169,6 +173,30 @@ stroll_bmap32_utest_init(void ** state __unused)
 	expect_assert_failure(stroll_bmap32_fini(NULL));
 #endif
 	stroll_bmap32_fini(&bmp);
+}
+
+static void
+stroll_bmap32_utest_mask(void ** state __unused)
+{
+	unsigned int r;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	expect_assert_failure(stroll_bmap32_mask(0, 0));
+	expect_assert_failure(stroll_bmap32_mask(0, 33));
+	expect_assert_failure(stroll_bmap32_mask(3, 30));
+#pragma GCC diagnostic pop
+#endif
+
+	for (r = 0; r < array_nr(stroll_bmap32_utest_ranges); r++) {
+		const struct stroll_bmap_utest_range * rng;
+
+		rng = &stroll_bmap32_utest_ranges[r];
+
+		assert_int_equal(stroll_bmap32_mask(rng->start, rng->count),
+		                 rng->mask);
+	}
 }
 
 static uint32_t
@@ -790,6 +818,7 @@ stroll_bmap32_utest_clear_iter(void ** state __unused)
 
 static const struct CMUnitTest stroll_bmap32_utests[] = {
 	cmocka_unit_test(stroll_bmap32_utest_init),
+	cmocka_unit_test(stroll_bmap32_utest_mask),
 	cmocka_unit_test_setup_teardown(stroll_bmap32_utest_and,
 	                                stroll_bmap32_utest_setup_and,
 	                                stroll_bmap32_utest_teardown),
@@ -847,14 +876,128 @@ static const struct CMUnitTest stroll_bmap32_utests[] = {
 	                                stroll_bmap32_utest_teardown),
 	cmocka_unit_test(stroll_bmap32_utest_toggle_all),
 	cmocka_unit_test(stroll_bmap32_utest_set_iter),
-	cmocka_unit_test(stroll_bmap32_utest_clear_iter),
+	cmocka_unit_test(stroll_bmap32_utest_clear_iter)
+};
+
+/******************************************************************************
+ *  Unsigned int support
+ ******************************************************************************/
+
+static void
+stroll_bmapuint_utest_init(void ** state __unused)
+{
+	unsigned int   bmp = 0x5A5A5A5A;
+	unsigned int * null = NULL;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap_init_set(null));
+#endif
+	stroll_bmap_init_set(&bmp);
+	assert_int_equal(bmp, UINT_MAX);
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap_init_clear(null));
+#endif
+	stroll_bmap_init_clear(&bmp);
+	assert_int_equal(bmp, 0);
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap_fini(null));
+#endif
+	stroll_bmap_fini(&bmp);
+}
+
+static const struct CMUnitTest stroll_bmapuint_utests[] = {
+	cmocka_unit_test(stroll_bmapuint_utest_init),
+};
+
+/******************************************************************************
+ * Unsigned 64-bits support
+ ******************************************************************************/
+
+static void
+stroll_bmap64_utest_init(void ** state __unused)
+{
+	uint64_t bmp = 0x5A5A5A5A5A5A5A5A;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap64_init_set(NULL));
+#endif
+	stroll_bmap64_init_set(&bmp);
+	assert_int_equal(bmp, UINT64_MAX);
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap64_init_clear(NULL));
+#endif
+	stroll_bmap64_init_clear(&bmp);
+	assert_int_equal(bmp, 0);
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap64_fini(NULL));
+#endif
+	stroll_bmap64_fini(&bmp);
+}
+
+static const struct CMUnitTest stroll_bmap64_utests[] = {
+	cmocka_unit_test(stroll_bmap64_utest_init),
+};
+
+/******************************************************************************
+ *  Unsigned long support
+ ******************************************************************************/
+
+static void
+stroll_bmapulong_utest_init(void ** state __unused)
+{
+	unsigned long   bmp = 0x5A5A5A5A;
+	unsigned long * null = NULL;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap_init_set(null));
+#endif
+	stroll_bmap_init_set(&bmp);
+	assert_int_equal(bmp, ULONG_MAX);
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap_init_clear(null));
+#endif
+	stroll_bmap_init_clear(&bmp);
+	assert_int_equal(bmp, 0);
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap_fini(null));
+#endif
+	stroll_bmap_fini(&bmp);
+}
+
+static const struct CMUnitTest stroll_bmapulong_utests[] = {
+	cmocka_unit_test(stroll_bmapulong_utest_init),
 };
 
 int
 main(void)
 {
-	return cmocka_run_group_tests_name("Bitmap (bmap)",
-	                                   stroll_bmap32_utests,
+	int ret;
+
+	ret = cmocka_run_group_tests_name("32-bits bitmap (bmap32)",
+	                                  stroll_bmap32_utests,
+	                                  NULL,
+	                                  NULL);
+
+	ret |= cmocka_run_group_tests_name("unsigned int bitmap (bmapuint)",
+	                                   stroll_bmapuint_utests,
 	                                   NULL,
 	                                   NULL);
+
+	ret |= cmocka_run_group_tests_name("64-bits bitmap (bmap64)",
+	                                   stroll_bmap64_utests,
+	                                   NULL,
+	                                   NULL);
+
+	ret |= cmocka_run_group_tests_name("unsigned long bitmap (bmapulong)",
+	                                   stroll_bmapulong_utests,
+	                                   NULL,
+	                                   NULL);
+
+	return !ret ? EXIT_SUCCESS : EXIT_FAILURE;
 }
