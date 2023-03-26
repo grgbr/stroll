@@ -35,7 +35,7 @@ static const uint32_t stroll_bmap32_utest_masks[] = {
 	0x005500aa
 };
 
-static const struct stroll_bmap_utest_range {
+static const struct stroll_bmap32_utest_range {
 	uint32_t     mask;
 	unsigned int start;
 	unsigned int count;
@@ -190,7 +190,7 @@ stroll_bmap32_utest_mask(void ** state __unused)
 #endif
 
 	for (r = 0; r < array_nr(stroll_bmap32_utest_ranges); r++) {
-		const struct stroll_bmap_utest_range * rng;
+		const struct stroll_bmap32_utest_range * rng;
 
 		rng = &stroll_bmap32_utest_ranges[r];
 
@@ -907,13 +907,62 @@ stroll_bmapuint_utest_init(void ** state __unused)
 	stroll_bmap_fini(&bmp);
 }
 
+static void
+stroll_bmapuint_utest_mask(void ** state __unused)
+{
+	unsigned int r;
+	unsigned int bmp;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	expect_assert_failure(stroll_bmap_mask(bmp, 0, 0));
+	expect_assert_failure(stroll_bmap_mask(bmp, 0, 33));
+	expect_assert_failure(stroll_bmap_mask(bmp, 3, 30));
+#pragma GCC diagnostic pop
+#endif
+
+	for (r = 0; r < array_nr(stroll_bmap32_utest_ranges); r++) {
+		const struct stroll_bmap32_utest_range * rng;
+
+		rng = &stroll_bmap32_utest_ranges[r];
+
+		assert_int_equal(stroll_bmap_mask(bmp, rng->start, rng->count),
+		                 rng->mask);
+	}
+}
+
 static const struct CMUnitTest stroll_bmapuint_utests[] = {
 	cmocka_unit_test(stroll_bmapuint_utest_init),
+	cmocka_unit_test(stroll_bmapuint_utest_mask),
 };
 
 /******************************************************************************
  * Unsigned 64-bits support
  ******************************************************************************/
+
+static const struct stroll_bmap64_utest_range {
+	uint64_t     mask;
+	unsigned int start;
+	unsigned int count;
+} stroll_bmap64_utest_ranges[] = {
+	{ 0x00000000ffffffff,  0, 32 },
+	{ 0x000000000000ffff,  0, 16 },
+	{ 0x00000000ffff0000, 16, 16 },
+	{ 0x0000000000ffff00,  8, 16 },
+	{ 0x00000000000000f0,  4,  4 },
+	{ 0x000000000000f000, 12,  4 },
+	{ 0x0000000000f00000, 20,  4 },
+	{ 0x00000000f0000000, 28,  4 },
+	{ 0xffffffffffffffff,  0, 64 },
+	{ 0x00000000ffffffff,  0, 32 },
+	{ 0xffffffff00000000, 32, 32 },
+	{ 0x000000ffffff0000, 16, 24 },
+	{ 0xf000000000000000, 60,  4 },
+	{ 0x00f0000000000000, 52,  4 },
+	{ 0x0000f00000000000, 44,  4 },
+	{ 0x000000f000000000, 36,  4 }
+};
 
 static void
 stroll_bmap64_utest_init(void ** state __unused)
@@ -938,13 +987,63 @@ stroll_bmap64_utest_init(void ** state __unused)
 	stroll_bmap64_fini(&bmp);
 }
 
+static void
+stroll_bmap64_utest_mask(void ** state __unused)
+{
+	unsigned int r;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	expect_assert_failure(stroll_bmap64_mask(0, 0));
+	expect_assert_failure(stroll_bmap64_mask(0, 65));
+	expect_assert_failure(stroll_bmap64_mask(3, 63));
+#pragma GCC diagnostic pop
+#endif
+
+	for (r = 0; r < array_nr(stroll_bmap64_utest_ranges); r++) {
+		const struct stroll_bmap64_utest_range * rng;
+
+		rng = &stroll_bmap64_utest_ranges[r];
+
+		assert_int_equal(stroll_bmap64_mask(rng->start, rng->count),
+		                 rng->mask);
+	}
+}
+
 static const struct CMUnitTest stroll_bmap64_utests[] = {
 	cmocka_unit_test(stroll_bmap64_utest_init),
+	cmocka_unit_test(stroll_bmap64_utest_mask),
 };
 
 /******************************************************************************
  *  Unsigned long support
  ******************************************************************************/
+
+static const struct stroll_bmapulong_utest_range {
+	unsigned long mask;
+	unsigned int  start;
+	unsigned int  count;
+} stroll_bmapulong_utest_ranges[] = {
+	{         0xffffffff,  0, 32 },
+	{         0x0000ffff,  0, 16 },
+	{         0xffff0000, 16, 16 },
+	{         0x00ffff00,  8, 16 },
+	{         0x000000f0,  4,  4 },
+	{         0x0000f000, 12,  4 },
+	{         0x00f00000, 20,  4 },
+	{         0xf0000000, 28,  4 },
+#if (__WORDSIZE == 64)
+	{ 0xffffffffffffffff,  0, 64 },
+	{ 0x00000000ffffffff,  0, 32 },
+	{ 0xffffffff00000000, 32, 32 },
+	{ 0x000000ffffff0000, 16, 24 },
+	{ 0xf000000000000000, 60,  4 },
+	{ 0x00f0000000000000, 52,  4 },
+	{ 0x0000f00000000000, 44,  4 },
+	{ 0x000000f000000000, 36,  4 }
+#endif
+};
 
 static void
 stroll_bmapulong_utest_init(void ** state __unused)
@@ -970,8 +1069,34 @@ stroll_bmapulong_utest_init(void ** state __unused)
 	stroll_bmap_fini(&bmp);
 }
 
+static void
+stroll_bmapulong_utest_mask(void ** state __unused)
+{
+	unsigned int  r;
+	unsigned long bmp;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	expect_assert_failure(stroll_bmap_mask(bmp, 0, 0));
+	expect_assert_failure(stroll_bmap_mask(bmp, 0, 65));
+	expect_assert_failure(stroll_bmap_mask(bmp, 3, 63));
+#pragma GCC diagnostic pop
+#endif
+
+	for (r = 0; r < array_nr(stroll_bmapulong_utest_ranges); r++) {
+		const struct stroll_bmapulong_utest_range * rng;
+
+		rng = &stroll_bmapulong_utest_ranges[r];
+
+		assert_int_equal(stroll_bmap_mask(bmp, rng->start, rng->count),
+		                 rng->mask);
+	}
+}
+
 static const struct CMUnitTest stroll_bmapulong_utests[] = {
 	cmocka_unit_test(stroll_bmapulong_utest_init),
+	cmocka_unit_test(stroll_bmapulong_utest_mask),
 };
 
 int
