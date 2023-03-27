@@ -18,6 +18,12 @@ config STROLL_ASSERT_INTERNAL
 	help
 	  Build stroll library with internal assertions enabled.
 
+config STROLL_UTEST
+	bool "Unit tests"
+	default n
+	help
+	  Build stroll library unit tests.
+
 config STROLL_BITOPS
 	bool "Bit operations"
 	default y
@@ -26,13 +32,13 @@ config STROLL_BITOPS
 
 config STROLL_ATOMIC
 	bool "Atomic operations"
-	default y
+	default n
 	help
 	  Build stroll library atomic operations framework.
 
 config STROLL_POW2
 	bool "Power of 2 operations"
-	default y
+	default n
 	help
 	  Build stroll library power of 2 operations framework.
 
@@ -45,18 +51,18 @@ config STROLL_BITMAP
 
 config STROLL_DLIST
 	bool "Doubly linked list"
-	default y
+	default n
 	help
 	  Build stroll library with doubly linked list support.
 
 config STROLL_SLIST
 	bool "Singly linked list"
-	default y
+	default n
 	help
 	  Build stroll library with singly linked list support.
 
 config STROLL_LVSTR
 	bool "Length-value strings"
-	default y
+	default n
 	help
 	  Build stroll library with length-value string support.

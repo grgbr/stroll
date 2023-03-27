@@ -12,8 +12,12 @@ headers   += $(call kconf_enabled,STROLL_DLIST,utils/dlist.h)
 headers   += $(call kconf_enabled,STROLL_SLIST,utils/slist.h)
 headers   += $(call kconf_enabled,STROLL_LVSTR,utils/lvstr.h)
 
-subdirs   := src test
+subdirs   := src
+
+ifeq ($(CONFIG_STROLL_UTEST),y)
+subdirs   += test
 test-deps := src
+endif # ($(CONFIG_STROLL_UTEST),y)
 
 define libstroll_pkgconf_tmpl
 prefix=$(PREFIX)

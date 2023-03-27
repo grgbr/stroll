@@ -199,6 +199,24 @@ stroll_bmap32_utest_mask(void ** state __unused)
 	}
 }
 
+static void
+stroll_bmap32_utest_hweight(void ** state __unused)
+{
+	unsigned int m;
+
+	for (m = 0; m < array_nr(stroll_bmap32_utest_bmaps); m++) {
+		uint32_t     bmp = stroll_bmap32_utest_bmaps[m];
+		unsigned int b;
+		unsigned int cnt;
+
+		for (b = 0, cnt = 0; b < 32; b++)
+			if (bmp & (1U << b))
+				cnt++;
+
+		assert_int_equal(cnt, stroll_bmap32_hweight(bmp));
+	}
+}
+
 static uint32_t
 stroll_bmap32_utest_and_oper(uint32_t bmap, uint32_t mask)
 {
@@ -819,6 +837,7 @@ stroll_bmap32_utest_clear_iter(void ** state __unused)
 static const struct CMUnitTest stroll_bmap32_utests[] = {
 	cmocka_unit_test(stroll_bmap32_utest_init),
 	cmocka_unit_test(stroll_bmap32_utest_mask),
+	cmocka_unit_test(stroll_bmap32_utest_hweight),
 	cmocka_unit_test_setup_teardown(stroll_bmap32_utest_and,
 	                                stroll_bmap32_utest_setup_and,
 	                                stroll_bmap32_utest_teardown),
@@ -932,14 +951,57 @@ stroll_bmapuint_utest_mask(void ** state __unused)
 	}
 }
 
+static void
+stroll_bmapuint_utest_hweight(void ** state __unused)
+{
+	unsigned int m;
+
+	for (m = 0; m < array_nr(stroll_bmap32_utest_bmaps); m++) {
+		unsigned int bmp = stroll_bmap32_utest_bmaps[m];
+		unsigned int b;
+		unsigned int cnt;
+
+		for (b = 0, cnt = 0; b < (sizeof(bmp) * CHAR_BIT); b++)
+			if (bmp & (1U << b))
+				cnt++;
+
+		assert_int_equal(cnt, stroll_bmap_hweight(bmp));
+	}
+}
+
 static const struct CMUnitTest stroll_bmapuint_utests[] = {
 	cmocka_unit_test(stroll_bmapuint_utest_init),
 	cmocka_unit_test(stroll_bmapuint_utest_mask),
+	cmocka_unit_test(stroll_bmapuint_utest_hweight),
 };
 
 /******************************************************************************
  * Unsigned 64-bits support
  ******************************************************************************/
+
+static const uint64_t stroll_bmap64_utest_bmaps[] = {
+	        0x00000000,
+	        0xffff0000,
+	        0x0000ffff,
+	        0xff00ff00,
+	        0x00ff00ff,
+	        0xf0a0f050,
+	        0x0f050f0a,
+	        0x00ff00aa,
+	        0xff005500,
+	        0xaaaa0000,
+	        0x00005555,
+	        0xffffffff,
+
+	0xffffffff00000000,
+	0x00000000ffffffff,
+	0xfff000ff0000fff0,
+	0x00ff00aa00ff0055,
+	0xaaaa000055550000,
+	0x00aa005500aa0055,
+	0xf0a0f050f0a0f050,
+	0xffffffffffffffff
+};
 
 static const struct stroll_bmap64_utest_range {
 	uint64_t     mask;
@@ -954,6 +1016,7 @@ static const struct stroll_bmap64_utest_range {
 	{ 0x000000000000f000, 12,  4 },
 	{ 0x0000000000f00000, 20,  4 },
 	{ 0x00000000f0000000, 28,  4 },
+
 	{ 0xffffffffffffffff,  0, 64 },
 	{ 0x00000000ffffffff,  0, 32 },
 	{ 0xffffffff00000000, 32, 32 },
@@ -1011,14 +1074,58 @@ stroll_bmap64_utest_mask(void ** state __unused)
 	}
 }
 
+static void
+stroll_bmap64_utest_hweight(void ** state __unused)
+{
+	unsigned int m;
+
+	for (m = 0; m < array_nr(stroll_bmap64_utest_bmaps); m++) {
+		uint64_t     bmp = stroll_bmap64_utest_bmaps[m];
+		unsigned int b;
+		unsigned int cnt;
+
+		for (b = 0, cnt = 0; b < 64; b++)
+			if (bmp & ((uint64_t)1U << b))
+				cnt++;
+
+		assert_int_equal(cnt, stroll_bmap64_hweight(bmp));
+	}
+}
+
 static const struct CMUnitTest stroll_bmap64_utests[] = {
 	cmocka_unit_test(stroll_bmap64_utest_init),
 	cmocka_unit_test(stroll_bmap64_utest_mask),
+	cmocka_unit_test(stroll_bmap64_utest_hweight),
 };
 
 /******************************************************************************
  *  Unsigned long support
  ******************************************************************************/
+
+static const unsigned long stroll_bmapulong_utest_bmaps[] = {
+	        0x00000000,
+	        0xffff0000,
+	        0x0000ffff,
+	        0xff00ff00,
+	        0x00ff00ff,
+	        0xf0a0f050,
+	        0x0f050f0a,
+	        0x00ff00aa,
+	        0xff005500,
+	        0xaaaa0000,
+	        0x00005555,
+	        0xffffffff,
+#if (__WORDSIZE == 64)
+	0xffffffff00000000,
+	0x00000000ffffffff,
+	0xfff000ff0000fff0,
+	0x00ff00aa00ff0055,
+	0xaaaa000055550000,
+	0x00aa005500aa0055,
+	0xf0a0f050f0a0f050,
+	0xffffffffffffffff
+#endif
+};
 
 static const struct stroll_bmapulong_utest_range {
 	unsigned long mask;
@@ -1094,9 +1201,28 @@ stroll_bmapulong_utest_mask(void ** state __unused)
 	}
 }
 
+static void
+stroll_bmapulong_utest_hweight(void ** state __unused)
+{
+	unsigned int m;
+
+	for (m = 0; m < array_nr(stroll_bmap64_utest_bmaps); m++) {
+		unsigned long bmp = stroll_bmapulong_utest_bmaps[m];
+		unsigned int  b;
+		unsigned int  cnt;
+
+		for (b = 0, cnt = 0; b < 64; b++)
+			if (bmp & (1UL << b))
+				cnt++;
+
+		assert_int_equal(cnt, stroll_bmap_hweight(bmp));
+	}
+}
+
 static const struct CMUnitTest stroll_bmapulong_utests[] = {
 	cmocka_unit_test(stroll_bmapulong_utest_init),
 	cmocka_unit_test(stroll_bmapulong_utest_mask),
+	cmocka_unit_test(stroll_bmapulong_utest_hweight),
 };
 
 int

@@ -96,6 +96,22 @@ stroll_bmap32_hweight(uint32_t bmap)
 	return stroll_bops32_hweight(bmap);
 }
 
+static inline unsigned int __const __nothrow __warn_result
+stroll_bmap64_hweight(uint64_t bmap)
+{
+	return stroll_bops64_hweight(bmap);
+}
+
+#define _stroll_bmap_hweight(_bmap) \
+	compile_choose(_is_stroll_bops32_type(_bmap), \
+	               stroll_bmap32_hweight(_bmap), \
+	               stroll_bmap64_hweight(_bmap))
+
+#define stroll_bmap_hweight(_bmap) \
+	compile_eval(_stroll_bops_check_type(_bmap), \
+	             _stroll_bmap_hweight(_bmap), \
+	             "invalid bitmap Hamming weight word size")
+
 static inline uint32_t __const __nothrow __warn_result
 stroll_bmap32_and(uint32_t bmap, uint32_t mask)
 {
