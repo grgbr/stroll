@@ -1266,7 +1266,7 @@ stroll_bmap64_utest_test_bit(void ** state __unused)
 		for (b = 0; b < 64; b++) {
 			uint64_t bmp = stroll_bmap64_utest_bmaps[m];
 
-			if (bmp & (1U << b))
+			if (bmp & ((uint64_t)1 << b))
 				assert_true(stroll_bmap64_test(bmp, b));
 			else
 				assert_false(stroll_bmap64_test(bmp, b));
@@ -1409,8 +1409,8 @@ stroll_bmap64_utest_set_bit(void ** state __unused)
 	for (b = 0; b < 64; b++) {
 		bmp = 0;
 		stroll_bmap64_set(&bmp, b);
-		assert_true(bmp & (1U << b));
-		assert_false(!!(bmp & ~(1U << b)));
+		assert_true(bmp & ((uint64_t)1 << b));
+		assert_false(!!(bmp & ~((uint64_t)1 << b)));
 	}
 }
 
@@ -1474,6 +1474,106 @@ stroll_bmap64_utest_set_all(void ** state __unused)
 	assert_int_equal(bmp, UINT64_MAX);
 }
 
+static void
+stroll_bmap64_utest_clear_bit(void ** state __unused)
+{
+	uint64_t     bmp = UINT64_MAX;
+	unsigned int b;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap64_clear(NULL, 1));
+#endif
+
+	for (b = 0; b < 64; b++) {
+		bmp = UINT64_MAX;
+		stroll_bmap64_clear(&bmp, b);
+		assert_int_equal(bmp, UINT64_MAX & ~((uint64_t)1 << b));
+	}
+}
+
+static uint64_t
+stroll_bmap64_utest_notand_oper(uint64_t bmap, uint64_t mask)
+{
+	return bmap & ~mask;
+}
+
+static int
+stroll_bmap64_utest_setup_clear_mask(void ** state)
+{
+	return stroll_bmap64_utest_setup_mask_oper(
+		state,
+		stroll_bmap64_utest_notand_oper);
+}
+
+static uint64_t
+stroll_bmap64_utest_clear_mask_oper(uint64_t bmap, uint64_t mask)
+{
+	uint64_t bmp = bmap;
+
+	stroll_bmap64_clear_mask(&bmp, mask);
+
+	return bmp;
+}
+
+static void
+stroll_bmap64_utest_clear_mask(void ** state)
+{
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap64_clear_mask(NULL, 0xf));
+#endif
+	stroll_bmap64_utest_run_mask_oper(state,
+	                                  stroll_bmap64_utest_clear_mask_oper);
+}
+
+static int
+stroll_bmap64_utest_setup_clear_range(void ** state)
+{
+	return stroll_bmap64_utest_setup_range_oper(
+		state,
+		stroll_bmap64_utest_notand_oper);
+}
+
+static uint64_t
+stroll_bmap64_utest_clear_range_oper(uint64_t     bmap,
+                                     unsigned int start_bit,
+                                     unsigned int bit_count)
+{
+	uint64_t bmp = bmap;
+
+	stroll_bmap64_clear_range(&bmp, start_bit, bit_count);
+
+	return bmp;
+}
+
+static void
+stroll_bmap64_utest_clear_range(void ** state)
+{
+#if defined(CONFIG_STROLL_ASSERT_API)
+	uint64_t bmp = UINT64_MAX;
+
+	expect_assert_failure(stroll_bmap64_clear_range(NULL, 1, 1));
+	expect_assert_failure(stroll_bmap64_clear_range(&bmp, 0, 0));
+	expect_assert_failure(stroll_bmap64_clear_range(&bmp, 64, 1));
+	expect_assert_failure(stroll_bmap64_clear_range(&bmp, 60, 5));
+#endif
+	stroll_bmap64_utest_run_range_oper(
+		state,
+		stroll_bmap64_utest_clear_range_oper);
+}
+
+static void
+stroll_bmap64_utest_clear_all(void ** state __unused)
+{
+	uint64_t bmp = UINT64_MAX;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap64_clear_all(NULL));
+#endif
+
+	stroll_bmap64_clear_all(&bmp);
+	assert_int_equal(bmp, 0);
+}
+
 static const struct CMUnitTest stroll_bmap64_utests[] = {
 	cmocka_unit_test(stroll_bmap64_utest_init),
 	cmocka_unit_test(stroll_bmap64_utest_mask),
@@ -1517,6 +1617,15 @@ static const struct CMUnitTest stroll_bmap64_utests[] = {
 	                                stroll_bmap64_utest_setup_or_range,
 	                                stroll_bmap_utest_teardown),
 	cmocka_unit_test(stroll_bmap64_utest_set_all),
+
+	cmocka_unit_test(stroll_bmap64_utest_clear_bit),
+	cmocka_unit_test_setup_teardown(stroll_bmap64_utest_clear_mask,
+	                                stroll_bmap64_utest_setup_clear_mask,
+	                                stroll_bmap_utest_teardown),
+	cmocka_unit_test_setup_teardown(stroll_bmap64_utest_clear_range,
+	                                stroll_bmap64_utest_setup_clear_range,
+	                                stroll_bmap_utest_teardown),
+	cmocka_unit_test(stroll_bmap64_utest_clear_all),
 };
 
 /******************************************************************************
@@ -1907,7 +2016,7 @@ stroll_bmap_utest_test_bit(void ** state __unused)
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
 			bmp = stroll_bmap_utest_bmaps[m];
-			if (bmp & (1U << b))
+			if (bmp & (1UL << b))
 				assert_true(stroll_bmap_test(bmp, b));
 			else
 				assert_false(stroll_bmap_test(bmp, b));
@@ -2056,8 +2165,8 @@ stroll_bmap_utest_set_bit(void ** state __unused)
 	for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
 		bmp = 0;
 		stroll_bmap_set(&bmp, b);
-		assert_true(bmp & (1U << b));
-		assert_false(!!(bmp & ~(1U << b)));
+		assert_true(bmp & (1UL << b));
+		assert_false(!!(bmp & ~(1UL << b)));
 	}
 }
 
@@ -2125,6 +2234,136 @@ stroll_bmap_utest_set_all(void ** state __unused)
 	assert_int_equal(bmp, ULONG_MAX);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static void
+stroll_bmap_utest_clear_bit(void ** state __unused)
+{
+	unsigned long bmp = ~(0UL);
+	unsigned int  b;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap64_clear(NULL, 1));
+#endif
+
+	for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
+		bmp = ~(0UL);
+		stroll_bmap64_clear(&bmp, b);
+		assert_int_equal(bmp, ~(0UL) & ~(1UL << b));
+	}
+}
+
+static unsigned long
+stroll_bmap_utest_notand_oper(unsigned long bmap, unsigned long mask)
+{
+	return bmap & ~mask;
+}
+
+static int
+stroll_bmap_utest_setup_clear_mask(void ** state)
+{
+	return stroll_bmap_utest_setup_mask_oper(
+		state,
+		stroll_bmap_utest_notand_oper);
+}
+
+static unsigned long
+stroll_bmap_utest_clear_mask_oper(unsigned long bmap, unsigned long mask)
+{
+	unsigned long bmp = bmap;
+
+	stroll_bmap_clear_mask(&bmp, mask);
+
+	return bmp;
+}
+
+static void
+stroll_bmap_utest_clear_mask(void ** state)
+{
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap_clear_mask(NULL, 0xf));
+#endif
+	stroll_bmap_utest_run_mask_oper(state,
+	                                stroll_bmap_utest_clear_mask_oper);
+}
+
+static int
+stroll_bmap_utest_setup_clear_range(void ** state)
+{
+	return stroll_bmap_utest_setup_range_oper(
+		state,
+		stroll_bmap_utest_notand_oper);
+}
+
+static unsigned long
+stroll_bmap_utest_clear_range_oper(unsigned long bmap,
+                                   unsigned int  start_bit,
+                                   unsigned int  bit_count)
+{
+	unsigned long bmp = bmap;
+
+	stroll_bmap_clear_range(&bmp, start_bit, bit_count);
+
+	return bmp;
+}
+
+static void
+stroll_bmap_utest_clear_range(void ** state)
+{
+#if defined(CONFIG_STROLL_ASSERT_API)
+	unsigned long bmp = ~(0UL);
+
+	expect_assert_failure(stroll_bmap_clear_range(NULL, 1, 1));
+	expect_assert_failure(stroll_bmap_clear_range(&bmp, 0, 0));
+#if (__WORDSIZE == 64)
+	expect_assert_failure(stroll_bmap_clear_range(&bmp, 64, 1));
+	expect_assert_failure(stroll_bmap_clear_range(&bmp, 60, 5));
+#else
+	expect_assert_failure(stroll_bmap_clear_range(&bmp, 32, 1));
+	expect_assert_failure(stroll_bmap_clear_range(&bmp, 30, 3));
+#endif
+#endif
+	stroll_bmap_utest_run_range_oper(
+		state,
+		stroll_bmap_utest_clear_range_oper);
+}
+
+static void
+stroll_bmap_utest_clear_all(void ** state __unused)
+{
+	unsigned long bmp = ~(0UL);
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	expect_assert_failure(stroll_bmap_clear_all(NULL));
+#endif
+
+	stroll_bmap_clear_all(&bmp);
+	assert_int_equal(bmp, 0);
+}
+
 static const struct CMUnitTest stroll_bmap_utests[] = {
 	cmocka_unit_test(stroll_bmap_utest_init),
 	cmocka_unit_test(stroll_bmap_utest_mask),
@@ -2168,6 +2407,15 @@ static const struct CMUnitTest stroll_bmap_utests[] = {
 	                                stroll_bmap_utest_setup_or_range,
 	                                stroll_bmap_utest_teardown),
 	cmocka_unit_test(stroll_bmap_utest_set_all),
+
+	cmocka_unit_test(stroll_bmap_utest_clear_bit),
+	cmocka_unit_test_setup_teardown(stroll_bmap_utest_clear_mask,
+	                                stroll_bmap_utest_setup_clear_mask,
+	                                stroll_bmap_utest_teardown),
+	cmocka_unit_test_setup_teardown(stroll_bmap_utest_clear_range,
+	                                stroll_bmap_utest_setup_clear_range,
+	                                stroll_bmap_utest_teardown),
+	cmocka_unit_test(stroll_bmap_utest_clear_all),
 };
 
 int

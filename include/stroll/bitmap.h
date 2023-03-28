@@ -394,7 +394,7 @@ stroll_bmap64_test(uint64_t bmap, unsigned int bit_no)
 {
 	stroll_bmap_assert_api(bit_no < stroll_bops_bitsof(bmap));
 
-	return stroll_bmap64_test_mask(bmap, 1U << bit_no);
+	return stroll_bmap64_test_mask(bmap, (uint64_t)1 << bit_no);
 }
 
 #if __WORDSIZE == 64
@@ -540,7 +540,7 @@ stroll_bmap64_set(uint64_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 64);
 
-	stroll_bmap64_set_mask(bmap, 1U << bit_no);
+	stroll_bmap64_set_mask(bmap, (uint64_t)1 << bit_no);
 }
 
 #if __WORDSIZE == 64
@@ -650,6 +650,32 @@ stroll_bmap32_clear_mask(uint32_t * bmap, uint32_t mask)
 }
 
 static inline void __stroll_nonull(1) __nothrow
+stroll_bmap64_clear_mask(uint64_t * bmap, uint64_t mask)
+{
+	stroll_bmap_assert_api(bmap);
+
+	*bmap = stroll_bmap64_and(*bmap, ~mask);
+}
+
+#if __WORDSIZE == 64
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap_clear_mask(unsigned long * bmap, unsigned long mask)
+{
+	return stroll_bmap64_clear_mask((uint64_t *)bmap, mask);
+}
+
+#elif __WORDSIZE == 32
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap_clear_mask(unsigned long * bmap, unsigned long mask)
+{
+	return stroll_bmap32_clear_mask((uint32_t *)bmap, mask);
+}
+
+#endif
+
+static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_clear(uint32_t * bmap, unsigned int bit_no)
 {
 	stroll_bmap_assert_api(bmap);
@@ -657,6 +683,33 @@ stroll_bmap32_clear(uint32_t * bmap, unsigned int bit_no)
 
 	stroll_bmap32_clear_mask(bmap, 1U << bit_no);
 }
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap64_clear(uint64_t * bmap, unsigned int bit_no)
+{
+	stroll_bmap_assert_api(bmap);
+	stroll_bmap_assert_api(bit_no < 64);
+
+	stroll_bmap64_clear_mask(bmap, (uint64_t)1 << bit_no);
+}
+
+#if __WORDSIZE == 64
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap_clear(unsigned long * bmap, unsigned int bit_no)
+{
+	stroll_bmap64_clear((uint64_t *)bmap, bit_no);
+}
+
+#elif __WORDSIZE == 32
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap_clear(unsigned long * bmap, unsigned int bit_no)
+{
+	stroll_bmap32_clear((uint32_t *)bmap, bit_no);
+}
+
+#endif
 
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_clear_range(uint32_t *   bmap,
@@ -670,6 +723,41 @@ stroll_bmap32_clear_range(uint32_t *   bmap,
 	stroll_bmap32_clear_mask(bmap,
 	                         stroll_bmap32_mask(start_bit, bit_count));
 }
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap64_clear_range(uint64_t *   bmap,
+                          unsigned int start_bit,
+                          unsigned int bit_count)
+{
+	stroll_bmap_assert_api(bmap);
+	stroll_bmap_assert_api(bit_count);
+	stroll_bmap_assert_api((start_bit + bit_count) <= 64);
+
+	stroll_bmap64_clear_mask(bmap,
+	                         stroll_bmap64_mask(start_bit, bit_count));
+}
+
+#if __WORDSIZE == 64
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap_clear_range(unsigned long * bmap,
+                        unsigned int    start_bit,
+                        unsigned int    bit_count)
+{
+	stroll_bmap64_clear_range((uint64_t *)bmap, start_bit, bit_count);
+}
+
+#elif __WORDSIZE == 32
+
+static inline void __stroll_nonull(1) __nothrow
+stroll_bmap_clear_range(unsigned long * bmap,
+                        unsigned int    start_bit,
+                        unsigned int    bit_count)
+{
+	stroll_bmap32_clear_range((uint32_t *)bmap, start_bit, bit_count);
+}
+
+#endif
 
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_clear_all(uint32_t * bmap)
