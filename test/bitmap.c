@@ -1256,6 +1256,145 @@ stroll_bmap64_utest_xor_range(void ** state)
 	stroll_bmap64_utest_run_range_oper(state, stroll_bmap64_xor_range);
 }
 
+static void
+stroll_bmap64_utest_test_bit(void ** state __unused)
+{
+	unsigned int b, m;
+	unsigned int mnr = array_nr(stroll_bmap64_utest_bmaps);
+
+	for (m = 0; m < mnr; m++) {
+		for (b = 0; b < 64; b++) {
+			uint64_t bmp = stroll_bmap64_utest_bmaps[m];
+
+			if (bmp & (1U << b))
+				assert_true(stroll_bmap64_test(bmp, b));
+			else
+				assert_false(stroll_bmap64_test(bmp, b));
+		}
+	}
+}
+
+static void
+stroll_bmap64_utest_test_all(void ** state __unused)
+{
+	unsigned int b, m;
+	unsigned int mnr = array_nr(stroll_bmap64_utest_bmaps);
+
+	for (m = 0; m < mnr; m++) {
+		for (b = 0; b < 64; b++) {
+			uint64_t bmp = stroll_bmap64_utest_bmaps[m];
+
+			if (!!bmp)
+				assert_true(stroll_bmap64_test_all(bmp));
+			else
+				assert_false(stroll_bmap64_test_all(bmp));
+		}
+	}
+}
+
+
+static int
+stroll_bmap64_utest_setup_test_mask(void ** state)
+{
+	unsigned int   b, m;
+	unsigned int   bnr = array_nr(stroll_bmap64_utest_bmaps);
+	unsigned int   mnr = array_nr(stroll_bmap64_utest_masks);
+	bool         * expected;
+
+	expected = malloc(bnr * mnr * sizeof(*expected));
+	if (!expected)
+		return -1;
+
+	for (b = 0; b < bnr; b++) {
+		for (m = 0; m < mnr; m++) {
+			bool * exp = &expected[(b * mnr) + m];
+
+			*exp = !!(stroll_bmap64_utest_bmaps[b] &
+			          stroll_bmap64_utest_masks[m]);
+		}
+	}
+
+	*state = expected;
+
+	return 0;
+}
+
+static void
+stroll_bmap64_utest_test_mask(void ** state)
+{
+	unsigned int   b, m;
+	unsigned int   bnr = array_nr(stroll_bmap64_utest_bmaps);
+	unsigned int   mnr = array_nr(stroll_bmap64_utest_masks);
+	const bool   * expected = *state;
+
+	for (b = 0; b < bnr; b++) {
+		for (m = 0; m < mnr; m++) {
+			bool res;
+
+			res = stroll_bmap64_test_mask(
+				stroll_bmap64_utest_bmaps[b],
+				stroll_bmap64_utest_masks[m]);
+			assert_true(res == expected[(b * mnr) + m]);
+		}
+	}
+}
+
+static int
+stroll_bmap64_utest_setup_test_range(void ** state)
+{
+	unsigned int   b, r;
+	unsigned int   bnr = array_nr(stroll_bmap64_utest_bmaps);
+	unsigned int   rnr = array_nr(stroll_bmap64_utest_ranges);
+	bool         * expected;
+
+	expected = malloc(bnr * rnr * sizeof(*expected));
+	if (!expected)
+		return -1;
+
+	for (b = 0; b < bnr; b++) {
+		for (r = 0; r < rnr; r++) {
+			bool * exp = &expected[(b * rnr) + r];
+
+			*exp = !!(stroll_bmap64_utest_bmaps[b] &
+			          stroll_bmap64_utest_ranges[r].mask);
+		}
+	}
+
+	*state = expected;
+
+	return 0;
+}
+
+static void
+stroll_bmap64_utest_test_range(void ** state)
+{
+	unsigned int   b, r;
+	unsigned int   bnr = array_nr(stroll_bmap64_utest_bmaps);
+	unsigned int   rnr = array_nr(stroll_bmap64_utest_ranges);
+	const bool   * expected = *state;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	expect_assert_failure(stroll_bmap64_test_range(0, 0, 0));
+	expect_assert_failure(stroll_bmap64_test_range(0, 64, 1));
+	expect_assert_failure(stroll_bmap64_test_range(0, 60, 5));
+#pragma GCC diagnostic pop
+#endif
+
+	for (b = 0; b < bnr; b++) {
+		for (r = 0; r < rnr; r++) {
+			bool res;
+
+			res = stroll_bmap64_test_range(
+				stroll_bmap64_utest_bmaps[b],
+				stroll_bmap64_utest_ranges[r].start,
+				stroll_bmap64_utest_ranges[r].count);
+			assert_true(res == expected[(b * rnr) + r]);
+		}
+	}
+}
+
 static const struct CMUnitTest stroll_bmap64_utests[] = {
 	cmocka_unit_test(stroll_bmap64_utest_init),
 	cmocka_unit_test(stroll_bmap64_utest_mask),
@@ -1280,6 +1419,15 @@ static const struct CMUnitTest stroll_bmap64_utests[] = {
 	                                stroll_bmap_utest_teardown),
 	cmocka_unit_test_setup_teardown(stroll_bmap64_utest_xor_range,
 	                                stroll_bmap64_utest_setup_xor_range,
+	                                stroll_bmap_utest_teardown),
+
+	cmocka_unit_test(stroll_bmap64_utest_test_bit),
+	cmocka_unit_test(stroll_bmap64_utest_test_all),
+	cmocka_unit_test_setup_teardown(stroll_bmap64_utest_test_mask,
+	                                stroll_bmap64_utest_setup_test_mask,
+	                                stroll_bmap_utest_teardown),
+	cmocka_unit_test_setup_teardown(stroll_bmap64_utest_test_range,
+	                                stroll_bmap64_utest_setup_test_range,
 	                                stroll_bmap_utest_teardown),
 };
 
@@ -1635,8 +1783,13 @@ stroll_bmap_utest_xor(void ** state)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
 	expect_assert_failure(stroll_bmap_xor_range(0, 0, 0));
+#if (__WORDSIZE == 64)
 	expect_assert_failure(stroll_bmap_xor_range(0, 64, 1));
 	expect_assert_failure(stroll_bmap_xor_range(0, 60, 5));
+#else
+	expect_assert_failure(stroll_bmap_xor_range(0, 62, 1));
+	expect_assert_failure(stroll_bmap_xor_range(0, 30, 3));
+#endif
 #pragma GCC diagnostic pop
 #endif
 	stroll_bmap_utest_run_mask_oper(state, stroll_bmap_xor);
@@ -1654,6 +1807,151 @@ static void
 stroll_bmap_utest_xor_range(void ** state)
 {
 	stroll_bmap_utest_run_range_oper(state, stroll_bmap_xor_range);
+}
+
+static void
+stroll_bmap_utest_test_bit(void ** state __unused)
+{
+	unsigned int b, m;
+	unsigned int mnr = array_nr(stroll_bmap_utest_bmaps);
+	unsigned long bmp;
+
+	for (m = 0; m < mnr; m++) {
+		for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
+			bmp = stroll_bmap_utest_bmaps[m];
+			if (bmp & (1U << b))
+				assert_true(stroll_bmap_test(bmp, b));
+			else
+				assert_false(stroll_bmap_test(bmp, b));
+		}
+	}
+}
+
+static void
+stroll_bmap_utest_test_all(void ** state __unused)
+{
+	unsigned int b, m;
+	unsigned int mnr = array_nr(stroll_bmap_utest_bmaps);
+	unsigned long bmp;
+
+	for (m = 0; m < mnr; m++) {
+		for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
+			bmp = stroll_bmap_utest_bmaps[m];
+
+			if (!!bmp)
+				assert_true(stroll_bmap_test_all(bmp));
+			else
+				assert_false(stroll_bmap_test_all(bmp));
+		}
+	}
+}
+
+
+static int
+stroll_bmap_utest_setup_test_mask(void ** state)
+{
+	unsigned int   b, m;
+	unsigned int   bnr = array_nr(stroll_bmap_utest_bmaps);
+	unsigned int   mnr = array_nr(stroll_bmap_utest_masks);
+	bool         * expected;
+
+	expected = malloc(bnr * mnr * sizeof(*expected));
+	if (!expected)
+		return -1;
+
+	for (b = 0; b < bnr; b++) {
+		for (m = 0; m < mnr; m++) {
+			bool * exp = &expected[(b * mnr) + m];
+
+			*exp = !!(stroll_bmap_utest_bmaps[b] &
+			          stroll_bmap_utest_masks[m]);
+		}
+	}
+
+	*state = expected;
+
+	return 0;
+}
+
+static void
+stroll_bmap_utest_test_mask(void ** state)
+{
+	unsigned int   b, m;
+	unsigned int   bnr = array_nr(stroll_bmap_utest_bmaps);
+	unsigned int   mnr = array_nr(stroll_bmap_utest_masks);
+	const bool   * expected = *state;
+
+	for (b = 0; b < bnr; b++) {
+		for (m = 0; m < mnr; m++) {
+			bool res;
+
+			res = stroll_bmap_test_mask(
+				stroll_bmap_utest_bmaps[b],
+				stroll_bmap_utest_masks[m]);
+			assert_true(res == expected[(b * mnr) + m]);
+		}
+	}
+}
+
+static int
+stroll_bmap_utest_setup_test_range(void ** state)
+{
+	unsigned int   b, r;
+	unsigned int   bnr = array_nr(stroll_bmap_utest_bmaps);
+	unsigned int   rnr = array_nr(stroll_bmap_utest_ranges);
+	bool         * expected;
+
+	expected = malloc(bnr * rnr * sizeof(*expected));
+	if (!expected)
+		return -1;
+
+	for (b = 0; b < bnr; b++) {
+		for (r = 0; r < rnr; r++) {
+			bool * exp = &expected[(b * rnr) + r];
+
+			*exp = !!(stroll_bmap_utest_bmaps[b] &
+			          stroll_bmap_utest_ranges[r].mask);
+		}
+	}
+
+	*state = expected;
+
+	return 0;
+}
+
+static void
+stroll_bmap_utest_test_range(void ** state)
+{
+	unsigned int   b, r;
+	unsigned int   bnr = array_nr(stroll_bmap_utest_bmaps);
+	unsigned int   rnr = array_nr(stroll_bmap_utest_ranges);
+	const bool   * expected = *state;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	expect_assert_failure(stroll_bmap_test_range(0, 0, 0));
+#if (__WORDSIZE == 64)
+	expect_assert_failure(stroll_bmap_test_range(0, 64, 1));
+	expect_assert_failure(stroll_bmap_test_range(0, 60, 5));
+#else
+	expect_assert_failure(stroll_bmap_test_range(0, 32, 1));
+	expect_assert_failure(stroll_bmap_test_range(0, 30, 3));
+#endif
+#pragma GCC diagnostic pop
+#endif
+
+	for (b = 0; b < bnr; b++) {
+		for (r = 0; r < rnr; r++) {
+			bool res;
+
+			res = stroll_bmap_test_range(
+				stroll_bmap_utest_bmaps[b],
+				stroll_bmap_utest_ranges[r].start,
+				stroll_bmap_utest_ranges[r].count);
+			assert_true(res == expected[(b * rnr) + r]);
+		}
+	}
 }
 
 static const struct CMUnitTest stroll_bmap_utests[] = {
@@ -1680,6 +1978,15 @@ static const struct CMUnitTest stroll_bmap_utests[] = {
 	                                stroll_bmap_utest_teardown),
 	cmocka_unit_test_setup_teardown(stroll_bmap_utest_xor_range,
 	                                stroll_bmap_utest_setup_xor_range,
+	                                stroll_bmap_utest_teardown),
+
+	cmocka_unit_test(stroll_bmap_utest_test_bit),
+	cmocka_unit_test(stroll_bmap_utest_test_all),
+	cmocka_unit_test_setup_teardown(stroll_bmap_utest_test_mask,
+	                                stroll_bmap_utest_setup_test_mask,
+	                                stroll_bmap_utest_teardown),
+	cmocka_unit_test_setup_teardown(stroll_bmap_utest_test_range,
+	                                stroll_bmap_utest_setup_test_range,
 	                                stroll_bmap_utest_teardown),
 };
 
