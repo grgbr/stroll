@@ -1214,6 +1214,48 @@ stroll_bmap64_utest_or_range(void ** state)
 	stroll_bmap64_utest_run_range_oper(state, stroll_bmap64_or_range);
 }
 
+static uint64_t
+stroll_bmap64_utest_xor_oper(uint64_t bmap, uint64_t mask)
+{
+	return bmap ^ mask;
+}
+
+static int
+stroll_bmap64_utest_setup_xor(void ** state)
+{
+	return stroll_bmap64_utest_setup_mask_oper(
+		state,
+		stroll_bmap64_utest_xor_oper);
+}
+
+static void
+stroll_bmap64_utest_xor(void ** state)
+{
+#if defined(CONFIG_STROLL_ASSERT_API)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	expect_assert_failure(stroll_bmap64_xor_range(0, 0, 0));
+	expect_assert_failure(stroll_bmap64_xor_range(0, 64, 1));
+	expect_assert_failure(stroll_bmap64_xor_range(0, 60, 5));
+#pragma GCC diagnostic pop
+#endif
+	stroll_bmap64_utest_run_mask_oper(state, stroll_bmap64_xor);
+}
+
+static int
+stroll_bmap64_utest_setup_xor_range(void ** state)
+{
+	return stroll_bmap64_utest_setup_range_oper(
+		state,
+		stroll_bmap64_utest_xor_oper);
+}
+
+static void
+stroll_bmap64_utest_xor_range(void ** state)
+{
+	stroll_bmap64_utest_run_range_oper(state, stroll_bmap64_xor_range);
+}
+
 static const struct CMUnitTest stroll_bmap64_utests[] = {
 	cmocka_unit_test(stroll_bmap64_utest_init),
 	cmocka_unit_test(stroll_bmap64_utest_mask),
@@ -1231,6 +1273,13 @@ static const struct CMUnitTest stroll_bmap64_utests[] = {
 	                                stroll_bmap_utest_teardown),
 	cmocka_unit_test_setup_teardown(stroll_bmap64_utest_or_range,
 	                                stroll_bmap64_utest_setup_or_range,
+	                                stroll_bmap_utest_teardown),
+
+	cmocka_unit_test_setup_teardown(stroll_bmap64_utest_xor,
+	                                stroll_bmap64_utest_setup_xor,
+	                                stroll_bmap_utest_teardown),
+	cmocka_unit_test_setup_teardown(stroll_bmap64_utest_xor_range,
+	                                stroll_bmap64_utest_setup_xor_range,
 	                                stroll_bmap_utest_teardown),
 };
 
@@ -1518,16 +1567,6 @@ stroll_bmap_utest_and_range(void ** state)
 	stroll_bmap_utest_run_range_oper(state, stroll_bmap_and_range);
 }
 
-
-
-
-
-
-
-
-
-
-
 static unsigned long
 stroll_bmap_utest_or_oper(unsigned long bmap, unsigned long mask)
 {
@@ -1575,6 +1614,48 @@ stroll_bmap_utest_or_range(void ** state)
 	stroll_bmap_utest_run_range_oper(state, stroll_bmap_or_range);
 }
 
+static unsigned long
+stroll_bmap_utest_xor_oper(unsigned long bmap, unsigned long mask)
+{
+	return bmap ^ mask;
+}
+
+static int
+stroll_bmap_utest_setup_xor(void ** state)
+{
+	return stroll_bmap_utest_setup_mask_oper(
+		state,
+		stroll_bmap_utest_xor_oper);
+}
+
+static void
+stroll_bmap_utest_xor(void ** state)
+{
+#if defined(CONFIG_STROLL_ASSERT_API)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	expect_assert_failure(stroll_bmap_xor_range(0, 0, 0));
+	expect_assert_failure(stroll_bmap_xor_range(0, 64, 1));
+	expect_assert_failure(stroll_bmap_xor_range(0, 60, 5));
+#pragma GCC diagnostic pop
+#endif
+	stroll_bmap_utest_run_mask_oper(state, stroll_bmap_xor);
+}
+
+static int
+stroll_bmap_utest_setup_xor_range(void ** state)
+{
+	return stroll_bmap_utest_setup_range_oper(
+		state,
+		stroll_bmap_utest_xor_oper);
+}
+
+static void
+stroll_bmap_utest_xor_range(void ** state)
+{
+	stroll_bmap_utest_run_range_oper(state, stroll_bmap_xor_range);
+}
+
 static const struct CMUnitTest stroll_bmap_utests[] = {
 	cmocka_unit_test(stroll_bmap_utest_init),
 	cmocka_unit_test(stroll_bmap_utest_mask),
@@ -1592,6 +1673,13 @@ static const struct CMUnitTest stroll_bmap_utests[] = {
 	                                stroll_bmap_utest_teardown),
 	cmocka_unit_test_setup_teardown(stroll_bmap_utest_or_range,
 	                                stroll_bmap_utest_setup_or_range,
+	                                stroll_bmap_utest_teardown),
+
+	cmocka_unit_test_setup_teardown(stroll_bmap_utest_xor,
+	                                stroll_bmap_utest_setup_xor,
+	                                stroll_bmap_utest_teardown),
+	cmocka_unit_test_setup_teardown(stroll_bmap_utest_xor_range,
+	                                stroll_bmap_utest_setup_xor_range,
 	                                stroll_bmap_utest_teardown),
 };
 

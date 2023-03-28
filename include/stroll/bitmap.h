@@ -281,6 +281,30 @@ stroll_bmap32_xor(uint32_t bmap, uint32_t mask)
 	return bmap ^ mask;
 }
 
+static inline uint64_t __const __nothrow __warn_result
+stroll_bmap64_xor(uint64_t bmap, uint64_t mask)
+{
+	return bmap ^ mask;
+}
+
+#if __WORDSIZE == 64
+
+static inline unsigned long __const __nothrow __warn_result
+stroll_bmap_xor(unsigned long bmap, unsigned long mask)
+{
+	return stroll_bmap64_xor(bmap, mask);
+}
+
+#elif __WORDSIZE == 32
+
+static inline unsigned long __const __nothrow __warn_result
+stroll_bmap_xor(unsigned long bmap, unsigned long mask)
+{
+	return stroll_bmap32_xor(bmap, mask);
+}
+
+#endif
+
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_xor_range(uint32_t     bmap,
                         unsigned int start_bit,
@@ -292,6 +316,40 @@ stroll_bmap32_xor_range(uint32_t     bmap,
 	return stroll_bmap32_xor(bmap,
 	                         stroll_bmap32_mask(start_bit, bit_count));
 }
+
+static inline uint64_t __stroll_const __nothrow __warn_result
+stroll_bmap64_xor_range(uint64_t     bmap,
+                        unsigned int start_bit,
+                        unsigned int bit_count)
+{
+	stroll_bmap_assert_api(bit_count);
+	stroll_bmap_assert_api((start_bit + bit_count) <= 64);
+
+	return stroll_bmap64_xor(bmap,
+	                         stroll_bmap64_mask(start_bit, bit_count));
+}
+
+#if __WORDSIZE == 64
+
+static inline unsigned long __stroll_const __nothrow __warn_result
+stroll_bmap_xor_range(unsigned long bmap,
+                      unsigned int  start_bit,
+                      unsigned int  bit_count)
+{
+	return stroll_bmap64_xor_range(bmap, start_bit, bit_count);
+}
+
+#elif __WORDSIZE == 32
+
+static inline unsigned long __stroll_const __nothrow __warn_result
+stroll_bmap_xor_range(unsigned long bmap,
+                      unsigned int  start_bit,
+                      unsigned int  bit_count)
+{
+	return stroll_bmap32_xor_range(bmap, start_bit, bit_count);
+}
+
+#endif
 
 static inline bool __const __nothrow __warn_result
 stroll_bmap32_test_mask(uint32_t bmap, uint32_t mask)
