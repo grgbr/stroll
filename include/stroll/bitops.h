@@ -46,15 +46,6 @@
 #error "Unsupported machine word size !"
 #endif /* !((__WORDSIZE != 32) && (__WORDSIZE != 64)) */
 
-#define _is_stroll_bops32_type(_value) \
-	_is_same_type(_value, uint32_t)
-
-#define _is_stroll_bops64_type(_value) \
-	_is_same_type(_value, uint64_t)
-
-#define _stroll_bops_check_type(_value) \
-	(_is_stroll_bops32_type(_value) || _is_stroll_bops64_type(_value))
-
 #define stroll_bops_bitsof(_expr) \
 	(sizeof(_expr) * CHAR_BIT)
 
@@ -97,22 +88,31 @@ stroll_bops64_ffs(uint64_t value)
 
 #endif
 
-#define _stroll_bops_ffs(_value) \
-	compile_choose(_is_stroll_bops32_type(_value), \
-	               stroll_bops32_ffs(_value), \
-	               stroll_bops64_ffs(_value))
-
 /**
- * Find First (least-significant) bit Set over a word.
+ * Find First (least-significant) bit Set over a machine word.
  *
- * @param[in] _value word to search
+ * @param[in] value word to search
  *
  * @return Index of bit starting from 1, 0 when no set bits were found.
  */
-#define stroll_bops_ffs(_value) \
-	compile_eval(_stroll_bops_check_type(_value), \
-	             _stroll_bops_ffs(_value), \
-	             "invalid bitops FFS word size")
+
+#if __WORDSIZE == 64
+
+static inline unsigned int __const __nothrow
+stroll_bops_ffs(unsigned long value)
+{
+	return stroll_bops64_ffs(value);
+}
+
+#elif __WORDSIZE == 32
+
+static inline unsigned int __const __nothrow
+stroll_bops_ffs(unsigned long value)
+{
+	return stroll_bops32_ffs(value);
+}
+
+#endif
 
 /**
  * Find Last (most-significant) bit Set over 32 bits word.
@@ -169,15 +169,10 @@ stroll_bops64_fls(uint64_t value)
 
 #endif
 
-#define _stroll_bops_fls(_value) \
-	compile_choose(_is_stroll_bops32_type(_value), \
-	               stroll_bops32_fls(_value), \
-	               stroll_bops64_fls(_value))
-
 /**
- * Find Last (most-significant) bit over a word
+ * Find Last (most-significant) bit over a machine word
  *
- * @param[in] _value word to search
+ * @param[in] value word to search
  *
  * @return Index of bit starting from 1
  *
@@ -186,10 +181,24 @@ stroll_bops64_fls(uint64_t value)
  * a @p value is zero, result is undefined. A zero @p value triggers an assertion
  * otherwise.
  */
-#define stroll_bops_fls(_value) \
-	compile_eval(_stroll_bops_check_type(_value), \
-	             _stroll_bops_fls(_value), \
-	             "invalid bitops FLS word size")
+
+#if __WORDSIZE == 64
+
+static inline unsigned int __stroll_const __nothrow
+stroll_bops_fls(unsigned long value)
+{
+	return stroll_bops64_fls(value);
+}
+
+#elif __WORDSIZE == 32
+
+static inline unsigned int __stroll_const __nothrow
+stroll_bops_fls(unsigned long value)
+{
+	return stroll_bops32_fls(value);
+}
+
+#endif
 
 /**
  * Find First (least-significant) bit Cleared over 32 bits word.
@@ -230,23 +239,31 @@ stroll_bops64_ffc(uint64_t value)
 
 #endif
 
-#define _stroll_bops_ffc(_value) \
-	compile_choose(_is_stroll_bops32_type(_value), \
-	               stroll_bops32_ffc(_value), \
-	               stroll_bops64_ffc(_value))
-
 /**
- * Find First (least-significant) bit Cleared over a word.
+ * Find First (least-significant) bit Cleared over a machine word.
  *
- * @param[in] _value word to search
+ * @param[in] value word to search
  *
  * @return Index of bit starting from 1, 0 when no cleared bits were found.
  */
 
-#define stroll_bops_ffc(_value) \
-	compile_eval(_stroll_bops_check_type(_value), \
-	             _stroll_bops_ffc(_value), \
-	             "invalid bitops FFC word size")
+#if __WORDSIZE == 64
+
+static inline unsigned int __const __nothrow
+stroll_bops_ffc(unsigned long value)
+{
+	return stroll_bops64_ffc(value);
+}
+
+#elif __WORDSIZE == 32
+
+static inline unsigned int __const __nothrow
+stroll_bops_ffc(unsigned long value)
+{
+	return stroll_bops32_ffc(value);
+}
+
+#endif
 
 /**
  * Find the number of set bits over 32 bits word.
@@ -293,24 +310,33 @@ stroll_bops64_hweight(uint64_t value)
 
 #endif
 
-#define _stroll_bops_hweight(_value) \
-	compile_choose(_is_stroll_bops32_type(_value), \
-	               stroll_bops32_hweight(_value), \
-	               stroll_bops64_hweight(_value))
-
 /**
- * Find the number of set bits over a word.
+ * Find the number of set bits over a machine word.
  *
- * @param[in] _value word to search
+ * @param[in] value word to search
  *
  * @return Number of set bits
  *
  * Returns the Hamming weight of a word. The Hamming weight of a number is the
  * total number of bits set in it.
  */
-#define stroll_bops_hweight(_value) \
-	compile_eval(_stroll_bops_check_type(_value), \
-	             _stroll_bops_hweight(_value), \
-	             "invalid bitops Hamming weight word size")
+
+#if __WORDSIZE == 64
+
+static inline unsigned int __const __nothrow
+stroll_bops_hweight(unsigned long value)
+{
+	return stroll_bops64_hweight(value);
+}
+
+#elif __WORDSIZE == 32
+
+static inline unsigned int __const __nothrow
+stroll_bops_hweight(unsigned long value)
+{
+	return stroll_bops32_hweight(value);
+}
+
+#endif
 
 #endif /* _STROLL_BITOPS_H */

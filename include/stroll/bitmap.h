@@ -375,7 +375,7 @@ stroll_bmap64_set_all(uint64_t * bmap)
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap_set_all(unsigned long * bmap)
 {
-	stroll_bmap64_set_all(bmap);
+	stroll_bmap64_set_all((uint64_t *)bmap);
 }
 
 #elif __WORDSIZE == 32
@@ -383,7 +383,7 @@ stroll_bmap_set_all(unsigned long * bmap)
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap_set_all(unsigned long * bmap)
 {
-	stroll_bmap32_set_all(bmap);
+	stroll_bmap32_set_all((uint32_t *)bmap);
 }
 
 #endif
@@ -439,7 +439,7 @@ stroll_bmap64_clear_all(uint64_t * bmap)
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap_clear_all(unsigned long * bmap)
 {
-	stroll_bmap64_clear_all(bmap);
+	stroll_bmap64_clear_all((uint64_t *)bmap);
 }
 
 #elif __WORDSIZE == 32
@@ -447,7 +447,7 @@ stroll_bmap_clear_all(unsigned long * bmap)
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap_clear_all(unsigned long * bmap)
 {
-	stroll_bmap32_clear_all(bmap);
+	stroll_bmap32_clear_all((uint32_t *)bmap);
 }
 
 #endif
@@ -511,7 +511,7 @@ stroll_bmap64_init_set(uint64_t * bmap)
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap_init_set(unsigned long * bmap)
 {
-	stroll_bmap64_init_set(bmap);
+	stroll_bmap64_init_set((uint64_t *)bmap);
 }
 
 #elif __WORDSIZE == 32
@@ -519,7 +519,7 @@ stroll_bmap_init_set(unsigned long * bmap)
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap_init_set(unsigned long * bmap)
 {
-	stroll_bmap32_init_set(bmap);
+	stroll_bmap32_init_set((uint32_t *)bmap);
 }
 
 #endif
@@ -545,7 +545,7 @@ stroll_bmap64_init_clear(uint64_t * bmap)
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap_init_clear(unsigned long * bmap)
 {
-	stroll_bmap64_init_clear(bmap);
+	stroll_bmap64_init_clear((uint64_t *)bmap);
 }
 
 #elif __WORDSIZE == 32
@@ -553,7 +553,7 @@ stroll_bmap_init_clear(unsigned long * bmap)
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap_init_clear(unsigned long * bmap)
 {
-	stroll_bmap32_init_clear(bmap);
+	stroll_bmap32_init_clear((uint32_t *)bmap);
 }
 
 #endif
@@ -575,7 +575,7 @@ stroll_bmap64_fini(uint64_t * bmap)
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap_fini(unsigned long * bmap)
 {
-	stroll_bmap64_fini(bmap);
+	stroll_bmap64_fini((uint64_t *)bmap);
 }
 
 #elif __WORDSIZE == 32
@@ -583,7 +583,7 @@ stroll_bmap_fini(unsigned long * bmap)
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap_fini(unsigned long * bmap)
 {
-	stroll_bmap32_fini(bmap);
+	stroll_bmap32_fini((uint32_t *)bmap);
 }
 
 #endif

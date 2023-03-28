@@ -1,7 +1,7 @@
 test-cflags    := -Wall -Wextra -Wformat=2 \
                   -D_GNU_SOURCE \
                   -D_STROLL_CMOCKA_UTEST \
-                  -I$(TOPDIR)/include \
+                  -I../include \
                   $(EXTRA_CFLAGS)
 test-ldflags   := $(common-cflags) \
                   -L$(BUILDDIR)/../src \

@@ -1458,12 +1458,12 @@ stroll_bmap_utest_hweight(void ** state __unused)
 {
 	unsigned int m;
 
-	for (m = 0; m < array_nr(stroll_bmap64_utest_bmaps); m++) {
+	for (m = 0; m < array_nr(stroll_bmap_utest_bmaps); m++) {
 		unsigned long bmp = stroll_bmap_utest_bmaps[m];
 		unsigned int  b;
 		unsigned int  cnt;
 
-		for (b = 0, cnt = 0; b < 64; b++)
+		for (b = 0, cnt = 0; b < stroll_bops_bitsof(bmp); b++)
 			if (bmp & (1UL << b))
 				cnt++;
 

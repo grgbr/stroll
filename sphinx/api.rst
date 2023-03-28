@@ -22,6 +22,15 @@ you can refer to for further details :
 * `Doubly linked lists`_,
 * `Singly linked lists`_,
 * `Length-value strings`_.
+  
+
+Build configuration
+===================
+
+.. todo::
+
+   Document build configuration macros from Kconfig
+
 
 .. index:: common definitions, cdefs
 
@@ -217,26 +226,6 @@ stroll_assert
 
 .. doxygendefine:: stroll_assert
 
-stroll_bops_ffc
-***************
-
-.. doxygendefine:: stroll_bops_ffc
-
-stroll_bops_ffs
-***************
-
-.. doxygendefine:: stroll_bops_ffs
-
-stroll_bops_fls
-***************
-
-.. doxygendefine:: stroll_bops_fls
-
-stroll_bops_hweight
-*******************
-
-.. doxygendefine:: stroll_bops_hweight
-
 Enumerations
 ------------
 
@@ -255,6 +244,26 @@ enbox_bind_entry
 
 Functions
 ---------
+
+stroll_bops_ffc
+***************
+
+.. doxygenfunction:: stroll_bops_ffc
+
+stroll_bops_ffs
+***************
+
+.. doxygenfunction:: stroll_bops_ffs
+
+stroll_bops_fls
+***************
+
+.. doxygenfunction:: stroll_bops_fls
+
+stroll_bops_hweight
+*******************
+
+.. doxygenfunction:: stroll_bops_hweight
 
 stroll_bops32_ffc
 *****************
