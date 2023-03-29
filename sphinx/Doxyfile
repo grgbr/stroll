@@ -2338,6 +2338,7 @@ PREDEFINED             = __restrict= \
 			 __const= \
 			 __stroll_const= \
 			 __nothrow= \
+			 __warn_result= \
                          __WORDSIZE=64
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this

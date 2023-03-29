@@ -42,6 +42,25 @@
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
+/**
+ * Compute a 32-bits word mask.
+ *
+ * @param[in] start_bit Index of first mask bit set starting from 0
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Computed mask
+ *
+ * Compute a 32-bits mask where all bits are set starting from bit which index
+ * is @p start_bit to `start_bit + bit_count - 1`. Bit indices starts from 0.
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
+ */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_mask(unsigned int start_bit, unsigned int bit_count)
 {
@@ -55,6 +74,25 @@ stroll_bmap32_mask(unsigned int start_bit, unsigned int bit_count)
 	return (UINT32_MAX >> (32 - bit_count)) << start_bit;
 }
 
+/**
+ * Compute a 64-bits word mask.
+ *
+ * @param[in] start_bit Index of first mask bit set starting from 0
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Computed mask
+ *
+ * Compute a 64-bits mask where all bits are set starting from bit which index
+ * is @p start_bit to `start_bit + bit_count - 1`. Bit indices starts from 0.
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
+ */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_mask(unsigned int start_bit, unsigned int bit_count)
 {
@@ -67,6 +105,28 @@ stroll_bmap64_mask(unsigned int start_bit, unsigned int bit_count)
 
 	return (UINT64_MAX >> (64 - bit_count)) << start_bit;
 }
+
+/**
+ * Compute a machine word mask.
+ *
+ * @param[in] start_bit Index of first mask bit set starting from 0
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Computed mask
+ *
+ * Compute a mask over a machine word where all bits are set starting from bit
+ * which index is @p start_bit to `start_bit + bit_count - 1`. Bit indices
+ * starts from 0.
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
+ *   bits contained within a machine word. If not, an undefined result is
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
+ *   assertion is triggered otherwise.
+ */
 
 #if __WORDSIZE == 64
 
@@ -86,17 +146,48 @@ stroll_bmap_mask(unsigned int start_bit, unsigned int bit_count)
 
 #endif
 
+/**
+ * Compute the number of bits set over a 32-bits bitmap.
+ *
+ * @param[in] bmap Bitmap to search
+ *
+ * @return Number of bits set
+ *
+ * Returns the Hamming weight of a 32-bits bitmap. The Hamming weight of a
+ * number is the total number of bits set in it.
+ */
 static inline unsigned int __const __nothrow __warn_result
 stroll_bmap32_hweight(uint32_t bmap)
 {
 	return stroll_bops32_hweight(bmap);
 }
 
+/**
+ * Compute the number of bits set over a 64-bits bitmap.
+ *
+ * @param[in] bmap Bitmap to search
+ *
+ * @return Number of bits set
+ *
+ * Returns the Hamming weight of a 64-bits bitmap. The Hamming weight of a
+ * number is the total number of bits set in it.
+ */
 static inline unsigned int __const __nothrow __warn_result
 stroll_bmap64_hweight(uint64_t bmap)
 {
 	return stroll_bops64_hweight(bmap);
 }
+
+/**
+ * Compute the number of bits set over a machine word bitmap.
+ *
+ * @param[in] bmap Bitmap to search
+ *
+ * @return Number of bits set
+ *
+ * Returns the Hamming weight of a machine word bitmap. The Hamming weight of a
+ * number is the total number of bits set in it.
+ */
 
 #if __WORDSIZE == 64
 
@@ -116,17 +207,42 @@ stroll_bmap_hweight(unsigned long bmap)
 
 #endif
 
+/**
+ * Perform bitwise mask based AND operation on 32-bits word bitmap.
+ *
+ * @param[in] bmap Bitmap to perform operation on
+ * @param[in] mask Mask to perform operation with
+ *
+ * @return `bmap & mask`
+ */
 static inline uint32_t __const __nothrow __warn_result
 stroll_bmap32_and(uint32_t bmap, uint32_t mask)
 {
 	return bmap & mask;
 }
 
+/**
+ * Perform bitwise mask based AND operation on 64-bits word bitmap.
+ *
+ * @param[in] bmap Bitmap to perform operation on
+ * @param[in] mask Mask to perform operation with
+ *
+ * @return `bmap & mask`
+ */
 static inline uint64_t __const __nothrow __warn_result
 stroll_bmap64_and(uint64_t bmap, uint64_t mask)
 {
 	return bmap & mask;
 }
+
+/**
+ * Perform bitwise mask based AND operation on machine word bitmap.
+ *
+ * @param[in] bmap Bitmap to perform operation on
+ * @param[in] mask Mask to perform operation with
+ *
+ * @return `bmap & mask`
+ */
 
 #if __WORDSIZE == 64
 
@@ -146,6 +262,21 @@ stroll_bmap_and(unsigned long bmap, unsigned long mask)
 
 #endif
 
+/**
+ * Perform bitwise range based AND operation on 32-bits word bitmap.
+ *
+ * @param[in] bmap      Bitmap to perform operation on
+ * @param[in] start_bit Index of first mask bit set
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Result of the bitwise AND operation
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument then use it to perform a bitwise AND operation over given @p bmap
+ * bitmap.
+ *
+ * Mask is computed thanks to stroll_bmap32_mask().
+ */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_and_range(uint32_t     bmap,
                         unsigned int start_bit,
@@ -158,6 +289,21 @@ stroll_bmap32_and_range(uint32_t     bmap,
 	                         stroll_bmap32_mask(start_bit, bit_count));
 }
 
+/**
+ * Perform bitwise range based AND operation on 64-bits word bitmap.
+ *
+ * @param[in] bmap      Bitmap to perform operation on
+ * @param[in] start_bit Index of first mask bit set
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Result of the bitwise AND operation
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument then use it to perform a bitwise AND operation over given @p bmap
+ * bitmap.
+ *
+ * Mask is computed thanks to stroll_bmap64_mask().
+ */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_and_range(uint64_t     bmap,
                         unsigned int start_bit,
@@ -170,6 +316,21 @@ stroll_bmap64_and_range(uint64_t     bmap,
 	                         stroll_bmap64_mask(start_bit, bit_count));
 }
 
+/**
+ * Perform bitwise range based AND operation on machine word bitmap.
+ *
+ * @param[in] bmap      Bitmap to perform operation on
+ * @param[in] start_bit Index of first mask bit set
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Result of the bitwise AND operation
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument then use it to perform a bitwise AND operation over given @p bmap
+ * bitmap.
+ *
+ * Mask is computed thanks to stroll_bmap_mask().
+ */
 #if __WORDSIZE == 64
 
 static inline unsigned long __stroll_const __nothrow __warn_result
@@ -192,17 +353,42 @@ stroll_bmap_and_range(unsigned long bmap,
 
 #endif
 
+/**
+ * Perform bitwise mask based OR operation on 32-bits word bitmap.
+ *
+ * @param[in] bmap Bitmap to perform operation on
+ * @param[in] mask Mask to perform operation with
+ *
+ * @return `bmap | mask`
+ */
 static inline uint32_t __const __nothrow __warn_result
 stroll_bmap32_or(uint32_t bmap, uint32_t mask)
 {
 	return bmap | mask;
 }
 
+/**
+ * Perform bitwise mask based OR operation on 64-bits word bitmap.
+ *
+ * @param[in] bmap Bitmap to perform operation on
+ * @param[in] mask Mask to perform operation with
+ *
+ * @return `bmap | mask`
+ */
 static inline uint64_t __const __nothrow __warn_result
 stroll_bmap64_or(uint64_t bmap, uint64_t mask)
 {
 	return bmap | mask;
 }
+
+/**
+ * Perform bitwise mask based OR operation on machine word bitmap.
+ *
+ * @param[in] bmap Bitmap to perform operation on
+ * @param[in] mask Mask to perform operation with
+ *
+ * @return `bmap | mask`
+ */
 
 #if __WORDSIZE == 64
 
@@ -222,6 +408,21 @@ stroll_bmap_or(unsigned long bmap, unsigned long mask)
 
 #endif
 
+/**
+ * Perform bitwise range based OR operation on 32-bits word bitmap.
+ *
+ * @param[in] bmap      Bitmap to perform operation on
+ * @param[in] start_bit Index of first mask bit set
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Result of the bitwise OR operation
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument then use it to perform a bitwise OR operation over given @p bmap
+ * bitmap.
+ *
+ * Mask is computed thanks to stroll_bmap32_mask().
+ */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_or_range(uint32_t     bmap,
                        unsigned int start_bit,
@@ -233,6 +434,21 @@ stroll_bmap32_or_range(uint32_t     bmap,
 	return stroll_bmap32_or(bmap, stroll_bmap32_mask(start_bit, bit_count));
 }
 
+/**
+ * Perform bitwise range based OR operation on 64-bits word bitmap.
+ *
+ * @param[in] bmap      Bitmap to perform operation on
+ * @param[in] start_bit Index of first mask bit set
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Result of the bitwise OR operation
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument then use it to perform a bitwise OR operation over given @p bmap
+ * bitmap.
+ *
+ * Mask is computed thanks to stroll_bmap64_mask().
+ */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_or_range(uint64_t     bmap,
                        unsigned int start_bit,
@@ -243,6 +459,22 @@ stroll_bmap64_or_range(uint64_t     bmap,
 
 	return stroll_bmap64_or(bmap, stroll_bmap64_mask(start_bit, bit_count));
 }
+
+/**
+ * Perform bitwise range based OR operation on machine word bitmap.
+ *
+ * @param[in] bmap      Bitmap to perform operation on
+ * @param[in] start_bit Index of first mask bit set
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Result of the bitwise OR operation
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument then use it to perform a bitwise OR operation over given @p bmap
+ * bitmap.
+ *
+ * Mask is computed thanks to stroll_bmap_mask().
+ */
 
 #if __WORDSIZE == 64
 
@@ -266,17 +498,42 @@ stroll_bmap_or_range(unsigned long bmap,
 
 #endif
 
+/**
+ * Perform bitwise mask based XOR operation on 32-bits word bitmap.
+ *
+ * @param[in] bmap Bitmap to perform operation on
+ * @param[in] mask Mask to perform operation with
+ *
+ * @return `bmap ^ mask`
+ */
 static inline uint32_t __const __nothrow __warn_result
 stroll_bmap32_xor(uint32_t bmap, uint32_t mask)
 {
 	return bmap ^ mask;
 }
 
+/**
+ * Perform bitwise mask based XOR operation on 64-bits word bitmap.
+ *
+ * @param[in] bmap Bitmap to perform operation on
+ * @param[in] mask Mask to perform operation with
+ *
+ * @return `bmap ^ mask`
+ */
 static inline uint64_t __const __nothrow __warn_result
 stroll_bmap64_xor(uint64_t bmap, uint64_t mask)
 {
 	return bmap ^ mask;
 }
+
+/**
+ * Perform bitwise mask based XOR operation on machine word bitmap.
+ *
+ * @param[in] bmap Bitmap to perform operation on
+ * @param[in] mask Mask to perform operation with
+ *
+ * @return `bmap ^ mask`
+ */
 
 #if __WORDSIZE == 64
 
@@ -296,6 +553,21 @@ stroll_bmap_xor(unsigned long bmap, unsigned long mask)
 
 #endif
 
+/**
+ * Perform bitwise range based XOR operation on 32-bits word bitmap.
+ *
+ * @param[in] bmap      Bitmap to perform operation on
+ * @param[in] start_bit Index of first mask bit set
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Result of the bitwise XOR operation
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument then use it to perform a bitwise XOR operation over given @p bmap
+ * bitmap.
+ *
+ * Mask is computed thanks to stroll_bmap32_mask().
+ */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_xor_range(uint32_t     bmap,
                         unsigned int start_bit,
@@ -308,6 +580,21 @@ stroll_bmap32_xor_range(uint32_t     bmap,
 	                         stroll_bmap32_mask(start_bit, bit_count));
 }
 
+/**
+ * Perform bitwise range based XOR operation on 64-bits word bitmap.
+ *
+ * @param[in] bmap      Bitmap to perform operation on
+ * @param[in] start_bit Index of first mask bit set
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Result of the bitwise XOR operation
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument then use it to perform a bitwise XOR operation over given @p bmap
+ * bitmap.
+ *
+ * Mask is computed thanks to stroll_bmap64_mask().
+ */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_xor_range(uint64_t     bmap,
                         unsigned int start_bit,
@@ -319,6 +606,22 @@ stroll_bmap64_xor_range(uint64_t     bmap,
 	return stroll_bmap64_xor(bmap,
 	                         stroll_bmap64_mask(start_bit, bit_count));
 }
+
+/**
+ * Perform bitwise range based XOR operation on machine word bitmap.
+ *
+ * @param[in] bmap      Bitmap to perform operation on
+ * @param[in] start_bit Index of first mask bit set
+ * @param[in] bit_count Number of bits set in mask
+ *
+ * @return Result of the bitwise XOR operation
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument then use it to perform a bitwise XOR operation over given @p bmap
+ * bitmap.
+ *
+ * Mask is computed thanks to stroll_bmap_mask().
+ */
 
 #if __WORDSIZE == 64
 
@@ -342,18 +645,54 @@ stroll_bmap_xor_range(unsigned long bmap,
 
 #endif
 
+/**
+ * Test wether bits in a 32-bits word bitmap are set or not.
+ *
+ * @param[in] bmap Bitmap to test
+ * @param[in] mask The set of bits to test
+ *
+ * @return Test result
+ * @retval true  One or multiple tested bits are set into @p bmap
+ * @retval false No tested bits are set into @p bmap
+ *
+ * Test wether a set of bits specified by @p mask are nonzero into @p bmap.
+ */
 static inline bool __const __nothrow __warn_result
 stroll_bmap32_test_mask(uint32_t bmap, uint32_t mask)
 {
 	return !!stroll_bmap32_and(bmap, mask);
 }
 
+/**
+ * Test wether bits in a 64-bits word bitmap are set or not.
+ *
+ * @param[in] bmap Bitmap to test
+ * @param[in] mask The set of bits to test
+ *
+ * @return Test result
+ * @retval true  One or multiple tested bits are set into @p bmap
+ * @retval false No tested bits are set into @p bmap
+ *
+ * Test wether a set of bits specified by @p mask are nonzero into @p bmap.
+ */
 static inline bool __const __nothrow __warn_result
 stroll_bmap64_test_mask(uint64_t bmap, uint64_t mask)
 {
 	return !!stroll_bmap64_and(bmap, mask);
 }
 
+/**
+ * Test wether bits in a machine word bitmap are set or not.
+ *
+ * @param[in] bmap Bitmap to test
+ * @param[in] mask The set of bits to test
+ *
+ * @return Test result
+ * @retval true  One or multiple tested bits are set into @p bmap
+ * @retval false No tested bits are set into @p bmap
+ *
+ * Test wether a set of bits specified by @p mask are nonzero into @p bmap.
+ */
 #if __WORDSIZE == 64
 
 static inline bool __const __nothrow __warn_result
@@ -372,6 +711,23 @@ stroll_bmap_test_mask(unsigned long bmap, unsigned long mask)
 
 #endif
 
+/**
+ * Test wether a bit in a 32-bits word bitmap is set or not.
+ *
+ * @param[in] bmap   Bitmap to test
+ * @param[in] bit_no Index of bit to test starting from 0
+ *
+ * @return Test result
+ * @retval true  tested bit is set
+ * @retval false tested bit is cleared
+ *
+ * Test wether the bit specified by @p bit_no is set into @p bmap bitmap.
+ * Bit indices starts from 0.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is `>= 32`, result is undefined. An assertion is triggered otherwise.
+ */
 static inline bool __stroll_const __nothrow __warn_result
 stroll_bmap32_test(uint32_t bmap, unsigned int bit_no)
 {
@@ -380,6 +736,23 @@ stroll_bmap32_test(uint32_t bmap, unsigned int bit_no)
 	return stroll_bmap32_test_mask(bmap, (uint32_t)1 << bit_no);
 }
 
+/**
+ * Test wether a bit in a 64-bits word bitmap is set or not.
+ *
+ * @param[in] bmap   Bitmap to test
+ * @param[in] bit_no Index of bit to test starting from 0
+ *
+ * @return Test result
+ * @retval true  tested bit is set
+ * @retval false tested bit is cleared
+ *
+ * Test wether the bit specified by @p bit_no is set into @p bmap bitmap.
+ * Bit indices starts from 0.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is `>= 64`, result is undefined. An assertion is triggered otherwise.
+ */
 static inline bool __stroll_const __nothrow __warn_result
 stroll_bmap64_test(uint64_t bmap, unsigned int bit_no)
 {
@@ -387,6 +760,26 @@ stroll_bmap64_test(uint64_t bmap, unsigned int bit_no)
 
 	return stroll_bmap64_test_mask(bmap, (uint64_t)1 << bit_no);
 }
+
+/**
+ * Test wether a bit in a machine word bitmap is set or not.
+ *
+ * @param[in] bmap   Bitmap to test
+ * @param[in] bit_no Index of bit to test starting from 0
+ *
+ * @return Test result
+ * @retval true  tested bit is set
+ * @retval false tested bit is cleared
+ *
+ * Test wether the bit specified by @p bit_no is set into @p bmap bitmap.
+ * Bit indices starts from 0.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is greater than or equal to the maximum number of bits contained
+ * within a machine word, result is undefined. An assertion is triggered
+ * otherwise.
+ */
 
 #if __WORDSIZE == 64
 
