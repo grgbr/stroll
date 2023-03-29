@@ -788,7 +788,7 @@ stroll_bmap32_utest_set_iter(void ** state __unused)
 
 		b = 0;
 		stroll_bmap32_foreach_set(&iter, bmp, &b) {
-			while ((e < 32) && !(bmp & ((uint32_t)1 << e)))
+			while ((e < 32) && !(bmp & (UINT32_C(1) << e)))
 				e++;
 			assert_int_equal(b, e);
 			e++;
@@ -822,7 +822,7 @@ stroll_bmap32_utest_clear_iter(void ** state __unused)
 
 		b = 0;
 		stroll_bmap32_foreach_clear(&iter, bmp, &b) {
-			while ((e < 32) && (bmp & ((uint32_t)1 << e)))
+			while ((e < 32) && (bmp & (UINT32_C(1) << e)))
 				e++;
 			assert_int_equal(b, e);
 			e++;
@@ -1124,7 +1124,7 @@ stroll_bmap64_utest_hweight(void ** state __unused)
 		unsigned int cnt;
 
 		for (b = 0, cnt = 0; b < 64; b++)
-			if (bmp & ((uint64_t)1U << b))
+			if (bmp & (UINT64_C(1) << b))
 				cnt++;
 
 		assert_int_equal(cnt, stroll_bmap64_hweight(bmp));
@@ -1267,7 +1267,7 @@ stroll_bmap64_utest_test_bit(void ** state __unused)
 		for (b = 0; b < 64; b++) {
 			uint64_t bmp = stroll_bmap64_utest_bmaps[m];
 
-			if (bmp & ((uint64_t)1 << b))
+			if (bmp & (UINT64_C(1) << b))
 				assert_true(stroll_bmap64_test(bmp, b));
 			else
 				assert_false(stroll_bmap64_test(bmp, b));
@@ -1410,8 +1410,8 @@ stroll_bmap64_utest_set_bit(void ** state __unused)
 	for (b = 0; b < 64; b++) {
 		bmp = 0;
 		stroll_bmap64_set(&bmp, b);
-		assert_true(bmp & ((uint64_t)1 << b));
-		assert_false(!!(bmp & ~((uint64_t)1 << b)));
+		assert_true(bmp & (UINT64_C(1) << b));
+		assert_false(!!(bmp & ~(UINT64_C(1) << b)));
 	}
 }
 
@@ -1488,7 +1488,7 @@ stroll_bmap64_utest_clear_bit(void ** state __unused)
 	for (b = 0; b < 64; b++) {
 		bmp = UINT64_MAX;
 		stroll_bmap64_clear(&bmp, b);
-		assert_int_equal(bmp, UINT64_MAX & ~((uint64_t)1 << b));
+		assert_int_equal(bmp, UINT64_MAX & ~(UINT64_C(1) << b));
 	}
 }
 
@@ -1589,11 +1589,11 @@ stroll_bmap64_utest_toggle_bit(void ** state __unused)
 	for (b = 0; b < 64; b++) {
 		bmp = 0;
 		stroll_bmap64_toggle(&bmp, b);
-		assert_int_equal(bmp, (uint64_t)1 << b);
+		assert_int_equal(bmp, UINT64_C(1) << b);
 
 		bmp = UINT64_MAX;
 		stroll_bmap64_toggle(&bmp, b);
-		assert_int_equal(bmp, ~((uint64_t)1 << b));
+		assert_int_equal(bmp, ~(UINT64_C(1) << b));
 	}
 }
 
@@ -1700,7 +1700,7 @@ stroll_bmap64_utest_set_iter(void ** state __unused)
 
 		b = 0;
 		stroll_bmap64_foreach_set(&iter, bmp, &b) {
-			while ((e < 64) && !(bmp & ((uint64_t)1 << e)))
+			while ((e < 64) && !(bmp & (UINT64_C(1) << e)))
 				e++;
 			assert_int_equal(b, e);
 			e++;
@@ -1734,7 +1734,7 @@ stroll_bmap64_utest_clear_iter(void ** state __unused)
 
 		b = 0;
 		stroll_bmap64_foreach_clear(&iter, bmp, &b) {
-			while ((e < 64) && (bmp & ((uint64_t)1 << e)))
+			while ((e < 64) && (bmp & (UINT64_C(1) << e)))
 				e++;
 			assert_int_equal(b, e);
 			e++;

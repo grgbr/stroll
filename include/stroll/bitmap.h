@@ -808,7 +808,7 @@ stroll_bmap32_test(uint32_t bmap, unsigned int bit_no)
 {
 	stroll_bmap_assert_api(bit_no < stroll_bops_bitsof(bmap));
 
-	return stroll_bmap32_test_mask(bmap, (uint32_t)1 << bit_no);
+	return stroll_bmap32_test_mask(bmap, UINT32_C(1) << bit_no);
 }
 
 /**
@@ -833,7 +833,7 @@ stroll_bmap64_test(uint64_t bmap, unsigned int bit_no)
 {
 	stroll_bmap_assert_api(bit_no < stroll_bops_bitsof(bmap));
 
-	return stroll_bmap64_test_mask(bmap, (uint64_t)1 << bit_no);
+	return stroll_bmap64_test_mask(bmap, UINT64_C(1) << bit_no);
 }
 
 /**
@@ -1132,7 +1132,7 @@ stroll_bmap32_set(uint32_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 32);
 
-	stroll_bmap32_set_mask(bmap, (uint32_t)1 << bit_no);
+	stroll_bmap32_set_mask(bmap, UINT32_C(1) << bit_no);
 }
 
 /**
@@ -1154,7 +1154,7 @@ stroll_bmap64_set(uint64_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 64);
 
-	stroll_bmap64_set_mask(bmap, (uint64_t)1 << bit_no);
+	stroll_bmap64_set_mask(bmap, UINT64_C(1) << bit_no);
 }
 
 /**
@@ -1393,7 +1393,7 @@ stroll_bmap32_clear(uint32_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 32);
 
-	stroll_bmap32_clear_mask(bmap, (uint32_t)1 << bit_no);
+	stroll_bmap32_clear_mask(bmap, UINT32_C(1) << bit_no);
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -1402,7 +1402,7 @@ stroll_bmap64_clear(uint64_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 64);
 
-	stroll_bmap64_clear_mask(bmap, (uint64_t)1 << bit_no);
+	stroll_bmap64_clear_mask(bmap, UINT64_C(1) << bit_no);
 }
 
 #if __WORDSIZE == 64
@@ -1545,7 +1545,7 @@ stroll_bmap32_toggle(uint32_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 32);
 
-	stroll_bmap32_toggle_mask(bmap, (uint32_t)1 << bit_no);
+	stroll_bmap32_toggle_mask(bmap, UINT32_C(1) << bit_no);
 }
 
 static inline void __stroll_nonull(1) __nothrow
@@ -1554,7 +1554,7 @@ stroll_bmap64_toggle(uint64_t * bmap, unsigned int bit_no)
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 64);
 
-	stroll_bmap64_toggle_mask(bmap, (uint64_t)1 << bit_no);
+	stroll_bmap64_toggle_mask(bmap, UINT64_C(1) << bit_no);
 }
 
 #if __WORDSIZE == 64
