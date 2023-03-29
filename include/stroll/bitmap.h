@@ -276,6 +276,14 @@ stroll_bmap_and(unsigned long bmap, unsigned long mask)
  * bitmap.
  *
  * Mask is computed thanks to stroll_bmap32_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_and_range(uint32_t     bmap,
@@ -303,6 +311,14 @@ stroll_bmap32_and_range(uint32_t     bmap,
  * bitmap.
  *
  * Mask is computed thanks to stroll_bmap64_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_and_range(uint64_t     bmap,
@@ -330,6 +346,15 @@ stroll_bmap64_and_range(uint64_t     bmap,
  * bitmap.
  *
  * Mask is computed thanks to stroll_bmap_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
+ *   bits contained within a machine word. If not, an undefined result is
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
+ *   assertion is triggered otherwise.
  */
 #if __WORDSIZE == 64
 
@@ -422,6 +447,14 @@ stroll_bmap_or(unsigned long bmap, unsigned long mask)
  * bitmap.
  *
  * Mask is computed thanks to stroll_bmap32_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_or_range(uint32_t     bmap,
@@ -448,6 +481,14 @@ stroll_bmap32_or_range(uint32_t     bmap,
  * bitmap.
  *
  * Mask is computed thanks to stroll_bmap64_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_or_range(uint64_t     bmap,
@@ -474,6 +515,15 @@ stroll_bmap64_or_range(uint64_t     bmap,
  * bitmap.
  *
  * Mask is computed thanks to stroll_bmap_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
+ *   bits contained within a machine word. If not, an undefined result is
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
+ *   assertion is triggered otherwise.
  */
 
 #if __WORDSIZE == 64
@@ -567,6 +617,14 @@ stroll_bmap_xor(unsigned long bmap, unsigned long mask)
  * bitmap.
  *
  * Mask is computed thanks to stroll_bmap32_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_xor_range(uint32_t     bmap,
@@ -594,6 +652,14 @@ stroll_bmap32_xor_range(uint32_t     bmap,
  * bitmap.
  *
  * Mask is computed thanks to stroll_bmap64_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_xor_range(uint64_t     bmap,
@@ -621,6 +687,15 @@ stroll_bmap64_xor_range(uint64_t     bmap,
  * bitmap.
  *
  * Mask is computed thanks to stroll_bmap_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
+ *   bits contained within a machine word. If not, an undefined result is
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
+ *   assertion is triggered otherwise.
  */
 
 #if __WORDSIZE == 64
@@ -799,6 +874,31 @@ stroll_bmap_test(unsigned long bmap, unsigned int bit_no)
 
 #endif
 
+/**
+ * Test wether a range of bits in a 32-bits word bitmap are set or not.
+ *
+ * @param[in] bmap      Bitmap to test
+ * @param[in] start_bit Index of first bit to test
+ * @param[in] bit_count Number of bits to test
+ *
+ * @return Test result
+ * @retval true  One or multiple tested bits are set into @p bmap
+ * @retval false No tested bits are set into @p bmap
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument. Then, check wether, within the given range, there are bits set into
+ * the @p bmap bitmap or not.
+ *
+ * Mask is computed thanks to stroll_bmap32_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
+ */
 static inline bool __stroll_const __nothrow __warn_result
 stroll_bmap32_test_range(uint32_t     bmap,
                          unsigned int start_bit,
@@ -811,6 +911,31 @@ stroll_bmap32_test_range(uint32_t     bmap,
 	                                                        bit_count));
 }
 
+/**
+ * Test wether a range of bits in a 64-bits word bitmap are set or not.
+ *
+ * @param[in] bmap      Bitmap to test
+ * @param[in] start_bit Index of first bit to test
+ * @param[in] bit_count Number of bits to test
+ *
+ * @return Test result
+ * @retval true  One or multiple tested bits are set into @p bmap
+ * @retval false No tested bits are set into @p bmap
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument. Then, check wether, within the given range, there are bits set into
+ * the @p bmap bitmap or not.
+ *
+ * Mask is computed thanks to stroll_bmap64_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
+ */
 static inline bool __stroll_const __nothrow __warn_result
 stroll_bmap64_test_range(uint64_t     bmap,
                          unsigned int start_bit,
@@ -822,6 +947,33 @@ stroll_bmap64_test_range(uint64_t     bmap,
 	return stroll_bmap64_test_mask(bmap, stroll_bmap64_mask(start_bit,
 	                                                        bit_count));
 }
+
+/**
+ * Test wether a range of bits in a machine word bitmap are set or not.
+ *
+ * @param[in] bmap      Bitmap to test
+ * @param[in] start_bit Index of first bit to test
+ * @param[in] bit_count Number of bits to test
+ *
+ * @return Test result
+ * @retval true  One or multiple tested bits are set into @p bmap
+ * @retval false No tested bits are set into @p bmap
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument. Then, check wether, within the given range, there are bits set into
+ * the @p bmap bitmap or not.
+ *
+ * Mask is computed thanks to stroll_bmap_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
+ *   bits contained within a machine word. If not, an undefined result is
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
+ *   assertion is triggered otherwise.
+ */
 
 #if __WORDSIZE == 64
 
@@ -845,17 +997,45 @@ stroll_bmap_test_range(unsigned long bmap,
 
 #endif
 
+/**
+ * Test wether a 32-bits word bitmap contains bits set or not.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Test result
+ * @retval true  One or multiple tested bits are set into @p bmap
+ * @retval false No tested bits are set into @p bmap
+ */
 static inline bool __const __nothrow __warn_result
 stroll_bmap32_test_all(uint32_t bmap)
 {
 	return !!bmap;
 }
 
+/**
+ * Test wether a 64-bits word bitmap contains bits set or not.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Test result
+ * @retval true  One or multiple tested bits are set into @p bmap
+ * @retval false No tested bits are set into @p bmap
+ */
 static inline bool __const __nothrow __warn_result
 stroll_bmap64_test_all(uint64_t bmap)
 {
 	return !!bmap;
 }
+
+/**
+ * Test wether a machine word bitmap contains bits set or not.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Test result
+ * @retval true  One or multiple tested bits are set into @p bmap
+ * @retval false No tested bits are set into @p bmap
+ */
 
 #if __WORDSIZE == 64
 
@@ -875,6 +1055,14 @@ stroll_bmap_test_all(unsigned long bmap)
 
 #endif
 
+/**
+ * Set bits of 32-bits word bitmap according to mask given in argument.
+ *
+ * @param[out] bmap Bitmap to set
+ * @param[in]  mask Mask of bits to set
+ *
+ * Set all bits of @p bmap bitmap which are set into @p mask.
+ */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_set_mask(uint32_t * bmap, uint32_t mask)
 {
@@ -883,6 +1071,14 @@ stroll_bmap32_set_mask(uint32_t * bmap, uint32_t mask)
 	*bmap = stroll_bmap32_or(*bmap, mask);
 }
 
+/**
+ * Set bits of 64-bits word bitmap according to mask given in argument.
+ *
+ * @param[out] bmap Bitmap to set
+ * @param[in]  mask Mask of bits to set
+ *
+ * Set all bits of @p bmap bitmap which are set into @p mask.
+ */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap64_set_mask(uint64_t * bmap, uint64_t mask)
 {
@@ -891,6 +1087,14 @@ stroll_bmap64_set_mask(uint64_t * bmap, uint64_t mask)
 	*bmap = stroll_bmap64_or(*bmap, mask);
 }
 
+/**
+ * Set bits of machine word bitmap according to mask given in argument.
+ *
+ * @param[out] bmap Bitmap to set
+ * @param[in]  mask Mask of bits to set
+ *
+ * Set all bits of @p bmap bitmap which are set into @p mask.
+ */
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __nothrow
@@ -909,6 +1113,19 @@ stroll_bmap_set_mask(unsigned long * bmap, unsigned long mask)
 
 #endif
 
+/**
+ * Set a bit in a 32-bits word bitmap.
+ *
+ * @param[out] bmap   Bitmap to set
+ * @param[in]  bit_no Index of bit to set
+ *
+ * Set bit specified by @p bit_no into @p bmap bitmap. Bit indices starts from
+ * 0.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is `>= 32`, result is undefined. An assertion is triggered otherwise.
+ */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_set(uint32_t * bmap, unsigned int bit_no)
 {
@@ -918,6 +1135,19 @@ stroll_bmap32_set(uint32_t * bmap, unsigned int bit_no)
 	stroll_bmap32_set_mask(bmap, (uint32_t)1 << bit_no);
 }
 
+/**
+ * Set a bit in a 64-bits word bitmap.
+ *
+ * @param[out] bmap   Bitmap to set
+ * @param[in]  bit_no Index of bit to set
+ *
+ * Set bit specified by @p bit_no into @p bmap bitmap. Bit indices starts from
+ * 0.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is `>= 32`, result is undefined. An assertion is triggered otherwise.
+ */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap64_set(uint64_t * bmap, unsigned int bit_no)
 {
@@ -926,6 +1156,22 @@ stroll_bmap64_set(uint64_t * bmap, unsigned int bit_no)
 
 	stroll_bmap64_set_mask(bmap, (uint64_t)1 << bit_no);
 }
+
+/**
+ * Set a bit in a machine word bitmap.
+ *
+ * @param[out] bmap   Bitmap to set
+ * @param[in]  bit_no Index of bit to set
+ *
+ * Set bit specified by @p bit_no into @p bmap bitmap. Bit indices starts from
+ * 0.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is greater than or equal to the maximum number of bits contained
+ * within a machine word, result is undefined. An assertion is triggered
+ * otherwise.
+ */
 
 #if __WORDSIZE == 64
 
@@ -945,6 +1191,27 @@ stroll_bmap_set(unsigned long * bmap, unsigned int bit_no)
 
 #endif
 
+/**
+ * Set bits in a 32-bits word bitmap according to specified range.
+ *
+ * @param[out] bmap      Bitmap to set
+ * @param[in]  start_bit Index of first bit to set
+ * @param[in]  bit_count Number of bits to set
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument. Then, set all bits in @p bmap bitmap which are set into this
+ * computed mask.
+ *
+ * Mask is computed thanks to stroll_bmap32_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
+ */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_set_range(uint32_t *   bmap,
                         unsigned int start_bit,
@@ -957,6 +1224,27 @@ stroll_bmap32_set_range(uint32_t *   bmap,
 	stroll_bmap32_set_mask(bmap, stroll_bmap32_mask(start_bit, bit_count));
 }
 
+/**
+ * Set bits in a 64-bits word bitmap according to specified range.
+ *
+ * @param[out] bmap      Bitmap to set
+ * @param[in]  start_bit Index of first bit to set
+ * @param[in]  bit_count Number of bits to set
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument. Then, set all bits in @p bmap bitmap which are set into this
+ * computed mask.
+ *
+ * Mask is computed thanks to stroll_bmap64_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
+ */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap64_set_range(uint64_t *   bmap,
                         unsigned int start_bit,
@@ -968,6 +1256,29 @@ stroll_bmap64_set_range(uint64_t *   bmap,
 
 	stroll_bmap64_set_mask(bmap, stroll_bmap64_mask(start_bit, bit_count));
 }
+
+/**
+ * Set bits in a machine word bitmap according to specified range.
+ *
+ * @param[out] bmap      Bitmap to set
+ * @param[in]  start_bit Index of first bit to set
+ * @param[in]  bit_count Number of bits to set
+ *
+ * Compute a mask according to @p start_bit and @p bit_count range given in
+ * argument. Then, set all bits in @p bmap bitmap which are set into this
+ * computed mask.
+ *
+ * Mask is computed thanks to stroll_bmap_mask().
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
+ * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
+ *   bits contained within a machine word. If not, an undefined result is
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
+ *   assertion is triggered otherwise.
+ */
 
 #if __WORDSIZE == 64
 
@@ -991,6 +1302,11 @@ stroll_bmap_set_range(unsigned long * bmap,
 
 #endif
 
+/**
+ * Set all bits of a 32-bits word bitmap.
+ *
+ * @param[out] bmap Bitmap to set
+ */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_set_all(uint32_t * bmap)
 {
@@ -999,6 +1315,11 @@ stroll_bmap32_set_all(uint32_t * bmap)
 	*bmap = UINT32_MAX;
 }
 
+/**
+ * Set all bits of a 64-bits word bitmap.
+ *
+ * @param[out] bmap Bitmap to set
+ */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap64_set_all(uint64_t * bmap)
 {
@@ -1006,6 +1327,13 @@ stroll_bmap64_set_all(uint64_t * bmap)
 
 	*bmap = UINT64_MAX;
 }
+
+/**
+ * Set all bits of a machine word bitmap.
+ *
+ * @param[out] bmap Bitmap to set
+ *
+ */
 
 #if __WORDSIZE == 64
 

@@ -134,14 +134,14 @@ These are:
       * :c:func:`stroll_bmap_mask`
       * :c:func:`stroll_bmap32_mask`
       * :c:func:`stroll_bmap64_mask`
-        
+
    * Compute number of bits set (:index:`Hammimg weight`):
 
       * :c:func:`stroll_bmap_hweight`
       * :c:func:`stroll_bmap32_hweight`
       * :c:func:`stroll_bmap64_hweight`
-        
-   * Perform bitwse AND operation:
+
+   * Perform bitwise AND operation:
 
       * :c:func:`stroll_bmap_and`
       * :c:func:`stroll_bmap_and_range`
@@ -149,8 +149,8 @@ These are:
       * :c:func:`stroll_bmap32_and_range`
       * :c:func:`stroll_bmap64_and`
       * :c:func:`stroll_bmap64_and_range`
-        
-   * Perform bitwse OR operation:
+
+   * Perform bitwise OR operation:
 
       * :c:func:`stroll_bmap_or`
       * :c:func:`stroll_bmap_or_range`
@@ -159,7 +159,7 @@ These are:
       * :c:func:`stroll_bmap64_or`
       * :c:func:`stroll_bmap64_or_range`
 
-   * Perform bitwse XOR operation:
+   * Perform bitwise XOR operation:
 
       * :c:func:`stroll_bmap_xor`
       * :c:func:`stroll_bmap_xor_range`
@@ -182,6 +182,22 @@ These are:
       * :c:func:`stroll_bmap64_test_all`
       * :c:func:`stroll_bmap64_test_mask`
       * :c:func:`stroll_bmap64_test_range`
+
+   * Set bit(s):
+
+      * :c:func:`stroll_bmap_set`
+      * :c:func:`stroll_bmap_set_mask`
+      * :c:func:`stroll_bmap_set_range`
+      * :c:func:`stroll_bmap_set_all`
+      * :c:func:`stroll_bmap32_set`
+      * :c:func:`stroll_bmap32_set_mask`
+      * :c:func:`stroll_bmap32_set_range`
+      * :c:func:`stroll_bmap32_set_all`
+      * :c:func:`stroll_bmap64_set`
+      * :c:func:`stroll_bmap64_set_mask`
+      * :c:func:`stroll_bmap64_set_range`
+      * :c:func:`stroll_bmap64_set_all`
+
 
 Doubly linked lists
 ===================
@@ -337,7 +353,26 @@ stroll_bmap_or_range
 
 .. doxygenfunction:: stroll_bmap_or_range
 
-   
+stroll_bmap_set
+***************
+
+.. doxygenfunction:: stroll_bmap_set
+
+stroll_bmap_set_mask
+********************
+
+.. doxygenfunction:: stroll_bmap_set_mask
+
+stroll_bmap_set_range
+*********************
+
+.. doxygenfunction:: stroll_bmap_set_range
+
+stroll_bmap_set_all
+*******************
+
+.. doxygenfunction:: stroll_bmap_set_all
+
 stroll_bmap_test
 ****************
 
@@ -397,7 +432,27 @@ stroll_bmap32_or_range
 **********************
 
 .. doxygenfunction:: stroll_bmap32_or_range
-   
+
+stroll_bmap32_set
+***************
+
+.. doxygenfunction:: stroll_bmap32_set
+
+stroll_bmap32_set_mask
+********************
+
+.. doxygenfunction:: stroll_bmap32_set_mask
+
+stroll_bmap32_set_range
+*********************
+
+.. doxygenfunction:: stroll_bmap32_set_range
+
+stroll_bmap32_set_all
+*******************
+
+.. doxygenfunction:: stroll_bmap32_set_all
+
 stroll_bmap32_test
 ******************
 
@@ -457,6 +512,26 @@ stroll_bmap64_or_range
 **********************
 
 .. doxygenfunction:: stroll_bmap64_or_range
+
+stroll_bmap64_set
+***************
+
+.. doxygenfunction:: stroll_bmap64_set
+
+stroll_bmap64_set_mask
+********************
+
+.. doxygenfunction:: stroll_bmap64_set_mask
+
+stroll_bmap64_set_range
+*********************
+
+.. doxygenfunction:: stroll_bmap64_set_range
+
+stroll_bmap64_set_all
+*******************
+
+.. doxygenfunction:: stroll_bmap64_set_all
 
 stroll_bmap64_test
 ******************

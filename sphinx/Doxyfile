@@ -2332,6 +2332,7 @@ INCLUDE_FILE_PATTERNS  =
 
 PREDEFINED             = __restrict= \
                          __nonull(...)= \
+                         __stroll_nonull(...)= \
                          __nothrow= \
                          __pure= \
 			 __stroll_pure= \

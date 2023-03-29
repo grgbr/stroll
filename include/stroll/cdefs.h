@@ -322,7 +322,7 @@
  * constant expression. This returns @p _true_stmt if @p _expr, which is an
  * integer constant expression, is nonzero. Otherwise it returns @p _false_stmt.
  *
- * This built-in function is analogous to the ‘? :’ operator in C, except that
+ * This function macro is analogous to the ‘? :’ operator in C, except that
  * the expression returned has its type unaltered by promotion rules. Also, the
  * compile_choose() does not evaluate the expression that is not chosen.
  *
