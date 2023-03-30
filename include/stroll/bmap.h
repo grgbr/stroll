@@ -26,7 +26,7 @@
 #ifndef _STROLL_BMAP_H
 #define _STROLL_BMAP_H
 
-#include <stroll/bitops.h>
+#include <stroll/bops.h>
 #include <stdbool.h>
 
 #if defined(CONFIG_STROLL_ASSERT_API)
