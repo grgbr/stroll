@@ -1804,7 +1804,7 @@ stroll_bmap_step_iter(unsigned long * iter, unsigned int * bit_no)
 static inline int __stroll_nonull(1, 2) __nothrow
 stroll_bmap_step_iter(unsigned long * iter, unsigned int * bit_no)
 {
-	return stroll_bmap64_step_iter((uint32_t *)iter, bit_no);
+	return stroll_bmap32_step_iter((uint32_t *)iter, bit_no);
 }
 
 #endif

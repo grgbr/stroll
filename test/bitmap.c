@@ -2431,7 +2431,7 @@ stroll_bmap_utest_clear_bit(void ** state __unused)
 
 	for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
 		bmp = ~(0UL);
-		stroll_bmap64_clear(&bmp, b);
+		stroll_bmap_clear(&bmp, b);
 		assert_int_equal(bmp, ~(0UL) & ~(1UL << b));
 	}
 }
