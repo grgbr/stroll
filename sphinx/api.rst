@@ -112,12 +112,6 @@ operations. These are:
       * :c:func:`stroll_bops32_hweight`
       * :c:func:`stroll_bops64_hweight`
 
-Atomic operations
-=================
-
-Power of 2 operations
-=====================
-
 .. index:: bitmaps, bmap
    
 Bitmaps
@@ -251,15 +245,6 @@ These are:
       * :c:func:`stroll_bmap64_toggle_mask`
       * :c:func:`stroll_bmap64_toggle_range`
       * :c:func:`stroll_bmap64_toggle_all`
-
-Doubly linked lists
-===================
-
-Singly linked lists
-===================
-
-Length-value strings
-====================
 
 Reference
 =========
