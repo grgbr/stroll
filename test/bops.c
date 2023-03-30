@@ -1,4 +1,4 @@
-#include "stroll/bitops.h"
+#include "stroll/bops.h"
 
 #include <stddef.h>
 #include <stdarg.h>

@@ -82,7 +82,7 @@ that developper may perform standard assertion checking.
 Bit operations
 ==============
 
-When compiled with the :c:macro:`CONFIG_STROLL_BITOPS` build configuration
+When compiled with the :c:macro:`CONFIG_STROLL_BOPS` build configuration
 option enabled, the Stroll library provides support for bit manipulation
 operations. These are:
 
@@ -123,12 +123,36 @@ Power of 2 operations
 Bitmaps
 =======
 
-When compiled with the :c:macro:`CONFIG_STROLL_BITMAP` build configuration
+When compiled with the :c:macro:`CONFIG_STROLL_BMAP` build configuration
 option enabled, the Stroll library provides support for bitmap operations.
 These are:
 
 .. hlist::
 
+   * Initialization:
+     
+      * :c:macro:`STROLL_BMAP_INIT_CLEAR`
+      * :c:func:`stroll_bmap_setup_clear`
+      * :c:macro:`STROLL_BMAP32_INIT_CLEAR`
+      * :c:func:`stroll_bmap32_setup_clear`
+      * :c:macro:`STROLL_BMAP64_INIT_CLEAR`
+      * :c:func:`stroll_bmap64_setup_clear`
+      * :c:macro:`STROLL_BMAP_INIT_SET`
+      * :c:func:`stroll_bmap_setup_set`
+      * :c:macro:`STROLL_BMAP32_INIT_SET`
+      * :c:func:`stroll_bmap32_setup_set`
+      * :c:macro:`STROLL_BMAP64_INIT_SET`
+      * :c:func:`stroll_bmap64_setup_set`
+
+   * Iteration:
+     
+      * :c:macro:`stroll_bmap_foreach_clear`
+      * :c:macro:`stroll_bmap32_foreach_clear`
+      * :c:macro:`stroll_bmap64_foreach_clear`
+      * :c:macro:`stroll_bmap_foreach_set`
+      * :c:macro:`stroll_bmap32_foreach_set`
+      * :c:macro:`stroll_bmap64_foreach_set`
+     
    * Compute masks:
 
       * :c:func:`stroll_bmap_mask`
@@ -198,6 +222,35 @@ These are:
       * :c:func:`stroll_bmap64_set_range`
       * :c:func:`stroll_bmap64_set_all`
 
+   * Clear bit(s):
+
+      * :c:func:`stroll_bmap_clear`
+      * :c:func:`stroll_bmap_clear_mask`
+      * :c:func:`stroll_bmap_clear_range`
+      * :c:func:`stroll_bmap_clear_all`
+      * :c:func:`stroll_bmap32_clear`
+      * :c:func:`stroll_bmap32_clear_mask`
+      * :c:func:`stroll_bmap32_clear_range`
+      * :c:func:`stroll_bmap32_clear_all`
+      * :c:func:`stroll_bmap64_clear`
+      * :c:func:`stroll_bmap64_clear_mask`
+      * :c:func:`stroll_bmap64_clear_range`
+      * :c:func:`stroll_bmap64_clear_all`
+        
+   * Toggle bit(s):
+
+      * :c:func:`stroll_bmap_toggle`
+      * :c:func:`stroll_bmap_toggle_mask`
+      * :c:func:`stroll_bmap_toggle_range`
+      * :c:func:`stroll_bmap_toggle_all`
+      * :c:func:`stroll_bmap32_toggle`
+      * :c:func:`stroll_bmap32_toggle_mask`
+      * :c:func:`stroll_bmap32_toggle_range`
+      * :c:func:`stroll_bmap32_toggle_all`
+      * :c:func:`stroll_bmap64_toggle`
+      * :c:func:`stroll_bmap64_toggle_mask`
+      * :c:func:`stroll_bmap64_toggle_range`
+      * :c:func:`stroll_bmap64_toggle_all`
 
 Doubly linked lists
 ===================
@@ -299,10 +352,70 @@ compile_choose
 
 .. doxygendefine:: compile_choose
 
+STROLL_BMAP_INIT_CLEAR
+**********************
+
+.. doxygendefine:: STROLL_BMAP_INIT_CLEAR
+
+STROLL_BMAP32_INIT_CLEAR
+************************
+
+.. doxygendefine:: STROLL_BMAP32_INIT_CLEAR
+
+STROLL_BMAP64_INIT_CLEAR
+************************
+
+.. doxygendefine:: STROLL_BMAP64_INIT_CLEAR
+
+STROLL_BMAP_INIT_SET
+********************
+
+.. doxygendefine:: STROLL_BMAP_INIT_SET
+
+STROLL_BMAP32_INIT_SET
+**********************
+
+.. doxygendefine:: STROLL_BMAP32_INIT_SET
+
+STROLL_BMAP64_INIT_SET
+**********************
+
+.. doxygendefine:: STROLL_BMAP64_INIT_SET
+
 stroll_assert
 *************
 
 .. doxygendefine:: stroll_assert
+
+stroll_bmap_foreach_clear
+*************************
+
+.. doxygendefine:: stroll_bmap_foreach_clear
+
+stroll_bmap_foreach_set
+***********************
+
+.. doxygendefine:: stroll_bmap_foreach_set
+
+stroll_bmap32_foreach_clear
+***************************
+
+.. doxygendefine:: stroll_bmap32_foreach_clear
+
+stroll_bmap32_foreach_set
+*************************
+
+.. doxygendefine:: stroll_bmap32_foreach_set
+
+stroll_bmap64_foreach_clear
+***************************
+
+.. doxygendefine:: stroll_bmap64_foreach_clear
+
+stroll_bmap64_foreach_set
+*************************
+
+.. doxygendefine:: stroll_bmap64_foreach_set
 
 Enumerations
 ------------
@@ -332,6 +445,27 @@ stroll_bmap_and_range
 *********************
 
 .. doxygenfunction:: stroll_bmap_and_range
+
+stroll_bmap_clear
+*****************
+
+.. doxygenfunction:: stroll_bmap_clear
+
+
+stroll_bmap_clear_mask
+**********************
+
+.. doxygenfunction:: stroll_bmap_clear_mask
+
+stroll_bmap_clear_range
+***********************
+
+.. doxygenfunction:: stroll_bmap_clear_range
+
+stroll_bmap_clear_all
+*********************
+
+.. doxygenfunction:: stroll_bmap_clear_all
 
 stroll_bmap_hweight
 *******************
@@ -373,6 +507,16 @@ stroll_bmap_set_all
 
 .. doxygenfunction:: stroll_bmap_set_all
 
+stroll_bmap_setup_clear
+***********************
+
+.. doxygenfunction:: stroll_bmap_setup_clear
+
+stroll_bmap_setup_set
+*********************
+
+.. doxygenfunction:: stroll_bmap_setup_set
+
 stroll_bmap_test
 ****************
 
@@ -393,6 +537,26 @@ stroll_bmap_test_range
 
 .. doxygenfunction:: stroll_bmap_test_range
 
+stroll_bmap_toggle
+******************
+
+.. doxygenfunction:: stroll_bmap_toggle
+
+stroll_bmap_toggle_mask
+***********************
+
+.. doxygenfunction:: stroll_bmap_toggle_mask
+
+stroll_bmap_toggle_range
+************************
+
+.. doxygenfunction:: stroll_bmap_toggle_range
+
+stroll_bmap_toggle_all
+**********************
+
+.. doxygenfunction:: stroll_bmap_toggle_all
+
 stroll_bmap_xor
 ***************
 
@@ -412,6 +576,27 @@ stroll_bmap32_and_range
 ***********************
 
 .. doxygenfunction:: stroll_bmap32_and_range
+
+stroll_bmap32_clear
+*******************
+
+.. doxygenfunction:: stroll_bmap32_clear
+
+
+stroll_bmap32_clear_mask
+************************
+
+.. doxygenfunction:: stroll_bmap32_clear_mask
+
+stroll_bmap32_clear_range
+*************************
+
+.. doxygenfunction:: stroll_bmap32_clear_range
+
+stroll_bmap32_clear_all
+***********************
+
+.. doxygenfunction:: stroll_bmap32_clear_all
 
 stroll_bmap32_hweight
 *********************
@@ -453,6 +638,16 @@ stroll_bmap32_set_all
 
 .. doxygenfunction:: stroll_bmap32_set_all
 
+stroll_bmap32_setup_clear
+*************************
+
+.. doxygenfunction:: stroll_bmap32_setup_clear
+
+stroll_bmap32_setup_set
+***********************
+
+.. doxygenfunction:: stroll_bmap32_setup_set
+
 stroll_bmap32_test
 ******************
 
@@ -473,6 +668,26 @@ stroll_bmap32_test_range
 
 .. doxygenfunction:: stroll_bmap32_test_range
 
+stroll_bmap32_toggle
+********************
+
+.. doxygenfunction:: stroll_bmap32_toggle
+
+stroll_bmap32_toggle_mask
+*************************
+
+.. doxygenfunction:: stroll_bmap32_toggle_mask
+
+stroll_bmap32_toggle_range
+**************************
+
+.. doxygenfunction:: stroll_bmap32_toggle_range
+
+stroll_bmap32_toggle_all
+************************
+
+.. doxygenfunction:: stroll_bmap32_toggle_all
+
 stroll_bmap32_xor
 *****************
 
@@ -492,6 +707,27 @@ stroll_bmap64_and_range
 ***********************
 
 .. doxygenfunction:: stroll_bmap64_and_range
+
+stroll_bmap64_clear
+*******************
+
+.. doxygenfunction:: stroll_bmap64_clear
+
+
+stroll_bmap64_clear_mask
+************************
+
+.. doxygenfunction:: stroll_bmap64_clear_mask
+
+stroll_bmap64_clear_range
+*************************
+
+.. doxygenfunction:: stroll_bmap64_clear_range
+
+stroll_bmap64_clear_all
+***********************
+
+.. doxygenfunction:: stroll_bmap64_clear_all
 
 stroll_bmap64_hweight
 *********************
@@ -533,6 +769,16 @@ stroll_bmap64_set_all
 
 .. doxygenfunction:: stroll_bmap64_set_all
 
+stroll_bmap64_setup_clear
+*************************
+
+.. doxygenfunction:: stroll_bmap64_setup_clear
+
+stroll_bmap64_setup_set
+***********************
+
+.. doxygenfunction:: stroll_bmap64_setup_set
+
 stroll_bmap64_test
 ******************
 
@@ -552,6 +798,26 @@ stroll_bmap64_test_range
 ************************
 
 .. doxygenfunction:: stroll_bmap64_test_range
+
+stroll_bmap64_toggle
+********************
+
+.. doxygenfunction:: stroll_bmap64_toggle
+
+stroll_bmap64_toggle_mask
+*************************
+
+.. doxygenfunction:: stroll_bmap64_toggle_mask
+
+stroll_bmap64_toggle_range
+**************************
+
+.. doxygenfunction:: stroll_bmap64_toggle_range
+
+stroll_bmap64_toggle_all
+************************
+
+.. doxygenfunction:: stroll_bmap64_toggle_all
 
 stroll_bmap64_xor
 *****************

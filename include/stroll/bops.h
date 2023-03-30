@@ -23,8 +23,8 @@
  * along with this program; if not, If not, see <http://www.gnu.org/licenses/>.
  * @licenseend
  */
-#ifndef _STROLL_BITOPS_H
-#define _STROLL_BITOPS_H
+#ifndef _STROLL_BOPS_H
+#define _STROLL_BOPS_H
 
 #include <stroll/cdefs.h>
 #include <stdint.h>
@@ -339,4 +339,4 @@ stroll_bops_hweight(unsigned long value)
 
 #endif
 
-#endif /* _STROLL_BITOPS_H */
+#endif /* _STROLL_BOPS_H */

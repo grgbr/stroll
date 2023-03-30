@@ -4,13 +4,8 @@ config-h  := stroll/config.h
 HEADERDIR := $(CURDIR)/include
 headers    = stroll/cdefs.h
 headers   += $(call kconf_enabled,STROLL_ASSERT,stroll/assert.h)
-headers   += $(call kconf_enabled,STROLL_BITOPS,stroll/bitops.h)
-headers   += $(call kconf_enabled,STROLL_ATOMIC,stroll/atomic.h)
-headers   += $(call kconf_enabled,STROLL_POW2,stroll/pow2.h)
-headers   += $(call kconf_enabled,STROLL_BITMAP,stroll/bitmap.h)
-headers   += $(call kconf_enabled,STROLL_DLIST,utils/dlist.h)
-headers   += $(call kconf_enabled,STROLL_SLIST,utils/slist.h)
-headers   += $(call kconf_enabled,STROLL_LVSTR,utils/lvstr.h)
+headers   += $(call kconf_enabled,STROLL_BOPS,stroll/bops.h)
+headers   += $(call kconf_enabled,STROLL_BMAP,stroll/bmap.h)
 
 subdirs   := src
 

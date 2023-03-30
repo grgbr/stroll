@@ -1,4 +1,4 @@
-#include "stroll/bitmap.h"
+#include "stroll/bmap.h"
 
 #include <stddef.h>
 #include <stdarg.h>
@@ -159,21 +159,16 @@ stroll_bmap32_utest_init(void ** state __unused)
 	uint32_t bmp = 0x5A5A5A5A;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap32_init_set(NULL));
+	expect_assert_failure(stroll_bmap32_setup_set(NULL));
 #endif
-	stroll_bmap32_init_set(&bmp);
+	stroll_bmap32_setup_set(&bmp);
 	assert_int_equal(bmp, UINT32_MAX);
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap32_init_clear(NULL));
+	expect_assert_failure(stroll_bmap32_setup_clear(NULL));
 #endif
-	stroll_bmap32_init_clear(&bmp);
+	stroll_bmap32_setup_clear(&bmp);
 	assert_int_equal(bmp, 0);
-
-#if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap32_fini(NULL));
-#endif
-	stroll_bmap32_fini(&bmp);
 }
 
 static void
@@ -776,10 +771,10 @@ stroll_bmap32_utest_set_iter(void ** state __unused)
 	unsigned int m;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap32_setup_set_iter(NULL, bmp, &b));
-	expect_assert_failure(stroll_bmap32_setup_set_iter(&iter, bmp, NULL));
-	expect_assert_failure(stroll_bmap32_step_iter(NULL, &b));
-	expect_assert_failure(stroll_bmap32_step_iter(&iter, NULL));
+	expect_assert_failure(_stroll_bmap32_setup_set_iter(NULL, bmp, &b));
+	expect_assert_failure(_stroll_bmap32_setup_set_iter(&iter, bmp, NULL));
+	expect_assert_failure(_stroll_bmap32_step_iter(NULL, &b));
+	expect_assert_failure(_stroll_bmap32_step_iter(&iter, NULL));
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap32_utest_bmaps); m++) {
@@ -810,10 +805,10 @@ stroll_bmap32_utest_clear_iter(void ** state __unused)
 	unsigned int m;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap32_setup_clear_iter(NULL, bmp, &b));
-	expect_assert_failure(stroll_bmap32_setup_clear_iter(&iter, bmp, NULL));
-	expect_assert_failure(stroll_bmap32_step_iter(NULL, &b));
-	expect_assert_failure(stroll_bmap32_step_iter(&iter, NULL));
+	expect_assert_failure(_stroll_bmap32_setup_clear_iter(NULL, bmp, &b));
+	expect_assert_failure(_stroll_bmap32_setup_clear_iter(&iter, bmp, NULL));
+	expect_assert_failure(_stroll_bmap32_step_iter(NULL, &b));
+	expect_assert_failure(_stroll_bmap32_step_iter(&iter, NULL));
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap32_utest_bmaps); m++) {
@@ -1072,21 +1067,16 @@ stroll_bmap64_utest_init(void ** state __unused)
 	uint64_t bmp = 0x5A5A5A5A5A5A5A5A;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap64_init_set(NULL));
+	expect_assert_failure(stroll_bmap64_setup_set(NULL));
 #endif
-	stroll_bmap64_init_set(&bmp);
+	stroll_bmap64_setup_set(&bmp);
 	assert_int_equal(bmp, UINT64_MAX);
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap64_init_clear(NULL));
+	expect_assert_failure(stroll_bmap64_setup_clear(NULL));
 #endif
-	stroll_bmap64_init_clear(&bmp);
+	stroll_bmap64_setup_clear(&bmp);
 	assert_int_equal(bmp, 0);
-
-#if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap64_fini(NULL));
-#endif
-	stroll_bmap64_fini(&bmp);
 }
 
 static void
@@ -1688,10 +1678,10 @@ stroll_bmap64_utest_set_iter(void ** state __unused)
 	unsigned int m;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap64_setup_set_iter(NULL, bmp, &b));
-	expect_assert_failure(stroll_bmap64_setup_set_iter(&iter, bmp, NULL));
-	expect_assert_failure(stroll_bmap64_step_iter(NULL, &b));
-	expect_assert_failure(stroll_bmap64_step_iter(&iter, NULL));
+	expect_assert_failure(_stroll_bmap64_setup_set_iter(NULL, bmp, &b));
+	expect_assert_failure(_stroll_bmap64_setup_set_iter(&iter, bmp, NULL));
+	expect_assert_failure(_stroll_bmap64_step_iter(NULL, &b));
+	expect_assert_failure(_stroll_bmap64_step_iter(&iter, NULL));
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap64_utest_bmaps); m++) {
@@ -1722,10 +1712,10 @@ stroll_bmap64_utest_clear_iter(void ** state __unused)
 	unsigned int m;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap64_setup_clear_iter(NULL, bmp, &b));
-	expect_assert_failure(stroll_bmap64_setup_clear_iter(&iter, bmp, NULL));
-	expect_assert_failure(stroll_bmap64_step_iter(NULL, &b));
-	expect_assert_failure(stroll_bmap64_step_iter(&iter, NULL));
+	expect_assert_failure(_stroll_bmap64_setup_clear_iter(NULL, bmp, &b));
+	expect_assert_failure(_stroll_bmap64_setup_clear_iter(&iter, bmp, NULL));
+	expect_assert_failure(_stroll_bmap64_step_iter(NULL, &b));
+	expect_assert_failure(_stroll_bmap64_step_iter(&iter, NULL));
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap64_utest_bmaps); m++) {
@@ -1991,21 +1981,16 @@ stroll_bmap_utest_init(void ** state __unused)
 	unsigned long * null = NULL;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap_init_set(null));
+	expect_assert_failure(stroll_bmap_setup_set(null));
 #endif
-	stroll_bmap_init_set(&bmp);
+	stroll_bmap_setup_set(&bmp);
 	assert_int_equal(bmp, ULONG_MAX);
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap_init_clear(null));
+	expect_assert_failure(stroll_bmap_setup_clear(null));
 #endif
-	stroll_bmap_init_clear(&bmp);
+	stroll_bmap_setup_clear(&bmp);
 	assert_int_equal(bmp, 0);
-
-#if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap_fini(null));
-#endif
-	stroll_bmap_fini(&bmp);
 }
 
 static void
@@ -2640,10 +2625,10 @@ stroll_bmap_utest_set_iter(void ** state __unused)
 	unsigned int  m;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap_setup_set_iter(NULL, bmp, &b));
-	expect_assert_failure(stroll_bmap_setup_set_iter(&iter, bmp, NULL));
-	expect_assert_failure(stroll_bmap_step_iter(NULL, &b));
-	expect_assert_failure(stroll_bmap_step_iter(&iter, NULL));
+	expect_assert_failure(_stroll_bmap_setup_set_iter(NULL, bmp, &b));
+	expect_assert_failure(_stroll_bmap_setup_set_iter(&iter, bmp, NULL));
+	expect_assert_failure(_stroll_bmap_step_iter(NULL, &b));
+	expect_assert_failure(_stroll_bmap_step_iter(&iter, NULL));
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap_utest_bmaps); m++) {
@@ -2675,10 +2660,10 @@ stroll_bmap_utest_clear_iter(void ** state __unused)
 	unsigned int  m;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_bmap_setup_clear_iter(NULL, bmp, &b));
-	expect_assert_failure(stroll_bmap_setup_clear_iter(&iter, bmp, NULL));
-	expect_assert_failure(stroll_bmap_step_iter(NULL, &b));
-	expect_assert_failure(stroll_bmap_step_iter(&iter, NULL));
+	expect_assert_failure(_stroll_bmap_setup_clear_iter(NULL, bmp, &b));
+	expect_assert_failure(_stroll_bmap_setup_clear_iter(&iter, bmp, NULL));
+	expect_assert_failure(_stroll_bmap_step_iter(NULL, &b));
+	expect_assert_failure(_stroll_bmap_step_iter(&iter, NULL));
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap32_utest_bmaps); m++) {
