@@ -2,37 +2,49 @@ config STROLL_ASSERT
 	bool "Assertion"
 	default n
 	help
-	  Build stroll library assertion framework.
+	  Build stroll library assertion framework exposing a programmatic
+	  assertion API for use by client code. See <stroll/assert.h>.
 
 config STROLL_ASSERT_API
 	bool "API assertion"
 	select STROLL_ASSERT
 	default n
 	help
-	  Build stroll library with high-level API assertions enabled.
-
-config STROLL_ASSERT_INTERNAL
-	bool "Internal assertion"
-	select STROLL_ASSERT
-	default n
-	help
-	  Build stroll library with internal assertions enabled.
+	  Build stroll library with high-level API assertions enabled to ensure
+	  that API functions exposed by Stroll will perform full verification of
+	  arguments consistency.
 
 config STROLL_UTEST
 	bool "Unit tests"
 	default n
 	help
-	  Build stroll library unit tests.
+	  Build stroll library unit test suite.
 
 config STROLL_BOPS
 	bool "Bit operations"
 	default y
 	help
-	  Build stroll library bit operations framework.
+	  Build stroll library bit operations framework exposing functions to
+	  perform bitwise operations upon words in memory such as:
+	  * find first bit set,
+	  * find first bit cleared,
+	  * find last bit set,
+	  * compute hamming weight,
+	  * etc...
+	  See <stroll/bops.h>.
 
 config STROLL_BMAP
 	bool "Bitmap"
 	default y
 	select STROLL_BOPS
 	help
-	  Build stroll library with bitmap framework.
+	  Build stroll library with bitmap framework exposing functions to
+	  perform usual operations over bitmaps stored memory words such as:
+	  * and / or / xor operations,
+	  * test bit / mask / bit range,
+	  * hamming weight,
+	  * iteration,
+	  * etc...
+	  See <stroll/bmap.h>.
+
+# vim: ft=kconfig:
