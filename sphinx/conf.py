@@ -199,5 +199,20 @@ texinfo_cross_references = True
 
 # -- Options for InterSphinx output -------------------------------------------
 
+ebuilddoc_target_path = os.getenv('EBUILDDOC_TARGET_PATH')
+if not ebuilddoc_target_path:
+    ebuilddoc_target_path = '../../ebuild/html'
+
+ebuilddoc_inventory_path = os.getenv('EBUILDDOC_INVENTORY_PATH')
+if not ebuilddoc_inventory_path:
+    docdir = os.getenv('DOCDIR')
+    if docdir:
+        ebuilddoc_inventory_path = os.path.join(docdir,
+                                                '../ebuild/html/objects.inv')
+
 # Example configuration for intersphinx: refer to the Python standard library.
-#intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+        'ebuild': (ebuilddoc_target_path, ebuilddoc_inventory_path)
+}
+
+intersphinx_disabled_reftypes = ['*']
