@@ -2137,7 +2137,7 @@ _stroll_bmap32_setup_set_iter(uint32_t     * iter,
 	stroll_bmap_assert_api(bit_no);
 
 	/* Wrap around at next _stroll_bmap32_step_iter() call. */
-	*bit_no = -1;
+	*bit_no = (unsigned int)-1;
 	*iter = bmap;
 }
 
@@ -2165,7 +2165,7 @@ _stroll_bmap64_setup_set_iter(uint64_t     * iter,
 	stroll_bmap_assert_api(bit_no);
 
 	/* Wrap around at next _stroll_bmap64_step_iter() call. */
-	*bit_no = -1;
+	*bit_no = (unsigned int)-1;
 	*iter = bmap;
 }
 
@@ -2230,7 +2230,7 @@ _stroll_bmap32_setup_clear_iter(uint32_t     * iter,
 	stroll_bmap_assert_api(bit_no);
 
 	/* Wrap around at next _stroll_bmap32_step_iter() call. */
-	*bit_no = -1;
+	*bit_no = (unsigned int)-1;
 	*iter = bmap ^ UINT32_MAX;
 }
 
@@ -2258,7 +2258,7 @@ _stroll_bmap64_setup_clear_iter(uint64_t     * iter,
 	stroll_bmap_assert_api(bit_no);
 
 	/* Wrap around at next _stroll_bmap64_step_iter() call. */
-	*bit_no = -1;
+	*bit_no = (unsigned int)-1;
 	*iter = bmap ^ UINT64_MAX;
 }
 

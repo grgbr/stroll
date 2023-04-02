@@ -59,7 +59,7 @@
 static inline unsigned int __const __nothrow
 stroll_bops32_ffs(uint32_t value)
 {
-	return __builtin_ffs(value);
+	return (unsigned int)__builtin_ffs((int)value);
 }
 
 /**
@@ -75,7 +75,7 @@ stroll_bops32_ffs(uint32_t value)
 static inline unsigned int __const __nothrow
 stroll_bops64_ffs(uint64_t value)
 {
-	return __builtin_ffsl(value);
+	return (unsigned int)__builtin_ffsl((int)value);
 }
 
 #elif __WORDSIZE == 32
@@ -131,7 +131,7 @@ stroll_bops32_fls(uint32_t value)
 {
 	stroll_bops_assert_api(value);
 
-	return 32 - __builtin_clz(value);
+	return 32 - (unsigned int)__builtin_clz(value);
 }
 
 /**
@@ -154,7 +154,7 @@ stroll_bops64_fls(uint64_t value)
 {
 	stroll_bops_assert_api(value);
 
-	return 64 - __builtin_clzl(value);
+	return 64 - (unsigned int)__builtin_clzl(value);
 }
 
 #elif __WORDSIZE == 32
@@ -278,7 +278,7 @@ stroll_bops_ffc(unsigned long value)
 static inline unsigned int __const __nothrow
 stroll_bops32_hweight(uint32_t value)
 {
-	return __builtin_popcount(value);
+	return (unsigned int)__builtin_popcount(value);
 }
 
 /**
@@ -297,7 +297,7 @@ stroll_bops32_hweight(uint32_t value)
 static inline unsigned int __const __nothrow
 stroll_bops64_hweight(uint64_t value)
 {
-	return __builtin_popcountl(value);
+	return (unsigned int)__builtin_popcountl(value);
 }
 
 #elif __WORDSIZE == 32
@@ -305,7 +305,7 @@ stroll_bops64_hweight(uint64_t value)
 static inline unsigned int __const __nothrow
 stroll_bops64_hweight(uint64_t value)
 {
-	return __builtin_popcountll(value);
+	return (unsigned int)__builtin_popcountll(value);
 }
 
 #endif
