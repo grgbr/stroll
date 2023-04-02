@@ -43,10 +43,11 @@
  * May be used to prevent compiler from warning about unused functions,
  * parameters, variables, etc...
  *
- * @see [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
- *      [GCC common variable attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes)
- *      [GCC common type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
- *      [GCC label attributes](https://gcc.gnu.org/onlinedocs/gcc/Label-Attributes.html#Label-Attributes)
+ * @see
+ * - [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
+ * - [GCC common variable attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes)
+ * - [GCC common type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
+ * - [GCC label attributes](https://gcc.gnu.org/onlinedocs/gcc/Label-Attributes.html#Label-Attributes)
  */
 #define __unused __attribute__((unused))
 
@@ -308,6 +309,42 @@
  */
 #define __dtor(_prio) \
 	__attribute__((destructor(_prio)))
+
+/**
+ * Assign public visibility to a function, variable or type.
+ *
+ * Attach "default" visibility to a function, variable or type declaration
+ * linkage.
+ * On ELF, default visibility means that the declaration is visible to other
+ * modules and, in shared libraries, means that the declared entity may be
+ * overridden.
+ *
+ * @see
+ * - [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
+ * - [GCC common variable attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes)
+ * - [GCC common type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
+ */
+#define __export_public \
+	__attribute__((visibility("default")))
+
+/**
+ * Assign protected visibility to a function, variable or type.
+ *
+ * Attach "protected" visibility to a function, variable or type declaration
+ * linkage.
+ * On ELF, protected visibility is like default visibility except that it
+ * indicates that references within the defining module bind to the definition
+ * in that module. That is, the declared entity cannot be overridden by another
+ * module.
+ *
+ * @see
+ * - #__export_public
+ * - [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
+ * - [GCC common variable attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes)
+ * - [GCC common type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
+ */
+#define __export_protect \
+	__attribute__((visibility("default")))
 
 /**
  * Evaluate code depending on the result of a constant expression.

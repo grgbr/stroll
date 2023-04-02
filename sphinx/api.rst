@@ -58,6 +58,8 @@ internals and meant for application development purposes. These are:
       * :c:macro:`__const`
       * :c:macro:`__ctor`
       * :c:macro:`__dtor`
+      * :c:macro:`__export_public`
+      * :c:macro:`__export_protect`
       * :c:macro:`__leaf`
       * :c:macro:`__nonull`
       * :c:macro:`__noreturn`
@@ -113,7 +115,7 @@ operations. These are:
       * :c:func:`stroll_bops64_hweight`
 
 .. index:: bitmaps, bmap
-   
+
 Bitmaps
 =======
 
@@ -271,6 +273,16 @@ __dtor
 ******
 
 .. doxygendefine:: __dtor
+   
+__export_public
+***************
+
+.. doxygendefine:: __export_public
+
+__export_protect
+****************
+
+.. doxygendefine:: __export_protect
 
 __leaf
 ******
