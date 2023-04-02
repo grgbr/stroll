@@ -47,4 +47,11 @@ config STROLL_BMAP
 	  * etc...
 	  See <stroll/bmap.h>.
 
+config STROLL_LVSTR
+	bool "Length-Value String"
+	default y
+	help
+	  Build stroll library with length-value string framework.
+	  See <stroll/lvstr.h>.
+
 # vim: ft=kconfig:
