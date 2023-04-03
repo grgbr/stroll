@@ -22,7 +22,6 @@ you can refer to for further details :
 * `Doubly linked lists`_,
 * `Singly linked lists`_,
 * `Length-value strings`_.
-  
 
 Build configuration
 ===================
@@ -126,29 +125,29 @@ These are:
 .. hlist::
 
    * Initialization:
-     
+
       * :c:macro:`STROLL_BMAP_INIT_CLEAR`
-      * :c:func:`stroll_bmap_setup_clear`
-      * :c:macro:`STROLL_BMAP32_INIT_CLEAR`
-      * :c:func:`stroll_bmap32_setup_clear`
-      * :c:macro:`STROLL_BMAP64_INIT_CLEAR`
-      * :c:func:`stroll_bmap64_setup_clear`
       * :c:macro:`STROLL_BMAP_INIT_SET`
-      * :c:func:`stroll_bmap_setup_set`
+      * :c:macro:`STROLL_BMAP32_INIT_CLEAR`
       * :c:macro:`STROLL_BMAP32_INIT_SET`
-      * :c:func:`stroll_bmap32_setup_set`
+      * :c:macro:`STROLL_BMAP64_INIT_CLEAR`
       * :c:macro:`STROLL_BMAP64_INIT_SET`
+      * :c:func:`stroll_bmap_setup_clear`
+      * :c:func:`stroll_bmap32_setup_clear`
+      * :c:func:`stroll_bmap64_setup_clear`
+      * :c:func:`stroll_bmap_setup_set`
+      * :c:func:`stroll_bmap32_setup_set`
       * :c:func:`stroll_bmap64_setup_set`
 
    * Iteration:
-     
+
       * :c:macro:`stroll_bmap_foreach_clear`
       * :c:macro:`stroll_bmap32_foreach_clear`
       * :c:macro:`stroll_bmap64_foreach_clear`
       * :c:macro:`stroll_bmap_foreach_set`
       * :c:macro:`stroll_bmap32_foreach_set`
       * :c:macro:`stroll_bmap64_foreach_set`
-     
+
    * Compute masks:
 
       * :c:func:`stroll_bmap_mask`
@@ -232,7 +231,7 @@ These are:
       * :c:func:`stroll_bmap64_clear_mask`
       * :c:func:`stroll_bmap64_clear_range`
       * :c:func:`stroll_bmap64_clear_all`
-        
+
    * Toggle bit(s):
 
       * :c:func:`stroll_bmap_toggle`
@@ -247,6 +246,56 @@ These are:
       * :c:func:`stroll_bmap64_toggle_mask`
       * :c:func:`stroll_bmap64_toggle_range`
       * :c:func:`stroll_bmap64_toggle_all`
+
+Length-Value Strings
+====================
+
+When compiled with the :c:macro:`CONFIG_STROLL_LVSTR` build configuration option
+enabled, the Stroll library provides support for :c:struct:`stroll_lvstr`
+length-value strings.
+
+This framework may ease the management of C strings life-cycle. In addition,
+it caches the length of string registered into it to mitigate client code string
+length computation overhead.
+
+The following manipulations are available:
+
+.. hlist::
+
+   * Accessors:
+
+      * :c:macro:`STROLL_LVSTR_LEN_MAX`
+      * :c:func:`stroll_lvstr_cstr`
+      * :c:func:`stroll_lvstr_len`
+
+   * C string registration:
+
+      * :c:func:`stroll_lvstr_cede`
+      * :c:func:`stroll_lvstr_dup`
+      * :c:func:`stroll_lvstr_lend`
+      * :c:func:`stroll_lvstr_ncede`
+      * :c:func:`stroll_lvstr_ndup`
+      * :c:func:`stroll_lvstr_nlend`
+
+   * Static initialization:
+
+      * :c:macro:`STROLL_LVSTR_INIT`
+      * :c:macro:`STROLL_LVSTR_INIT_NLEND`
+      * :c:macro:`STROLL_LVSTR_INIT_NCEDE`
+
+   * Initialization:
+
+      * :c:func:`stroll_lvstr_init`
+      * :c:func:`stroll_lvstr_init_cede`
+      * :c:func:`stroll_lvstr_init_dup`
+      * :c:func:`stroll_lvstr_init_lend`
+      * :c:func:`stroll_lvstr_init_ncede`
+      * :c:func:`stroll_lvstr_init_ndup`
+      * :c:func:`stroll_lvstr_init_nlend`
+
+   * Finalization:
+
+      * :c:func:`stroll_lvstr_fini`
 
 Reference
 =========
@@ -354,30 +403,50 @@ STROLL_BMAP_INIT_CLEAR
 
 .. doxygendefine:: STROLL_BMAP_INIT_CLEAR
 
-STROLL_BMAP32_INIT_CLEAR
-************************
-
-.. doxygendefine:: STROLL_BMAP32_INIT_CLEAR
-
-STROLL_BMAP64_INIT_CLEAR
-************************
-
-.. doxygendefine:: STROLL_BMAP64_INIT_CLEAR
-
 STROLL_BMAP_INIT_SET
 ********************
 
 .. doxygendefine:: STROLL_BMAP_INIT_SET
+
+STROLL_BMAP32_INIT_CLEAR
+************************
+
+.. doxygendefine:: STROLL_BMAP32_INIT_CLEAR
 
 STROLL_BMAP32_INIT_SET
 **********************
 
 .. doxygendefine:: STROLL_BMAP32_INIT_SET
 
+STROLL_BMAP64_INIT_CLEAR
+************************
+
+.. doxygendefine:: STROLL_BMAP64_INIT_CLEAR
+
 STROLL_BMAP64_INIT_SET
 **********************
 
 .. doxygendefine:: STROLL_BMAP64_INIT_SET
+
+STROLL_LVSTR_INIT
+*****************
+
+.. doxygendefine:: STROLL_LVSTR_INIT
+
+STROLL_LVSTR_INIT_NLEND
+***********************
+
+.. doxygendefine:: STROLL_LVSTR_INIT_NLEND
+
+STROLL_LVSTR_INIT_NCEDE
+***********************
+
+.. doxygendefine:: STROLL_LVSTR_INIT_NCEDE
+
+STROLL_LVSTR_LEN_MAX
+********************
+
+.. doxygendefine:: STROLL_LVSTR_LEN_MAX
 
 stroll_assert
 *************
@@ -414,21 +483,13 @@ stroll_bmap64_foreach_set
 
 .. doxygendefine:: stroll_bmap64_foreach_set
 
-Enumerations
-------------
-
-enbox_entry_type
-****************
-
-.. doxygenenum:: enbox_entry_type
-
 Structures
 ----------
 
-enbox_bind_entry
-****************
+stroll_lvstr
+************
 
-.. doxygenstruct:: enbox_bind_entry
+.. doxygenstruct:: stroll_lvstr
 
 Functions
 ---------
@@ -885,3 +946,83 @@ stroll_bops64_hweight
 *********************
 
 .. doxygenfunction:: stroll_bops64_hweight
+
+stroll_lvstr_cede
+*****************
+
+.. doxygenfunction:: stroll_lvstr_cede
+
+stroll_lvstr_cstr
+*****************
+
+.. doxygenfunction:: stroll_lvstr_cstr
+
+stroll_lvstr_dup
+****************
+
+.. doxygenfunction:: stroll_lvstr_dup
+
+stroll_lvstr_fini
+*****************
+
+.. doxygenfunction:: stroll_lvstr_fini
+
+stroll_lvstr_init
+*****************
+
+.. doxygenfunction:: stroll_lvstr_init
+
+stroll_lvstr_init_cede
+**********************
+
+.. doxygenfunction:: stroll_lvstr_init_cede
+
+stroll_lvstr_init_dup
+*********************
+
+.. doxygenfunction:: stroll_lvstr_init_dup
+
+stroll_lvstr_init_lend
+**********************
+
+.. doxygenfunction:: stroll_lvstr_init_lend
+
+stroll_lvstr_init_ncede
+***********************
+
+.. doxygenfunction:: stroll_lvstr_init_ncede
+
+stroll_lvstr_init_ndup
+**********************
+
+.. doxygenfunction:: stroll_lvstr_init_ndup
+
+stroll_lvstr_init_nlend
+***********************
+
+.. doxygenfunction:: stroll_lvstr_init_nlend
+
+stroll_lvstr_len
+****************
+
+.. doxygenfunction:: stroll_lvstr_len
+
+stroll_lvstr_lend
+*****************
+
+.. doxygenfunction:: stroll_lvstr_lend
+
+stroll_lvstr_ncede
+******************
+
+.. doxygenfunction:: stroll_lvstr_ncede
+
+stroll_lvstr_ndup
+*****************
+
+.. doxygenfunction:: stroll_lvstr_ndup
+
+stroll_lvstr_nlend
+******************
+
+.. doxygenfunction:: stroll_lvstr_nlend
