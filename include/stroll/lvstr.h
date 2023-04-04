@@ -586,6 +586,8 @@ stroll_lvstr_init_dup(struct stroll_lvstr * lvstr, const char * cstr);
 static inline void
 stroll_lvstr_init(struct stroll_lvstr * lvstr)
 {
+	stroll_lvstr_assert_api(lvstr);
+
 	lvstr->cstr = NULL;
 }
 
