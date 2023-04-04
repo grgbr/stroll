@@ -34,7 +34,7 @@
 #include <stroll/assert.h>
 
 #define stroll_bmap_assert_api(_expr) \
-	stroll_assert("stroll: bmap", _expr)
+	stroll_assert("stroll:bmap", _expr)
 
 #else /* !defined(CONFIG_STROLL_ASSERT_API) */
 

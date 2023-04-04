@@ -34,7 +34,7 @@
 #include <stroll/assert.h>
 
 #define stroll_bops_assert_api(_expr) \
-	stroll_assert("stroll: bops", _expr)
+	stroll_assert("stroll:bops", _expr)
 
 #else /* !defined(CONFIG_STROLL_ASSERT_API) */
 

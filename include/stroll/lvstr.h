@@ -36,7 +36,7 @@
 #include <stroll/assert.h>
 
 #define stroll_lvstr_assert_api(_expr) \
-	stroll_assert("stroll: lvstr", _expr)
+	stroll_assert("stroll:lvstr", _expr)
 
 #else /* !defined(CONFIG_STROLL_ASSERT_API) */
 
