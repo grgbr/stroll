@@ -1,9 +1,5 @@
+#include "utest.h"
 #include "stroll/bmap.h"
-
-#include <stddef.h>
-#include <stdarg.h>
-#include <setjmp.h>
-#include <cmocka.h>
 #include <stdlib.h>
 
 /******************************************************************************
@@ -778,9 +774,9 @@ stroll_bmap32_utest_set_iter(void ** state __unused)
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap32_utest_bmaps); m++) {
-		uint32_t     bmp = stroll_bmap32_utest_bmaps[m];
 		unsigned int e = 0;
 
+		bmp = stroll_bmap32_utest_bmaps[m];
 		b = 0;
 		stroll_bmap32_foreach_set(&iter, bmp, &b) {
 			while ((e < 32) && !(bmp & (UINT32_C(1) << e)))
@@ -812,9 +808,9 @@ stroll_bmap32_utest_clear_iter(void ** state __unused)
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap32_utest_bmaps); m++) {
-		uint32_t     bmp = stroll_bmap32_utest_bmaps[m];
 		unsigned int e = 0;
 
+		bmp = stroll_bmap32_utest_bmaps[m];
 		b = 0;
 		stroll_bmap32_foreach_clear(&iter, bmp, &b) {
 			while ((e < 32) && (bmp & (UINT32_C(1) << e)))
@@ -1685,9 +1681,9 @@ stroll_bmap64_utest_set_iter(void ** state __unused)
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap64_utest_bmaps); m++) {
-		uint64_t     bmp = stroll_bmap64_utest_bmaps[m];
 		unsigned int e = 0;
 
+		bmp = stroll_bmap64_utest_bmaps[m];
 		b = 0;
 		stroll_bmap64_foreach_set(&iter, bmp, &b) {
 			while ((e < 64) && !(bmp & (UINT64_C(1) << e)))
@@ -1719,9 +1715,9 @@ stroll_bmap64_utest_clear_iter(void ** state __unused)
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap64_utest_bmaps); m++) {
-		uint64_t     bmp = stroll_bmap64_utest_bmaps[m];
 		unsigned int e = 0;
 
+		bmp = stroll_bmap64_utest_bmaps[m];
 		b = 0;
 		stroll_bmap64_foreach_clear(&iter, bmp, &b) {
 			while ((e < 64) && (bmp & (UINT64_C(1) << e)))
@@ -2632,9 +2628,9 @@ stroll_bmap_utest_set_iter(void ** state __unused)
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap_utest_bmaps); m++) {
-		unsigned long bmp = stroll_bmap_utest_bmaps[m];
 		unsigned int  e = 0;
 
+		bmp = stroll_bmap_utest_bmaps[m];
 		b = 0;
 		stroll_bmap_foreach_set(&iter, bmp, &b) {
 			while ((e < stroll_bops_bitsof(bmp)) &&
@@ -2667,9 +2663,9 @@ stroll_bmap_utest_clear_iter(void ** state __unused)
 #endif
 
 	for (m = 0; m < array_nr(stroll_bmap32_utest_bmaps); m++) {
-		unsigned long bmp = stroll_bmap32_utest_bmaps[m];
 		unsigned int  e = 0;
 
+		bmp = stroll_bmap32_utest_bmaps[m];
 		b = 0;
 		stroll_bmap_foreach_clear(&iter, bmp, &b) {
 			while ((e < stroll_bops_bitsof(bmp)) &&

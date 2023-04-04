@@ -57,22 +57,6 @@ stroll_assert_fail(const char * __restrict prefix,
  *
  * @hideinitializer
  */
-#if defined(_STROLL_CMOCKA_UTEST)
-
-extern void
-mock_assert(const int          result,
-            const char * const expression,
-            const char * const file,
-            const int          line);
-
-#define stroll_assert(_prefix, _expr) \
-	 mock_assert(!!(_expr), \
-	             "{utest assert}" _prefix ": " __STRING(_expr), \
-	             __FILE__, \
-	             __LINE__)
-
-#else  /* !defined(_STROLL_CMOCKA_UTEST) */
-
 #define stroll_assert(_prefix, _expr) \
 	((_expr) ? \
 	 (void)(0) : \
@@ -81,7 +65,5 @@ mock_assert(const int          result,
 	                    __FILE__, \
 	                    __LINE__, \
 	                    __FUNCTION__))
-
-#endif /* defined(_STROLL_CMOCKA_UTEST) */
 
 #endif /* _STROLL_ASSERT_H */

@@ -50,8 +50,8 @@
 	stroll_lvstr_assert_api((_len) <= STROLL_LVSTR_LEN_MAX); \
 	stroll_lvstr_assert_api(strnlen(_cstr, (_len) + 1) == (_len))
 
-#define STROLL_LVSTR_LEASER  (0U)
-#define STROLL_LVSTR_OWNER   (1U)
+#define STROLL_LVSTR_LEASER (0U)
+#define STROLL_LVSTR_OWNER  (1U)
 
 /**
  * Maximum length of a C string that may be registered into a stroll_lvstr.
@@ -418,7 +418,10 @@ stroll_lvstr_init_nlend(struct stroll_lvstr * lvstr,
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
 
 	lvstr->len = len << 1 | STROLL_LVSTR_LEASER;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 	lvstr->cstr = (char *)cstr;
+#pragma GCC diagnostic pop
 }
 
 /**

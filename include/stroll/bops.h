@@ -75,7 +75,7 @@ stroll_bops32_ffs(uint32_t value)
 static inline unsigned int __const __nothrow
 stroll_bops64_ffs(uint64_t value)
 {
-	return (unsigned int)__builtin_ffsl((int)value);
+	return (unsigned int)__builtin_ffsl((long)value);
 }
 
 #elif __WORDSIZE == 32
@@ -83,7 +83,7 @@ stroll_bops64_ffs(uint64_t value)
 static inline unsigned int __const __nothrow
 stroll_bops64_ffs(uint64_t value)
 {
-	return __builtin_ffsll(value);
+	return (unsigned int)__builtin_ffsll((long long)value);
 }
 
 #endif
@@ -164,7 +164,7 @@ stroll_bops64_fls(uint64_t value)
 {
 	stroll_bops_assert_api(value);
 
-	return 64 - __builtin_clzll(value);
+	return 64 - (unsigned int)__builtin_clzll(value);
 }
 
 #endif

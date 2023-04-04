@@ -1,4 +1,12 @@
-common-cflags        := -Wall -Wextra -Wformat=2 \
+common-cflags        := -Wall \
+                        -Wextra \
+                        -Wformat=2 \
+                        -Wconversion \
+                        -Wundef \
+                        -Wshadow \
+                        -Wcast-qual \
+                        -Wcast-align \
+                        -Wmissing-declarations \
                         -D_GNU_SOURCE \
                         -I ../include \
                         $(EXTRA_CFLAGS)

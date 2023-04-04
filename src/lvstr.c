@@ -61,7 +61,7 @@ stroll_lvstr_check_cstr(const char * cstr)
 	if (len >= STROLL_LVSTR_LEN_MAX)
 		return -E2BIG;
 
-	return len;
+	return (ssize_t)len;
 }
 
 static bool
@@ -102,7 +102,10 @@ stroll_lvstr_nlend(struct stroll_lvstr * lvstr, const char * cstr, size_t len)
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
 
 	stroll_lvstr_release(lvstr);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 	stroll_lvstr_set(lvstr, (char *)cstr, len, STROLL_LVSTR_LEASER);
+#pragma GCC diagnostic pop
 }
 
 int
@@ -114,7 +117,7 @@ stroll_lvstr_lend(struct stroll_lvstr * lvstr, const char * cstr)
 
 	len = stroll_lvstr_check_cstr(cstr);
 	if (len < 0)
-		return len;
+		return (int)len;
 
 	stroll_lvstr_nlend(lvstr, cstr, (size_t)len);
 
@@ -139,7 +142,7 @@ stroll_lvstr_cede(struct stroll_lvstr * lvstr, char * cstr)
 
 	len = stroll_lvstr_check_cstr(cstr);
 	if (len < 0)
-		return len;
+		return (int)len;
 
 	stroll_lvstr_ncede(lvstr, cstr, (size_t)len);
 
@@ -188,9 +191,9 @@ stroll_lvstr_dup(struct stroll_lvstr * lvstr, const char * cstr)
 
 	len = stroll_lvstr_check_cstr(cstr);
 	if (len < 0)
-		return len;
+		return (int)len;
 
-	return stroll_lvstr_ndup(lvstr, cstr, len);
+	return stroll_lvstr_ndup(lvstr, cstr, (size_t)len);
 }
 
 int
@@ -202,7 +205,7 @@ stroll_lvstr_init_lend(struct stroll_lvstr * lvstr, const char * cstr)
 
 	len = stroll_lvstr_check_cstr(cstr);
 	if (len < 0)
-		return len;
+		return (int)len;
 
 	stroll_lvstr_init_nlend(lvstr, cstr, (size_t)len);
 
@@ -218,9 +221,9 @@ stroll_lvstr_init_cede(struct stroll_lvstr * lvstr, char * cstr)
 
 	len = stroll_lvstr_check_cstr(cstr);
 	if (len < 0)
-		return len;
+		return (int)len;
 
-	stroll_lvstr_init_ncede(lvstr, cstr, len);
+	stroll_lvstr_init_ncede(lvstr, cstr, (size_t)len);
 
 	return 0;
 }
@@ -238,7 +241,7 @@ stroll_lvstr_init_ndup(struct stroll_lvstr * lvstr,
 	if (!str)
 		return -errno;
 
-	stroll_lvstr_init_ncede(lvstr, str, len);
+	stroll_lvstr_init_ncede(lvstr, str, (size_t)len);
 
 	return 0;
 }
@@ -252,9 +255,9 @@ stroll_lvstr_init_dup(struct stroll_lvstr * lvstr, const char * cstr)
 
 	len = stroll_lvstr_check_cstr(cstr);
 	if (len < 0)
-		return len;
+		return (int)len;
 
-	return stroll_lvstr_init_ndup(lvstr, cstr, len);
+	return stroll_lvstr_init_ndup(lvstr, cstr, (size_t)len);
 }
 
 void
