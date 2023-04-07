@@ -1974,7 +1974,7 @@ static void
 stroll_bmap_utest_init(void ** state __unused)
 {
 	unsigned long   bmp = 0x5A5A5A5A;
-	unsigned long * null = NULL;
+	unsigned long * null __unused = NULL;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 	expect_assert_failure(stroll_bmap_setup_set(null));
