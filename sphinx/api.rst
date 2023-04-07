@@ -260,7 +260,7 @@ When compiled with the :c:macro:`CONFIG_STROLL_LVSTR` build configuration option
 enabled, the Stroll library provides support for :c:struct:`stroll_lvstr`
 length-value strings.
 
-This framework may ease the management of C strings life-cycle. In addition,
+This framework ease the management of C strings life-cycle. In addition,
 it caches the length of string registered into it to mitigate client code string
 length computation overhead.
 
@@ -268,24 +268,10 @@ The following manipulations are available:
 
 .. hlist::
 
-   * Accessors:
-
-      * :c:macro:`STROLL_LVSTR_LEN_MAX`
-      * :c:func:`stroll_lvstr_cstr`
-      * :c:func:`stroll_lvstr_len`
-
-   * C string registration:
-
-      * :c:func:`stroll_lvstr_cede`
-      * :c:func:`stroll_lvstr_dup`
-      * :c:func:`stroll_lvstr_lend`
-      * :c:func:`stroll_lvstr_ncede`
-      * :c:func:`stroll_lvstr_ndup`
-      * :c:func:`stroll_lvstr_nlend`
-
    * Static initialization:
 
       * :c:macro:`STROLL_LVSTR_INIT`
+      * :c:macro:`STROLL_LVSTR_INIT_LEND`
       * :c:macro:`STROLL_LVSTR_INIT_NLEND`
       * :c:macro:`STROLL_LVSTR_INIT_NCEDE`
 
@@ -298,6 +284,22 @@ The following manipulations are available:
       * :c:func:`stroll_lvstr_init_ncede`
       * :c:func:`stroll_lvstr_init_ndup`
       * :c:func:`stroll_lvstr_init_nlend`
+
+   * C string registration:
+
+      * :c:func:`stroll_lvstr_cede`
+      * :c:func:`stroll_lvstr_drop`
+      * :c:func:`stroll_lvstr_dup`
+      * :c:func:`stroll_lvstr_lend`
+      * :c:func:`stroll_lvstr_ncede`
+      * :c:func:`stroll_lvstr_ndup`
+      * :c:func:`stroll_lvstr_nlend`
+
+   * Accessors:
+
+      * :c:macro:`STROLL_LVSTR_LEN_MAX`
+      * :c:func:`stroll_lvstr_cstr`
+      * :c:func:`stroll_lvstr_len`
 
    * Finalization:
 
@@ -423,6 +425,11 @@ STROLL_LVSTR_INIT
 *****************
 
 .. doxygendefine:: STROLL_LVSTR_INIT
+
+STROLL_LVSTR_INIT_LEND
+**********************
+
+.. doxygendefine:: STROLL_LVSTR_INIT_LEND
 
 STROLL_LVSTR_INIT_NLEND
 ***********************

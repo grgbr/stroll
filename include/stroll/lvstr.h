@@ -56,7 +56,9 @@
 /**
  * Maximum length of a C string that may be registered into a stroll_lvstr.
  */
-#define STROLL_LVSTR_LEN_MAX (SIZE_MAX >> 1)
+#define STROLL_LVSTR_LEN_MAX \
+	stroll_min(SIZE_MAX >> 1, \
+	           stroll_min((size_t)SSIZE_MAX, (size_t)PTRDIFF_MAX - 1))
 
 /**
  * Length-Value string.
@@ -114,7 +116,30 @@ struct stroll_lvstr {
  * stroll_lvstr_fini() to release allocated resources.
  */
 #define STROLL_LVSTR_INIT_NLEND(_cstr, _len) \
-	{ .len = (_len) << 1 | STROLL_LVSTR_LEASER, .cstr = _cstr }
+	{ .len = ((_len) << 1) | STROLL_LVSTR_LEASER, .cstr = (char *)_cstr }
+
+/**
+ * Static initialize a non-owning stroll_lvstr with a string which length is
+ * not known.
+ *
+ * @param[in] _cstr A C string **literal** to register
+ *
+ * Behavior is similar to stroll_lvstr_init_lend() but for static initialization
+ * purpose.
+ *
+ * @note
+ * Once client code is done with the stroll_lvstr, it *MUST* call
+ * stroll_lvstr_fini() to release allocated resources.
+ *
+ * @warning
+ * Will generate an error at compile time if @p _cstr is not a constant string
+ * literal.
+ */
+#define STROLL_LVSTR_INIT_LEND(_cstr) \
+	STROLL_LVSTR_INIT_NLEND(_cstr, \
+	                        compile_eval(_is_const(_cstr), \
+	                                     sizeof(_cstr)  - 1, \
+	                                     "string literal expected"))
 
 /**
  * Static initialize an owning stroll_lvstr with a string which length is
@@ -124,14 +149,24 @@ struct stroll_lvstr {
  * @param[in] _len   length of @p _cstr
  *
  * Behavior is similar to stroll_lvstr_init_ncede() but for static
- * initialization purpose.
+ * initialization purpose. @p _cstr *MUST NOT* be a constant string since it
+ * will be @man{free(3)}'ed at release time.
  *
  * @note
  * Once client code is done with the stroll_lvstr, it *MUST* call
  * stroll_lvstr_fini() to release allocated resources.
+ *
+ * @warning
+ * Will generate an error at compile time if @p _cstr is a constant string
+ * literal.
  */
 #define STROLL_LVSTR_INIT_NCEDE(_cstr, _len) \
-	{ .len = (_len) << 1 | STROLL_LVSTR_OWNER, .cstr = _cstr }
+	{ \
+		.len = ((_len) << 1) | STROLL_LVSTR_OWNER, \
+		.cstr = compile_eval(!_is_const(_cstr), \
+		                     (char *)_cstr, \
+		                     "string literal unexpected") \
+	}
 
 /**
  * Return registered C string.
@@ -320,7 +355,10 @@ stroll_lvstr_cede(struct stroll_lvstr * lvstr, char * cstr);
  * @p lvstr the owner of duplicated string.
  *
  * @p cstr *MUST* be a valid C string, i.e., a NULL byte terminated string which
- * length @p len is smaller than or equal to #STROLL_LVSTR_LEN_MAX.
+ * length is greater than or equal to @p len, with @p len smaller than or equal
+ * to #STROLL_LVSTR_LEN_MAX.
+ * The duplicated string will contain characters over the range [0..len] only
+ * and will be terminated by a NULL byte.
  *
  * @p lvstr is allowed to free @p cstr at release time, i.e., whenever
  * the registered string is replaced or when stroll_lvstr_fini() is called. Use
@@ -418,10 +456,7 @@ stroll_lvstr_init_nlend(struct stroll_lvstr * lvstr,
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
 
 	lvstr->len = len << 1 | STROLL_LVSTR_LEASER;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
 	lvstr->cstr = (char *)cstr;
-#pragma GCC diagnostic pop
 }
 
 /**
@@ -576,6 +611,24 @@ extern int
 stroll_lvstr_init_dup(struct stroll_lvstr * lvstr, const char * cstr);
 
 /**
+ * Release a previously registered string.
+ *
+ * @param[out] lvstr Length-Value String
+ *
+ * Give the caller a way to explictly release allocated resources (when needed)
+ * of a previously registered C string. Internal reference to the latter is
+ * dropped.
+ *
+ * Unless re-initialized, any subsequent calls to stroll_lvstr_cstr() will
+ * return NULL.
+ *
+ * @see
+ * stroll_lvstr_fini()
+ */
+extern void
+stroll_lvstr_drop(struct stroll_lvstr * lvstr);
+
+/**
  * Initialize an empty stroll_lvstr.
  *
  * @param[out] lvstr Length-Value String
@@ -613,6 +666,7 @@ stroll_lvstr_init(struct stroll_lvstr * lvstr)
  * - stroll_lvstr_init_ncede()
  * - stroll_lvstr_init_ndup()
  * - stroll_lvstr_init_nlend()
+ * - stroll_lvstr_drop()
  */
 extern void
 stroll_lvstr_fini(struct stroll_lvstr * lvstr);

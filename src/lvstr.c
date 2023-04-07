@@ -33,7 +33,7 @@
 #include <stroll/assert.h>
 
 #define stroll_lvstr_assert_intern(_expr) \
-	stroll_assert("stroll: lvstr", _expr)
+	stroll_assert("stroll:lvstr", _expr)
 
 #else /* !defined(CONFIG_STROLL_ASSERT_INTERN) */
 
@@ -45,11 +45,6 @@
 	stroll_lvstr_assert_api(_lvstr); \
 	stroll_lvstr_assert_api(_cstr)
 
-#define stroll_lvstr_assert_intern_ncstr(_cstr, _len) \
-	stroll_lvstr_assert_intern(_cstr); \
-	stroll_lvstr_assert_intern((_len) <= STROLL_LVSTR_LEN_MAX); \
-	stroll_lvstr_assert_intern(strnlen(_cstr, (_len) + 1) == (_len))
-
 static ssize_t
 stroll_lvstr_check_cstr(const char * cstr)
 {
@@ -57,8 +52,23 @@ stroll_lvstr_check_cstr(const char * cstr)
 
 	size_t len;
 
+	/*
+	 * Warning, Glibc based GCC limits string size argument given to
+	 * strnlen() to PTRDIFF_MAX. Hence STROLL_LVSTR_LEN_MAX MUST be <
+	 * PTRDIFF_MAX to prevent GCC from emitting a Wstringop-overread /
+	 * Wstringop-overflow warning:
+	 *     'strnlen' specified bound ... exceeds maximum object size ...
+	 *
+	 * In addition, len MUST be <= (SIZE_MAX >> 1) since stored into struct
+	 * stroll_lvstr::len with first bit being used to store
+	 * stroll_lvstr::cstr ownership.
+	 *
+	 * Finally, as we return a ssize_t, it MUST also be <= SSIZE_MAX.
+	 *
+	 * See how STROLL_LVSTR_LEN_MAX is defined into lvstr.h.
+	 */
 	len = strnlen(cstr, STROLL_LVSTR_LEN_MAX + 1);
-	if (len >= STROLL_LVSTR_LEN_MAX)
+	if (len > STROLL_LVSTR_LEN_MAX)
 		return -E2BIG;
 
 	return (ssize_t)len;
@@ -69,7 +79,7 @@ stroll_lvstr_owns(const struct stroll_lvstr * lvstr)
 {
 	stroll_lvstr_assert_intern(lvstr);
 
-	return !!(lvstr->cstr && (lvstr->len & 1U));
+	return !!(lvstr->cstr && (lvstr->len & 1UL));
 }
 
 static void
@@ -81,6 +91,15 @@ stroll_lvstr_release(struct stroll_lvstr * lvstr)
 		free(lvstr->cstr);
 }
 
+void
+stroll_lvstr_drop(struct stroll_lvstr * lvstr)
+{
+	stroll_lvstr_assert_api(lvstr);
+
+	stroll_lvstr_release(lvstr);
+	lvstr->cstr = NULL;
+}
+
 static void
 stroll_lvstr_set(struct stroll_lvstr * lvstr,
                  char                * cstr,
@@ -88,7 +107,9 @@ stroll_lvstr_set(struct stroll_lvstr * lvstr,
                  size_t                owner)
 {
 	stroll_lvstr_assert_intern(lvstr);
-	stroll_lvstr_assert_intern_ncstr(cstr, len);
+	stroll_lvstr_assert_intern(cstr);
+	stroll_lvstr_assert_intern(len <= STROLL_LVSTR_LEN_MAX);
+	stroll_lvstr_assert_intern(strnlen(cstr, len + 1) == len);
 	stroll_lvstr_assert_intern((owner == STROLL_LVSTR_LEASER) ||
 	                           (owner == STROLL_LVSTR_OWNER));
 
@@ -102,10 +123,7 @@ stroll_lvstr_nlend(struct stroll_lvstr * lvstr, const char * cstr, size_t len)
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
 
 	stroll_lvstr_release(lvstr);
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
 	stroll_lvstr_set(lvstr, (char *)cstr, len, STROLL_LVSTR_LEASER);
-#pragma GCC diagnostic pop
 }
 
 int
@@ -152,7 +170,9 @@ stroll_lvstr_cede(struct stroll_lvstr * lvstr, char * cstr)
 static char *
 stroll_lvstr_dup_cstr(const char * cstr, size_t len)
 {
-	stroll_lvstr_assert_intern_ncstr(cstr, len);
+	stroll_lvstr_assert_intern(cstr);
+	stroll_lvstr_assert_intern(len <= STROLL_LVSTR_LEN_MAX);
+	stroll_lvstr_assert_intern(strnlen(cstr, STROLL_LVSTR_LEN_MAX) <= len);
 
 	char * str;
 
@@ -169,7 +189,10 @@ stroll_lvstr_dup_cstr(const char * cstr, size_t len)
 int
 stroll_lvstr_ndup(struct stroll_lvstr * lvstr, const char * cstr, size_t len)
 {
-	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
+	stroll_lvstr_assert_api(lvstr);
+	stroll_lvstr_assert_api(cstr);
+	stroll_lvstr_assert_api(len <= STROLL_LVSTR_LEN_MAX);
+	stroll_lvstr_assert_api(strnlen(cstr, STROLL_LVSTR_LEN_MAX) >= len);
 
 	char * str;
 
@@ -233,7 +256,10 @@ stroll_lvstr_init_ndup(struct stroll_lvstr * lvstr,
                        const char          * cstr,
                        size_t                len)
 {
-	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
+	stroll_lvstr_assert_api(lvstr);
+	stroll_lvstr_assert_api(cstr);
+	stroll_lvstr_assert_api(len <= STROLL_LVSTR_LEN_MAX);
+	stroll_lvstr_assert_api(strnlen(cstr, STROLL_LVSTR_LEN_MAX) >= len);
 
 	char * str;
 
