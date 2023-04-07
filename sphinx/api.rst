@@ -43,6 +43,9 @@ internals and meant for application development purposes. These are:
 
    * Compile time logic :
 
+      * :c:macro:`STROLL_CONCAT`
+      * :c:macro:`STROLL_STRING`
+      * :c:macro:`STROLL_UNIQ`
       * :c:macro:`compile_assert`
       * :c:macro:`compile_choose`
       * :c:macro:`compile_eval`
@@ -50,6 +53,9 @@ internals and meant for application development purposes. These are:
    * Various
 
       * :c:macro:`array_nr`
+      * :c:macro:`stroll_abs`
+      * :c:macro:`stroll_min`
+      * :c:macro:`stroll_max`
 
    * Attribute wrappers :
 
@@ -378,26 +384,6 @@ __warn_result
 
 .. doxygendefine:: __warn_result
 
-array_nr
-********
-
-.. doxygendefine:: array_nr
-
-compile_eval
-************
-
-.. doxygendefine:: compile_eval
-
-compile_assert
-**************
-
-.. doxygendefine:: compile_assert
-
-compile_choose
-**************
-
-.. doxygendefine:: compile_choose
-
 STROLL_BMAP_INIT_CLEAR
 **********************
 
@@ -428,6 +414,11 @@ STROLL_BMAP64_INIT_SET
 
 .. doxygendefine:: STROLL_BMAP64_INIT_SET
 
+STROLL_CONCAT
+*************
+
+.. doxygendefine:: STROLL_CONCAT
+
 STROLL_LVSTR_INIT
 *****************
 
@@ -447,6 +438,41 @@ STROLL_LVSTR_LEN_MAX
 ********************
 
 .. doxygendefine:: STROLL_LVSTR_LEN_MAX
+
+STROLL_STRING
+*************
+
+.. doxygendefine:: STROLL_STRING
+
+STROLL_UNIQ
+***********
+
+.. doxygendefine:: STROLL_UNIQ
+
+array_nr
+********
+
+.. doxygendefine:: array_nr
+
+compile_eval
+************
+
+.. doxygendefine:: compile_eval
+
+compile_assert
+**************
+
+.. doxygendefine:: compile_assert
+
+compile_choose
+**************
+
+.. doxygendefine:: compile_choose
+
+stroll_abs
+**********
+
+.. doxygendefine:: stroll_abs
 
 stroll_assert
 *************
@@ -482,6 +508,16 @@ stroll_bmap64_foreach_set
 *************************
 
 .. doxygendefine:: stroll_bmap64_foreach_set
+
+stroll_min
+**********
+
+.. doxygendefine:: stroll_min
+
+stroll_max
+**********
+
+.. doxygendefine:: stroll_max
 
 Structures
 ----------

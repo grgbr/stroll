@@ -5,7 +5,7 @@
  * @author       Grégor Boirie <gregor.boirie@free.fr>
  * @date         29 Aug 2017
  * @copyright    Copyright (C) 2017-2023 Grégor Boirie.
- * @licensestart GNU Lesser General Public License (LGPL) v3
+ * @licensestart GNU Lesser General Public License (LGPL) v3
  *
  * This file is part of libstroll
  *
@@ -346,6 +346,59 @@
 #define __export_protect \
 	__attribute__((visibility("default")))
 
+#define _STROLL_CONCAT(_a, _b) \
+	_a ## _b
+
+/**
+ * Concatenate 2 preprocessor tokens.
+ *
+ * @param[in] _a first token
+ * @param[in] _b second token
+ *
+ * Concatenate @p _a with @p _b during C preprocessor macro expansion.
+ *
+ * @see [GCC Concatenation](https://gcc.gnu.org/onlinedocs/cpp/Concatenation.html)
+ */
+#define STROLL_CONCAT(_a, _b) \
+	_STROLL_CONCAT(_a, _b)
+
+
+#define _STROLL_STRING(_token) \
+	# _token
+
+/**
+ * Convert a preprocessor token into a string constant.
+ *
+ * @param[in] _token token to convert
+ *
+ * Convert @p _a into a string during C preprocessor macro expansion.
+ *
+ * @see [GCC Stringizing](https://gcc.gnu.org/onlinedocs/cpp/Stringizing.html#Stringizing)
+ */
+#define STROLL_STRING(_token) \
+	_STROLL_STRING(_token)
+
+/**
+ * Generate unique preprocessor token.
+ *
+ * @param[in] _token base preprocessor identifier
+ *
+ * Preprocessor magic generating a unique identifier from a primary token.
+ * #STROLL_UNIQ() basically relies upon GCC `__COUNTER__` predefined macro to
+ * form a unique identifier composed of the concatenation of :
+ * - `__stroll_uniq__` literal,
+ * - @p _token,
+ * - a unique sequential integral values starting from `0`.
+ *
+ * This may be usefull to prevent GCC from warning about shadowed variables used
+ * into preprocessor macros defining local variables. See #stroll_min() /
+ * #stroll_max() for practical examples.
+ *
+ * @see [GCC Common predefined macros](https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html#Common-Predefined-Macros)
+ */
+#define STROLL_UNIQ(_token) \
+	STROLL_CONCAT(STROLL_CONCAT(__stroll_uniq__, _token), __COUNTER__)
+
 /**
  * Evaluate code depending on the result of a constant expression.
  *
@@ -409,6 +462,39 @@
 /**
  * @internal
  *
+ * Determine if an expression is known to be constant at compile time.
+ *
+ * @param[in] _expr Expression to test
+ *
+ * @return `1` if @p _expr is constant at compile time, `0` otherwise.
+ */
+#define _is_const(_expr) \
+	__builtin_constant_p(_expr)
+
+/**
+ * @internal
+ *
+ * Generate a compile time warning when 2 types are not compatible.
+ *
+ * Basically, both arguments are tested for equality. The test will generate a
+ * warning when argument types are not compatible.
+ * Note that comparison is performed using pointer types to prevent from
+ * implicit types conversion during equality test.
+ *
+ * The sizeof operator is applied to ensure this is a constant expression that
+ * always evaluates to true (thanks to the `!!`).
+ *
+ * Idea borrowed from the Linux kernel source tree
+ * <linux>/include/linux/minmax.h header.
+ *
+ * @see [GCC Other Built-in Functions](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html)
+ */
+#define _warn_incompatible_types(_a, _b) \
+	(!!sizeof((typeof(_a) *)1 == (typeof(_b) *)1))
+
+/**
+ * @internal
+ *
  * Compare 2 expression types at compile time.
  *
  * @param[in] _a first expression
@@ -416,7 +502,7 @@
  *
  * @return `1` if types are similar, `0` otherwise.
  *
- * Return `true` if unqualified versions of the types of @p _a and @p _b are the
+ * Return `1` if unqualified versions of the types of @p _a and @p _b are the
  * same.
  */
 #define _is_same_type(_a, _b) \
@@ -454,6 +540,120 @@
 	             sizeof(_array) / sizeof((_array)[0]), \
 	             "array expected")
 
+#define _stroll_eval_cmp(_a, _b, _op) \
+	(((_a) _op (_b)) ? (_a) : (_b))
+
+#define _stroll_eval_cmp_once(_a, _b, _uniq_a, _uniq_b, _op) \
+	({ \
+		typeof(_a) _uniq_a = _a; \
+		typeof(_b) _uniq_b = _b; \
+		_stroll_eval_cmp(_uniq_a, _uniq_b, _op); \
+	 })
+
+/**
+ * @internal
+ *
+ * Compare 2 arguments using given compare operator.
+ *
+ * @param[in] _a  first argument
+ * @param[in] _b  second argument
+ * @param[in] _op compare operator
+ *
+ * @return argument value resulting from the compare operation
+ *
+ * Check that both argument types are compatible and emit a warning if they are
+ * not. Then, if both arguments are compile time constants, perform the
+ * comparison according to @p _op operator and return the argument value
+ * resulting from the compare operation.
+ *
+ * In case where one or both argument values are not compile time constants,
+ * ensure that arguments are evaluated only once using temporary local
+ * variables, and return the argument value resulting from the compare
+ * operation.
+ * To prevent from variable shadowing, argument evaluation is performed using
+ * temporary local variable identifiers generated thanks to the #STROLL_UNIQ()
+ * macro.
+ */
+#define _stroll_cmp(_a, _b, _op) \
+	compile_choose(_warn_incompatible_types(_a, _b) && \
+	               _is_const(_a) && _is_const(_b), \
+	               _stroll_eval_cmp(_a, _b, _op), \
+	               _stroll_eval_cmp_once(_a, \
+	                                     _b, \
+	                                     STROLL_UNIQ(__a), \
+	                                     STROLL_UNIQ(__b), \
+	                                     _op))
+
+/**
+ * Return the smallest of 2 arguments.
+ *
+ * @param[in] _a first argument
+ * @param[in] _b second argument
+ *
+ * @return smallest argument
+ *
+ * Both argument types *MUST* be compatible. A warning will be generated
+ * otherwise.
+ * Both arguments are evaluated only once respectively to prevent from runtime
+ * side-effects.
+ */
+#define stroll_min(_a, _b) \
+	_stroll_cmp(_a, _b, <)
+
+/**
+ * Return the greatest of 2 arguments.
+ *
+ * @param[in] _a first argument
+ * @param[in] _b second argument
+ *
+ * @return greatest argument
+ *
+ * Both argument types *MUST* be compatible. A warning will be generated
+ * otherwise.
+ * Both arguments are evaluated only once respectively to prevent from runtime
+ * side-effects.
+ */
+#define stroll_max(_a, _b) \
+	_stroll_cmp(_a, _b, >)
+
+#define _stroll_eval_abs(_a) \
+	(((_a) >= 0) ? _a : -_a)
+
+/**
+ * @internal
+ *
+ * Return the absolute value of the given argument.
+ *
+ * @param[in] _a argument
+ *
+ * @return absolute value of @p _a
+ *
+ * Ensure that argument @p _a is evaluated only once using temporary local
+ * variables, and return the absolute value of @p _a.
+ * To prevent from variable shadowing, argument evaluation is performed using
+ * a temporary local variable identifier generated thanks to the #STROLL_UNIQ()
+ * macro.
+ */
+#define _stroll_eval_abs_once(_a, _uniq_a) \
+	({ \
+		typeof(_a) _uniq_a = _a; \
+		_stroll_eval_abs(_uniq_a); \
+	 })
+
+/**
+ * Return the absolute value of the given argument.
+ *
+ * @param[in] _a argument
+ *
+ * @return absolute value of @p _a
+ *
+ * Argument is evaluated only once to prevent from runtime side-effects.
+ */
+#define stroll_abs(_a) \
+	compile_choose(_is_const(_a), \
+	               _stroll_eval_abs(_a), \
+	               _stroll_eval_abs_once(_a, STROLL_UNIQ(__a)))
+
 #define likely(_expr) \
 	__builtin_expect(!!(_expr), 1)
 
@@ -480,26 +680,6 @@
 #define containerof(_ptr, _type, _member) \
 	({ \
 		((_type *)((char *)(_ptr) - offsetof(_type, _member))); \
-	 })
-
-#define uabs(_a) \
-	({ \
-		typeof(_a) __a = _a; \
-		(__a >= 0) ? __a : -__a; \
-	 })
-
-#define umin(_a, _b) \
-	({ \
-		typeof(_a) __a = _a; \
-		typeof(_b) __b = _b; \
-		(__a < __b) ? __a : __b; \
-	 })
-
-#define umax(_a, _b) \
-	({ \
-		typeof(_a) __a = _a; \
-		typeof(_b) __b = _b; \
-		(__a > __b) ? __a : __b; \
 	 })
 
 #define __ualign_mask(_value, _align) \
@@ -541,18 +721,6 @@
 #else
 #error "Unsupported machine word size !"
 #endif
-
-#define _UCONCAT(_a, _b) \
-	(_a ## _b)
-
-#define UCONCAT(_a, _b) \
-	_UCONCAT(_a, _b)
-
-#define _USTRINGIFY(_expr) \
-	# _expr
-
-#define USTRINGIFY(_expr) \
-	_USTRINGIFY(_expr) \
 
 #define __VA_ARGS_COUNT__( _c0,  _c1,  _c2,  _c3,  _c4,  _c5,  _c6,  _c7, \
                            _c8,  _c9, _c10, _c11, _c12, _c13, _c14, _c15, \

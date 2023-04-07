@@ -4,7 +4,6 @@ test-cflags  := -Wall \
                 -Wconversion \
                 -Wundef \
                 -Wshadow \
-                -Wcast-qual \
                 -Wcast-align \
                 -Wmissing-declarations \
                 -D_GNU_SOURCE \
@@ -27,7 +26,12 @@ builtins         := builtin.a
 builtin.a-objs   := utest.o
 builtin.a-cflags := $(test-cflags)
 
-bins :=
+bins := stroll-cdefs-ut
+
+stroll-cdefs-ut-objs    := cdefs.o
+stroll-cdefs-ut-cflags  := $(test-cflags)
+stroll-cdefs-ut-ldflags := $(test-ldflags)
+stroll-cdefs-ut-pkgconf := cmocka
 
 ifeq ($(CONFIG_STROLL_BOPS),y)
 bins                    += stroll-bops-ut

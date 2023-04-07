@@ -20,6 +20,13 @@ config STROLL_UTEST
 	help
 	  Build stroll library unit test suite.
 
+config STROLL_VALGRIND
+	bool "Valgrind support"
+	depends on STROLL_UTEST
+	default n
+	help
+	  Build stroll library unit test suite with Valgrind support enabled.
+
 config STROLL_BOPS
 	bool "Bit operations"
 	default y
