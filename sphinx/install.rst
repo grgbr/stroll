@@ -1,8 +1,7 @@
-.. include:: _cdefs.rst
-
 .. _breathe:              https://github.com/breathe-doc/breathe
 .. _cmocka:               https://cmocka.org/
 .. _ebuild:               https://github.com/grgbr/ebuild/
+.. _gnu_make:             https://www.gnu.org/software/make/
 .. |eBuild|               replace:: `eBuild <ebuild_>`_
 .. |eBuild User Guide|    replace:: :external+ebuild:doc:`eBuild User Guide <user>`
 .. |eBuild Prerequisites| replace:: :external+ebuild:ref:`eBuild Prerequisites <sect-user-prerequisites>`
@@ -14,6 +13,7 @@
 .. |PREFIX|               replace:: :external+ebuild:ref:`var-prefix`
 .. |CROSS_COMPILE|        replace:: :external+ebuild:ref:`var-cross_compile`
 .. |DESTDIR|              replace:: :external+ebuild:ref:`var-destdir`
+.. |GNU Make|             replace:: `GNU Make <gnu_make_>`_
 
 Overview
 ========
@@ -31,8 +31,8 @@ Prerequisites
 In addition to the standard |eBuild Prerequisites|, no particular packages are
 required to build Stroll.
 
-Optionally, you will need cmocka_ at build time and at runtime when unit testing
-suite is enabled (see CONFIG_STROLL_UTEST_).
+Optionally, you will need cmocka_ at build time and at runtime when unit
+testsuite is enabled (see :ref:`CONFIG_STROLL_UTEST`).
 
 Optionally, you will need multiple packages installed to build the
 documentation. In addition to packages listed into |eBuild Prerequisites|,
@@ -76,15 +76,16 @@ Alternatively, you may replace the last step mentioned above with a |Staged
 Install|. You will find below a **quick starting guide** showing how to build
 Stroll.
 
-.. topic:: Preparation phase
+Preparation phase
+-----------------
 
 The overall :external+ebuild:ref:`eBuild Workflow <sect-user-workflow>` is
 customizable thanks to multiple :command:`make` variable settings. You should
 adjust values according to your specific needs.
 
 Most of the time, setting |BUILDDIR|, |PREFIX|, |CROSS_COMPILE| is enough.
-You should also set the :envvar:`PATH` environment variable according to the set
-of tools required by the build process.
+You should also set the :envvar:`PATH` environment variable according to the
+set of tools required by the build process.
 
 Optionally, you may set ``EXTRA_CFLAGS`` and ``EXTRA_LDFLAGS`` variables to
 give the compiler and linker additional flags respectively.
@@ -95,7 +96,8 @@ informations.
 
 .. _workflow-configure-phase:
    
-.. topic:: Configure phase
+Configure phase
+---------------
 
 To begin with, |Configure| the build process interactively by running the
 :external+ebuild:ref:`eBuild menuconfig target <target-menuconfig>`:
@@ -104,7 +106,8 @@ To begin with, |Configure| the build process interactively by running the
 
    $ make menuconfig BUILDDIR=$HOME/build/stroll
 
-.. topic:: Build phase
+Build phase
+-----------
 
 Now, proceed to the |Build| phase and compile / link programs, libraries, etc.
 by running the :external+ebuild:ref:`eBuild build target <target-build>`:
@@ -113,25 +116,28 @@ by running the :external+ebuild:ref:`eBuild build target <target-build>`:
 
    $ make build BUILDDIR=$HOME/build/stroll PREFIX=/usr
  
-.. topic:: Install phase
+Install phase
+-------------
 
 Finally, |Install| programs, libraries, etc.: by running the
 :external+ebuild:ref:`eBuild install target <target-install>`:
 
 .. code-block:: console
-
+   
    $ make install BUILDDIR=$HOME/build/stroll PREFIX=/usr
  
-.. topic:: Alternative staged install phase
+Alternative staged install phase
+--------------------------------
 
 Alternatively, perform a |Staged install| by specifying the |DESTDIR| variable
 instead:
-
+   
 .. code-block:: console
 
    $ make install BUILDDIR=$HOME/build/stroll PREFIX=/usr DESTDIR=$HOME/staging
 
-.. topic:: Documentation generation
+Documentation generation
+------------------------
 
 You may generate Stroll documentation by running the `doc` target like so:
 
@@ -149,71 +155,3 @@ target:
 Finally, you may find lots of usefull informations into the
 :external+ebuild:ref:`Reference <sect-user-reference>` section of the |eBuild
 User Guide|.
-
-Build configuration
-===================
-
-At :ref:`Build configuration time <workflow-configure-phase>`, multiple build
-options are available to customize final Stroll build. These are listed below.
-
-.. _CONFIG_STROLL_ASSERT:
-   
-CONFIG_STROLL_ASSERT
---------------------
-
-Build stroll library assertion framework exposing a programmatic assertion
-API for use by client code.
-
-.. _CONFIG_STROLL_ASSERT_API:
-
-CONFIG_STROLL_ASSERT_API
-------------------------
-
-Build stroll library with high-level API assertions enabled to ensure that API
-functions exposed by Stroll will perform full verification of arguments
-consistency.
-
-.. _CONFIG_STROLL_ASSERT_INTERN:
-   
-CONFIG_STROLL_ASSERT_INTERN
----------------------------
-
-Build stroll library with internal assertions enabled to check for internal
-Stroll behavioral consistency.
-
-.. _CONFIG_STROLL_UTEST:
-   
-CONFIG_STROLL_UTEST
--------------------
-
-Build stroll library unit test suite.
-
-.. _CONFIG_STROLL_VALGRIND:
-   
-CONFIG_STROLL_VALGRIND
-----------------------
-
-Build stroll library unit test suite with Valgrind support enabled.
-
-.. _CONFIG_STROLL_BOPS:
-   
-CONFIG_STROLL_BOPS
-------------------
-
-Build stroll library bit operations framework exposing functions to perform
-bitwise operations upon words in memory.
-
-.. _CONFIG_STROLL_BMAP:
-
-CONFIG_STROLL_BMAP
-------------------
-
-Build stroll library with bitmap framework exposing functions to perform usual
-operations over bitmaps stored memory words.
-
-.. _CONFIG_STROLL_LVSTR:
-
-CONFIG_STROLL_LVSTR
--------------------
-
-Build stroll library with length-value string framework.

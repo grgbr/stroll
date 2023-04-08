@@ -16,12 +16,26 @@ you can refer to for further details :
 * `Common definitions`_,
 * Assertions_,
 * `Bit operations`_,
-* `Atomic operations`_,
-* `Power of 2 operations`_,
 * `Bitmaps`_,
-* `Doubly linked lists`_,
-* `Singly linked lists`_,
 * `Length-value strings`_.
+
+.. index:: build configuration, configuration macros
+   
+Build configuration
+===================
+
+At :ref:`Build configuration time <workflow-configure-phase>`, multiple build
+options are available to customize final Stroll build. From client code, you may
+eventually refer to the corresponding C macros listed below:
+
+* :c:macro:`CONFIG_STROLL_ASSERT`
+* :c:macro:`CONFIG_STROLL_ASSERT_API`
+* :c:macro:`CONFIG_STROLL_ASSERT_INTERN`
+* :c:macro:`CONFIG_STROLL_UTEST`
+* :c:macro:`CONFIG_STROLL_VALGRIND`
+* :c:macro:`CONFIG_STROLL_BOPS`
+* :c:macro:`CONFIG_STROLL_BMAP`
+* :c:macro:`CONFIG_STROLL_LVSTR`
 
 .. index:: common definitions, cdefs
 
@@ -303,6 +317,51 @@ The following manipulations are available:
    
 Reference
 =========
+
+Configuration macros
+--------------------
+
+CONFIG_STROLL_ASSERT
+********************
+
+.. doxygendefine:: CONFIG_STROLL_ASSERT
+
+CONFIG_STROLL_ASSERT_API
+************************
+
+.. doxygendefine:: CONFIG_STROLL_ASSERT_API
+
+CONFIG_STROLL_ASSERT_INTERN
+***************************
+
+.. doxygendefine:: CONFIG_STROLL_ASSERT_INTERN
+
+.. _CONFIG_STROLL_UTEST:
+
+CONFIG_STROLL_UTEST
+*******************
+
+.. doxygendefine:: CONFIG_STROLL_UTEST
+
+CONFIG_STROLL_VALGRIND
+**********************
+
+.. doxygendefine:: CONFIG_STROLL_VALGRIND
+
+CONFIG_STROLL_BOPS
+******************
+
+.. doxygendefine:: CONFIG_STROLL_BOPS
+
+CONFIG_STROLL_BMAP
+******************
+
+.. doxygendefine:: CONFIG_STROLL_BMAP
+
+CONFIG_STROLL_LVSTR
+*******************
+
+.. doxygendefine:: CONFIG_STROLL_LVSTR
 
 Macros
 ------
@@ -716,22 +775,22 @@ stroll_bmap32_or_range
 .. doxygenfunction:: stroll_bmap32_or_range
 
 stroll_bmap32_set
-***************
+*****************
 
 .. doxygenfunction:: stroll_bmap32_set
 
 stroll_bmap32_set_mask
-********************
+**********************
 
 .. doxygenfunction:: stroll_bmap32_set_mask
 
 stroll_bmap32_set_range
-*********************
+***********************
 
 .. doxygenfunction:: stroll_bmap32_set_range
 
 stroll_bmap32_set_all
-*******************
+*********************
 
 .. doxygenfunction:: stroll_bmap32_set_all
 
@@ -847,22 +906,22 @@ stroll_bmap64_or_range
 .. doxygenfunction:: stroll_bmap64_or_range
 
 stroll_bmap64_set
-***************
+*****************
 
 .. doxygenfunction:: stroll_bmap64_set
 
 stroll_bmap64_set_mask
-********************
+**********************
 
 .. doxygenfunction:: stroll_bmap64_set_mask
 
 stroll_bmap64_set_range
-*********************
+***********************
 
 .. doxygenfunction:: stroll_bmap64_set_range
 
 stroll_bmap64_set_all
-*******************
+*********************
 
 .. doxygenfunction:: stroll_bmap64_set_all
 

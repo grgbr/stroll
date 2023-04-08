@@ -54,12 +54,12 @@
  * is @p start_bit to `start_bit + bit_count - 1`. Bit indices starts from 0.
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_mask(unsigned int start_bit, unsigned int bit_count)
@@ -86,12 +86,12 @@ stroll_bmap32_mask(unsigned int start_bit, unsigned int bit_count)
  * is @p start_bit to `start_bit + bit_count - 1`. Bit indices starts from 0.
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_mask(unsigned int start_bit, unsigned int bit_count)
@@ -119,12 +119,12 @@ stroll_bmap64_mask(unsigned int start_bit, unsigned int bit_count)
  * starts from 0.
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
  *   bits contained within a machine word. If not, an undefined result is
- *   returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option is
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is
  *   disabled. An assertion is triggered otherwise.
  */
 
@@ -278,12 +278,12 @@ stroll_bmap_and(unsigned long bmap, unsigned long mask)
  * Mask is computed thanks to stroll_bmap32_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_and_range(uint32_t     bmap,
@@ -313,12 +313,12 @@ stroll_bmap32_and_range(uint32_t     bmap,
  * Mask is computed thanks to stroll_bmap64_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_and_range(uint64_t     bmap,
@@ -348,12 +348,12 @@ stroll_bmap64_and_range(uint64_t     bmap,
  * Mask is computed thanks to stroll_bmap_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
  *   bits contained within a machine word. If not, an undefined result is
- *   returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option is
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is
  *   disabled. An assertion is triggered otherwise.
  */
 #if __WORDSIZE == 64
@@ -449,12 +449,12 @@ stroll_bmap_or(unsigned long bmap, unsigned long mask)
  * Mask is computed thanks to stroll_bmap32_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_or_range(uint32_t     bmap,
@@ -483,12 +483,12 @@ stroll_bmap32_or_range(uint32_t     bmap,
  * Mask is computed thanks to stroll_bmap64_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_or_range(uint64_t     bmap,
@@ -517,13 +517,13 @@ stroll_bmap64_or_range(uint64_t     bmap,
  * Mask is computed thanks to stroll_bmap_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
  *   bits contained within a machine word. If not, an undefined result is
- *   returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option is
- *   disabled. An assertion is triggered otherwise.
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
+ *   assertion is triggered otherwise.
  */
 
 #if __WORDSIZE == 64
@@ -619,12 +619,12 @@ stroll_bmap_xor(unsigned long bmap, unsigned long mask)
  * Mask is computed thanks to stroll_bmap32_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint32_t __stroll_const __nothrow __warn_result
 stroll_bmap32_xor_range(uint32_t     bmap,
@@ -654,12 +654,12 @@ stroll_bmap32_xor_range(uint32_t     bmap,
  * Mask is computed thanks to stroll_bmap64_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline uint64_t __stroll_const __nothrow __warn_result
 stroll_bmap64_xor_range(uint64_t     bmap,
@@ -689,13 +689,13 @@ stroll_bmap64_xor_range(uint64_t     bmap,
  * Mask is computed thanks to stroll_bmap_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
  *   bits contained within a machine word. If not, an undefined result is
- *   returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option is
- *   disabled. An assertion is triggered otherwise.
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
+ *   assertion is triggered otherwise.
  */
 
 #if __WORDSIZE == 64
@@ -800,9 +800,8 @@ stroll_bmap_test_mask(unsigned long bmap, unsigned long mask)
  * Bit indices starts from 0.
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and @p bit_no is `>= 32`, result is undefined. An assertion is
- * triggered otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is `>= 32`, result is undefined. An assertion is triggered otherwise.
  */
 static inline bool __stroll_const __nothrow __warn_result
 stroll_bmap32_test(uint32_t bmap, unsigned int bit_no)
@@ -826,9 +825,8 @@ stroll_bmap32_test(uint32_t bmap, unsigned int bit_no)
  * Bit indices starts from 0.
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and @p bit_no is `>= 64`, result is undefined. An assertion is
- * triggered otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is `>= 64`, result is undefined. An assertion is triggered otherwise.
  */
 static inline bool __stroll_const __nothrow __warn_result
 stroll_bmap64_test(uint64_t bmap, unsigned int bit_no)
@@ -852,10 +850,10 @@ stroll_bmap64_test(uint64_t bmap, unsigned int bit_no)
  * Bit indices starts from 0.
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and @p bit_no is greater than or equal to the maximum number of bits
- * contained within a machine word, result is undefined. An assertion is
- * triggered otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is greater than or equal to the maximum number of bits contained
+ * within a machine word, result is undefined. An assertion is triggered
+ * otherwise.
  */
 
 #if __WORDSIZE == 64
@@ -894,12 +892,12 @@ stroll_bmap_test(unsigned long bmap, unsigned int bit_no)
  * Mask is computed thanks to stroll_bmap32_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline bool __stroll_const __nothrow __warn_result
 stroll_bmap32_test_range(uint32_t     bmap,
@@ -931,12 +929,12 @@ stroll_bmap32_test_range(uint32_t     bmap,
  * Mask is computed thanks to stroll_bmap64_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline bool __stroll_const __nothrow __warn_result
 stroll_bmap64_test_range(uint64_t     bmap,
@@ -968,13 +966,13 @@ stroll_bmap64_test_range(uint64_t     bmap,
  * Mask is computed thanks to stroll_bmap_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
  *   bits contained within a machine word. If not, an undefined result is
- *   returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option is
- *   disabled. An assertion is triggered otherwise.
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
+ *   assertion is triggered otherwise.
  */
 
 #if __WORDSIZE == 64
@@ -1125,9 +1123,8 @@ stroll_bmap_set_mask(unsigned long * bmap, unsigned long mask)
  * 0.
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and @p bit_no is `>= 32`, result is undefined. An assertion is
- * triggered otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is `>= 32`, result is undefined. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_set(uint32_t * bmap, unsigned int bit_no)
@@ -1148,9 +1145,8 @@ stroll_bmap32_set(uint32_t * bmap, unsigned int bit_no)
  * 0.
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and @p bit_no is `>= 64`, result is undefined. An assertion is
- * triggered otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is `>= 64`, result is undefined. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap64_set(uint64_t * bmap, unsigned int bit_no)
@@ -1171,10 +1167,10 @@ stroll_bmap64_set(uint64_t * bmap, unsigned int bit_no)
  * 0.
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and @p bit_no is greater than or equal to the maximum number of bits
- * contained within a machine word, result is undefined. An assertion is
- * triggered otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is greater than or equal to the maximum number of bits contained
+ * within a machine word, result is undefined. An assertion is triggered
+ * otherwise.
  */
 
 #if __WORDSIZE == 64
@@ -1209,12 +1205,12 @@ stroll_bmap_set(unsigned long * bmap, unsigned int bit_no)
  * Mask is computed thanks to stroll_bmap32_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_set_range(uint32_t *   bmap,
@@ -1242,12 +1238,12 @@ stroll_bmap32_set_range(uint32_t *   bmap,
  * Mask is computed thanks to stroll_bmap64_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap64_set_range(uint64_t *   bmap,
@@ -1275,13 +1271,12 @@ stroll_bmap64_set_range(uint64_t *   bmap,
  * Mask is computed thanks to stroll_bmap_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
  *   bits contained within a machine word. If not, an undefined result is
- *   returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option is
- *   disabled. An
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
  *   assertion is triggered otherwise.
  */
 
@@ -1426,9 +1421,8 @@ stroll_bmap_clear_mask(unsigned long * bmap, unsigned long mask)
  * 0.
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and @p bit_no is `>= 32`, result is undefined. An assertion is
- * triggered otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is `>= 32`, result is undefined. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_clear(uint32_t * bmap, unsigned int bit_no)
@@ -1449,9 +1443,8 @@ stroll_bmap32_clear(uint32_t * bmap, unsigned int bit_no)
  * 0.
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and @p bit_no is `>= 64`, result is undefined. An assertion is
- * triggered otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is `>= 64`, result is undefined. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap64_clear(uint64_t * bmap, unsigned int bit_no)
@@ -1472,10 +1465,10 @@ stroll_bmap64_clear(uint64_t * bmap, unsigned int bit_no)
  * 0.
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and @p bit_no is greater than or equal to the maximum number of bits
- * contained within a machine word, result is undefined. An assertion is
- * triggered otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
+ * bit_no is greater than or equal to the maximum number of bits contained
+ * within a machine word, result is undefined. An assertion is triggered
+ * otherwise.
  */
 
 #if __WORDSIZE == 64
@@ -1510,12 +1503,12 @@ stroll_bmap_clear(unsigned long * bmap, unsigned int bit_no)
  * Mask is computed thanks to stroll_bmap32_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_clear_range(uint32_t *   bmap,
@@ -1544,12 +1537,12 @@ stroll_bmap32_clear_range(uint32_t *   bmap,
  * Mask is computed thanks to stroll_bmap64_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap64_clear_range(uint64_t *   bmap,
@@ -1578,13 +1571,13 @@ stroll_bmap64_clear_range(uint64_t *   bmap,
  * Mask is computed thanks to stroll_bmap_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
  *   bits contained within a machine word. If not, an undefined result is
- *   returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option is
- *   disabled. An assertion is triggered otherwise.
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
+ *   assertion is triggered otherwise.
  */
 
 #if __WORDSIZE == 64
@@ -1796,12 +1789,12 @@ stroll_bmap_toggle(unsigned long * bmap, unsigned int bit_no)
  * Mask is computed thanks to stroll_bmap32_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 32`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap32_toggle_range(uint32_t *   bmap,
@@ -1830,12 +1823,12 @@ stroll_bmap32_toggle_range(uint32_t *   bmap,
  * Mask is computed thanks to stroll_bmap64_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be `<= 64`. If not, an undefined
- *   result is returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   is disabled. An assertion is triggered otherwise.
+ *   result is returned when the #CONFIG_STROLL_ASSERT_API build option is
+ *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __nothrow
 stroll_bmap64_toggle_range(uint64_t *   bmap,
@@ -1864,13 +1857,12 @@ stroll_bmap64_toggle_range(uint64_t *   bmap,
  * Mask is computed thanks to stroll_bmap_mask().
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p bit_count is zero, result is undefined. A zero @p bit_count
- *   triggers an assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_count is zero, result is undefined. A zero @p bit_count triggers an
+ *   assertion otherwise.
  * - The sum `start_bit + bit_count` **MUST** be less than the maximum number of
  *   bits contained within a machine word. If not, an undefined result is
- *   returned when the @rstref{CONFIG_STROLL_ASSERT_API} build option is
- *   disabled. An
+ *   returned when the #CONFIG_STROLL_ASSERT_API build option is disabled. An
  *   assertion is triggered otherwise.
  */
 

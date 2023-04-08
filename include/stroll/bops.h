@@ -122,9 +122,9 @@ stroll_bops_ffs(unsigned long value)
  * @return Index of bit starting from 1
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and a @p value is zero, result is undefined. A zero @p value
- * triggers an assertion otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and a
+ * @p value is zero, result is undefined. A zero @p value triggers an assertion
+ * otherwise.
  */
 static inline unsigned int __stroll_const __nothrow
 stroll_bops32_fls(uint32_t value)
@@ -142,9 +142,9 @@ stroll_bops32_fls(uint32_t value)
  * @return Index of bit starting from 1
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and a @p value is zero, result is undefined. A zero @p value
- * triggers an assertion otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and a
+ * @p value is zero, result is undefined. A zero @p value triggers an assertion
+ * otherwise.
  */
 
 #if __WORDSIZE == 64
@@ -177,9 +177,9 @@ stroll_bops64_fls(uint64_t value)
  * @return Index of bit starting from 1
  *
  * @warning
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and a @p value is zero, result is undefined. A zero @p value
- * triggers an assertion otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and a
+ * @p value is zero, result is undefined. A zero @p value triggers an assertion
+ * otherwise.
  */
 
 #if __WORDSIZE == 64

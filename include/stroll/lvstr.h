@@ -191,10 +191,9 @@ stroll_lvstr_cstr(const struct stroll_lvstr * lvstr)
  * @return Length of registered string excluding the terminating NULL byte
  *
  * @warning
-
- * When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- * disabled and there is no registered C string, result is undefined. An
- * assertion is triggered otherwise.
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ * there is no registered C string, result is undefined. An assertion is
+ * triggered otherwise.
  *
  * @see
  * stroll_lvstr_cstr()
@@ -229,12 +228,12 @@ stroll_lvstr_len(const struct stroll_lvstr * lvstr)
  * registered string if @p lvstr was made the owner of it.
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p cstr is invalid, result is undefined. An assertion is
- *   triggered otherwise.
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p len is greater than #STROLL_LVSTR_LEN_MAX, result is
- *   undefined. An assertion is triggered otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p cstr is invalid, result is undefined. An assertion is triggered
+ *   otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p len is greater than #STROLL_LVSTR_LEN_MAX, result is undefined. An
+ *   assertion is triggered otherwise.
  *
  * @see
  * - STROLL_LVSTR_INIT_NLEND
@@ -295,12 +294,12 @@ stroll_lvstr_lend(struct stroll_lvstr * lvstr, const char * cstr);
  * string if @p lvstr was made the owner of it.
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p cstr is invalid, result is undefined. An assertion is
- *   triggered otherwise.
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p len is greater than #STROLL_LVSTR_LEN_MAX, result is
- *   undefined. An assertion is triggered otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p cstr is invalid, result is undefined. An assertion is triggered
+ *   otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p len is greater than #STROLL_LVSTR_LEN_MAX, result is undefined. An
+ *   assertion is triggered otherwise.
  *
  * @see
  * - STROLL_LVSTR_INIT_NCEDE
@@ -371,12 +370,12 @@ stroll_lvstr_cede(struct stroll_lvstr * lvstr, char * cstr);
  * string if @p lvstr was made the owner of it.
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p cstr is invalid, result is undefined. An assertion is
- *   triggered otherwise.
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p len is greater than #STROLL_LVSTR_LEN_MAX, result is
- *   undefined. An assertion is triggered otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p cstr is invalid, result is undefined. An assertion is triggered
+ *   otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p len is greater than #STROLL_LVSTR_LEN_MAX, result is undefined. An
+ *   assertion is triggered otherwise.
  *
  * @see
  * - stroll_lvstr_init_ndup()
@@ -438,12 +437,12 @@ stroll_lvstr_dup(struct stroll_lvstr * lvstr, const char * cstr);
  * stroll_lvstr_fini() to release allocated resources.
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p cstr is invalid, result is undefined. An assertion is
- *   triggered otherwise.
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p len is greater than #STROLL_LVSTR_LEN_MAX, result is
- *   undefined. An assertion is triggered otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p cstr is invalid, result is undefined. An assertion is triggered
+ *   otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p len is greater than #STROLL_LVSTR_LEN_MAX, result is undefined. An
+ *   assertion is triggered otherwise.
  *
  * @see
  * - STROLL_LVSTR_INIT_NLEND()
@@ -502,12 +501,12 @@ stroll_lvstr_init_lend(struct stroll_lvstr * lvstr, const char * cstr);
  * stroll_lvstr_fini() to release allocated resources.
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p cstr is invalid, result is undefined. An assertion is
- *   triggered otherwise.
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p len is greater than #STROLL_LVSTR_LEN_MAX, result is
- *   undefined. An assertion is triggered otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p cstr is invalid, result is undefined. An assertion is triggered
+ *   otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p len is greater than #STROLL_LVSTR_LEN_MAX, result is undefined. An
+ *   assertion is triggered otherwise.
  *
  * @see
  * - STROLL_LVSTR_INIT_NCEDE()
@@ -569,12 +568,12 @@ stroll_lvstr_init_cede(struct stroll_lvstr * lvstr, char * cstr);
  * stroll_lvstr_fini() to release allocated resources.
  *
  * @warning
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p cstr is invalid, result is undefined. An assertion is
- *   triggered otherwise.
- * - When compiled with the @rstref{CONFIG_STROLL_ASSERT_API} build option
- *   disabled and @p len is greater than #STROLL_LVSTR_LEN_MAX, result is
- *   undefined. An assertion is triggered otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p cstr is invalid, result is undefined. An assertion is triggered
+ *   otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p len is greater than #STROLL_LVSTR_LEN_MAX, result is undefined. An
+ *   assertion is triggered otherwise.
  *
  * @see
  * stroll_lvstr_init_dup()

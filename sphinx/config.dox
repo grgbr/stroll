@@ -1,0 +1,74 @@
+/**
+ * @def   CONFIG_STROLL_ASSERT
+ * @brief Enable assertion framework
+ * @details
+ * Build stroll library assertion framework exposing a programmatic assertion
+ * API for use by client code.
+ */
+#define CONFIG_STROLL_ASSERT 1
+
+/**
+ * @def   CONFIG_STROLL_ASSERT_API
+ * @brief Enable Stroll API assertions
+ * @details
+ * Build stroll library with high-level API assertions enabled to ensure that
+ * API functions exposed by Stroll will perform full verification of arguments
+ * consistency.
+ */
+#define CONFIG_STROLL_ASSERT_API 1
+
+/**
+ * @def   CONFIG_STROLL_ASSERT_INTERN
+ * @brief Enable internal Stroll assertions
+ * @details
+ * Build stroll library with internal assertions enabled to check for internal
+ * Stroll behavioral consistency.
+ */
+#define CONFIG_STROLL_ASSERT_INTERN 1
+
+/**
+ *
+ * @def   CONFIG_STROLL_UTEST
+ * @brief Build Stroll testsuite
+ * @details
+ * Build stroll library unit test suite.
+ */
+#define CONFIG_STROLL_UTEST 1
+
+/**
+ * @def   CONFIG_STROLL_VALGRIND
+ * @brief Enable Valgrind support
+ * @details
+ * Build stroll library unit test suite with Valgrind support enabled. For
+ * debugging purposes only: do not use in production.
+ */
+#define CONFIG_STROLL_VALGRIND 1
+
+/**
+ * @def   CONFIG_STROLL_BOPS
+ * @brief Enable bitwise operations framework
+ * @details
+ * Build stroll library bit operations framework exposing functions to perform
+ * bitwise operations upon words in memory.
+ */
+#define CONFIG_STROLL_BOPS 1
+
+/**
+ * @def   CONFIG_STROLL_BMAP
+ * @brief Enable bitmap framework
+ * @details
+ * Build stroll library with bitmap framework exposing functions to perform
+ * usual operations over bitmaps stored memory words.
+ */
+#define CONFIG_STROLL_BMAP 1
+
+/**
+ * @def   CONFIG_STROLL_LVSTR
+ * @brief Enable Length-Value strings framework
+ * @details
+ * Build stroll library with length-value string framework meant to ease
+ * the life-cycle of C strings.
+ */
+#define CONFIG_STROLL_LVSTR 1
+
+# vim: ft=doxygen:

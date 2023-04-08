@@ -1,23 +1,10 @@
-Welcome to Enbox documentation
-##############################
+Welcome to Stroll documentation
+###############################
 
 .. Caption of toctrees are not translated into latex, hence the dirty trick
 .. below. See https://github.com/sphinx-doc/sphinx/issues/3169 for more infos.
 .. Basically, we ask the latex backend to generate a \part{} section for each
 .. toctree caption using the `raw' restructuredtext directive.
-
-.. only:: latex
-
-   .. raw:: latex
-
-      \part{User Guide}
-
-.. toctree::
-   :numbered:
-   :caption: User Guide
-
-   main
-
 
 .. only:: latex
 

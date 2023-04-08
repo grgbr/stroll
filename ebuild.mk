@@ -33,7 +33,7 @@ pkgconfigs        := libstroll.pc
 libstroll.pc-tmpl := libstroll_pkgconf_tmpl
 
 doxyconf  := $(CURDIR)/sphinx/Doxyfile
-doxyenv   := INCDIR="$(patsubst -I%,%,$(filter -I%,$(common-cflags)))" \
+doxyenv   := SRCDIR="$(HEADERDIR) $(SRCDIR)" \
              VERSION="$(VERSION)"
 
 sphinxsrc := $(CURDIR)/sphinx

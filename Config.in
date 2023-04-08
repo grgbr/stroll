@@ -34,6 +34,7 @@ config STROLL_VALGRIND
 	default n
 	help
 	  Build stroll library unit test suite with Valgrind support enabled.
+	  For debugging purposes only: do not use in production.
 
 config STROLL_BOPS
 	bool "Bit operations"
@@ -54,7 +55,8 @@ config STROLL_BMAP
 	select STROLL_BOPS
 	help
 	  Build stroll library with bitmap framework exposing functions to
-	  perform usual operations over bitmaps stored memory words such as:
+	  perform usual operations over bitmaps stored into memory words such
+	  as:
 	  * and / or / xor operations,
 	  * test bit / mask / bit range,
 	  * hamming weight,
@@ -66,7 +68,8 @@ config STROLL_LVSTR
 	bool "Length-Value String"
 	default y
 	help
-	  Build stroll library with length-value string framework.
+	  Build stroll library with length-value string framework meant to ease
+	  the life-cycle of C strings.
 	  See <stroll/lvstr.h>.
 
 # vim: ft=kconfig:
