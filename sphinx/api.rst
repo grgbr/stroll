@@ -23,14 +23,6 @@ you can refer to for further details :
 * `Singly linked lists`_,
 * `Length-value strings`_.
 
-Build configuration
-===================
-
-.. todo::
-
-   Document build configuration macros from Kconfig
-
-
 .. index:: common definitions, cdefs
 
 Common definitions
@@ -253,6 +245,8 @@ These are:
       * :c:func:`stroll_bmap64_toggle_range`
       * :c:func:`stroll_bmap64_toggle_all`
 
+.. index:: length-value string, lvstr
+
 Length-Value Strings
 ====================
 
@@ -305,6 +299,8 @@ The following manipulations are available:
 
       * :c:func:`stroll_lvstr_fini`
 
+.. index:: API reference, reference
+   
 Reference
 =========
 

@@ -297,6 +297,10 @@ ALIASES = licensestart="@par License^^@parblock^^" \
 # to: https://www.doxygen.nl/manual/custcmd.html#custcmd_complex
 ALIASES += man{1}="@verbatim embed:rst:inline :manpage:`\1` @endverbatim"
 
+# Declare an alias allowing to cross reference Sphinx / reStructuredText
+# documentation sections using the explicit target given in argument.
+ALIASES += rstref{1}="@verbatim embed:rst:inline :ref:`\1` @endverbatim"
+
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
 # instance, some of the names that are used will be different. The list of all
