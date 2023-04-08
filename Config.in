@@ -14,6 +14,14 @@ config STROLL_ASSERT_API
 	  that API functions exposed by Stroll will perform full verification of
 	  arguments consistency.
 
+config STROLL_ASSERT_INTERN
+	bool "Internal assertion"
+	select STROLL_ASSERT
+	default n
+	help
+	  Build stroll library with internal assertions enabled to check for
+	  internal Stroll behavioral consistency.
+
 config STROLL_UTEST
 	bool "Unit tests"
 	default n

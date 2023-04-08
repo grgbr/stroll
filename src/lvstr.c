@@ -172,7 +172,7 @@ stroll_lvstr_dup_cstr(const char * cstr, size_t len)
 {
 	stroll_lvstr_assert_intern(cstr);
 	stroll_lvstr_assert_intern(len <= STROLL_LVSTR_LEN_MAX);
-	stroll_lvstr_assert_intern(strnlen(cstr, STROLL_LVSTR_LEN_MAX) <= len);
+	stroll_lvstr_assert_intern(strnlen(cstr, STROLL_LVSTR_LEN_MAX) >= len);
 
 	char * str;
 
