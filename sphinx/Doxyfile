@@ -2349,13 +2349,14 @@ PREDEFINED             = __restrict= \
                          __nonull(...)= \
                          __stroll_nonull(...)= \
                          __nothrow= \
+                         __stroll_nothrow= \
                          __pure= \
 			 __stroll_pure= \
 			 __const= \
 			 __stroll_const= \
-			 __nothrow= \
 			 __warn_result= \
-                         __WORDSIZE=64
+                         __WORDSIZE=64 \
+			 __leaf=
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
