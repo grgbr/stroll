@@ -1064,7 +1064,7 @@ stroll_bmap_test_all(unsigned long bmap)
  * Set all bits of @p bmap bitmap which are set into @p mask.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_set_mask(uint32_t * bmap, uint32_t mask)
+stroll_bmap32_set_mask(uint32_t * __restrict bmap, uint32_t mask)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1080,7 +1080,7 @@ stroll_bmap32_set_mask(uint32_t * bmap, uint32_t mask)
  * Set all bits of @p bmap bitmap which are set into @p mask.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_set_mask(uint64_t * bmap, uint64_t mask)
+stroll_bmap64_set_mask(uint64_t * __restrict bmap, uint64_t mask)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1098,7 +1098,7 @@ stroll_bmap64_set_mask(uint64_t * bmap, uint64_t mask)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_set_mask(unsigned long * bmap, unsigned long mask)
+stroll_bmap_set_mask(unsigned long * __restrict bmap, unsigned long mask)
 {
 	stroll_bmap64_set_mask((uint64_t *)bmap, mask);
 }
@@ -1106,7 +1106,7 @@ stroll_bmap_set_mask(unsigned long * bmap, unsigned long mask)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_set_mask(unsigned long * bmap, unsigned long mask)
+stroll_bmap_set_mask(unsigned long * __restrict bmap, unsigned long mask)
 {
 	stroll_bmap32_set_mask((uint32_t *)bmap, mask);
 }
@@ -1127,7 +1127,7 @@ stroll_bmap_set_mask(unsigned long * bmap, unsigned long mask)
  * bit_no is `>= 32`, result is undefined. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_set(uint32_t * bmap, unsigned int bit_no)
+stroll_bmap32_set(uint32_t * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 32);
@@ -1149,7 +1149,7 @@ stroll_bmap32_set(uint32_t * bmap, unsigned int bit_no)
  * bit_no is `>= 64`, result is undefined. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_set(uint64_t * bmap, unsigned int bit_no)
+stroll_bmap64_set(uint64_t * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 64);
@@ -1176,7 +1176,7 @@ stroll_bmap64_set(uint64_t * bmap, unsigned int bit_no)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_set(unsigned long * bmap, unsigned int bit_no)
+stroll_bmap_set(unsigned long * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap64_set((uint64_t *)bmap, bit_no);
 }
@@ -1184,7 +1184,7 @@ stroll_bmap_set(unsigned long * bmap, unsigned int bit_no)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_set(unsigned long * bmap, unsigned int bit_no)
+stroll_bmap_set(unsigned long * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap32_set((uint32_t *)bmap, bit_no);
 }
@@ -1213,9 +1213,9 @@ stroll_bmap_set(unsigned long * bmap, unsigned int bit_no)
  *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_set_range(uint32_t *   bmap,
-                        unsigned int start_bit,
-                        unsigned int bit_count)
+stroll_bmap32_set_range(uint32_t *  __restrict bmap,
+                        unsigned int           start_bit,
+                        unsigned int           bit_count)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_count);
@@ -1246,9 +1246,9 @@ stroll_bmap32_set_range(uint32_t *   bmap,
  *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_set_range(uint64_t *   bmap,
-                        unsigned int start_bit,
-                        unsigned int bit_count)
+stroll_bmap64_set_range(uint64_t * __restrict bmap,
+                        unsigned int          start_bit,
+                        unsigned int          bit_count)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_count);
@@ -1283,9 +1283,9 @@ stroll_bmap64_set_range(uint64_t *   bmap,
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_set_range(unsigned long * bmap,
-                      unsigned int    start_bit,
-                      unsigned int    bit_count)
+stroll_bmap_set_range(unsigned long * __restrict bmap,
+                      unsigned int               start_bit,
+                      unsigned int               bit_count)
 {
 	stroll_bmap64_set_range((uint64_t *)bmap, start_bit, bit_count);
 }
@@ -1293,9 +1293,9 @@ stroll_bmap_set_range(unsigned long * bmap,
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_set_range(unsigned long * bmap,
-                      unsigned int    start_bit,
-                      unsigned int    bit_count)
+stroll_bmap_set_range(unsigned long * __restrict bmap,
+                      unsigned int               start_bit,
+                      unsigned int               bit_count)
 {
 	stroll_bmap32_set_range((uint32_t *)bmap, start_bit, bit_count);
 }
@@ -1308,7 +1308,7 @@ stroll_bmap_set_range(unsigned long * bmap,
  * @param[out] bmap Bitmap to set
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_set_all(uint32_t * bmap)
+stroll_bmap32_set_all(uint32_t * __restrict bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1321,7 +1321,7 @@ stroll_bmap32_set_all(uint32_t * bmap)
  * @param[out] bmap Bitmap to set
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_set_all(uint64_t * bmap)
+stroll_bmap64_set_all(uint64_t * __restrict bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1337,7 +1337,7 @@ stroll_bmap64_set_all(uint64_t * bmap)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_set_all(unsigned long * bmap)
+stroll_bmap_set_all(unsigned long * __restrict bmap)
 {
 	stroll_bmap64_set_all((uint64_t *)bmap);
 }
@@ -1345,7 +1345,7 @@ stroll_bmap_set_all(unsigned long * bmap)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_set_all(unsigned long * bmap)
+stroll_bmap_set_all(unsigned long * __restrict bmap)
 {
 	stroll_bmap32_set_all((uint32_t *)bmap);
 }
@@ -1361,7 +1361,7 @@ stroll_bmap_set_all(unsigned long * bmap)
  * Clear all bits of @p bmap bitmap which are set into @p mask.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_clear_mask(uint32_t * bmap, uint32_t mask)
+stroll_bmap32_clear_mask(uint32_t * __restrict bmap, uint32_t mask)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1377,7 +1377,7 @@ stroll_bmap32_clear_mask(uint32_t * bmap, uint32_t mask)
  * Clear all bits of @p bmap bitmap which are set into @p mask.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_clear_mask(uint64_t * bmap, uint64_t mask)
+stroll_bmap64_clear_mask(uint64_t * __restrict bmap, uint64_t mask)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1396,7 +1396,7 @@ stroll_bmap64_clear_mask(uint64_t * bmap, uint64_t mask)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_clear_mask(unsigned long * bmap, unsigned long mask)
+stroll_bmap_clear_mask(unsigned long * __restrict bmap, unsigned long mask)
 {
 	return stroll_bmap64_clear_mask((uint64_t *)bmap, mask);
 }
@@ -1404,7 +1404,7 @@ stroll_bmap_clear_mask(unsigned long * bmap, unsigned long mask)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_clear_mask(unsigned long * bmap, unsigned long mask)
+stroll_bmap_clear_mask(unsigned long * __restrict bmap, unsigned long mask)
 {
 	return stroll_bmap32_clear_mask((uint32_t *)bmap, mask);
 }
@@ -1425,7 +1425,7 @@ stroll_bmap_clear_mask(unsigned long * bmap, unsigned long mask)
  * bit_no is `>= 32`, result is undefined. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_clear(uint32_t * bmap, unsigned int bit_no)
+stroll_bmap32_clear(uint32_t * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 32);
@@ -1447,7 +1447,7 @@ stroll_bmap32_clear(uint32_t * bmap, unsigned int bit_no)
  * bit_no is `>= 64`, result is undefined. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_clear(uint64_t * bmap, unsigned int bit_no)
+stroll_bmap64_clear(uint64_t * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 64);
@@ -1474,7 +1474,7 @@ stroll_bmap64_clear(uint64_t * bmap, unsigned int bit_no)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_clear(unsigned long * bmap, unsigned int bit_no)
+stroll_bmap_clear(unsigned long * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap64_clear((uint64_t *)bmap, bit_no);
 }
@@ -1482,7 +1482,7 @@ stroll_bmap_clear(unsigned long * bmap, unsigned int bit_no)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_clear(unsigned long * bmap, unsigned int bit_no)
+stroll_bmap_clear(unsigned long * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap32_clear((uint32_t *)bmap, bit_no);
 }
@@ -1511,9 +1511,9 @@ stroll_bmap_clear(unsigned long * bmap, unsigned int bit_no)
  *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_clear_range(uint32_t *   bmap,
-                          unsigned int start_bit,
-                          unsigned int bit_count)
+stroll_bmap32_clear_range(uint32_t * __restrict bmap,
+                          unsigned int          start_bit,
+                          unsigned int          bit_count)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_count);
@@ -1545,9 +1545,9 @@ stroll_bmap32_clear_range(uint32_t *   bmap,
  *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_clear_range(uint64_t *   bmap,
-                          unsigned int start_bit,
-                          unsigned int bit_count)
+stroll_bmap64_clear_range(uint64_t * __restrict bmap,
+                          unsigned int          start_bit,
+                          unsigned int          bit_count)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_count);
@@ -1583,9 +1583,9 @@ stroll_bmap64_clear_range(uint64_t *   bmap,
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_clear_range(unsigned long * bmap,
-                        unsigned int    start_bit,
-                        unsigned int    bit_count)
+stroll_bmap_clear_range(unsigned long * __restrict bmap,
+                        unsigned int               start_bit,
+                        unsigned int               bit_count)
 {
 	stroll_bmap64_clear_range((uint64_t *)bmap, start_bit, bit_count);
 }
@@ -1593,9 +1593,9 @@ stroll_bmap_clear_range(unsigned long * bmap,
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_clear_range(unsigned long * bmap,
-                        unsigned int    start_bit,
-                        unsigned int    bit_count)
+stroll_bmap_clear_range(unsigned long * __restrict bmap,
+                        unsigned int               start_bit,
+                        unsigned int               bit_count)
 {
 	stroll_bmap32_clear_range((uint32_t *)bmap, start_bit, bit_count);
 }
@@ -1608,7 +1608,7 @@ stroll_bmap_clear_range(unsigned long * bmap,
  * @param[out] bmap Bitmap to clear
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_clear_all(uint32_t * bmap)
+stroll_bmap32_clear_all(uint32_t * __restrict bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1621,7 +1621,7 @@ stroll_bmap32_clear_all(uint32_t * bmap)
  * @param[out] bmap Bitmap to clear
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_clear_all(uint64_t * bmap)
+stroll_bmap64_clear_all(uint64_t * __restrict bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1637,7 +1637,7 @@ stroll_bmap64_clear_all(uint64_t * bmap)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_clear_all(unsigned long * bmap)
+stroll_bmap_clear_all(unsigned long * __restrict bmap)
 {
 	stroll_bmap64_clear_all((uint64_t *)bmap);
 }
@@ -1645,7 +1645,7 @@ stroll_bmap_clear_all(unsigned long * bmap)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_clear_all(unsigned long * bmap)
+stroll_bmap_clear_all(unsigned long * __restrict bmap)
 {
 	stroll_bmap32_clear_all((uint32_t *)bmap);
 }
@@ -1661,7 +1661,7 @@ stroll_bmap_clear_all(unsigned long * bmap)
  * Invert value of @p bmap bitmap bits which are set into @p mask.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_toggle_mask(uint32_t * bmap, uint32_t mask)
+stroll_bmap32_toggle_mask(uint32_t * __restrict bmap, uint32_t mask)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1677,7 +1677,7 @@ stroll_bmap32_toggle_mask(uint32_t * bmap, uint32_t mask)
  * Invert value of @p bmap bitmap bits which are set into @p mask.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_toggle_mask(uint64_t * bmap, uint64_t mask)
+stroll_bmap64_toggle_mask(uint64_t * __restrict bmap, uint64_t mask)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1696,7 +1696,7 @@ stroll_bmap64_toggle_mask(uint64_t * bmap, uint64_t mask)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_toggle_mask(unsigned long * bmap, unsigned long mask)
+stroll_bmap_toggle_mask(unsigned long * __restrict bmap, unsigned long mask)
 {
 	stroll_bmap64_toggle_mask((uint64_t *)bmap, mask);
 }
@@ -1704,7 +1704,7 @@ stroll_bmap_toggle_mask(unsigned long * bmap, unsigned long mask)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_toggle_mask(unsigned long * bmap, unsigned long mask)
+stroll_bmap_toggle_mask(unsigned long * __restrict bmap, unsigned long mask)
 {
 	stroll_bmap32_toggle_mask((uint32_t *)bmap, mask);
 }
@@ -1721,7 +1721,7 @@ stroll_bmap_toggle_mask(unsigned long * bmap, unsigned long mask)
  * Bit indices starts from 0.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_toggle(uint32_t * bmap, unsigned int bit_no)
+stroll_bmap32_toggle(uint32_t * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 32);
@@ -1739,7 +1739,7 @@ stroll_bmap32_toggle(uint32_t * bmap, unsigned int bit_no)
  * Bit indices starts from 0.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_toggle(uint64_t * bmap, unsigned int bit_no)
+stroll_bmap64_toggle(uint64_t * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_no < 64);
@@ -1760,7 +1760,7 @@ stroll_bmap64_toggle(uint64_t * bmap, unsigned int bit_no)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_toggle(unsigned long * bmap, unsigned int bit_no)
+stroll_bmap_toggle(unsigned long * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap64_toggle((uint64_t *)bmap, bit_no);
 }
@@ -1768,7 +1768,7 @@ stroll_bmap_toggle(unsigned long * bmap, unsigned int bit_no)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_toggle(unsigned long * bmap, unsigned int bit_no)
+stroll_bmap_toggle(unsigned long * __restrict bmap, unsigned int bit_no)
 {
 	stroll_bmap32_toggle((uint32_t *)bmap, bit_no);
 }
@@ -1797,9 +1797,9 @@ stroll_bmap_toggle(unsigned long * bmap, unsigned int bit_no)
  *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_toggle_range(uint32_t *   bmap,
-                           unsigned int start_bit,
-                           unsigned int bit_count)
+stroll_bmap32_toggle_range(uint32_t * __restrict bmap,
+                           unsigned int          start_bit,
+                           unsigned int          bit_count)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_count);
@@ -1831,9 +1831,9 @@ stroll_bmap32_toggle_range(uint32_t *   bmap,
  *   disabled. An assertion is triggered otherwise.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_toggle_range(uint64_t *   bmap,
-                           unsigned int start_bit,
-                           unsigned int bit_count)
+stroll_bmap64_toggle_range(uint64_t * __restrict bmap,
+                           unsigned int          start_bit,
+                           unsigned int          bit_count)
 {
 	stroll_bmap_assert_api(bmap);
 	stroll_bmap_assert_api(bit_count);
@@ -1869,9 +1869,9 @@ stroll_bmap64_toggle_range(uint64_t *   bmap,
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_toggle_range(unsigned long * bmap,
-                         unsigned int    start_bit,
-                         unsigned int    bit_count)
+stroll_bmap_toggle_range(unsigned long * __restrict bmap,
+                         unsigned int               start_bit,
+                         unsigned int               bit_count)
 {
 	stroll_bmap64_toggle_range((uint64_t *)bmap, start_bit, bit_count);
 }
@@ -1879,9 +1879,9 @@ stroll_bmap_toggle_range(unsigned long * bmap,
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_toggle_range(unsigned long * bmap,
-                         unsigned int    start_bit,
-                         unsigned int    bit_count)
+stroll_bmap_toggle_range(unsigned long * __restrict bmap,
+                         unsigned int               start_bit,
+                         unsigned int               bit_count)
 {
 	stroll_bmap32_toggle_range((uint32_t *)bmap, start_bit, bit_count);
 }
@@ -1896,7 +1896,7 @@ stroll_bmap_toggle_range(unsigned long * bmap,
  * Invert the value of all bits of @p bmap bitmap.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_toggle_all(uint32_t * bmap)
+stroll_bmap32_toggle_all(uint32_t * __restrict bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1911,7 +1911,7 @@ stroll_bmap32_toggle_all(uint32_t * bmap)
  * Invert the value of all bits of @p bmap bitmap.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_toggle_all(uint64_t * bmap)
+stroll_bmap64_toggle_all(uint64_t * __restrict bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1929,7 +1929,7 @@ stroll_bmap64_toggle_all(uint64_t * bmap)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_toggle_all(unsigned long * bmap)
+stroll_bmap_toggle_all(unsigned long * __restrict bmap)
 {
 	stroll_bmap64_toggle_all((uint64_t *)bmap);
 }
@@ -1937,7 +1937,7 @@ stroll_bmap_toggle_all(unsigned long * bmap)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_toggle_all(unsigned long * bmap)
+stroll_bmap_toggle_all(unsigned long * __restrict bmap)
 {
 	stroll_bmap32_toggle_all((uint32_t *)bmap);
 }
@@ -1955,7 +1955,7 @@ stroll_bmap_toggle_all(unsigned long * bmap)
  * @param[out] bmap Bitmap to setup.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_setup_set(uint32_t * bmap)
+stroll_bmap32_setup_set(uint32_t * __restrict bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1973,7 +1973,7 @@ stroll_bmap32_setup_set(uint32_t * bmap)
  * @param[out] bmap Bitmap to setup.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_setup_set(uint64_t * bmap)
+stroll_bmap64_setup_set(uint64_t * __restrict bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -1994,7 +1994,7 @@ stroll_bmap64_setup_set(uint64_t * bmap)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_setup_set(unsigned long * bmap)
+stroll_bmap_setup_set(unsigned long * __restrict bmap)
 {
 	stroll_bmap64_setup_set((uint64_t *)bmap);
 }
@@ -2002,7 +2002,7 @@ stroll_bmap_setup_set(unsigned long * bmap)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_setup_set(unsigned long * bmap)
+stroll_bmap_setup_set(unsigned long * __restrict bmap)
 {
 	stroll_bmap32_setup_set((uint32_t *)bmap);
 }
@@ -2020,7 +2020,7 @@ stroll_bmap_setup_set(unsigned long * bmap)
  * @param[out] bmap Bitmap to setup.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap32_setup_clear(uint32_t * bmap)
+stroll_bmap32_setup_clear(uint32_t * __restrict bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -2038,7 +2038,7 @@ stroll_bmap32_setup_clear(uint32_t * bmap)
  * @param[out] bmap Bitmap to setup.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap64_setup_clear(uint64_t * bmap)
+stroll_bmap64_setup_clear(uint64_t * __restrict bmap)
 {
 	stroll_bmap_assert_api(bmap);
 
@@ -2059,7 +2059,7 @@ stroll_bmap64_setup_clear(uint64_t * bmap)
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_setup_clear(unsigned long * bmap)
+stroll_bmap_setup_clear(unsigned long * __restrict bmap)
 {
 	stroll_bmap64_setup_clear((uint64_t *)bmap);
 }
@@ -2067,7 +2067,7 @@ stroll_bmap_setup_clear(unsigned long * bmap)
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_bmap_setup_clear(unsigned long * bmap)
+stroll_bmap_setup_clear(unsigned long * __restrict bmap)
 {
 	stroll_bmap32_setup_clear((uint32_t *)bmap);
 }
@@ -2075,7 +2075,8 @@ stroll_bmap_setup_clear(unsigned long * bmap)
 #endif
 
 static inline int __stroll_nonull(1, 2) __stroll_nothrow
-_stroll_bmap32_step_iter(uint32_t * iter, unsigned int * bit_no)
+_stroll_bmap32_step_iter(uint32_t * __restrict     iter,
+                         unsigned int * __restrict bit_no)
 {
 	stroll_bmap_assert_api(iter);
 	stroll_bmap_assert_api(bit_no);
@@ -2093,7 +2094,8 @@ _stroll_bmap32_step_iter(uint32_t * iter, unsigned int * bit_no)
 }
 
 static inline int __stroll_nonull(1, 2) __stroll_nothrow
-_stroll_bmap64_step_iter(uint64_t * iter, unsigned int * bit_no)
+_stroll_bmap64_step_iter(uint64_t * __restrict     iter,
+                         unsigned int * __restrict bit_no)
 {
 	stroll_bmap_assert_api(iter);
 	stroll_bmap_assert_api(bit_no);
@@ -2113,7 +2115,8 @@ _stroll_bmap64_step_iter(uint64_t * iter, unsigned int * bit_no)
 #if __WORDSIZE == 64
 
 static inline int __stroll_nonull(1, 2) __stroll_nothrow
-_stroll_bmap_step_iter(unsigned long * iter, unsigned int * bit_no)
+_stroll_bmap_step_iter(unsigned long * __restrict iter,
+                       unsigned int * __restrict  bit_no)
 {
 	return _stroll_bmap64_step_iter((uint64_t *)iter, bit_no);
 }
@@ -2121,7 +2124,8 @@ _stroll_bmap_step_iter(unsigned long * iter, unsigned int * bit_no)
 #elif __WORDSIZE == 32
 
 static inline int __stroll_nonull(1, 2) __stroll_nothrow
-_stroll_bmap_step_iter(unsigned long * iter, unsigned int * bit_no)
+_stroll_bmap_step_iter(unsigned long * __restrict iter,
+                       unsigned int * __restrict  bit_no)
 {
 	return _stroll_bmap32_step_iter((uint32_t *)iter, bit_no);
 }
@@ -2129,9 +2133,9 @@ _stroll_bmap_step_iter(unsigned long * iter, unsigned int * bit_no)
 #endif
 
 static inline void __stroll_nonull(1, 3) __stroll_nothrow
-_stroll_bmap32_setup_set_iter(uint32_t     * iter,
-                              uint32_t       bmap,
-                              unsigned int * bit_no)
+_stroll_bmap32_setup_set_iter(uint32_t * __restrict     iter,
+                              uint32_t                  bmap,
+                              unsigned int * __restrict bit_no)
 {
 	stroll_bmap_assert_api(iter);
 	stroll_bmap_assert_api(bit_no);
@@ -2157,9 +2161,9 @@ _stroll_bmap32_setup_set_iter(uint32_t     * iter,
 	    )
 
 static inline void __stroll_nonull(1, 3) __stroll_nothrow
-_stroll_bmap64_setup_set_iter(uint64_t     * iter,
-                              uint64_t       bmap,
-                              unsigned int * bit_no)
+_stroll_bmap64_setup_set_iter(uint64_t * __restrict     iter,
+                              uint64_t                  bmap,
+                              unsigned int * __restrict bit_no)
 {
 	stroll_bmap_assert_api(iter);
 	stroll_bmap_assert_api(bit_no);
@@ -2187,9 +2191,9 @@ _stroll_bmap64_setup_set_iter(uint64_t     * iter,
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1, 3) __stroll_nothrow
-_stroll_bmap_setup_set_iter(unsigned long * iter,
-                            unsigned long   bmap,
-                            unsigned int  * bit_no)
+_stroll_bmap_setup_set_iter(unsigned long * __restrict iter,
+                            unsigned long              bmap,
+                            unsigned int * __restrict  bit_no)
 {
 	_stroll_bmap64_setup_set_iter((uint64_t *)iter, bmap, bit_no);
 }
@@ -2197,9 +2201,9 @@ _stroll_bmap_setup_set_iter(unsigned long * iter,
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1, 3) __stroll_nothrow
-_stroll_bmap_setup_set_iter(unsigned long * iter,
-                            unsigned long   bmap,
-                            unsigned int  * bit_no)
+_stroll_bmap_setup_set_iter(unsigned long * __restrict iter,
+                            unsigned long              bmap,
+                            unsigned int * __restrict  bit_no)
 {
 	_stroll_bmap32_setup_set_iter((uint32_t *)iter, bmap, bit_no);
 }
@@ -2222,9 +2226,9 @@ _stroll_bmap_setup_set_iter(unsigned long * iter,
 	    )
 
 static inline void __stroll_nonull(1, 3) __stroll_nothrow
-_stroll_bmap32_setup_clear_iter(uint32_t     * iter,
-                                uint32_t       bmap,
-                                unsigned int * bit_no)
+_stroll_bmap32_setup_clear_iter(uint32_t * __restrict     iter,
+                                uint32_t                  bmap,
+                                unsigned int * __restrict bit_no)
 {
 	stroll_bmap_assert_api(iter);
 	stroll_bmap_assert_api(bit_no);
@@ -2250,9 +2254,9 @@ _stroll_bmap32_setup_clear_iter(uint32_t     * iter,
 	    )
 
 static inline void __stroll_nonull(1, 3) __stroll_nothrow
-_stroll_bmap64_setup_clear_iter(uint64_t     * iter,
-                                uint64_t       bmap,
-                                unsigned int * bit_no)
+_stroll_bmap64_setup_clear_iter(uint64_t * __restrict     iter,
+                                uint64_t                  bmap,
+                                unsigned int * __restrict bit_no)
 {
 	stroll_bmap_assert_api(iter);
 	stroll_bmap_assert_api(bit_no);
@@ -2280,9 +2284,9 @@ _stroll_bmap64_setup_clear_iter(uint64_t     * iter,
 #if __WORDSIZE == 64
 
 static inline void __stroll_nonull(1, 3) __stroll_nothrow
-_stroll_bmap_setup_clear_iter(unsigned long * iter,
-                              unsigned long   bmap,
-                              unsigned int  * bit_no)
+_stroll_bmap_setup_clear_iter(unsigned long * __restrict iter,
+                              unsigned long              bmap,
+                              unsigned int  * __restrict bit_no)
 {
 	_stroll_bmap64_setup_clear_iter((uint64_t *)iter, bmap, bit_no);
 }
@@ -2290,9 +2294,9 @@ _stroll_bmap_setup_clear_iter(unsigned long * iter,
 #elif __WORDSIZE == 32
 
 static inline void __stroll_nonull(1, 3) __stroll_nothrow
-_stroll_bmap_setup_clear_iter(unsigned long * iter,
-                              unsigned long   bmap,
-                              unsigned int  * bit_no)
+_stroll_bmap_setup_clear_iter(unsigned long * __restrict iter,
+                              unsigned long              bmap,
+                              unsigned int  * __restrict bit_no)
 {
 	_stroll_bmap32_setup_clear_iter((uint32_t *)iter, bmap, bit_no);
 }

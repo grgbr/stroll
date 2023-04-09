@@ -177,7 +177,7 @@ struct stroll_lvstr {
  */
 static inline
 const char * __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
-stroll_lvstr_cstr(const struct stroll_lvstr * lvstr)
+stroll_lvstr_cstr(const struct stroll_lvstr * __restrict lvstr)
 {
 	stroll_lvstr_assert_api(lvstr);
 
@@ -201,7 +201,7 @@ stroll_lvstr_cstr(const struct stroll_lvstr * lvstr)
  */
 static inline
 size_t __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
-stroll_lvstr_len(const struct stroll_lvstr * lvstr)
+stroll_lvstr_len(const struct stroll_lvstr * __restrict lvstr)
 {
 	stroll_lvstr_assert_api(lvstr);
 	stroll_lvstr_assert_api(lvstr->cstr);
@@ -243,7 +243,9 @@ stroll_lvstr_len(const struct stroll_lvstr * lvstr)
  * - stroll_lvstr_lend()
  */
 extern void
-stroll_lvstr_nlend(struct stroll_lvstr * lvstr, const char * cstr, size_t len)
+stroll_lvstr_nlend(struct stroll_lvstr * __restrict lvstr,
+                   const char *                     cstr,
+                   size_t                           len)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
@@ -274,7 +276,7 @@ stroll_lvstr_nlend(struct stroll_lvstr * lvstr, const char * cstr, size_t len)
  * - stroll_lvstr_init_lend()
  */
 extern int
-stroll_lvstr_lend(struct stroll_lvstr * lvstr, const char * cstr)
+stroll_lvstr_lend(struct stroll_lvstr * __restrict lvstr, const char * cstr)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
@@ -311,7 +313,9 @@ stroll_lvstr_lend(struct stroll_lvstr * lvstr, const char * cstr)
  * - stroll_lvstr_cede()
  */
 extern void
-stroll_lvstr_ncede(struct stroll_lvstr * lvstr, char * cstr, size_t len)
+stroll_lvstr_ncede(struct stroll_lvstr * __restrict lvstr,
+                   char *                           cstr,
+                   size_t                           len)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
@@ -343,7 +347,7 @@ stroll_lvstr_ncede(struct stroll_lvstr * lvstr, char * cstr, size_t len)
  * - stroll_lvstr_ncede()
  */
 extern int
-stroll_lvstr_cede(struct stroll_lvstr * lvstr, char * cstr)
+stroll_lvstr_cede(struct stroll_lvstr * __restrict lvstr, char * cstr)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
@@ -389,7 +393,9 @@ stroll_lvstr_cede(struct stroll_lvstr * lvstr, char * cstr)
  * - stroll_lvstr_ncede()
  */
 extern int
-stroll_lvstr_ndup(struct stroll_lvstr * lvstr, const char * cstr, size_t len)
+stroll_lvstr_ndup(struct stroll_lvstr * __restrict lvstr,
+                  const char *                     cstr,
+                  size_t                           len)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
 /**
@@ -425,7 +431,7 @@ stroll_lvstr_ndup(struct stroll_lvstr * lvstr, const char * cstr, size_t len)
  * - stroll_lvstr_cede()
  */
 extern int
-stroll_lvstr_dup(struct stroll_lvstr * lvstr, const char * cstr)
+stroll_lvstr_dup(struct stroll_lvstr * __restrict lvstr, const char * cstr)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
 /**
@@ -457,9 +463,9 @@ stroll_lvstr_dup(struct stroll_lvstr * lvstr, const char * cstr)
  * - stroll_lvstr_init_lend()
  */
 static inline void __stroll_nonull(1, 2) __stroll_nothrow
-stroll_lvstr_init_nlend(struct stroll_lvstr * lvstr,
-                        const char          * cstr,
-                        size_t                len)
+stroll_lvstr_init_nlend(struct stroll_lvstr * __restrict lvstr,
+                        const char *                     cstr,
+                        size_t                           len)
 {
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
 
@@ -490,7 +496,8 @@ stroll_lvstr_init_nlend(struct stroll_lvstr * lvstr,
  * stroll_lvstr_init_nlend()
  */
 extern int
-stroll_lvstr_init_lend(struct stroll_lvstr * lvstr, const char * cstr)
+stroll_lvstr_init_lend(struct stroll_lvstr * __restrict lvstr,
+                       const char *                     cstr)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
@@ -522,7 +529,9 @@ stroll_lvstr_init_lend(struct stroll_lvstr * lvstr, const char * cstr)
  * - stroll_lvstr_init_cede()
  */
 static inline void __stroll_nonull(1, 2) __stroll_nothrow
-stroll_lvstr_init_ncede(struct stroll_lvstr * lvstr, char * cstr, size_t len)
+stroll_lvstr_init_ncede(struct stroll_lvstr * __restrict lvstr,
+                        char *                           cstr,
+                        size_t                           len)
 {
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
 
@@ -553,7 +562,7 @@ stroll_lvstr_init_ncede(struct stroll_lvstr * lvstr, char * cstr, size_t len)
  * stroll_lvstr_init_ncede()
  */
 extern int
-stroll_lvstr_init_cede(struct stroll_lvstr * lvstr, char * cstr)
+stroll_lvstr_init_cede(struct stroll_lvstr * __restrict lvstr, char * cstr)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
@@ -589,9 +598,9 @@ stroll_lvstr_init_cede(struct stroll_lvstr * lvstr, char * cstr)
  * stroll_lvstr_init_dup()
  */
 extern int
-stroll_lvstr_init_ndup(struct stroll_lvstr * lvstr,
-                       const char          * cstr,
-                       size_t                len)
+stroll_lvstr_init_ndup(struct stroll_lvstr * __restrict lvstr,
+                       const char *                     cstr,
+                       size_t                           len)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
 /**
@@ -619,7 +628,8 @@ stroll_lvstr_init_ndup(struct stroll_lvstr * lvstr,
  * stroll_lvstr_init_ndup()
  */
 extern int
-stroll_lvstr_init_dup(struct stroll_lvstr * lvstr, const char * cstr)
+stroll_lvstr_init_dup(struct stroll_lvstr * __restrict lvstr,
+                      const char *                     cstr)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
 /**
@@ -638,7 +648,7 @@ stroll_lvstr_init_dup(struct stroll_lvstr * lvstr, const char * cstr)
  * stroll_lvstr_fini()
  */
 extern void
-stroll_lvstr_drop(struct stroll_lvstr * lvstr)
+stroll_lvstr_drop(struct stroll_lvstr * __restrict lvstr)
 	__stroll_nonull(1) __stroll_nothrow __leaf;
 
 /**
@@ -650,7 +660,7 @@ stroll_lvstr_drop(struct stroll_lvstr * lvstr)
  * STROLL_LVSTR_INIT
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
-stroll_lvstr_init(struct stroll_lvstr * lvstr)
+stroll_lvstr_init(struct stroll_lvstr * __restrict lvstr)
 {
 	stroll_lvstr_assert_api(lvstr);
 
@@ -682,7 +692,7 @@ stroll_lvstr_init(struct stroll_lvstr * lvstr)
  * - stroll_lvstr_drop()
  */
 extern void
-stroll_lvstr_fini(struct stroll_lvstr * lvstr)
+stroll_lvstr_fini(struct stroll_lvstr * __restrict lvstr)
 	__stroll_nonull(1) __stroll_nothrow __leaf;
 
 #endif /* _STROLL_LVSTR_H */
