@@ -7,9 +7,12 @@ stroll_lvstr_utest_empty(void ** state __unused)
 	struct stroll_lvstr lvstr = STROLL_LVSTR_INIT;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
+	const char * str __unused;
+	size_t       len __unused;
+
 	expect_assert_failure(stroll_lvstr_init(NULL));
-	expect_assert_failure(stroll_lvstr_cstr(NULL));
-	expect_assert_failure(stroll_lvstr_len(NULL));
+	expect_assert_failure(str = stroll_lvstr_cstr(NULL));
+	expect_assert_failure(len = stroll_lvstr_len(NULL));
 	expect_assert_failure(stroll_lvstr_fini(NULL));
 #endif
 
@@ -233,15 +236,16 @@ stroll_lvstr_utest_ndup(void ** state __unused)
 	const char          * str2 = "test2";
 	size_t                len2 = strlen(str2);
 	struct stroll_lvstr   lvstr;
+	int                   ret __unused;
 
 	lvstr.len = 0xdeadbeef;
 	lvstr.cstr = (void *)0xdeadbeef;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_lvstr_init_ndup(NULL, str1, len1));
-	expect_assert_failure(stroll_lvstr_init_ndup(&lvstr, NULL, len1));
+	expect_assert_failure(ret = stroll_lvstr_init_ndup(NULL, str1, len1));
+	expect_assert_failure(ret = stroll_lvstr_init_ndup(&lvstr, NULL, len1));
 #endif
-	stroll_lvstr_init_ndup(&lvstr, str1, len1);
+	assert_int_equal(stroll_lvstr_init_ndup(&lvstr, str1, len1), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str1);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len1);
 	stroll_utest_expect_free_arg(lvstr.cstr, len1 + 1);
@@ -250,7 +254,7 @@ stroll_lvstr_utest_ndup(void ** state __unused)
 	lvstr.len = 0xdeadbeef;
 	lvstr.cstr = (void *)0xdeadbeef;
 
-	stroll_lvstr_init_ndup(&lvstr, str2, len2 - 1);
+	assert_int_equal(stroll_lvstr_init_ndup(&lvstr, str2, len2 - 1), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str1);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len2 - 1);
 	stroll_utest_expect_free_arg(lvstr.cstr, len2 - 1);
@@ -259,15 +263,15 @@ stroll_lvstr_utest_ndup(void ** state __unused)
 	lvstr.len = 0xdeadbeef;
 	lvstr.cstr = (void *)0xdeadbeef;
 
-	stroll_lvstr_init_ndup(&lvstr, str1, len1);
+	assert_int_equal(stroll_lvstr_init_ndup(&lvstr, str1, len1), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str1);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len1);
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_lvstr_ndup(NULL, str2, len2));
-	expect_assert_failure(stroll_lvstr_ndup(&lvstr, NULL, len2));
+	expect_assert_failure(ret = stroll_lvstr_ndup(NULL, str2, len2));
+	expect_assert_failure(ret = stroll_lvstr_ndup(&lvstr, NULL, len2));
 #endif
-	stroll_lvstr_ndup(&lvstr, str2, len2);
+	assert_int_equal(stroll_lvstr_ndup(&lvstr, str2, len2), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str2);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len2);
 
@@ -283,15 +287,16 @@ stroll_lvstr_utest_dup(void ** state __unused)
 	const char          * str2 = "test2";
 	size_t                len2 = strlen(str2);
 	struct stroll_lvstr   lvstr;
+	int                   ret __unused;
 
 	lvstr.len = 0xdeadbeef;
 	lvstr.cstr = (void *)0xdeadbeef;
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_lvstr_init_dup(NULL, str1));
-	expect_assert_failure(stroll_lvstr_init_dup(&lvstr, NULL));
+	expect_assert_failure(ret = stroll_lvstr_init_dup(NULL, str1));
+	expect_assert_failure(ret = stroll_lvstr_init_dup(&lvstr, NULL));
 #endif
-	stroll_lvstr_init_dup(&lvstr, str1);
+	assert_int_equal(stroll_lvstr_init_dup(&lvstr, str1), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str1);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len1);
 	stroll_utest_expect_free_arg(lvstr.cstr, len1 + 1);
@@ -300,15 +305,15 @@ stroll_lvstr_utest_dup(void ** state __unused)
 	lvstr.len = 0xdeadbeef;
 	lvstr.cstr = (void *)0xdeadbeef;
 
-	stroll_lvstr_init_dup(&lvstr, str1);
+	assert_int_equal(stroll_lvstr_init_dup(&lvstr, str1), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str1);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len1);
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-	expect_assert_failure(stroll_lvstr_dup(NULL, str2));
-	expect_assert_failure(stroll_lvstr_dup(&lvstr, NULL));
+	expect_assert_failure(ret = stroll_lvstr_dup(NULL, str2));
+	expect_assert_failure(ret = stroll_lvstr_dup(&lvstr, NULL));
 #endif
-	stroll_lvstr_ndup(&lvstr, str2, len2);
+	assert_int_equal(stroll_lvstr_ndup(&lvstr, str2, len2), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str2);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len2);
 
@@ -377,7 +382,7 @@ stroll_lvstr_utest_drop_init(void ** state __unused)
 
 	lvstr.len = 0xdeadbeef;
 	lvstr.cstr = (void *)0xdeadbeef;
-	stroll_lvstr_init_ndup(&lvstr, str, len);
+	assert_int_equal(stroll_lvstr_init_ndup(&lvstr, str, len), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len);
 	stroll_utest_expect_free_arg(lvstr.cstr, len + 1);
@@ -387,7 +392,7 @@ stroll_lvstr_utest_drop_init(void ** state __unused)
 
 	lvstr.len = 0xdeadbeef;
 	lvstr.cstr = (void *)0xdeadbeef;
-	stroll_lvstr_init_dup(&lvstr, str);
+	assert_int_equal(stroll_lvstr_init_dup(&lvstr, str), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len);
 	stroll_utest_expect_free_arg(lvstr.cstr, len + 1);
@@ -456,7 +461,7 @@ stroll_lvstr_utest_drop(void ** state __unused)
 	lvstr.cstr = (void *)0xdeadbeef;
 	stroll_lvstr_init(&lvstr);
 	assert_null(stroll_lvstr_cstr(&lvstr));
-	stroll_lvstr_ndup(&lvstr, str, len);
+	assert_int_equal(stroll_lvstr_ndup(&lvstr, str, len), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len);
 	stroll_utest_expect_free_arg(lvstr.cstr, len + 1);
@@ -468,7 +473,7 @@ stroll_lvstr_utest_drop(void ** state __unused)
 	lvstr.cstr = (void *)0xdeadbeef;
 	stroll_lvstr_init(&lvstr);
 	assert_null(stroll_lvstr_cstr(&lvstr));
-	stroll_lvstr_dup(&lvstr, str);
+	assert_int_equal(stroll_lvstr_dup(&lvstr, str), 0);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len);
 	stroll_utest_expect_free_arg(lvstr.cstr, len + 1);
@@ -530,7 +535,7 @@ stroll_lvstr_utest_dup_release(void ** state __unused)
 	lvstr.cstr = (void *)0xdeadbeef;
 	stroll_lvstr_init(&lvstr);
 	assert_null(stroll_lvstr_cstr(&lvstr));
-	stroll_lvstr_ndup(&lvstr, str1, len1);
+	assert_int_equal(stroll_lvstr_ndup(&lvstr, str1, len1), 0);
 	tmp = stroll_lvstr_cstr(&lvstr);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), tmp);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len1);
@@ -545,7 +550,7 @@ stroll_lvstr_utest_dup_release(void ** state __unused)
 	lvstr.cstr = (void *)0xdeadbeef;
 	stroll_lvstr_init(&lvstr);
 	assert_null(stroll_lvstr_cstr(&lvstr));
-	stroll_lvstr_dup(&lvstr, str1);
+	assert_int_equal(stroll_lvstr_dup(&lvstr, str1), 0);
 	tmp = stroll_lvstr_cstr(&lvstr);
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), tmp);
 	assert_int_equal(stroll_lvstr_len(&lvstr), len1);

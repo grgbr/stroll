@@ -74,6 +74,7 @@ internals and meant for application development purposes. These are:
       * :c:macro:`__leaf`
       * :c:macro:`__nonull`
       * :c:macro:`__noreturn`
+      * :c:macro:`__nothrow`
       * :c:macro:`__packed`
       * :c:macro:`__printf`
       * :c:macro:`__pure`
@@ -410,6 +411,11 @@ __noreturn
 **********
 
 .. doxygendefine:: __noreturn
+
+__nothrow
+*********
+
+.. doxygendefine:: __nothrow
 
 __packed
 ********

@@ -45,7 +45,7 @@
 	stroll_lvstr_assert_api(_lvstr); \
 	stroll_lvstr_assert_api(_cstr)
 
-static ssize_t
+static ssize_t __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 stroll_lvstr_check_cstr(const char * cstr)
 {
 	stroll_lvstr_assert_intern(cstr);
@@ -74,7 +74,7 @@ stroll_lvstr_check_cstr(const char * cstr)
 	return (ssize_t)len;
 }
 
-static bool
+static bool __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 stroll_lvstr_owns(const struct stroll_lvstr * lvstr)
 {
 	stroll_lvstr_assert_intern(lvstr);
@@ -82,7 +82,7 @@ stroll_lvstr_owns(const struct stroll_lvstr * lvstr)
 	return !!(lvstr->cstr && (lvstr->len & 1UL));
 }
 
-static void
+static void __stroll_nonull(1) __stroll_nothrow
 stroll_lvstr_release(struct stroll_lvstr * lvstr)
 {
 	stroll_lvstr_assert_intern(lvstr);
@@ -100,7 +100,7 @@ stroll_lvstr_drop(struct stroll_lvstr * lvstr)
 	lvstr->cstr = NULL;
 }
 
-static void
+static void __stroll_nonull(1, 2) __stroll_nothrow
 stroll_lvstr_set(struct stroll_lvstr * lvstr,
                  char                * cstr,
                  size_t                len,
@@ -167,7 +167,7 @@ stroll_lvstr_cede(struct stroll_lvstr * lvstr, char * cstr)
 	return 0;
 }
 
-static char *
+static char * __stroll_nonull(1) __stroll_nothrow __warn_result
 stroll_lvstr_dup_cstr(const char * cstr, size_t len)
 {
 	stroll_lvstr_assert_intern(cstr);

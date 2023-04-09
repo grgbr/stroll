@@ -175,7 +175,8 @@ struct stroll_lvstr {
  *
  * @return Registered NULL terminated string or NULL if no string is registered.
  */
-static inline const char *
+static inline
+const char * __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 stroll_lvstr_cstr(const struct stroll_lvstr * lvstr)
 {
 	stroll_lvstr_assert_api(lvstr);
@@ -198,7 +199,8 @@ stroll_lvstr_cstr(const struct stroll_lvstr * lvstr)
  * @see
  * stroll_lvstr_cstr()
  */
-static inline size_t
+static inline
+size_t __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 stroll_lvstr_len(const struct stroll_lvstr * lvstr)
 {
 	stroll_lvstr_assert_api(lvstr);
@@ -241,7 +243,8 @@ stroll_lvstr_len(const struct stroll_lvstr * lvstr)
  * - stroll_lvstr_lend()
  */
 extern void
-stroll_lvstr_nlend(struct stroll_lvstr * lvstr, const char * cstr, size_t len);
+stroll_lvstr_nlend(struct stroll_lvstr * lvstr, const char * cstr, size_t len)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
  * Register a C string which length is not known.
@@ -271,7 +274,8 @@ stroll_lvstr_nlend(struct stroll_lvstr * lvstr, const char * cstr, size_t len);
  * - stroll_lvstr_init_lend()
  */
 extern int
-stroll_lvstr_lend(struct stroll_lvstr * lvstr, const char * cstr);
+stroll_lvstr_lend(struct stroll_lvstr * lvstr, const char * cstr)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
  * Register a C string which length is known and grant lvstr ownership of it.
@@ -307,7 +311,8 @@ stroll_lvstr_lend(struct stroll_lvstr * lvstr, const char * cstr);
  * - stroll_lvstr_cede()
  */
 extern void
-stroll_lvstr_ncede(struct stroll_lvstr * lvstr, char * cstr, size_t len);
+stroll_lvstr_ncede(struct stroll_lvstr * lvstr, char * cstr, size_t len)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
  * Register a C string which length is not known and grant lvstr ownership of
@@ -338,7 +343,8 @@ stroll_lvstr_ncede(struct stroll_lvstr * lvstr, char * cstr, size_t len);
  * - stroll_lvstr_ncede()
  */
 extern int
-stroll_lvstr_cede(struct stroll_lvstr * lvstr, char * cstr);
+stroll_lvstr_cede(struct stroll_lvstr * lvstr, char * cstr)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
  * Duplicate a C string which length is known and grant lvstr ownership of it.
@@ -383,7 +389,8 @@ stroll_lvstr_cede(struct stroll_lvstr * lvstr, char * cstr);
  * - stroll_lvstr_ncede()
  */
 extern int
-stroll_lvstr_ndup(struct stroll_lvstr * lvstr, const char * cstr, size_t len);
+stroll_lvstr_ndup(struct stroll_lvstr * lvstr, const char * cstr, size_t len)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
 /**
  * Duplicate a C string which length is not known and grant lvstr ownership of
@@ -418,7 +425,8 @@ stroll_lvstr_ndup(struct stroll_lvstr * lvstr, const char * cstr, size_t len);
  * - stroll_lvstr_cede()
  */
 extern int
-stroll_lvstr_dup(struct stroll_lvstr * lvstr, const char * cstr);
+stroll_lvstr_dup(struct stroll_lvstr * lvstr, const char * cstr)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
 /**
  * Initialize a non-owning stroll_lvstr with a string which length is known.
@@ -448,7 +456,7 @@ stroll_lvstr_dup(struct stroll_lvstr * lvstr, const char * cstr);
  * - STROLL_LVSTR_INIT_NLEND()
  * - stroll_lvstr_init_lend()
  */
-static inline void
+static inline void __stroll_nonull(1, 2) __stroll_nothrow
 stroll_lvstr_init_nlend(struct stroll_lvstr * lvstr,
                         const char          * cstr,
                         size_t                len)
@@ -482,7 +490,8 @@ stroll_lvstr_init_nlend(struct stroll_lvstr * lvstr,
  * stroll_lvstr_init_nlend()
  */
 extern int
-stroll_lvstr_init_lend(struct stroll_lvstr * lvstr, const char * cstr);
+stroll_lvstr_init_lend(struct stroll_lvstr * lvstr, const char * cstr)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
  * Initialize an owning stroll_lvstr with a string which length is known.
@@ -512,7 +521,7 @@ stroll_lvstr_init_lend(struct stroll_lvstr * lvstr, const char * cstr);
  * - STROLL_LVSTR_INIT_NCEDE()
  * - stroll_lvstr_init_cede()
  */
-static inline void
+static inline void __stroll_nonull(1, 2) __stroll_nothrow
 stroll_lvstr_init_ncede(struct stroll_lvstr * lvstr, char * cstr, size_t len)
 {
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
@@ -544,7 +553,8 @@ stroll_lvstr_init_ncede(struct stroll_lvstr * lvstr, char * cstr, size_t len)
  * stroll_lvstr_init_ncede()
  */
 extern int
-stroll_lvstr_init_cede(struct stroll_lvstr * lvstr, char * cstr);
+stroll_lvstr_init_cede(struct stroll_lvstr * lvstr, char * cstr)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
 /**
  * Initialize an owning stroll_lvstr with a duplicated string which length is
@@ -581,7 +591,8 @@ stroll_lvstr_init_cede(struct stroll_lvstr * lvstr, char * cstr);
 extern int
 stroll_lvstr_init_ndup(struct stroll_lvstr * lvstr,
                        const char          * cstr,
-                       size_t                len);
+                       size_t                len)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
 /**
  * Initialize an owning stroll_lvstr with a duplicated string which length is
@@ -608,7 +619,8 @@ stroll_lvstr_init_ndup(struct stroll_lvstr * lvstr,
  * stroll_lvstr_init_ndup()
  */
 extern int
-stroll_lvstr_init_dup(struct stroll_lvstr * lvstr, const char * cstr);
+stroll_lvstr_init_dup(struct stroll_lvstr * lvstr, const char * cstr)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
 /**
  * Release a previously registered string.
@@ -626,7 +638,8 @@ stroll_lvstr_init_dup(struct stroll_lvstr * lvstr, const char * cstr);
  * stroll_lvstr_fini()
  */
 extern void
-stroll_lvstr_drop(struct stroll_lvstr * lvstr);
+stroll_lvstr_drop(struct stroll_lvstr * lvstr)
+	__stroll_nonull(1) __stroll_nothrow __leaf;
 
 /**
  * Initialize an empty stroll_lvstr.
@@ -636,7 +649,7 @@ stroll_lvstr_drop(struct stroll_lvstr * lvstr);
  * @see
  * STROLL_LVSTR_INIT
  */
-static inline void
+static inline void __stroll_nonull(1) __stroll_nothrow
 stroll_lvstr_init(struct stroll_lvstr * lvstr)
 {
 	stroll_lvstr_assert_api(lvstr);
@@ -669,6 +682,7 @@ stroll_lvstr_init(struct stroll_lvstr * lvstr)
  * - stroll_lvstr_drop()
  */
 extern void
-stroll_lvstr_fini(struct stroll_lvstr * lvstr);
+stroll_lvstr_fini(struct stroll_lvstr * lvstr)
+	__stroll_nonull(1) __stroll_nothrow __leaf;
 
 #endif /* _STROLL_LVSTR_H */

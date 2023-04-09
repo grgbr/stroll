@@ -126,7 +126,7 @@ stroll_bops_ffs(unsigned long value)
  * @p value is zero, result is undefined. A zero @p value triggers an assertion
  * otherwise.
  */
-static inline unsigned int __stroll_const __nothrow
+static inline unsigned int __stroll_const __stroll_nothrow
 stroll_bops32_fls(uint32_t value)
 {
 	stroll_bops_assert_api(value);
@@ -149,7 +149,7 @@ stroll_bops32_fls(uint32_t value)
 
 #if __WORDSIZE == 64
 
-static inline unsigned int __stroll_const __nothrow
+static inline unsigned int __stroll_const __stroll_nothrow
 stroll_bops64_fls(uint64_t value)
 {
 	stroll_bops_assert_api(value);
@@ -159,7 +159,7 @@ stroll_bops64_fls(uint64_t value)
 
 #elif __WORDSIZE == 32
 
-static inline unsigned int __stroll_const __nothrow
+static inline unsigned int __stroll_const __stroll_nothrow
 stroll_bops64_fls(uint64_t value)
 {
 	stroll_bops_assert_api(value);
@@ -184,7 +184,7 @@ stroll_bops64_fls(uint64_t value)
 
 #if __WORDSIZE == 64
 
-static inline unsigned int __stroll_const __nothrow
+static inline unsigned int __stroll_const __stroll_nothrow
 stroll_bops_fls(unsigned long value)
 {
 	return stroll_bops64_fls(value);
@@ -192,7 +192,7 @@ stroll_bops_fls(unsigned long value)
 
 #elif __WORDSIZE == 32
 
-static inline unsigned int __stroll_const __nothrow
+static inline unsigned int __stroll_const __stroll_nothrow
 stroll_bops_fls(unsigned long value)
 {
 	return stroll_bops32_fls(value);

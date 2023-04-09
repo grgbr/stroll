@@ -102,15 +102,17 @@
  * @see #__nonull
  */
 
-#if defined(CONFIG_STROLL_ASSERT_API)
+#if defined(CONFIG_STROLL_ASSERT_API) || defined(CONFIG_STROLL_ASSERT_INTERN)
 
 #define __stroll_nonull(_arg_index, ...)
 
-#else /* !defined(CONFIG_STROLL_ASSERT_API) */
+#else  /* !(defined(CONFIG_STROLL_ASSERT_API) || \
+            defined(CONFIG_STROLL_ASSERT_INTERN)) */
 
 #define __stroll_nonull(_arg_index, ...) __nonull(_arg_index, ## __VA_ARGS__)
 
-#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+#endif /* defined(CONFIG_STROLL_ASSERT_API) || \
+          defined(CONFIG_STROLL_ASSERT_INTERN) */
 
 /**
  * Tell compiler to check for printf() style format string argument consistency.
@@ -129,6 +131,32 @@
  * @see [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
  */
 #define __nothrow __attribute__((nothrow))
+
+/**
+ * @internal
+ *
+ * Tell compiler that a function does not throw exceptions.
+ *
+ * @note
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option enabled, this
+ * macro expands as empty since a function triggering a Stroll assertion calls
+ * @man{fprintf(3)} which is itself a cancellation point.
+ *
+ * @see #__nothrow
+ * @see stroll_assert_fail()
+ */
+
+#if defined(CONFIG_STROLL_ASSERT_API) || defined(CONFIG_STROLL_ASSERT_INTERN)
+
+#define __stroll_nothrow
+
+#else  /* !(defined(CONFIG_STROLL_ASSERT_API) || \
+            defined(CONFIG_STROLL_ASSERT_INTERN)) */
+
+#define __stroll_nothrow __nothrow
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) || \
+          defined(CONFIG_STROLL_ASSERT_INTERN) */
 
 /**
  * Declare a function to the compiler as a leaf.
@@ -170,21 +198,24 @@
  *
  * @note
  * When compiled with the #CONFIG_STROLL_ASSERT_API build option enabled, this
- * macro expands as empty since a function triggering an assertion cannot be
- * #__pure.
+ * macro expands as empty since a function triggering a Stroll assertion, which
+ * itself calls @man{fprintf(3)}, cannot be #__pure.
  *
  * @see #__pure
+ * @see stroll_assert_fail()
  */
 
-#if defined(CONFIG_STROLL_ASSERT_API)
+#if defined(CONFIG_STROLL_ASSERT_API) || defined(CONFIG_STROLL_ASSERT_INTERN)
 
 #define __stroll_pure
 
-#else /* !defined(CONFIG_STROLL_ASSERT_API) */
+#else  /* !(defined(CONFIG_STROLL_ASSERT_API) || \
+            defined(CONFIG_STROLL_ASSERT_INTERN)) */
 
 #define __stroll_pure __pure
 
-#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+#endif /* defined(CONFIG_STROLL_ASSERT_API) || \
+          defined(CONFIG_STROLL_ASSERT_INTERN) */
 
 /**
  * Declare a function to the compiler as const.
@@ -216,21 +247,24 @@
  *
  * @note
  * When compiled with the #CONFIG_STROLL_ASSERT_API build option enabled, this
- * macro expands as empty since a function triggering an assertion cannot be
- * #__const.
+ * macro expands as empty since a function triggering a Stroll assertion, which
+ * itself calls @man{fprintf(3)}, cannot be #__const.
  *
  * @see #__const
+ * @see stroll_assert_fail()
  */
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 
 #define __stroll_const
 
-#else /* !defined(CONFIG_STROLL_ASSERT_API) */
+#else  /* !(defined(CONFIG_STROLL_ASSERT_API) || \
+            defined(CONFIG_STROLL_ASSERT_INTERN)) */
 
 #define __stroll_const __const
 
-#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+#endif /* defined(CONFIG_STROLL_ASSERT_API) || \
+          defined(CONFIG_STROLL_ASSERT_INTERN) */
 
 /**
  * Declare a variable or type to the compiler as packed.
