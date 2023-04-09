@@ -378,7 +378,7 @@
  * - [GCC common type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
  */
 #define __export_protect \
-	__attribute__((visibility("default")))
+	__attribute__((visibility("protected")))
 
 #define _STROLL_CONCAT(_a, _b) \
 	_a ## _b
