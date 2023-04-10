@@ -354,6 +354,7 @@
  * overridden.
  *
  * @see
+ * - #__export_protect
  * - [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
  * - [GCC common variable attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes)
  * - [GCC common type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
@@ -635,6 +636,27 @@
 	_stroll_cmp(_a, _b, <)
 
 /**
+ * Return the smallest of 2 preprocessing arguments.
+ *
+ * @param[in] _a first argument
+ * @param[in] _b second argument
+ *
+ * @return smallest argument
+ *
+ * Use STROLL_CONST_MIN() within preprocessor directives where arguments are
+ * subject to restrictions as stated into
+ * [GCC If](https://gcc.gnu.org/onlinedocs/cpp/If.html#If).
+ * 
+ * More specifically STROLL_CONST_MIN() should be used with constant arguments
+ * known at preprocessing time only. Use stroll_min() otherwise.
+ *
+ * @warning
+ * Arguments evaluation is subject to runtime side-effects.
+ */
+#define STROLL_CONST_MIN(_a, _b) \
+	_stroll_eval_cmp(_a, _b, <)
+
+/**
  * Return the greatest of 2 arguments.
  *
  * @param[in] _a first argument
@@ -649,6 +671,27 @@
  */
 #define stroll_max(_a, _b) \
 	_stroll_cmp(_a, _b, >)
+
+/**
+ * Return the greatest of 2 preprocessing arguments.
+ *
+ * @param[in] _a first argument
+ * @param[in] _b second argument
+ *
+ * @return greatest argument
+ *
+ * Use STROLL_CONST_MAX() within preprocessor directives where arguments are
+ * subject to restrictions as stated into
+ * [GCC If](https://gcc.gnu.org/onlinedocs/cpp/If.html#If).
+ * 
+ * More specifically STROLL_CONST_MAX() should be used with constant arguments
+ * known at preprocessing time only. Use stroll_max() otherwise.
+ *
+ * @warning
+ * Arguments evaluation is subject to runtime side-effects.
+ */
+#define STROLL_CONST_MAX(_a, _b) \
+	_stroll_eval_cmp(_a, _b, >)
 
 #define _stroll_eval_abs(_a) \
 	(((_a) >= 0) ? _a : -_a)
@@ -687,6 +730,26 @@
 	compile_choose(_is_const(_a), \
 	               _stroll_eval_abs(_a), \
 	               _stroll_eval_abs_once(_a, STROLL_UNIQ(__a)))
+
+/**
+ * Return the absolute value of the given preprocessing argument.
+ *
+ * @param[in] _a first argument
+ *
+ * @return absolute value of @p _a
+ *
+ * Use STROLL_CONST_ABS() within preprocessor directives where argument is
+ * subject to restrictions as stated into
+ * [GCC If](https://gcc.gnu.org/onlinedocs/cpp/If.html#If).
+ * 
+ * More specifically STROLL_CONST_ABS() should be used with a constant argument
+ * known at preprocessing time only. Use stroll_abs() otherwise.
+ *
+ * @warning
+ * Argument evaluation is subject to runtime side-effects.
+ */
+#define STROLL_CONST_ABS(_a, _b) \
+	_stroll_eval_abs(_a)
 
 #define likely(_expr) \
 	__builtin_expect(!!(_expr), 1)

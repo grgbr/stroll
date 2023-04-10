@@ -50,6 +50,9 @@ internals and meant for application development purposes. These are:
    * Compile time logic :
 
       * :c:macro:`STROLL_CONCAT`
+      * :c:macro:`STROLL_CONST_ABS`
+      * :c:macro:`STROLL_CONST_MAX`
+      * :c:macro:`STROLL_CONST_MIN`
       * :c:macro:`STROLL_STRING`
       * :c:macro:`STROLL_UNIQ`
       * :c:macro:`compile_assert`
@@ -481,6 +484,21 @@ STROLL_CONCAT
 *************
 
 .. doxygendefine:: STROLL_CONCAT
+
+STROLL_CONST_ABS
+****************
+
+.. doxygendefine:: STROLL_CONST_ABS
+
+STROLL_CONST_MAX
+****************
+
+.. doxygendefine:: STROLL_CONST_MAX
+
+STROLL_CONST_MIN
+****************
+
+.. doxygendefine:: STROLL_CONST_MIN
 
 STROLL_LVSTR_INIT
 *****************
