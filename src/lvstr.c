@@ -79,7 +79,7 @@ stroll_lvstr_owns(const struct stroll_lvstr * __restrict lvstr)
 {
 	stroll_lvstr_assert_intern(lvstr);
 
-	return !!(lvstr->cstr && (lvstr->len & 1UL));
+	return !!(lvstr->rostr && (lvstr->len & 1UL));
 }
 
 static void __stroll_nonull(1) __stroll_nothrow
@@ -88,7 +88,7 @@ stroll_lvstr_release(struct stroll_lvstr * __restrict lvstr)
 	stroll_lvstr_assert_intern(lvstr);
 
 	if (stroll_lvstr_owns(lvstr))
-		free(lvstr->cstr);
+		free(lvstr->rwstr);
 }
 
 void
@@ -97,24 +97,7 @@ stroll_lvstr_drop(struct stroll_lvstr * __restrict lvstr)
 	stroll_lvstr_assert_api(lvstr);
 
 	stroll_lvstr_release(lvstr);
-	lvstr->cstr = NULL;
-}
-
-static void __stroll_nonull(1, 2) __stroll_nothrow
-stroll_lvstr_set(struct stroll_lvstr * __restrict lvstr,
-                 char *                           cstr,
-                 size_t                           len,
-                 size_t                           owner)
-{
-	stroll_lvstr_assert_intern(lvstr);
-	stroll_lvstr_assert_intern(cstr);
-	stroll_lvstr_assert_intern(len <= STROLL_LVSTR_LEN_MAX);
-	stroll_lvstr_assert_intern(strnlen(cstr, len + 1) == len);
-	stroll_lvstr_assert_intern((owner == STROLL_LVSTR_LEASER) ||
-	                           (owner == STROLL_LVSTR_OWNER));
-
-	lvstr->len = (len << 1) | owner;
-	lvstr->cstr = cstr;
+	lvstr->rostr = NULL;
 }
 
 void
@@ -125,7 +108,9 @@ stroll_lvstr_nlend(struct stroll_lvstr * __restrict lvstr,
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
 
 	stroll_lvstr_release(lvstr);
-	stroll_lvstr_set(lvstr, (char *)cstr, len, STROLL_LVSTR_LEASER);
+
+	lvstr->len = (len << 1) | STROLL_LVSTR_LEASER;
+	lvstr->rostr = cstr;
 }
 
 int
@@ -152,7 +137,9 @@ stroll_lvstr_ncede(struct stroll_lvstr * __restrict lvstr,
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
 
 	stroll_lvstr_release(lvstr);
-	stroll_lvstr_set(lvstr, cstr, len, STROLL_LVSTR_OWNER);
+
+	lvstr->len = (len << 1) | STROLL_LVSTR_OWNER;
+	lvstr->rwstr = cstr;
 }
 
 int

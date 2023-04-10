@@ -57,8 +57,8 @@
  * Maximum length of a C string that may be registered into a stroll_lvstr.
  */
 #define STROLL_LVSTR_LEN_MAX \
-	stroll_min(SIZE_MAX >> 1, \
-	           stroll_min((size_t)SSIZE_MAX, (size_t)PTRDIFF_MAX - 1))
+	STROLL_CONST_MIN(SIZE_MAX >> 1, \
+	                 STROLL_CONST_MIN(SSIZE_MAX, PTRDIFF_MAX - 1))
 
 /**
  * Length-Value string.
@@ -85,7 +85,10 @@ struct stroll_lvstr {
 	 *
 	 * Registered NULL terminated C string.
 	 */
-	char   * cstr;
+	union {
+		char *       rwstr;
+		const char * rostr;
+	};
 };
 
 /**
@@ -99,7 +102,7 @@ struct stroll_lvstr {
  * stroll_lvstr_fini() to release allocated resources.
  */
 #define STROLL_LVSTR_INIT \
-	{ .cstr = NULL }
+	{ .rostr = NULL }
 
 /**
  * Static initialize a non-owning stroll_lvstr with a string which length is
@@ -116,7 +119,7 @@ struct stroll_lvstr {
  * stroll_lvstr_fini() to release allocated resources.
  */
 #define STROLL_LVSTR_INIT_NLEND(_cstr, _len) \
-	{ .len = ((_len) << 1) | STROLL_LVSTR_LEASER, .cstr = (char *)_cstr }
+	{ .len = ((_len) << 1) | STROLL_LVSTR_LEASER, .rostr = _cstr }
 
 /**
  * Static initialize a non-owning stroll_lvstr with a string which length is
@@ -163,9 +166,9 @@ struct stroll_lvstr {
 #define STROLL_LVSTR_INIT_NCEDE(_cstr, _len) \
 	{ \
 		.len = ((_len) << 1) | STROLL_LVSTR_OWNER, \
-		.cstr = compile_eval(!_is_const(_cstr), \
-		                     (char *)_cstr, \
-		                     "string literal unexpected") \
+		.rwstr = compile_eval(!_is_const(_cstr), \
+		                      _cstr, \
+		                      "string literal unexpected") \
 	}
 
 /**
@@ -181,7 +184,7 @@ stroll_lvstr_cstr(const struct stroll_lvstr * __restrict lvstr)
 {
 	stroll_lvstr_assert_api(lvstr);
 
-	return lvstr->cstr;
+	return lvstr->rostr;
 }
 
 /**
@@ -204,7 +207,7 @@ size_t __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 stroll_lvstr_len(const struct stroll_lvstr * __restrict lvstr)
 {
 	stroll_lvstr_assert_api(lvstr);
-	stroll_lvstr_assert_api(lvstr->cstr);
+	stroll_lvstr_assert_api(lvstr->rostr);
 
 	return lvstr->len >> 1;
 }
@@ -470,7 +473,7 @@ stroll_lvstr_init_nlend(struct stroll_lvstr * __restrict lvstr,
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
 
 	lvstr->len = len << 1 | STROLL_LVSTR_LEASER;
-	lvstr->cstr = (char *)cstr;
+	lvstr->rostr = cstr;
 }
 
 /**
@@ -536,7 +539,7 @@ stroll_lvstr_init_ncede(struct stroll_lvstr * __restrict lvstr,
 	stroll_lvstr_assert_api_ncstr(lvstr, cstr, len);
 
 	lvstr->len = (len << 1) | STROLL_LVSTR_OWNER;
-	lvstr->cstr = cstr;
+	lvstr->rwstr = cstr;
 }
 
 /**
@@ -664,7 +667,7 @@ stroll_lvstr_init(struct stroll_lvstr * __restrict lvstr)
 {
 	stroll_lvstr_assert_api(lvstr);
 
-	lvstr->cstr = NULL;
+	lvstr->rostr = NULL;
 }
 
 /**

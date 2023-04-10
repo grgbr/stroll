@@ -4,6 +4,7 @@ common-cflags        := -Wall \
                         -Wconversion \
                         -Wundef \
                         -Wshadow \
+                        -Wcast-qual \
                         -Wcast-align \
                         -Wmissing-declarations \
                         -D_GNU_SOURCE \
