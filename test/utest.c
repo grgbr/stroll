@@ -83,7 +83,7 @@ free(void * ptr)
 		 * First check pointer value, then content of memory pointed to.
 		 */
 		check_expected_ptr(ptr);
-		check_expected(ptr);
+		check_expected_ptr(ptr);
 	}
 
 	/* Now call the original free(3) function. */
@@ -117,7 +117,7 @@ stroll_utest_expect_free_arg(const void * arg, size_t size)
 #endif
 
 	/* Request checking of pointer value. */
-	expect_value(free, ptr, arg);
+	expect_value(free, ptr, (uintptr_t)arg);
 	/* Request checking of pointed to memory content. */
 	expect_memory(free, ptr, arg, size);
 	/* Instruct free() function above to perform checking of arguments. */

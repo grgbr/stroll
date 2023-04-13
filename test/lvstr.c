@@ -123,9 +123,9 @@ stroll_lvstr_utest_lend(void ** state __unused)
 static void
 stroll_lvstr_utest_ncede(void ** state __unused)
 {
-	char                * str = strdup("test");
+	char * volatile       str = strdup("test");
 	char                * str2 = strdup("test2");
-	size_t                len = strlen(str);
+	volatile size_t       len = strlen(str);
 	struct stroll_lvstr   lvstr = STROLL_LVSTR_INIT_NCEDE(str, len);
 
 	assert_string_equal(stroll_lvstr_cstr(&lvstr), str);
@@ -174,11 +174,11 @@ stroll_lvstr_utest_ncede(void ** state __unused)
 static void
 stroll_lvstr_utest_cede(void ** state __unused)
 {
-	char                * str1 = strdup("test");
-	size_t                len1 = strlen(str1);
-	char                * str2 = strdup("test2");
-	size_t                len2 = strlen(str2);
-	struct stroll_lvstr   lvstr;
+	char *              str1 = strdup("test");
+	size_t              len1 = strlen(str1);
+	char * volatile     str2 = strdup("test2");
+	size_t              len2 = strlen(str2);
+	struct stroll_lvstr lvstr;
 
 	lvstr.len = 0xdeadbeef;
 	lvstr.rwstr = (void *)0xdeadbeef;
