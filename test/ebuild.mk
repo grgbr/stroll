@@ -23,6 +23,11 @@ test-ldflags := $(test-cflags) \
                 -Wl,-whole-archive $(BUILDDIR)/builtin.a -Wl,-no-whole-archive \
                 -lstroll
 
+ifneq ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
+test-cflags  := $(filter-out -DNDEBUG,$(test-cflags))
+test-ldflags := $(filter-out -DNDEBUG,$(test-ldflags))
+endif # ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
+
 builtins         := builtin.a
 builtin.a-objs   := utest.o
 builtin.a-cflags := $(test-cflags)

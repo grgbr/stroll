@@ -174,8 +174,8 @@ stroll_lvstr_utest_ncede(void ** state __unused)
 static void
 stroll_lvstr_utest_cede(void ** state __unused)
 {
-	char *              str1 = strdup("test");
-	size_t              len1 = strlen(str1);
+	char * volatile     str1 = strdup("test");
+	size_t volatile     len1 = strlen(str1);
 	char * volatile     str2 = strdup("test2");
 	size_t              len2 = strlen(str2);
 	struct stroll_lvstr lvstr;
