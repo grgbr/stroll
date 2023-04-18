@@ -46,3 +46,14 @@ stroll_assert_fail(const char * __restrict prefix,
 
 	abort();
 }
+
+void
+stroll_assert_fail_msg(const char * __restrict prefix,
+                       const char * __restrict message)
+{
+	fflush(NULL);
+
+	fprintf(stderr, "{assert} %s:%s\n", prefix, message);
+
+	abort();
+}

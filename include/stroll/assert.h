@@ -32,7 +32,7 @@
 /**
  * @internal
  *
- * Output a failed assertion message.
+ * Output a failed assertion message and abort.
  *
  * @param[in] prefix message prefix
  * @param[in] expr   expression that failed
@@ -48,6 +48,20 @@ stroll_assert_fail(const char * __restrict prefix,
                    const char * __restrict func) __nonull(1, 2, 3, 5)
                                                  __noreturn
 						 __leaf;
+
+/**
+ * @internal
+ *
+ * Output a failed assertion message and abort.
+ *
+ * @param[in] prefix  message prefix
+ * @param[in] message assertion message to output
+ */
+void
+stroll_assert_fail_msg(const char * __restrict prefix,
+                       const char * __restrict message) __nonull(1, 2)
+                                                        __noreturn
+						        __leaf;
 
 /**
  * Check an assertion.
