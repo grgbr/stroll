@@ -263,6 +263,8 @@ These are:
       * :c:func:`stroll_bmap64_toggle_range`
       * :c:func:`stroll_bmap64_toggle_all`
 
+.. _sect-api-lvstr:
+
 .. index:: length-value string, lvstr
 
 Length-Value Strings
