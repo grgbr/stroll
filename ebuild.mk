@@ -32,9 +32,12 @@ endef
 pkgconfigs        := libstroll.pc
 libstroll.pc-tmpl := libstroll_pkgconf_tmpl
 
+################################################################################
+# Documentation generation
+################################################################################
+
 doxyconf  := $(CURDIR)/sphinx/Doxyfile
-doxyenv   := SRCDIR="$(HEADERDIR) $(SRCDIR)" \
-             VERSION="$(VERSION)"
+doxyenv   := SRCDIR="$(HEADERDIR) $(SRCDIR)"
 
 sphinxsrc := $(CURDIR)/sphinx
 sphinxenv := \
@@ -44,4 +47,4 @@ sphinxenv := \
 	$(if $(strip $(EBUILDDOC_INVENTORY_PATH)), \
 	     EBUILDDOC_INVENTORY_PATH="$(strip $(EBUILDDOC_INVENTORY_PATH))")
 
-# vim: filetype=make :
+# ex: filetype=make :

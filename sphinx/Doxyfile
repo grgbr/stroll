@@ -42,7 +42,7 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = Stroll
+PROJECT_NAME           = $(PACKAGE)
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
@@ -300,6 +300,10 @@ ALIASES += man{1}="@verbatim embed:rst:inline :manpage:`\1` @endverbatim"
 # Declare an alias allowing to cross reference Sphinx / reStructuredText
 # documentation sections using the explicit target given in argument.
 ALIASES += rstref{1}="@verbatim embed:rst:inline :ref:`\1` @endverbatim"
+
+# Declare an alias allowing to use the predefined Sphinx / reStructuredText
+# substitution directive given in argument.
+ALIASES += rstsubst{1}="@verbatim embed:rst:inline |\1| @endverbatim"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
@@ -933,7 +937,7 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = $(SRCDIR)
+INPUT                  = $(SRCDIR) $(CONFDOC)
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -2355,8 +2359,9 @@ PREDEFINED             = __restrict= \
 			 __const= \
 			 __stroll_const= \
 			 __warn_result= \
+			 __leaf= \
                          __WORDSIZE=64 \
-			 __leaf=
+			 $(CONFDEFS)
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The

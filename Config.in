@@ -57,11 +57,11 @@ config STROLL_BMAP
 	  Build stroll library with bitmap framework exposing functions to
 	  perform usual operations over bitmaps stored into memory words such
 	  as:
-	  * and / or / xor operations,
-	  * test bit / mask / bit range,
-	  * hamming weight,
-	  * iteration,
-	  * etc...
+	  - and / or / xor operations,
+	  - test bit / mask / bit range,
+	  - hamming weight,
+	  - iteration,
+	  - etc...
 	  See <stroll/bmap.h>.
 
 config STROLL_LVSTR
