@@ -748,7 +748,7 @@
  * @warning
  * Argument evaluation is subject to runtime side-effects.
  */
-#define STROLL_CONST_ABS(_a, _b) \
+#define STROLL_CONST_ABS(_a) \
 	_stroll_eval_abs(_a)
 
 #define likely(_expr) \
