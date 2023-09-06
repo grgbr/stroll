@@ -8,6 +8,7 @@ test-cflags  := -Wall \
                 -Wcast-align \
                 -Wmissing-declarations \
                 -D_GNU_SOURCE \
+                -DSTROLL_VERSION_STRING="\"$(VERSION)\"" \
                 -I../include \
                 $(EXTRA_CFLAGS)
 
@@ -32,6 +33,16 @@ builtins         := builtin.a
 builtin.a-objs   := utest.o
 builtin.a-cflags := $(test-cflags)
 
+bins := stroll-utest
+
+stroll-utest-objs    := cdefs.o
+stroll-utest-objs    += $(call kconf_enabled,STROLL_BOPS,bops.o)
+stroll-utest-objs    += $(call kconf_enabled,STROLL_BMAP,bmap.o)
+stroll-utest-cflags  := $(test-cflags)
+stroll-utest-ldflags := $(test-ldflags)
+stroll-utest-pkgconf := libcute
+
+ifeq (0,1)
 bins := stroll-cdefs-ut
 
 stroll-cdefs-ut-objs    := cdefs.o
@@ -62,5 +73,6 @@ stroll-lvstr-ut-cflags  := $(test-cflags)
 stroll-lvstr-ut-ldflags := $(test-ldflags)
 stroll-lvstr-ut-pkgconf := cmocka
 endif # ($(CONFIG_STROLL_LVSTR),y)
+endif
 
-# vim: filetype=make :
+# ex: filetype=make :

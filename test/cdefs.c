@@ -1,88 +1,122 @@
 #include "stroll/cdefs.h"
-#include "utest.h"
+#include <cute/cute.h>
+#include <cute/check.h>
 
-static void
-stroll_cdefs_utest_min(void ** state __unused)
+CUTE_TEST(strollut_cdefs_min_of_literals)
 {
-	int a, b, c;
-
-	assert_int_equal(stroll_min(0, 0), 0);
-	assert_int_equal(stroll_min(0, 1), 0);
-	assert_int_equal(stroll_min(-1, 1), -1);
-	assert_int_equal(stroll_min(-2, -1), -2);
-
-	a = 0, b = 0;
-	assert_int_equal(stroll_min(a, b), 0);
-	a = 0, b = 1;
-	assert_int_equal(stroll_min(a, b), 0);
-	a = -1, b = 1;
-	assert_int_equal(stroll_min(a, b), -1);
-	a = -2, b = -1;
-	assert_int_equal(stroll_min(a, b), -2);
-
-	assert_int_equal(stroll_min(stroll_min(0, 1), -1), -1);
-	a = -2, b = 1, c = 0;
-	assert_int_equal(stroll_min(stroll_min(c, a), b), -2);
+	cute_check_sint(stroll_min( 0,  0), equal,  0);
+	cute_check_sint(stroll_min( 0,  1), equal,  0);
+	cute_check_sint(stroll_min(-1,  1), equal, -1);
+	cute_check_sint(stroll_min(-2, -1), equal, -2);
 }
 
 static void
-stroll_cdefs_utest_max(void ** state __unused)
+strollut_cdefs_check_min(int first, int second, int expected)
 {
-	int a, b, c;
+	cute_check_sint(stroll_min(first,  second), equal, expected);
+}
 
-	assert_int_equal(stroll_max(0, 0), 0);
-	assert_int_equal(stroll_max(0, 1), 1);
-	assert_int_equal(stroll_max(-1, 1), 1);
-	assert_int_equal(stroll_max(-2, -1), -1);
+CUTE_TEST(strollut_cdefs_min_of_variables)
+{
+	strollut_cdefs_check_min( 0,  0,  0);
+	strollut_cdefs_check_min( 0,  1,  0);
+	strollut_cdefs_check_min(-1,  1, -1);
+	strollut_cdefs_check_min(-2, -1, -2);
+}
 
-	a = 0, b = 0;
-	assert_int_equal(stroll_max(a, b), 0);
-	a = 0, b = 1;
-	assert_int_equal(stroll_max(a, b), 1);
-	a = -1, b = 1;
-	assert_int_equal(stroll_max(a, b), 1);
-	a = -2, b = -1;
-	assert_int_equal(stroll_max(a, b), -1);
+CUTE_TEST(strollut_cdefs_multi_min)
+{
+	int a = -2, b = 1, c = 0;
 
-	assert_int_equal(stroll_max(stroll_max(0, 1), -1), 1);
-	a = -2, b = 1, c = 0;
-	assert_int_equal(stroll_max(stroll_max(c, a), b), 1);
+	cute_check_sint(stroll_min(stroll_min(0, 1), -1), equal, -1);
+	cute_check_sint(stroll_min(stroll_min(c, a),  b), equal, -2);
+}
+
+CUTE_TEST(strollut_cdefs_max_of_literals)
+{
+	cute_check_sint(stroll_max( 0,  0), equal,  0);
+	cute_check_sint(stroll_max( 0,  2), equal,  2);
+	cute_check_sint(stroll_max(-1,  1), equal,  1);
+	cute_check_sint(stroll_max(-2, -1), equal, -1);
 }
 
 static void
-stroll_cdefs_utest_abs(void ** state __unused)
+strollut_cdefs_check_max(int first, int second, int expected)
 {
-	int a, b;
-
-	assert_int_equal(stroll_abs(0), 0);
-	assert_int_equal(stroll_abs(1), 1);
-	assert_int_equal(stroll_abs(-2), 2);
-
-	a = 0;
-	assert_int_equal(stroll_abs(a), 0);
-	a = 1;
-	assert_int_equal(stroll_abs(a), 1);
-	a = -2;
-	assert_int_equal(stroll_abs(a), 2);
-
-	assert_int_equal(stroll_max(stroll_abs(-1), 1), 1);
-	a = -1, b = 2;
-	assert_int_equal(stroll_max(stroll_abs(a), b), 2);
-	a = -1, b = 2;
-	assert_int_equal(stroll_abs(stroll_min(a, b)), 1);
+	cute_check_sint(stroll_max(first,  second), equal, expected);
 }
 
-static const struct CMUnitTest stroll_cdefs_utests[] = {
-	cmocka_unit_test(stroll_cdefs_utest_min),
-	cmocka_unit_test(stroll_cdefs_utest_max),
-	cmocka_unit_test(stroll_cdefs_utest_abs)
+CUTE_TEST(strollut_cdefs_max_of_variables)
+{
+	strollut_cdefs_check_max( 0,  0,  0);
+	strollut_cdefs_check_max( 0,  2,  2);
+	strollut_cdefs_check_max(-1,  1,  1);
+	strollut_cdefs_check_max(-2, -1, -1);
+}
+
+CUTE_TEST(strollut_cdefs_multi_max)
+{
+	int a = -2, b = 1, c = 0;
+
+	cute_check_sint(stroll_max(stroll_max(0, 1), -1), equal, 1);
+	cute_check_sint(stroll_max(stroll_max(c, a),  b), equal, 1);
+}
+
+CUTE_TEST(strollut_cdefs_abs_of_literals)
+{
+	cute_check_sint(stroll_abs( 0), equal, 0);
+	cute_check_sint(stroll_abs( 1), equal, 1);
+	cute_check_sint(stroll_abs(-2), equal, 2);
+}
+
+static void
+strollut_cdefs_check_abs(int value, int expected)
+{
+	cute_check_sint(stroll_abs(value), equal, expected);
+}
+
+CUTE_TEST(strollut_cdefs_abs_of_variables)
+{
+	strollut_cdefs_check_abs( 0, 0);
+	strollut_cdefs_check_abs( 1, 1);
+	strollut_cdefs_check_abs(-2, 2);
+}
+
+CUTE_TEST(strollut_cdefs_mixed_ops_of_literals)
+{
+	cute_check_sint(stroll_min(stroll_abs(-1), 2), equal, 1);
+	cute_check_sint(stroll_max(stroll_abs(-1), 0), equal, 1);
+
+	cute_check_sint(stroll_abs(stroll_min(-1,  0)), equal, 1);
+	cute_check_sint(stroll_abs(stroll_max(-2, -1)), equal, 1);
+}
+
+CUTE_TEST(strollut_cdefs_mixed_ops_of_variables)
+{
+	int a = -1, b = 0, c = 2;
+
+	cute_check_sint(stroll_min(stroll_abs(a), c), equal, 1);
+	cute_check_sint(stroll_max(stroll_abs(a), b), equal, 1);
+
+	cute_check_sint(stroll_abs(stroll_min(a,  b)), equal, 1);
+	cute_check_sint(stroll_abs(stroll_max(-c, a)), equal, 1);
+}
+
+CUTE_GROUP(strollut_cdefs_group) = {
+	CUTE_REF(strollut_cdefs_min_of_literals),
+	CUTE_REF(strollut_cdefs_min_of_variables),
+	CUTE_REF(strollut_cdefs_multi_min),
+	CUTE_REF(strollut_cdefs_max_of_literals),
+	CUTE_REF(strollut_cdefs_max_of_variables),
+	CUTE_REF(strollut_cdefs_multi_max),
+	CUTE_REF(strollut_cdefs_abs_of_literals),
+	CUTE_REF(strollut_cdefs_abs_of_variables),
+	CUTE_REF(strollut_cdefs_mixed_ops_of_literals),
+	CUTE_REF(strollut_cdefs_mixed_ops_of_variables)
 };
 
-int
-main(void)
-{
-	return cmocka_run_group_tests_name("Common definitions (cdefs)",
-	                                   stroll_cdefs_utests,
-	                                   NULL,
-	                                   NULL);
-}
+CUTE_SUITE_EXTERN(strollut_cdefs_suite,
+                  strollut_cdefs_group,
+                  CUTE_NULL_SETUP,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);

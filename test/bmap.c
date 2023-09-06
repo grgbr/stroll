@@ -1,3 +1,11 @@
+#include "stroll/bmap.h"
+#include "utest.h"
+#include <cute/cute.h>
+#include <cute/check.h>
+#include <cute/expect.h>
+#include <stdlib.h>
+
+#if 0
 #include "utest.h"
 #include "stroll/bmap.h"
 #include <stdlib.h>
@@ -2770,3 +2778,334 @@ main(void)
 
 	return !ret ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+#endif
+
+/******************************************************************************
+ * Machine word support
+ ******************************************************************************/
+
+static void * strollut_bmap_xpct;
+
+static const unsigned long strollut_bmap_words[] = {
+	        0x00000000,
+	        0xffff0000,
+	        0x0000ffff,
+	        0xff00ff00,
+	        0x00ff00ff,
+	        0xf0a0f050,
+	        0x0f050f0a,
+	        0x00ff00aa,
+	        0xff005500,
+	        0xaaaa0000,
+	        0x00005555,
+	        0xffffffff,
+#if (__WORDSIZE == 64)
+	0xffffffff00000000,
+	0x00000000ffffffff,
+	0xfff000ff0000fff0,
+	0x00ff00aa00ff0055,
+	0xaaaa000055550000,
+	0x00aa005500aa0055,
+	0xf0a0f050f0a0f050,
+	0xffffffffffffffff
+#endif
+};
+
+static const unsigned long strollut_bmap_word_masks[] = {
+	        0x00000000,
+	        0xffffffff,
+	        0x0000ffff,
+	        0xffff0000,
+	        0xff00ff00,
+	        0x00ff00ff,
+	        0xaa005500,
+	        0x005500aa,
+#if (__WORDSIZE == 64)
+	0xffffffffffffffff,
+	0x0000ffff0000ffff,
+	0xffff0000ffff0000,
+	0xff00ff00ff00ff00,
+	0x00ff00ff00ff00ff,
+	0xaa005500aa005500,
+	0x005500aa005500aa
+#endif
+};
+
+static const struct strollut_bmap_word_range {
+	unsigned long mask;
+	unsigned int  start;
+	unsigned int  count;
+} strollut_bmap_word_ranges[] = {
+	{         0xffffffff,  0, 32 },
+	{         0x0000ffff,  0, 16 },
+	{         0xffff0000, 16, 16 },
+	{         0x00ffff00,  8, 16 },
+	{         0x000000f0,  4,  4 },
+	{         0x0000f000, 12,  4 },
+	{         0x00f00000, 20,  4 },
+	{         0xf0000000, 28,  4 },
+#if (__WORDSIZE == 64)
+	{ 0xffffffffffffffff,  0, 64 },
+	{ 0x00000000ffffffff,  0, 32 },
+	{ 0xffffffff00000000, 32, 32 },
+	{ 0x000000ffffff0000, 16, 24 },
+	{ 0xf000000000000000, 60,  4 },
+	{ 0x00f0000000000000, 52,  4 },
+	{ 0x0000f00000000000, 44,  4 },
+	{ 0x000000f000000000, 36,  4 }
+#endif
+};
+
+static void
+strollut_bmap_utest_setup_mask_oper(unsigned long (* oper)(unsigned long,
+                                                           unsigned long))
+{
+	unsigned int    b, m;
+	unsigned int    bnr = array_nr(strollut_bmap_words);
+	unsigned int    mnr = array_nr(strollut_bmap_word_masks);
+	unsigned long * expected;
+
+	expected = malloc(bnr * mnr * sizeof(*expected));
+	cute_check_ptr(expected, unequal, NULL);
+
+	for (b = 0; b < bnr; b++) {
+		for (m = 0; m < mnr; m++) {
+			unsigned long * exp = &expected[(b * mnr) + m];
+
+			*exp = oper(strollut_bmap_words[b],
+			            strollut_bmap_word_masks[m]);
+		}
+	}
+
+	cute_check_ptr(strollut_bmap_xpct, equal, NULL);
+	strollut_bmap_xpct = expected;
+}
+
+static void
+strollut_bmap_setup_range_oper(unsigned long (* oper)(unsigned long,
+                                                      unsigned long))
+{
+	unsigned int    b, r;
+	unsigned int    bnr = array_nr(strollut_bmap_words);
+	unsigned int    rnr = array_nr(strollut_bmap_word_ranges);
+	unsigned long * expected;
+
+	expected = malloc(bnr * rnr * sizeof(*expected));
+	cute_check_ptr(expected, unequal, NULL);
+
+	for (b = 0; b < bnr; b++) {
+		for (r = 0; r < rnr; r++) {
+			unsigned long * exp = &expected[(b * rnr) + r];
+
+			*exp = oper(strollut_bmap_words[b],
+			            strollut_bmap_word_ranges[r].mask);
+		}
+	}
+
+	cute_check_ptr(strollut_bmap_xpct, equal, NULL);
+	strollut_bmap_xpct = expected;
+}
+
+static void
+strollut_bmap_teardown(void)
+{
+	free(strollut_bmap_xpct);
+	strollut_bmap_xpct = NULL;
+}
+
+static void
+strollut_bmap_run_mask_oper(unsigned long (* oper)(unsigned long,
+                                                   unsigned long))
+{
+	unsigned int          b, m;
+	unsigned int          bnr = array_nr(strollut_bmap_words);
+	unsigned int          mnr = array_nr(strollut_bmap_word_masks);
+	const unsigned long * expected = strollut_bmap_xpct;
+
+	for (b = 0; b < bnr; b++) {
+		for (m = 0; m < mnr; m++)
+			cute_check_hex(oper(strollut_bmap_words[b],
+			                    strollut_bmap_word_masks[m]),
+			               equal,
+			               expected[(b * mnr) + m]);
+	}
+}
+
+static void
+strollut_bmap_word_run_range_oper(unsigned long (* oper)(unsigned long,
+                                                         unsigned int,
+                                                         unsigned int))
+{
+	unsigned int          b, r;
+	unsigned int          bnr = array_nr(strollut_bmap_words);
+	unsigned int          rnr = array_nr(strollut_bmap_word_ranges);
+	const unsigned long * expected = strollut_bmap_xpct;
+
+	for (b = 0; b < bnr; b++) {
+		for (r = 0; r < rnr; r++) {
+			cute_check_hex(oper(strollut_bmap_words[b],
+				            strollut_bmap_word_ranges[r].start,
+				            strollut_bmap_word_ranges[r].count),
+				       equal,
+				       expected[(b * rnr) + r]);
+		}
+	}
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+CUTE_TEST(strollut_bmap_word_setup_assert)
+{
+	cute_expect_assertion(stroll_bmap_setup_set(NULL));
+	cute_expect_assertion(stroll_bmap_setup_clear(NULL));
+}
+#else
+CUTE_TEST(strollut_bmap_word_setup_assert)
+{
+	cute_skip("assertion unsupported");
+}
+#endif
+
+CUTE_TEST(strollut_bmap_word_setup)
+{
+	unsigned long   bmp = 0x5A5A5A5A;
+	unsigned long * null __unused = NULL;
+
+	stroll_bmap_setup_set(&bmp);
+	cute_check_hex(bmp, equal, ULONG_MAX);
+
+	stroll_bmap_setup_clear(&bmp);
+	cute_check_hex(bmp, equal, 0);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+CUTE_TEST(strollut_bmap_word_mask_assert)
+{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	cute_expect_assertion(stroll_bmap_mask(0, 0));
+	cute_expect_assertion(stroll_bmap_mask(0, 65));
+	cute_expect_assertion(stroll_bmap_mask(3, 63));
+#pragma GCC diagnostic pop
+}
+#else
+CUTE_TEST(strollut_bmap_word_mask_assert)
+{
+	cute_skip("assertion unsupported");
+}
+#endif
+
+CUTE_TEST(strollut_bmap_word_mask)
+{
+	unsigned int  r;
+
+	for (r = 0; r < array_nr(strollut_bmap_word_ranges); r++) {
+		const struct strollut_bmap_word_range * rng;
+
+		rng = &strollut_bmap_word_ranges[r];
+
+		cute_check_hex(stroll_bmap_mask(rng->start, rng->count),
+		               equal,
+		               rng->mask);
+	}
+}
+
+CUTE_TEST(strollut_bmap_word_hweight)
+{
+	unsigned int m;
+
+	for (m = 0; m < array_nr(strollut_bmap_words); m++) {
+		unsigned long bmp = strollut_bmap_words[m];
+		unsigned int  b;
+		unsigned int  cnt;
+
+		for (b = 0, cnt = 0; b < stroll_bops_bitsof(bmp); b++)
+			if (bmp & (1UL << b))
+				cnt++;
+
+		cute_check_uint(stroll_bmap_hweight(bmp), equal, cnt);
+	}
+}
+
+static unsigned long
+strollut_bmap_word_and_oper(unsigned long bmap, unsigned long mask)
+{
+	return bmap & mask;
+}
+
+static void
+strollut_bmap_word_setup_and(void)
+{
+	strollut_bmap_utest_setup_mask_oper(strollut_bmap_word_and_oper);
+}
+
+CUTE_TEST_STATIC(strollut_bmap_word_and,
+                 strollut_bmap_word_setup_and,
+                 strollut_bmap_teardown,
+                 CUTE_DFLT_TMOUT)
+{
+	strollut_bmap_run_mask_oper(stroll_bmap_and);
+}
+
+static void
+strollut_bmap_word_setup_and_range(void)
+{
+	strollut_bmap_setup_range_oper(strollut_bmap_word_and_oper);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+CUTE_TEST(strollut_bmap_word_and_range_assert)
+{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	cute_expect_assertion(stroll_bmap_and_range(0, 0, 0));
+#if (__WORDSIZE == 64)
+	cute_expect_assertion(stroll_bmap_and_range(0, 64, 1));
+	cute_expect_assertion(stroll_bmap_and_range(0, 60, 5));
+#else
+	cute_expect_assertion(stroll_bmap_and_range(0, 32, 1));
+	cute_expect_assertion(stroll_bmap_and_range(0, 30, 3));
+#endif
+#pragma GCC diagnostic pop
+}
+#else
+CUTE_TEST(strollut_bmap_word_and_range_assert)
+{
+	cute_skip("assertion unsupported");
+}
+#endif
+
+CUTE_TEST_STATIC(strollut_bmap_word_and_range,
+                 strollut_bmap_word_setup_and_range,
+                 strollut_bmap_teardown,
+                 CUTE_DFLT_TMOUT)
+{
+	strollut_bmap_word_run_range_oper(stroll_bmap_and_range);
+}
+
+CUTE_GROUP(strollut_bmap_word_group) = {
+	CUTE_REF(strollut_bmap_word_setup_assert),
+	CUTE_REF(strollut_bmap_word_setup),
+	CUTE_REF(strollut_bmap_word_mask_assert),
+	CUTE_REF(strollut_bmap_word_mask),
+	CUTE_REF(strollut_bmap_word_hweight),
+
+	CUTE_REF(strollut_bmap_word_and),
+	CUTE_REF(strollut_bmap_word_and_range_assert),
+	CUTE_REF(strollut_bmap_word_and_range),
+};
+
+CUTE_SUITE(strollut_bmap_word_suite, strollut_bmap_word_group);
+
+/******************************************************************************
+ * Top-level bitmap support
+ ******************************************************************************/
+
+CUTE_GROUP(strollut_bmap_group) = {
+	CUTE_REF(strollut_bmap_word_suite),
+};
+
+CUTE_SUITE_EXTERN(strollut_bmap_suite,
+                  strollut_bmap_group,
+                  CUTE_NULL_SETUP,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);

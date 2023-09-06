@@ -1,11 +1,85 @@
 #include "utest.h"
+#include <cute/cute.h>
+#include <cute/expect.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+static char strollut_assert_msg[LINE_MAX];
+
+/*
+ * Override libstroll's stroll_assert_fail() and use cute_mock_assert() to
+ * validate assertions.
+ */
+void
+stroll_assert_fail(const char * __restrict prefix,
+                   const char * __restrict expr,
+                   const char * __restrict file,
+                   unsigned int            line,
+                   const char * __restrict func)
+{
+	int    ret;
+	size_t sz = sizeof(strollut_assert_msg) - 1;
+
+	/*
+	 * cute_mock_assert() does not really "return". It uses a nonlocal goto
+	 * logic to restore program / stack state that existed before the code
+	 * under test called us. This is the way CUTe allows checking for
+	 * assertions.
+	 * This means that the code below will never reach the abort() call
+	 * below (which is just there to prevent GCC from warning us since
+	 * stroll_assert_fail() is declared as a function that cannot return).
+	 *
+	 * Since cute_mock_assert() does not give control back to us, we MUST
+	 * use a statically allocated buffer to store assertion messages. We
+	 * would not have the opportunity to free(3) a previously allocated
+	 * buffer otherwise.
+	 * In other words, Valgrind memory leak checker should be happy with
+	 * this...
+	 */
+	ret = snprintf(strollut_assert_msg,
+	               sz,
+	               "{utest assert} %s:%s:%u:%s:\'%s\'",
+	               prefix,
+	               file,
+	               line,
+	               func,
+	               expr);
+	if (ret > 0) {
+		if ((size_t)ret >= sz)
+			strollut_assert_msg[sz - 1] = '\0';
+
+		cute_mock_assert(strollut_assert_msg, file, line, func);
+	}
+	else
+		cute_mock_assert("{utest assert} ??", file, line, func);
+
+	/* Not reached (see comment above)... */
+	abort();
+}
+
+extern CUTE_SUITE_DECL(strollut_cdefs_suite);
+extern CUTE_SUITE_DECL(strollut_bops_suite);
+extern CUTE_SUITE_DECL(strollut_bmap_suite);
+
+CUTE_GROUP(strollut_group) = {
+	CUTE_REF(strollut_cdefs_suite),
+	CUTE_REF(strollut_bops_suite),
+	CUTE_REF(strollut_bmap_suite),
+};
+
+CUTE_SUITE(strollut_suite, strollut_group);
+
+CUTE_MAIN(strollut_suite, "Stroll", STROLL_VERSION_STRING)
+
+#if 0
+#include "utest.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 static char stroll_utest_assert_msg[LINE_MAX];
 
 /*
- * Override libstroll's stroll_asser_fail() and use mock_assert() to validate
+ * Override libstroll's stroll_assert_fail() and use mock_assert() to validate
  * assertions.
  */
 void
@@ -123,3 +197,4 @@ stroll_utest_expect_free_arg(const void * arg, size_t size)
 	/* Instruct free() function above to perform checking of arguments. */
 	stroll_utest_free_wrapped = true;
 }
+#endif
