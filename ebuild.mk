@@ -47,4 +47,16 @@ sphinxenv := \
 	$(if $(strip $(EBUILDDOC_INVENTORY_PATH)), \
 	     EBUILDDOC_INVENTORY_PATH="$(strip $(EBUILDDOC_INVENTORY_PATH))")
 
+################################################################################
+# Source distribution generation
+################################################################################
+
+# Declare the list of files under revision control to include into final source
+# distribution tarball.
+override distfiles = $(list_versioned_recipe)
+
+# Override InterSphinx eBuild base documentation URI and make it point to online
+# GitHub pages when building final source distribution tarball
+dist: export EBUILDDOC_TARGET_PATH := http://grgbr.github.io/ebuild/
+
 # ex: filetype=make :
