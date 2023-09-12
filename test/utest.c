@@ -129,15 +129,27 @@ strollut_expect_free(const void * parm, size_t size)
 }
 
 extern CUTE_SUITE_DECL(strollut_cdefs_suite);
+#if defined(CONFIG_STROLL_BOPS)
 extern CUTE_SUITE_DECL(strollut_bops_suite);
+#endif
+#if defined(CONFIG_STROLL_BMAP)
 extern CUTE_SUITE_DECL(strollut_bmap_suite);
+#endif
+#if defined(CONFIG_STROLL_LVSTR)
 extern CUTE_SUITE_DECL(strollut_lvstr_suite);
+#endif
 
 CUTE_GROUP(strollut_group) = {
 	CUTE_REF(strollut_cdefs_suite),
+#if defined(CONFIG_STROLL_BOPS)
 	CUTE_REF(strollut_bops_suite),
+#endif
+#if defined(CONFIG_STROLL_BMAP)
 	CUTE_REF(strollut_bmap_suite),
+#endif
+#if defined(CONFIG_STROLL_LVSTR)
 	CUTE_REF(strollut_lvstr_suite),
+#endif
 };
 
 CUTE_SUITE(strollut_suite, strollut_group);

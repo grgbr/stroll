@@ -653,7 +653,7 @@ CUTE_TEST(strollut_bmap32_clear_bit_assert)
 	cute_expect_assertion(stroll_bmap32_clear(NULL, 1));
 }
 #else
-CUTE_TEST(strollut_bmap32_clear_bit)_assert
+CUTE_TEST(strollut_bmap32_clear_bit_assert)
 {
 	cute_skip("assertion unsupported");
 }

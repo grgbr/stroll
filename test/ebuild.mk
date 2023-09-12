@@ -29,11 +29,11 @@ test-cflags  := $(filter-out -DNDEBUG,$(test-cflags))
 test-ldflags := $(filter-out -DNDEBUG,$(test-ldflags))
 endif # ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
 
-builtins         := builtin.a
-builtin.a-objs   := utest.o
-builtin.a-cflags := $(test-cflags)
+builtins             := builtin.a
+builtin.a-objs       := utest.o
+builtin.a-cflags     := $(test-cflags)
 
-bins := stroll-utest
+bins                 := stroll-utest
 
 stroll-utest-objs    := cdefs.o
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BOPS,bops.o)
@@ -42,38 +42,5 @@ stroll-utest-objs    += $(call kconf_enabled,STROLL_LVSTR,lvstr.o)
 stroll-utest-cflags  := $(test-cflags)
 stroll-utest-ldflags := $(test-ldflags)
 stroll-utest-pkgconf := libcute
-
-ifeq (0,1)
-bins := stroll-cdefs-ut
-
-stroll-cdefs-ut-objs    := cdefs.o
-stroll-cdefs-ut-cflags  := $(test-cflags)
-stroll-cdefs-ut-ldflags := $(test-ldflags)
-stroll-cdefs-ut-pkgconf := cmocka
-
-ifeq ($(CONFIG_STROLL_BOPS),y)
-bins                    += stroll-bops-ut
-stroll-bops-ut-objs     := bops.o
-stroll-bops-ut-cflags   := $(test-cflags)
-stroll-bops-ut-ldflags  := $(test-ldflags)
-stroll-bops-ut-pkgconf  := cmocka
-endif # ($(CONFIG_STROLL_BOPS),y)
-
-ifeq ($(CONFIG_STROLL_BMAP),y)
-bins                    += stroll-bmap-ut
-stroll-bmap-ut-objs     := bmap.o
-stroll-bmap-ut-cflags   := $(test-cflags)
-stroll-bmap-ut-ldflags  := $(test-ldflags)
-stroll-bmap-ut-pkgconf  := cmocka
-endif # ($(CONFIG_STROLL_BMAP),y)
-
-ifeq ($(CONFIG_STROLL_LVSTR),y)
-bins                    += stroll-lvstr-ut
-stroll-lvstr-ut-objs    := lvstr.o
-stroll-lvstr-ut-cflags  := $(test-cflags)
-stroll-lvstr-ut-ldflags := $(test-ldflags)
-stroll-lvstr-ut-pkgconf := cmocka
-endif # ($(CONFIG_STROLL_LVSTR),y)
-endif
 
 # ex: filetype=make :
