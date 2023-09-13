@@ -55,7 +55,7 @@ master_title = u'Stroll Documentation'
 
 # General information about the project.
 project = u'Stroll'
-copyright = u"2017-2033 Grégor Boirie"
+copyright = u"2017-2023 Grégor Boirie"
 author = u"Grégor Boirie"
 
 # The version info for the project you're documenting, acts as replacement for
