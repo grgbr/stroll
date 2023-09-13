@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index &mdash; Stroll 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Stroll
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Integration Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#prerequisites">2. Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#getting-help">3. Getting help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#build-workflow">4. Build Workflow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#preparation-phase">4.1. Preparation phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#configure-phase">4.2. Configure phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#build-phase">4.3. Build phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#install-phase">4.4. Install phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#alternative-staged-install-phase">4.5. Alternative staged install phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#documentation-generation">4.6. Documentation generation</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#build-configuration">2. Build configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#common-definitions">3. Common definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#assertions">4. Assertions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#bit-operations">5. Bit operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#bitmaps">6. Bitmaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#length-value-strings">7. Length-Value Strings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#reference">8. Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#configuration-macros">8.1. Configuration macros</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#config-stroll-assert">8.1.1. CONFIG_STROLL_ASSERT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#config-stroll-assert-api">8.1.2. CONFIG_STROLL_ASSERT_API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#config-stroll-assert-intern">8.1.3. CONFIG_STROLL_ASSERT_INTERN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#config-stroll-utest">8.1.4. CONFIG_STROLL_UTEST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#config-stroll-valgrind">8.1.5. CONFIG_STROLL_VALGRIND</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#config-stroll-bops">8.1.6. CONFIG_STROLL_BOPS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#config-stroll-bmap">8.1.7. CONFIG_STROLL_BMAP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#config-stroll-lvstr">8.1.8. CONFIG_STROLL_LVSTR</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#macros">8.2. Macros</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#align">8.2.1. __align</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#const">8.2.2. __const</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#ctor">8.2.3. __ctor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#dtor">8.2.4. __dtor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#export-public">8.2.5. __export_public</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#export-protect">8.2.6. __export_protect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#leaf">8.2.7. __leaf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#nonull">8.2.8. __nonull</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#noreturn">8.2.9. __noreturn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#nothrow">8.2.10. __nothrow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#packed">8.2.11. __packed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#printf">8.2.12. __printf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#pure">8.2.13. __pure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#returns-nonull">8.2.14. __returns_nonull</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#unused">8.2.15. __unused</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#warn-result">8.2.16. __warn_result</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-init-clear">8.2.17. STROLL_BMAP_INIT_CLEAR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-init-set">8.2.18. STROLL_BMAP_INIT_SET</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-init-clear">8.2.19. STROLL_BMAP32_INIT_CLEAR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-init-set">8.2.20. STROLL_BMAP32_INIT_SET</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-init-clear">8.2.21. STROLL_BMAP64_INIT_CLEAR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-init-set">8.2.22. STROLL_BMAP64_INIT_SET</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-concat">8.2.23. STROLL_CONCAT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-const-abs">8.2.24. STROLL_CONST_ABS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-const-max">8.2.25. STROLL_CONST_MAX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-const-min">8.2.26. STROLL_CONST_MIN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-init">8.2.27. STROLL_LVSTR_INIT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-init-lend">8.2.28. STROLL_LVSTR_INIT_LEND</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-init-nlend">8.2.29. STROLL_LVSTR_INIT_NLEND</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-init-ncede">8.2.30. STROLL_LVSTR_INIT_NCEDE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-len-max">8.2.31. STROLL_LVSTR_LEN_MAX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-string">8.2.32. STROLL_STRING</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-uniq">8.2.33. STROLL_UNIQ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#array-nr">8.2.34. array_nr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#compile-eval">8.2.35. compile_eval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#compile-assert">8.2.36. compile_assert</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#compile-choose">8.2.37. compile_choose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-abs">8.2.38. stroll_abs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-assert">8.2.39. stroll_assert</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-foreach-clear">8.2.40. stroll_bmap_foreach_clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-foreach-set">8.2.41. stroll_bmap_foreach_set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-foreach-clear">8.2.42. stroll_bmap32_foreach_clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-foreach-set">8.2.43. stroll_bmap32_foreach_set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-foreach-clear">8.2.44. stroll_bmap64_foreach_clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-foreach-set">8.2.45. stroll_bmap64_foreach_set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-min">8.2.46. stroll_min</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-max">8.2.47. stroll_max</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#structures">8.3. Structures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr">8.3.1. stroll_lvstr</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#functions">8.4. Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-and">8.4.1. stroll_bmap_and</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-and-range">8.4.2. stroll_bmap_and_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-clear">8.4.3. stroll_bmap_clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-clear-mask">8.4.4. stroll_bmap_clear_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-clear-range">8.4.5. stroll_bmap_clear_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-clear-all">8.4.6. stroll_bmap_clear_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-hweight">8.4.7. stroll_bmap_hweight</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-mask">8.4.8. stroll_bmap_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-or">8.4.9. stroll_bmap_or</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-or-range">8.4.10. stroll_bmap_or_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-set">8.4.11. stroll_bmap_set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-set-mask">8.4.12. stroll_bmap_set_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-set-range">8.4.13. stroll_bmap_set_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-set-all">8.4.14. stroll_bmap_set_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-setup-clear">8.4.15. stroll_bmap_setup_clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-setup-set">8.4.16. stroll_bmap_setup_set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-test">8.4.17. stroll_bmap_test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-test-all">8.4.18. stroll_bmap_test_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-test-mask">8.4.19. stroll_bmap_test_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-test-range">8.4.20. stroll_bmap_test_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-toggle">8.4.21. stroll_bmap_toggle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-toggle-mask">8.4.22. stroll_bmap_toggle_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-toggle-range">8.4.23. stroll_bmap_toggle_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-toggle-all">8.4.24. stroll_bmap_toggle_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-xor">8.4.25. stroll_bmap_xor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap-xor-range">8.4.26. stroll_bmap_xor_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-and">8.4.27. stroll_bmap32_and</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-and-range">8.4.28. stroll_bmap32_and_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-clear">8.4.29. stroll_bmap32_clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-clear-mask">8.4.30. stroll_bmap32_clear_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-clear-range">8.4.31. stroll_bmap32_clear_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-clear-all">8.4.32. stroll_bmap32_clear_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-hweight">8.4.33. stroll_bmap32_hweight</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-mask">8.4.34. stroll_bmap32_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-or">8.4.35. stroll_bmap32_or</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-or-range">8.4.36. stroll_bmap32_or_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-set">8.4.37. stroll_bmap32_set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-set-mask">8.4.38. stroll_bmap32_set_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-set-range">8.4.39. stroll_bmap32_set_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-set-all">8.4.40. stroll_bmap32_set_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-setup-clear">8.4.41. stroll_bmap32_setup_clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-setup-set">8.4.42. stroll_bmap32_setup_set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-test">8.4.43. stroll_bmap32_test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-test-all">8.4.44. stroll_bmap32_test_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-test-mask">8.4.45. stroll_bmap32_test_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-test-range">8.4.46. stroll_bmap32_test_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-toggle">8.4.47. stroll_bmap32_toggle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-toggle-mask">8.4.48. stroll_bmap32_toggle_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-toggle-range">8.4.49. stroll_bmap32_toggle_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-toggle-all">8.4.50. stroll_bmap32_toggle_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-xor">8.4.51. stroll_bmap32_xor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap32-xor-range">8.4.52. stroll_bmap32_xor_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-and">8.4.53. stroll_bmap64_and</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-and-range">8.4.54. stroll_bmap64_and_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-clear">8.4.55. stroll_bmap64_clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-clear-mask">8.4.56. stroll_bmap64_clear_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-clear-range">8.4.57. stroll_bmap64_clear_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-clear-all">8.4.58. stroll_bmap64_clear_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-hweight">8.4.59. stroll_bmap64_hweight</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-mask">8.4.60. stroll_bmap64_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-or">8.4.61. stroll_bmap64_or</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-or-range">8.4.62. stroll_bmap64_or_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-set">8.4.63. stroll_bmap64_set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-set-mask">8.4.64. stroll_bmap64_set_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-set-range">8.4.65. stroll_bmap64_set_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-set-all">8.4.66. stroll_bmap64_set_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-setup-clear">8.4.67. stroll_bmap64_setup_clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-setup-set">8.4.68. stroll_bmap64_setup_set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-test">8.4.69. stroll_bmap64_test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-test-all">8.4.70. stroll_bmap64_test_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-test-mask">8.4.71. stroll_bmap64_test_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-test-range">8.4.72. stroll_bmap64_test_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-toggle">8.4.73. stroll_bmap64_toggle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-toggle-mask">8.4.74. stroll_bmap64_toggle_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-toggle-range">8.4.75. stroll_bmap64_toggle_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-toggle-all">8.4.76. stroll_bmap64_toggle_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-xor">8.4.77. stroll_bmap64_xor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bmap64-xor-range">8.4.78. stroll_bmap64_xor_range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops-ffc">8.4.79. stroll_bops_ffc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops-ffs">8.4.80. stroll_bops_ffs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops-fls">8.4.81. stroll_bops_fls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops-hweight">8.4.82. stroll_bops_hweight</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops32-ffc">8.4.83. stroll_bops32_ffc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops64-ffc">8.4.84. stroll_bops64_ffc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops32-ffs">8.4.85. stroll_bops32_ffs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops64-ffs">8.4.86. stroll_bops64_ffs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops32-fls">8.4.87. stroll_bops32_fls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops64-fls">8.4.88. stroll_bops64_fls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops32-hweight">8.4.89. stroll_bops32_hweight</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-bops64-hweight">8.4.90. stroll_bops64_hweight</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-cede">8.4.91. stroll_lvstr_cede</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-cstr">8.4.92. stroll_lvstr_cstr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-dup">8.4.93. stroll_lvstr_dup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-fini">8.4.94. stroll_lvstr_fini</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#id2">8.4.95. stroll_lvstr_init</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-init-cede">8.4.96. stroll_lvstr_init_cede</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-init-dup">8.4.97. stroll_lvstr_init_dup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#id3">8.4.98. stroll_lvstr_init_lend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#id4">8.4.99. stroll_lvstr_init_ncede</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-init-ndup">8.4.100. stroll_lvstr_init_ndup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#id5">8.4.101. stroll_lvstr_init_nlend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-len">8.4.102. stroll_lvstr_len</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-lend">8.4.103. stroll_lvstr_lend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-ncede">8.4.104. stroll_lvstr_ncede</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-ndup">8.4.105. stroll_lvstr_ndup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#stroll-lvstr-nlend">8.4.106. stroll_lvstr_nlend</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="license.html">Licensing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="license.html#gnu-lesser-general-public-license">GNU LESSER GENERAL PUBLIC LICENSE</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="license.html#additional-definitions">Additional Definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html#exception-to-section-3-of-the-gnu-gpl">Exception to Section 3 of the GNU GPL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html#conveying-modified-versions">Conveying Modified Versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html#object-code-incorporating-material-from-library-header-files">Object Code Incorporating Material from Library Header Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html#combined-works">Combined Works</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html#combined-libraries">Combined Libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html#revised-versions-of-the-gnu-lesser-general-public-license">Revised Versions of the GNU Lesser General Public License</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#gnu-general-public-license">GNU GENERAL PUBLIC LICENSE</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="license.html#preamble">Preamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html#terms-and-conditions">TERMS AND CONDITIONS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="license.html#definitions">Definitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#source-code">Source Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#basic-permissions">Basic Permissions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#protecting-users-legal-rights-from-anti-circumvention-law">Protecting Users’ Legal Rights From Anti-Circumvention Law</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#conveying-verbatim-copies">Conveying Verbatim Copies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#conveying-modified-source-versions">Conveying Modified Source Versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#conveying-non-source-forms">Conveying Non-Source Forms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#additional-terms">Additional Terms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#termination">Termination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#acceptance-not-required-for-having-copies">Acceptance Not Required for Having Copies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#automatic-licensing-of-downstream-recipients">Automatic Licensing of Downstream Recipients</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#patents">Patents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#no-surrender-of-others-freedom">No Surrender of Others’ Freedom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#use-with-the-gnu-affero-general-public-license">Use with the GNU Affero General Public License</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#revised-versions-of-this-license">Revised Versions of this License</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#disclaimer-of-warranty">Disclaimer of Warranty</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#limitation-of-liability">Limitation of Liability</a></li>
+<li class="toctree-l4"><a class="reference internal" href="license.html#interpretation-of-sections-15-and-16">Interpretation of Sections 15 and 16</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="license.html#how-to-apply-these-terms-to-your-new-programs">How to Apply These Terms to Your New Programs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todo</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Stroll</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Index</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#c.__align">__align (C macro)</a>
+</li>
+      <li><a href="api.html#c.__const">__const (C macro)</a>
+</li>
+      <li><a href="api.html#c.__ctor">__ctor (C macro)</a>
+</li>
+      <li><a href="api.html#c.__dtor">__dtor (C macro)</a>
+</li>
+      <li><a href="api.html#c.__export_protect">__export_protect (C macro)</a>
+</li>
+      <li><a href="api.html#c.__export_public">__export_public (C macro)</a>
+</li>
+      <li><a href="api.html#c.__leaf">__leaf (C macro)</a>
+</li>
+      <li><a href="api.html#c.__nonull">__nonull (C macro)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#c.__noreturn">__noreturn (C macro)</a>
+</li>
+      <li><a href="api.html#c.__nothrow">__nothrow (C macro)</a>
+</li>
+      <li><a href="api.html#c.__packed">__packed (C macro)</a>
+</li>
+      <li><a href="api.html#c.__printf">__printf (C macro)</a>
+</li>
+      <li><a href="api.html#c.__pure">__pure (C macro)</a>
+</li>
+      <li><a href="api.html#c.__returns_nonull">__returns_nonull (C macro)</a>
+</li>
+      <li><a href="api.html#c.__unused">__unused (C macro)</a>
+</li>
+      <li><a href="api.html#c.__warn_result">__warn_result (C macro)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#index-8">API reference</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#c.array_nr">array_nr (C macro)</a>
+</li>
+      <li><a href="api.html#index-2">assertions</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#index-3">bit operations</a>
+</li>
+      <li><a href="api.html#index-5">bitmaps</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#index-3">bitops</a>
+</li>
+      <li><a href="api.html#index-5">bmap</a>
+</li>
+      <li><a href="api.html#index-0">build configuration</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#index-1">cdefs</a>
+</li>
+      <li><a href="api.html#index-1">common definitions</a>
+</li>
+      <li><a href="api.html#c.compile_assert">compile_assert (C macro)</a>
+</li>
+      <li><a href="api.html#c.compile_choose">compile_choose (C macro)</a>
+</li>
+      <li><a href="api.html#c.compile_eval">compile_eval (C macro)</a>
+</li>
+      <li><a href="api.html#c.CONFIG_STROLL_ASSERT">CONFIG_STROLL_ASSERT (C macro)</a>
+</li>
+      <li><a href="api.html#c.CONFIG_STROLL_ASSERT_API">CONFIG_STROLL_ASSERT_API (C macro)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#c.CONFIG_STROLL_ASSERT_INTERN">CONFIG_STROLL_ASSERT_INTERN (C macro)</a>
+</li>
+      <li><a href="api.html#c.CONFIG_STROLL_BMAP">CONFIG_STROLL_BMAP (C macro)</a>
+</li>
+      <li><a href="api.html#c.CONFIG_STROLL_BOPS">CONFIG_STROLL_BOPS (C macro)</a>
+</li>
+      <li><a href="api.html#c.CONFIG_STROLL_LVSTR">CONFIG_STROLL_LVSTR (C macro)</a>
+</li>
+      <li><a href="api.html#c.CONFIG_STROLL_UTEST">CONFIG_STROLL_UTEST (C macro)</a>
+</li>
+      <li><a href="api.html#c.CONFIG_STROLL_VALGRIND">CONFIG_STROLL_VALGRIND (C macro)</a>
+</li>
+      <li><a href="api.html#index-0">configuration macros</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    environment variable
+
+      <ul>
+        <li><a href="install.html#index-0">PATH</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#index-4">Hammimg weight</a>, <a href="api.html#index-6">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#index-7">length-value string</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#index-7">lvstr</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="install.html#index-0">PATH</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#index-8">reference</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#c.stroll_abs">stroll_abs (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_assert">stroll_assert (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_and">stroll_bmap32_and (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_and_range">stroll_bmap32_and_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_clear">stroll_bmap32_clear (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_clear_all">stroll_bmap32_clear_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_clear_mask">stroll_bmap32_clear_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_clear_range">stroll_bmap32_clear_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_foreach_clear">stroll_bmap32_foreach_clear (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_foreach_set">stroll_bmap32_foreach_set (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_hweight">stroll_bmap32_hweight (C function)</a>
+</li>
+      <li><a href="api.html#c.STROLL_BMAP32_INIT_CLEAR">STROLL_BMAP32_INIT_CLEAR (C macro)</a>
+</li>
+      <li><a href="api.html#c.STROLL_BMAP32_INIT_SET">STROLL_BMAP32_INIT_SET (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_mask">stroll_bmap32_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_or">stroll_bmap32_or (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_or_range">stroll_bmap32_or_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_set">stroll_bmap32_set (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_set_all">stroll_bmap32_set_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_set_mask">stroll_bmap32_set_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_set_range">stroll_bmap32_set_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_setup_clear">stroll_bmap32_setup_clear (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_setup_set">stroll_bmap32_setup_set (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_test">stroll_bmap32_test (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_test_all">stroll_bmap32_test_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_test_mask">stroll_bmap32_test_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_test_range">stroll_bmap32_test_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_toggle">stroll_bmap32_toggle (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_toggle_all">stroll_bmap32_toggle_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_toggle_mask">stroll_bmap32_toggle_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_toggle_range">stroll_bmap32_toggle_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_xor">stroll_bmap32_xor (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap32_xor_range">stroll_bmap32_xor_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_and">stroll_bmap64_and (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_and_range">stroll_bmap64_and_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_clear">stroll_bmap64_clear (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_clear_all">stroll_bmap64_clear_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_clear_mask">stroll_bmap64_clear_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_clear_range">stroll_bmap64_clear_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_foreach_clear">stroll_bmap64_foreach_clear (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_foreach_set">stroll_bmap64_foreach_set (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_hweight">stroll_bmap64_hweight (C function)</a>
+</li>
+      <li><a href="api.html#c.STROLL_BMAP64_INIT_CLEAR">STROLL_BMAP64_INIT_CLEAR (C macro)</a>
+</li>
+      <li><a href="api.html#c.STROLL_BMAP64_INIT_SET">STROLL_BMAP64_INIT_SET (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_mask">stroll_bmap64_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_or">stroll_bmap64_or (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_or_range">stroll_bmap64_or_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_set">stroll_bmap64_set (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_set_all">stroll_bmap64_set_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_set_mask">stroll_bmap64_set_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_set_range">stroll_bmap64_set_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_setup_clear">stroll_bmap64_setup_clear (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_setup_set">stroll_bmap64_setup_set (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_test">stroll_bmap64_test (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_test_all">stroll_bmap64_test_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_test_mask">stroll_bmap64_test_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_test_range">stroll_bmap64_test_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_toggle">stroll_bmap64_toggle (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_toggle_all">stroll_bmap64_toggle_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_toggle_mask">stroll_bmap64_toggle_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_toggle_range">stroll_bmap64_toggle_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_xor">stroll_bmap64_xor (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap64_xor_range">stroll_bmap64_xor_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_and">stroll_bmap_and (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_and_range">stroll_bmap_and_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_clear">stroll_bmap_clear (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_clear_all">stroll_bmap_clear_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_clear_mask">stroll_bmap_clear_mask (C function)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#c.stroll_bmap_clear_range">stroll_bmap_clear_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_foreach_clear">stroll_bmap_foreach_clear (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_foreach_set">stroll_bmap_foreach_set (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_hweight">stroll_bmap_hweight (C function)</a>
+</li>
+      <li><a href="api.html#c.STROLL_BMAP_INIT_CLEAR">STROLL_BMAP_INIT_CLEAR (C macro)</a>
+</li>
+      <li><a href="api.html#c.STROLL_BMAP_INIT_SET">STROLL_BMAP_INIT_SET (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_mask">stroll_bmap_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_or">stroll_bmap_or (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_or_range">stroll_bmap_or_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_set">stroll_bmap_set (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_set_all">stroll_bmap_set_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_set_mask">stroll_bmap_set_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_set_range">stroll_bmap_set_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_setup_clear">stroll_bmap_setup_clear (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_setup_set">stroll_bmap_setup_set (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_test">stroll_bmap_test (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_test_all">stroll_bmap_test_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_test_mask">stroll_bmap_test_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_test_range">stroll_bmap_test_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_toggle">stroll_bmap_toggle (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_toggle_all">stroll_bmap_toggle_all (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_toggle_mask">stroll_bmap_toggle_mask (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_toggle_range">stroll_bmap_toggle_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_xor">stroll_bmap_xor (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bmap_xor_range">stroll_bmap_xor_range (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops32_ffc">stroll_bops32_ffc (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops32_ffs">stroll_bops32_ffs (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops32_fls">stroll_bops32_fls (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops32_hweight">stroll_bops32_hweight (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops64_ffc">stroll_bops64_ffc (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops64_ffs">stroll_bops64_ffs (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops64_fls">stroll_bops64_fls (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops64_hweight">stroll_bops64_hweight (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops_ffc">stroll_bops_ffc (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops_ffs">stroll_bops_ffs (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops_fls">stroll_bops_fls (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_bops_hweight">stroll_bops_hweight (C function)</a>
+</li>
+      <li><a href="api.html#c.STROLL_CONCAT">STROLL_CONCAT (C macro)</a>
+</li>
+      <li><a href="api.html#c.STROLL_CONST_ABS">STROLL_CONST_ABS (C macro)</a>
+</li>
+      <li><a href="api.html#c.STROLL_CONST_MAX">STROLL_CONST_MAX (C macro)</a>
+</li>
+      <li><a href="api.html#c.STROLL_CONST_MIN">STROLL_CONST_MIN (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr">stroll_lvstr (C struct)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_cede">stroll_lvstr_cede (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_cstr">stroll_lvstr_cstr (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_dup">stroll_lvstr_dup (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_fini">stroll_lvstr_fini (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_init">stroll_lvstr_init (C function)</a>
+</li>
+      <li><a href="api.html#c.STROLL_LVSTR_INIT">STROLL_LVSTR_INIT (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_init_cede">stroll_lvstr_init_cede (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_init_dup">stroll_lvstr_init_dup (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_init_lend">stroll_lvstr_init_lend (C function)</a>
+</li>
+      <li><a href="api.html#c.STROLL_LVSTR_INIT_LEND">STROLL_LVSTR_INIT_LEND (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_init_ncede">stroll_lvstr_init_ncede (C function)</a>
+</li>
+      <li><a href="api.html#c.STROLL_LVSTR_INIT_NCEDE">STROLL_LVSTR_INIT_NCEDE (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_init_ndup">stroll_lvstr_init_ndup (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_init_nlend">stroll_lvstr_init_nlend (C function)</a>
+</li>
+      <li><a href="api.html#c.STROLL_LVSTR_INIT_NLEND">STROLL_LVSTR_INIT_NLEND (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_len">stroll_lvstr_len (C function)</a>
+</li>
+      <li><a href="api.html#c.STROLL_LVSTR_LEN_MAX">STROLL_LVSTR_LEN_MAX (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_lend">stroll_lvstr_lend (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_ncede">stroll_lvstr_ncede (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_ndup">stroll_lvstr_ndup (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_lvstr_nlend">stroll_lvstr_nlend (C function)</a>
+</li>
+      <li><a href="api.html#c.stroll_max">stroll_max (C macro)</a>
+</li>
+      <li><a href="api.html#c.stroll_min">stroll_min (C macro)</a>
+</li>
+      <li><a href="api.html#c.STROLL_STRING">STROLL_STRING (C macro)</a>
+</li>
+      <li><a href="api.html#c.STROLL_UNIQ">STROLL_UNIQ (C macro)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2023 Grégor Boirie.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
