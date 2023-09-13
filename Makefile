@@ -25,3 +25,14 @@ $(error '$(EBUILDDIR)': no valid eBuild install found !)
 endif # ($(realpath $(EBUILDDIR)/main.mk),)
 
 include $(EBUILDDIR)/main.mk
+
+.PHONY: gh
+gh: export EBUILDDOC_TARGET_PATH := http://grgbr.github.io/ebuild/
+gh: html
+	@$(RM) -r $(TOPDIR)/docs
+	$(call installdir_recipe,,$(sphinxhtmldir),$(TOPDIR)/docs)
+	@touch $(TOPDIR)/docs/.nojekyll
+
+.PHONY: clean-gh
+clean-gh:
+	$(call rmr_recipe,$(TOPDIR)/docs)
