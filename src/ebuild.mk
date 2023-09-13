@@ -1,3 +1,10 @@
+################################################################################
+# SPDX-License-Identifier: LGPL-3.0-only
+#
+# This file is part of Stroll.
+# Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
+################################################################################
+
 common-cflags        := -Wall \
                         -Wextra \
                         -Wformat=2 \
@@ -41,4 +48,4 @@ libstroll.a-objs     += $(call kconf_enabled,STROLL_ASSERT,static/assert.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_LVSTR,static/lvstr.o)
 libstroll.a-cflags   := $(common-cflags)
 
-# vim: filetype=make :
+# ex: filetype=make :

@@ -1,3 +1,8 @@
+.. SPDX-License-Identifier: GPL-3.0-only
+   
+   This file is part of Stroll.
+   Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
+
 .. _breathe:              https://github.com/breathe-doc/breathe
 .. _cmocka:               https://cmocka.org/
 .. _ebuild:               https://github.com/grgbr/ebuild/

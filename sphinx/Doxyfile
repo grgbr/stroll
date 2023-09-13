@@ -1,3 +1,10 @@
+################################################################################
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# This file is part of Stroll.
+# Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
+################################################################################
+
 # Doxyfile 1.9.6
 
 # This file describes the settings to be used by the documentation system
@@ -287,6 +294,9 @@ TAB_SIZE               = 8
 ALIASES = licensestart="@par License^^@parblock^^" \
           licenseend="@endparblock^^"
 
+# A simple one line reference Licensing information alias.
+ALIASES += license="@par License^^"
+
 # Declare an alias command taking one parameter to output a link to a manpage
 # rendered by Sphinx / Breathe logic.
 #
@@ -304,6 +314,10 @@ ALIASES += rstref{1}="@verbatim embed:rst:inline :ref:`\1` @endverbatim"
 # Declare an alias allowing to use the predefined Sphinx / reStructuredText
 # substitution directive given in argument.
 ALIASES += rstsubst{1}="@verbatim embed:rst:inline |\1| @endverbatim"
+
+# Declare an alias allowing to use the predefined Sphinx / reStructuredText
+# hyperlink given in argument.
+ALIASES += rstlnk{1}="@verbatim embed:rst:inline `\1`_ @endverbatim"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For

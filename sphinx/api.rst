@@ -1,3 +1,8 @@
+.. SPDX-License-Identifier: GPL-3.0-only
+   
+   This file is part of Stroll.
+   Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
+
 .. _stroll: https://github.com/grgbr/stroll/
 
 Overview
@@ -20,6 +25,10 @@ you can refer to for further details :
 * `Bit operations`_,
 * `Bitmaps`_,
 * `Length-value strings`_.
+
+Stroll_ sources are distributed under the :ref:`GNU Lesser General Public
+License <lgpl>` whereas documentation manuals are distributed under the
+:ref:`GNU General Public License <gpl>`.
 
 .. index:: build configuration, configuration macros
    

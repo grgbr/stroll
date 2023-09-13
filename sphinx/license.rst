@@ -3,7 +3,9 @@
    This file is part of Stroll.
    Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
 
-.. This file is a placeholder and will be replaced
+*********
+Licensing
+*********
 
-Index
-#####
+.. include:: license/lgpl.rst
+.. include:: license/gpl.rst
