@@ -1,16 +1,18 @@
+.. _stroll: https://github.com/grgbr/stroll/
+
 Overview
 ========
 
-What follows here provides a thorough description of how to use Stroll's
+What follows here provides a thorough description of how to use Stroll_'s
 library.
 
-Basically, Stroll library is a basic C framework that provides definitions
+Basically, Stroll_ library is a basic C framework that provides definitions
 usefull to carry out common C/C++ applicative tasks.
 The library is implemented to run on GNU Linux / glibc platforms only (although
 porting to alternate C library such as `musl libc <https://www.musl-libc.org/>`_
 should not be much of a hassle).
 
-Stroll library API is organized around the following functional areas which
+Stroll_ library API is organized around the following functional areas which
 you can refer to for further details :
 
 * `Common definitions`_,
@@ -25,8 +27,8 @@ Build configuration
 ===================
 
 At :ref:`Build configuration time <workflow-configure-phase>`, multiple build
-options are available to customize final Stroll build. From client code, you may
-eventually refer to the corresponding C macros listed below:
+options are available to customize final Stroll_ build. From client code, you
+may eventually refer to the corresponding C macros listed below:
 
 * :c:macro:`CONFIG_STROLL_ASSERT`
 * :c:macro:`CONFIG_STROLL_ASSERT_API`
@@ -42,7 +44,7 @@ eventually refer to the corresponding C macros listed below:
 Common definitions
 ==================
 
-Stroll library exposes various C preprocessor macros used to implement Stroll
+Stroll_ library exposes various C preprocessor macros used to implement Stroll_
 internals and meant for application development purposes. These are:
 
 .. hlist::
@@ -91,7 +93,7 @@ Assertions
 ==========
 
 When compiled with the :c:macro:`CONFIG_STROLL_ASSERT` build configuration
-option enabled, the Stroll library exposes the :c:macro:`stroll_assert` macro so
+option enabled, the Stroll_ library exposes the :c:macro:`stroll_assert` macro so
 that developper may perform standard assertion checking.
 
 .. index:: bit operations, bitops
@@ -100,7 +102,7 @@ Bit operations
 ==============
 
 When compiled with the :c:macro:`CONFIG_STROLL_BOPS` build configuration
-option enabled, the Stroll library provides support for bit manipulation
+option enabled, the Stroll_ library provides support for bit manipulation
 operations. These are:
 
 .. hlist::
@@ -135,7 +137,7 @@ Bitmaps
 =======
 
 When compiled with the :c:macro:`CONFIG_STROLL_BMAP` build configuration
-option enabled, the Stroll library provides support for bitmap operations.
+option enabled, the Stroll_ library provides support for bitmap operations.
 These are:
 
 .. hlist::
@@ -271,7 +273,7 @@ Length-Value Strings
 ====================
 
 When compiled with the :c:macro:`CONFIG_STROLL_LVSTR` build configuration option
-enabled, the Stroll library provides support for :c:struct:`stroll_lvstr`
+enabled, the Stroll_ library provides support for :c:struct:`stroll_lvstr`
 length-value strings.
 
 This framework ease the management of C strings life-cycle. In addition,
