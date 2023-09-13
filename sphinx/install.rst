@@ -3,8 +3,10 @@
    This file is part of Stroll.
    Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
 
+.. include:: _cdefs.rst
+
+.. _cute:                 https://github.com/grgbr/cute/
 .. _breathe:              https://github.com/breathe-doc/breathe
-.. _cmocka:               https://cmocka.org/
 .. _ebuild:               https://github.com/grgbr/ebuild/
 .. _gnu_make:             https://www.gnu.org/software/make/
 .. |eBuild|               replace:: `eBuild <ebuild_>`_
@@ -24,9 +26,9 @@ Overview
 ========
 
 This guide mainly focuses upon the construction process required to install
-Stroll.
+Stroll_.
 
-Stroll's build logic is based upon |eBuild|. In addition to the build process
+Stroll_'s build logic is based upon |eBuild|. In addition to the build process
 description explained below, you may refer to the |eBuild User Guide|
 for further detailed informations.
 
@@ -34,19 +36,19 @@ Prerequisites
 =============
 
 In addition to the standard |eBuild Prerequisites|, no particular packages are
-required to build Stroll.
+required to build Stroll_.
 
-Optionally, you will need cmocka_ at build time and at runtime when unit
+Optionally, you will need CUTe_ at build time and at runtime when unit
 testsuite is enabled (see :ref:`CONFIG_STROLL_UTEST`).
 
 Optionally, you will need multiple packages installed to build the
 documentation. In addition to packages listed into |eBuild Prerequisites|,
-Stroll's documentation generation process requires breathe_.
+Stroll_'s documentation generation process requires breathe_.
 
 Getting help
 ============
 
-From Stroll source tree root, enter:
+From Stroll_ source tree root, enter:
 
 .. code-block:: console
 
@@ -68,8 +70,8 @@ section also contains valuable informations.
 Build Workflow
 ==============
 
-As mentioned earlier, Stroll's build logic is based on |eBuild|, a |GNU make|
-based build system. To build and install Stroll, the typical workflow is:
+As mentioned earlier, Stroll_'s build logic is based on |eBuild|, a |GNU make|
+based build system. To build and install Stroll_, the typical workflow is:
 
 #. Prepare and collect workflow requirements,
 #. |Configure| the construction logic,
@@ -79,7 +81,7 @@ based build system. To build and install Stroll, the typical workflow is:
 
 Alternatively, you may replace the last step mentioned above with a |Staged
 Install|. You will find below a **quick starting guide** showing how to build
-Stroll.
+Stroll_.
 
 Preparation phase
 -----------------
@@ -144,7 +146,7 @@ instead:
 Documentation generation
 ------------------------
 
-You may generate Stroll documentation by running the `doc` target like so:
+You may generate Stroll_ documentation by running the `doc` target like so:
 
 .. code-block:: console
 

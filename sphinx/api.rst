@@ -3,7 +3,7 @@
    This file is part of Stroll.
    Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
 
-.. _stroll: https://github.com/grgbr/stroll/
+.. include:: _cdefs.rst
 
 Overview
 ========
