@@ -82,14 +82,15 @@ free(void * ptr)
 		 * true to perform subsequent validation.
 		 *
 		 * Watch out ! This MUST be done before calling any
-		 * check_expected...() function is called since they all rely
-		 * upon a working free(3). We would otherwise wrap cmocka
-		 * internal calls to free(3) !
+		 * cute_mock_...() function is called since they all rely upon a
+		 * working free(3). We would otherwise wrap CUTe's internal
+		 * calls to free(3) !
 		 */
 		strollut_free_wrapped = false;
 		/*
 		 * free(3) argument checking logic is enabled: do the check
-		 * using standard cmocka check_expected_ptr().
+		 * using standard CUTe's cute_mock_ptr_parm() /
+		 * cute_mock_mem_parm().
 		 * First check pointer value, then content of memory pointed to.
 		 */
 		cute_mock_ptr_parm(ptr);
