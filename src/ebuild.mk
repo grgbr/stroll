@@ -29,7 +29,8 @@ ifeq ($(CONFIG_STROLL_UTEST)$(CONFIG_STROLL_ASSERT),yy)
 common-cflags        := $(common-cflags) -fsemantic-interposition
 endif # ($(CONFIG_STROLL_UTEST)$(CONFIG_STROLL_ASSERT),yy)
 
-common-ldflags       := $(common-cflags) $(EXTRA_LDFLAGS)
+common-ldflags       := $(common-cflags) $(EXTRA_LDFLAGS) \
+                        -Wl,-z,start-stop-visibility=hidden
 
 ifneq ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
 common-cflags         := $(filter-out -DNDEBUG,$(common-cflags))

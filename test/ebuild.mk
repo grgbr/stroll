@@ -28,6 +28,7 @@ test-cflags  := -Wall \
 test-ldflags := $(test-cflags) \
                 -L$(BUILDDIR)/../src \
                 $(EXTRA_LDFLAGS) \
+                -Wl,-z,start-stop-visibility=hidden \
                 -Wl,-whole-archive $(BUILDDIR)/builtin.a -Wl,-no-whole-archive \
                 -lstroll
 
