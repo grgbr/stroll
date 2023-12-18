@@ -5,8 +5,9 @@
 # Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
 ################################################################################
 
-config-in := Config.in
-config-h  := stroll/config.h
+config-in  := Config.in
+config-h   := stroll/config.h
+config-obj := config.o
 
 HEADERDIR := $(CURDIR)/include
 headers    = stroll/cdefs.h

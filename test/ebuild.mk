@@ -38,7 +38,7 @@ test-ldflags := $(filter-out -DNDEBUG,$(test-ldflags))
 endif # ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
 
 builtins             := builtin.a
-builtin.a-objs       := utest.o
+builtin.a-objs       := utest.o $(config-obj)
 builtin.a-cflags     := $(test-cflags)
 
 bins                 := stroll-utest
