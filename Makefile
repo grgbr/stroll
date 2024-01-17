@@ -25,3 +25,49 @@ $(error '$(EBUILDDIR)': no valid eBuild install found !)
 endif # ($(realpath $(EBUILDDIR)/main.mk),)
 
 include $(EBUILDDIR)/main.mk
+
+ifeq ($(CONFIG_STROLL_UTEST),y)
+
+ifeq ($(strip $(CROSS_COMPILE)),)
+
+CHECK_FORCE ?= y
+ifneq ($(filter y 1,$(CHECK_FORCE)),)
+.PHONY: $(BUILDDIR)/test/stroll-utest.xml
+endif
+
+CHECK_VERBOSE ?= --silent
+
+check_lib_search_path := \
+	$(BUILDDIR)/src$(if $(LD_LIBRARY_PATH),:$(LD_LIBRARY_PATH))
+
+.PHONY: check
+check: $(BUILDDIR)/test/stroll-utest.xml
+
+$(BUILDDIR)/test/stroll-utest.xml: | build-check
+	@echo "  CHECK   $(@)"
+	$(Q)env LD_LIBRARY_PATH="$(check_lib_search_path)" \
+	        $(BUILDDIR)/test/stroll-utest \
+	        $(CHECK_VERBOSE) \
+	        --xml='$(@)' \
+	        run
+
+clean-check: _clean-check
+
+.PHONY: _clean-check
+_clean-check:
+	$(call rm_recipe,$(BUILDDIR)/test/stroll-utest.xml)
+
+else  # ifneq ($(strip $(CROSS_COMPILE)),)
+
+.PHONY: check
+check:
+	$(error Cannot check while cross building !)
+
+endif # ifeq ($(strip $(CROSS_COMPILE)),)
+
+else  # ifneq ($(CONFIG_STROLL_UTEST),y)
+
+.PHONY: check
+check:
+
+endif # ifeq ($(CONFIG_STROLL_UTEST),y)

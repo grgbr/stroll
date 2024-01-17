@@ -1,10 +1,11 @@
 .. SPDX-License-Identifier: GPL-3.0-only
    
    This file is part of Stroll.
-   Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
+   Copyright (C) 2017-2024 Grégor Boirie <gregor.boirie@free.fr>
 
 .. include:: _cdefs.rst
 
+.. _junit:                https://en.wikipedia.org/wiki/JUnit
 .. _cute:                 https://github.com/grgbr/cute/
 .. _breathe:              https://github.com/breathe-doc/breathe
 .. _ebuild:               https://github.com/grgbr/ebuild/
@@ -12,12 +13,15 @@
 .. |eBuild|               replace:: `eBuild <ebuild_>`_
 .. |eBuild User Guide|    replace:: :external+ebuild:doc:`eBuild User Guide <user>`
 .. |eBuild Prerequisites| replace:: :external+ebuild:ref:`eBuild Prerequisites <sect-user-prerequisites>`
+.. |cute-run|             replace:: :external+cute:doc:`cute-run(1) <man/cute-run>`
+.. |cute-report|          replace:: :external+cute:doc:`cute-report(1) <man/cute-report>`
 .. |Configure|            replace:: :external+ebuild:ref:`sect-user-configure`
 .. |Build|                replace:: :external+ebuild:ref:`sect-user-build`
 .. |Install|              replace:: :external+ebuild:ref:`sect-user-install`
 .. |Staged install|       replace:: :external+ebuild:ref:`sect-user-staged-install`
 .. |BUILDDIR|             replace:: :external+ebuild:ref:`var-builddir`
 .. |PREFIX|               replace:: :external+ebuild:ref:`var-prefix`
+.. |BINDIR|               replace:: :external+ebuild:ref:`var-bindir`
 .. |CROSS_COMPILE|        replace:: :external+ebuild:ref:`var-cross_compile`
 .. |DESTDIR|              replace:: :external+ebuild:ref:`var-destdir`
 .. |GNU Make|             replace:: `GNU Make <gnu_make_>`_
@@ -39,11 +43,11 @@ In addition to the standard |eBuild Prerequisites|, no particular packages are
 required to build Stroll_.
 
 Optionally, you will need CUTe_ at build time and at runtime when unit
-testsuite is enabled (see :ref:`CONFIG_STROLL_UTEST`).
+testsuite_ is enabled (see :ref:`CONFIG_STROLL_UTEST`).
 
 Optionally, you will need multiple packages installed to build the
-documentation. In addition to packages listed into |eBuild Prerequisites|,
-Stroll_'s documentation generation process requires breathe_.
+documentation_. In addition to packages listed into |eBuild Prerequisites|,
+Stroll_'s documentation_ generation process requires breathe_.
 
 Getting help
 ============
@@ -75,13 +79,18 @@ based build system. To build and install Stroll_, the typical workflow is:
 
 #. Prepare and collect workflow requirements,
 #. |Configure| the construction logic,
-#. |Build| programs, libraries, documentation, etc.,
+#. |Build| programs, libraries, etc.,
 #. |Install| components, copying files previously built to
    system-wide directories
 
 Alternatively, you may replace the last step mentioned above with a |Staged
 Install|. You will find below a **quick starting guide** showing how to build
 Stroll_.
+
+You are also provided with the ability to :
+
+* generate documentation_,
+* build, install, and / or run Stroll_'s testsuite_.
 
 Preparation phase
 -----------------
@@ -143,21 +152,77 @@ instead:
 
    $ make install BUILDDIR=$HOME/build/stroll PREFIX=/usr DESTDIR=$HOME/staging
 
-Documentation generation
-------------------------
+Documentation
+-------------
 
-You may generate Stroll_ documentation by running the `doc` target like so:
+You may generate Stroll_ documentation by running the
+:external+ebuild:ref:`eBuild doc target <target-doc>` like so:
 
 .. code-block:: console
 
    $ make doc BUILDDIR=$HOME/build/stroll PREFIX=/usr
 
-You may further install generated documentation by running the `install-doc`
-target:
+You may further install generated documentation by running the
+:external+ebuild:ref:`eBuild install-doc target <target-install-doc>` target:
 
 .. code-block:: console
 
    $ make install-doc BUILDDIR=$HOME/build/stroll PREFIX=/usr DESTDIR=$HOME/staging
+
+.. _testsuite:
+
+Testing
+-------
+
+When the :c:macro:`CONFIG_STROLL_UTEST` build configuration setting is enabled,
+you may build Stroll_ testsuite by running the
+:external+ebuild:ref:`eBuild build-check target <target-build-check>` target
+like so:
+
+.. code-block:: console
+
+   $ make build-check BUILDDIR=$HOME/build/stroll PREFIX=/usr
+
+You may further install generated testsuite by running the
+:external+ebuild:ref:`eBuild install-check target <target-install-check>`
+target:
+
+.. code-block:: console
+
+   $ make install-check BUILDDIR=$HOME/build/stroll PREFIX=/usr DESTDIR=$HOME/staging
+
+Use the :command:`stroll-utest` program installed under the |BINDIR| directory
+to run the testsuite.
+
+When *not cross-compiling*, running the ``check`` target builds and runs
+the testsuite all at once with no required installation:
+
+.. code-block:: console
+
+   $ make check BUILDDIR=$HOME/build/stroll CHECK_FORCE=n CHECK_VERBOSE=--terse
+
+The ``CHECK_FORCE`` :command:`make` variable given above may be used to skip
+testing operations when a previous testsuite run has already completed. It may
+be specified as :
+
+* one of ``y`` or ``1`` values to enforce a testsuite run (the default);
+* or any other value to values to disable testsuite run enforcement.
+
+The ``CHECK_VERBOSE`` :command:`make` variable given above is passed as-is to
+the :command:`stroll-utest` command line arguments and may be used to enable
+testsuite verbose output. See CUTe_'s |cute-run| manual for more informations.
+
+The ``check`` target requests :command:`stroll-utest` to store results into the
+:file:`stroll-utest.xml` JUnit_ file located under the ``$(BUILDDIR)/test``
+directory so that you may perform further analysis thanks to the CUTe_'s
+|cute-report| reporting tool:
+
+.. code-block:: console
+
+   $ cute-report sumup $HOME/build/stroll/test/stroll-utest.xml
+
+Further informations
+--------------------
 
 Finally, you may find lots of usefull informations into the
 :external+ebuild:ref:`Reference <sect-user-reference>` section of the |eBuild

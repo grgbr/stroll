@@ -41,7 +41,7 @@ builtins             := builtin.a
 builtin.a-objs       := utest.o $(config-obj)
 builtin.a-cflags     := $(test-cflags)
 
-bins                 := stroll-utest
+checkbins            := stroll-utest
 
 stroll-utest-objs    := cdefs.o
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BOPS,bops.o)

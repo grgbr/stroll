@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 #
 # This file is part of Stroll.
-# Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
+# Copyright (C) 2017-2024 Grégor Boirie <gregor.boirie@free.fr>
 ################################################################################
 # -*- coding: utf-8 -*-
 #
@@ -55,7 +55,7 @@ master_title = u'Stroll Documentation'
 
 # General information about the project.
 project = u'Stroll'
-copyright = u"2017-2023 Grégor Boirie"
+copyright = u"2017-2024 Grégor Boirie"
 author = u"Grégor Boirie"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -216,9 +216,21 @@ if not ebuilddoc_inventory_path:
         ebuilddoc_inventory_path = os.path.join(docdir,
                                                 '../ebuild/html/objects.inv')
 
+cutedoc_target_path = os.getenv('CUTEDOC_TARGET_PATH')
+if not cutedoc_target_path:
+    cutedoc_target_path = '../../cute/html'
+
+cutedoc_inventory_path = os.getenv('CUTEDOC_INVENTORY_PATH')
+if not cutedoc_inventory_path:
+    docdir = os.getenv('DOCDIR')
+    if docdir:
+        cutedoc_inventory_path = os.path.join(docdir,
+                                              '../cute/html/objects.inv')
+
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-        'ebuild': (ebuilddoc_target_path, ebuilddoc_inventory_path)
+        'ebuild': (ebuilddoc_target_path, ebuilddoc_inventory_path),
+        'cute':   (cutedoc_target_path, cutedoc_inventory_path)
 }
 
 intersphinx_disabled_reftypes = ['*']

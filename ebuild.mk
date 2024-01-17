@@ -41,6 +41,14 @@ pkgconfigs        := libstroll.pc
 libstroll.pc-tmpl := libstroll_pkgconf_tmpl
 
 ################################################################################
+# Source code tags generation
+################################################################################
+
+tagfiles        := $(shell find $(addprefix $(CURDIR)/,$(subdirs)) \
+                                $(HEADERDIR) \
+                                -type f)
+
+################################################################################
 # Documentation generation
 ################################################################################
 
@@ -53,7 +61,11 @@ sphinxenv := \
 	$(if $(strip $(EBUILDDOC_TARGET_PATH)), \
 	     EBUILDDOC_TARGET_PATH="$(strip $(EBUILDDOC_TARGET_PATH))") \
 	$(if $(strip $(EBUILDDOC_INVENTORY_PATH)), \
-	     EBUILDDOC_INVENTORY_PATH="$(strip $(EBUILDDOC_INVENTORY_PATH))")
+	     EBUILDDOC_INVENTORY_PATH="$(strip $(EBUILDDOC_INVENTORY_PATH))") \
+	$(if $(strip $(CUTEDOC_TARGET_PATH)), \
+	     CUTEDOC_TARGET_PATH="$(strip $(CUTEDOC_TARGET_PATH))") \
+	$(if $(strip $(CUTEDOC_INVENTORY_PATH)), \
+	     CUTEDOC_INVENTORY_PATH="$(strip $(CUTEDOC_INVENTORY_PATH))")
 
 ################################################################################
 # Source distribution generation
@@ -66,5 +78,6 @@ override distfiles = $(list_versioned_recipe)
 # Override InterSphinx eBuild base documentation URI and make it point to online
 # GitHub pages when building final source distribution tarball
 dist: export EBUILDDOC_TARGET_PATH := http://grgbr.github.io/ebuild/
+dist: export CUTEDOC_TARGET_PATH := http://grgbr.github.io/cute/
 
 # ex: filetype=make :
