@@ -5,8 +5,13 @@
 # Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
 ################################################################################
 
+config STROLL_PROVIDES_LIBS
+       bool
+       default n
+
 config STROLL_ASSERT
 	bool "Assertion"
+	select STROLL_PROVIDES_LIBS
 	default n
 	help
 	  Build stroll library assertion framework exposing a programmatic
@@ -73,6 +78,7 @@ config STROLL_BMAP
 
 config STROLL_LVSTR
 	bool "Length-Value String"
+	select STROLL_PROVIDES_LIBS
 	default y
 	help
 	  Build stroll library with length-value string framework meant to ease

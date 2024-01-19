@@ -23,6 +23,10 @@ subdirs   += test
 test-deps := src
 endif # ($(CONFIG_STROLL_UTEST),y)
 
+ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
+override libstroll_pkgconf_libs := Libs: -L$${libdir} -lstroll
+endif # ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
+
 define libstroll_pkgconf_tmpl
 prefix=$(PREFIX)
 exec_prefix=$${prefix}
@@ -34,7 +38,7 @@ Description: Stroll library
 Version: %%PKG_VERSION%%
 Requires:
 Cflags: -I$${includedir}
-Libs: -L$${libdir} -lstroll
+$(libstroll_pkgconf_libs)
 endef
 
 pkgconfigs        := libstroll.pc
