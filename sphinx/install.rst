@@ -206,7 +206,7 @@ testing operations when a previous testsuite run has already completed. It may
 be specified as :
 
 * one of ``y`` or ``1`` values to enforce a testsuite run (the default);
-* or any other value to values to disable testsuite run enforcement.
+* or any other value to disable testsuite run enforcement.
 
 The ``CHECK_VERBOSE`` :command:`make` variable given above is passed as-is to
 the :command:`stroll-utest` command line arguments and may be used to enable
