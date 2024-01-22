@@ -1092,10 +1092,19 @@ stroll_lvstr_cstr
 
 .. doxygenfunction:: stroll_lvstr_cstr
 
+.. _sect-api-stroll_lvstr_drop:
+
+stroll_lvstr_drop
+*****************
+
+.. doxygenfunction:: stroll_lvstr_drop
+
 stroll_lvstr_dup
 ****************
 
 .. doxygenfunction:: stroll_lvstr_dup
+
+.. _sect-api-stroll_lvstr_fini:
 
 stroll_lvstr_fini
 *****************
