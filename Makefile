@@ -57,10 +57,10 @@ ifneq ($(filter y 1,$(CHECK_FORCE)),)
 endif
 
 CHECK_HALT_ON_FAIL ?= n
-ifneq ($(filter y 1,$(CHECK_HALT_ON_FAIL)),)
-K := --no-keep-going
-else
+ifeq ($(filter y 1,$(CHECK_HALT_ON_FAIL)),)
 K := --keep-going
+else
+K := --no-keep-going
 endif
 
 CHECK_VERBOSE ?= --silent
