@@ -14,6 +14,7 @@ headers    = stroll/cdefs.h
 headers   += $(call kconf_enabled,STROLL_ASSERT,stroll/assert.h)
 headers   += $(call kconf_enabled,STROLL_BOPS,stroll/bops.h)
 headers   += $(call kconf_enabled,STROLL_BMAP,stroll/bmap.h)
+headers   += $(call kconf_enabled,STROLL_FBMAP,stroll/fbmap.h)
 headers   += $(call kconf_enabled,STROLL_LVSTR,stroll/lvstr.h)
 
 subdirs   := src
@@ -35,7 +36,7 @@ includedir=$${prefix}/include
 
 Name: libstroll
 Description: Stroll library
-Version: %%PKG_VERSION%%
+Version: $(VERSION)
 Requires:
 Cflags: -I$${includedir}
 $(libstroll_pkgconf_libs)

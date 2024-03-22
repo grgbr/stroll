@@ -803,11 +803,18 @@
 	 })
 
 #if __WORDSIZE == 64
-#define __UINTPTR_C(c) c ## UL
-#define UWORD_SHIFT    (6)
+#define UINTPTR_C(c) c ## UL
 #elif __WORDSIZE == 32
-#define __UINTPTR_C(c) c ## U
-#define UWORD_SHIFT    (5)
+#define UINTPTR_C(c) c ## U
+#else
+#error "Unsupported machine word size !"
+#endif
+
+
+#if __WORDSIZE == 64
+#define STROLL_WORD_SHIFT (6)
+#elif __WORDSIZE == 32
+#define STROLL_WORD_SHIFT (5)
 #else
 #error "Unsupported machine word size !"
 #endif

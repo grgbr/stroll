@@ -76,6 +76,22 @@ config STROLL_BMAP
 	  - etc...
 	  See <stroll/bmap.h>.
 
+config STROLL_FBMAP
+	bool "Fixed sized bitmap"
+	default y
+	select STROLL_BOPS
+	select STROLL_PROVIDES_LIBS
+	help
+	  Build stroll library with a bitmap framework allowing to manipulate
+	  bitmaps stored into memory area of arbitrary fixed sizes.
+	  Multiple functions are exposed to perform usual operations such as:
+	  - and / or / xor operations,
+	  - test bit / mask / bit range,
+	  - hamming weight,
+	  - iteration,
+	  - etc...
+	  See <stroll/fbmap.h>.
+
 config STROLL_LVSTR
 	bool "Length-Value String"
 	select STROLL_PROVIDES_LIBS
