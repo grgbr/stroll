@@ -1,3 +1,10 @@
+/******************************************************************************
+ * SPDX-License-Identifier: LGPL-3.0-only
+ *
+ * This file is part of Stroll.
+ * Copyright (C) 2020-2024 Grégor Boirie <gregor.boirie@free.fr>
+ ******************************************************************************/
+
 #include "stroll/fbmap.h"
 #include "stroll/bops.h"
 #include <errno.h>
@@ -7,8 +14,8 @@
 	stroll_fbmap_assert_api((_bmap)->nr); \
 	stroll_fbmap_assert_api((_bmap)->nr <= INT_MAX); \
 	stroll_fbmap_assert_api(_bit_count); \
-	stroll_fbmap_assert_api(_start_bit < (_bmap)->nr); \
-	stroll_fbmap_assert_api((_start_bit + _bit_count) <= (_bmap)->nr)
+	stroll_fbmap_assert_api((_start_bit) < (_bmap)->nr); \
+	stroll_fbmap_assert_api(((_start_bit) + (_bit_count)) <= (_bmap)->nr)
 
 /*
  * Return a bit mask suitable for masking out all bits lower that the bit index
@@ -21,6 +28,17 @@ stroll_fbmap_word_high_mask(unsigned int bit_no)
 	return ~(0UL) << stroll_fbmap_word_bit_no(bit_no);
 }
 
+/*
+ * Return a bit mask suitable for masking out all bits higher that the bit index
+ * given in argument.
+ */
+static __const __nothrow __warn_result
+unsigned long
+stroll_fbmap_word_low_mask(unsigned int bit_no)
+{
+	return ~(0UL) >> (__WORDSIZE - 1 - stroll_fbmap_word_bit_no(bit_no));
+}
+
 bool
 stroll_fbmap_test_range(const struct stroll_fbmap * __restrict bmap,
                         unsigned int                           start_bit,
@@ -28,15 +46,11 @@ stroll_fbmap_test_range(const struct stroll_fbmap * __restrict bmap,
 {
 	stroll_fbmap_assert_range(bmap, start_bit, bit_count);
 
-	unsigned int  curr;
-	unsigned int  last;
+	unsigned int  stop_bit = start_bit + bit_count - 1;
+	unsigned int  curr = stroll_fbmap_word_no(start_bit);
+	unsigned int  last = stroll_fbmap_word_no(stop_bit);
 	unsigned long msb = stroll_fbmap_word_high_mask(start_bit);
-	unsigned long lsb = ~(0UL) >>
-	                    (__WORDSIZE -
-	                     stroll_fbmap_word_bit_no(start_bit + bit_count));
-
-	curr = stroll_fbmap_word_no(start_bit);
-	last = stroll_fbmap_word_no(start_bit + bit_count - 1);
+	unsigned long lsb = stroll_fbmap_word_low_mask(stop_bit);
 
 	if (curr != last) {
 		/*
@@ -72,9 +86,13 @@ stroll_fbmap_test_all(const struct stroll_fbmap * __restrict bmap)
 
 	unsigned int w;
 
-	for (w = 0; w < stroll_fbmap_word_nr(bmap->nr); w++)
+	for (w = 0; w < (stroll_fbmap_word_nr(bmap->nr) - 1); w++) {
 		if (bmap->bits[w])
 			return true;
+	}
+
+	if (bmap->bits[w] & stroll_fbmap_word_low_mask(bmap->nr - 1))
+		return true;
 
 	return false;
 }

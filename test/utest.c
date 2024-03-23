@@ -143,6 +143,9 @@ extern CUTE_SUITE_DECL(strollut_bops_suite);
 #if defined(CONFIG_STROLL_BMAP)
 extern CUTE_SUITE_DECL(strollut_bmap_suite);
 #endif
+#if defined(CONFIG_STROLL_FBMAP)
+extern CUTE_SUITE_DECL(strollut_fbmap_suite);
+#endif
 #if defined(CONFIG_STROLL_LVSTR)
 extern CUTE_SUITE_DECL(strollut_lvstr_suite);
 #endif
@@ -154,6 +157,9 @@ CUTE_GROUP(strollut_group) = {
 #endif
 #if defined(CONFIG_STROLL_BMAP)
 	CUTE_REF(strollut_bmap_suite),
+#endif
+#if defined(CONFIG_STROLL_FBMAP)
+	CUTE_REF(strollut_fbmap_suite),
 #endif
 #if defined(CONFIG_STROLL_LVSTR)
 	CUTE_REF(strollut_lvstr_suite),

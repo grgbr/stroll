@@ -25,7 +25,10 @@ test-deps := src
 endif # ($(CONFIG_STROLL_UTEST),y)
 
 ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
-override libstroll_pkgconf_libs := Libs: -L$${libdir} -lstroll
+override libstroll_pkgconf_libs := Libs: -L$${libdir} \
+                                         -Wl,--push-state,--as-needed \
+                                         -lstroll \
+                                         -Wl,--pop-state
 endif # ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
 
 define libstroll_pkgconf_tmpl
@@ -37,7 +40,6 @@ includedir=$${prefix}/include
 Name: libstroll
 Description: Stroll library
 Version: $(VERSION)
-Requires:
 Cflags: -I$${includedir}
 $(libstroll_pkgconf_libs)
 endef

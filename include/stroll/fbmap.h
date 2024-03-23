@@ -91,6 +91,7 @@ stroll_fbmap_test(const struct stroll_fbmap * __restrict bmap,
                   unsigned int                           bit_no)
 {
 	stroll_fbmap_assert_map_api(bmap);
+	stroll_fbmap_assert_api(bit_no < bmap->nr);
 
 	return !!(bmap->bits[stroll_fbmap_word_no(bit_no)] &
 	          stroll_fbmap_word_bit_mask(bit_no));
@@ -111,7 +112,7 @@ void
 stroll_fbmap_set(struct stroll_fbmap * __restrict bmap, unsigned int bit_no)
 {
 	stroll_fbmap_assert_map_api( bmap);
-	stroll_fbmap_assert_api(bit_no <  bmap->nr);
+	stroll_fbmap_assert_api(bit_no < bmap->nr);
 
 	 bmap->bits[stroll_fbmap_word_no(bit_no)] |=
 		stroll_fbmap_word_bit_mask(bit_no);
