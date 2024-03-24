@@ -74,6 +74,7 @@ struct stroll_fbmap {
 #define stroll_fbmap_assert_map_api(_bmap) \
 	stroll_fbmap_assert_api(_bmap); \
 	stroll_fbmap_assert_api((_bmap)->nr); \
+	stroll_fbmap_assert_api((_bmap)->nr <= (unsigned int)INT_MAX); \
 	stroll_fbmap_assert_api((_bmap)->bits)
 
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
@@ -177,6 +178,11 @@ stroll_fbmap_init_clear(struct stroll_fbmap * __restrict bmap,
                         unsigned int                     bit_nr)
 	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
+extern int
+stroll_fbmap_init_dup(struct stroll_fbmap * __restrict       bmap,
+                      const struct stroll_fbmap * __restrict src)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
+
 static inline __stroll_nonull(1) __stroll_nothrow
 void
 stroll_fbmap_fini(struct stroll_fbmap * __restrict bmap)
@@ -216,10 +222,13 @@ stroll_fbmap_init_range_iter(struct stroll_fbmap_iter * __restrict  iter,
 	     (_bit_no) >= 0; \
 	     (_bit_no) = stroll_fbmap_step_iter(_iter))
 
-static inline int
+static inline __stroll_nonull(1, 2) __stroll_nothrow __warn_result
+int
 stroll_fbmap_init_iter(struct stroll_fbmap_iter * __restrict  iter,
                        const struct stroll_fbmap * __restrict bmap)
 {
+	stroll_fbmap_assert_api(bmap);
+
 	return stroll_fbmap_init_range_iter(iter, bmap, 0, bmap->nr);
 }
 

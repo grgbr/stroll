@@ -11,8 +11,6 @@
 
 #define stroll_fbmap_assert_range(_bmap, _start_bit, _bit_count) \
 	stroll_fbmap_assert_map_api(_bmap); \
-	stroll_fbmap_assert_api((_bmap)->nr); \
-	stroll_fbmap_assert_api((_bmap)->nr <= INT_MAX); \
 	stroll_fbmap_assert_api(_bit_count); \
 	stroll_fbmap_assert_api((_start_bit) < (_bmap)->nr); \
 	stroll_fbmap_assert_api(((_start_bit) + (_bit_count)) <= (_bmap)->nr)
@@ -143,6 +141,26 @@ stroll_fbmap_init_clear(struct stroll_fbmap * __restrict bmap,
 		return -ENOMEM;
 
 	bmap->nr = bit_nr;
+
+	return 0;
+}
+
+int
+stroll_fbmap_init_dup(struct stroll_fbmap * __restrict       bmap,
+                      const struct stroll_fbmap * __restrict src)
+{
+	stroll_fbmap_assert_api(bmap);
+	stroll_fbmap_assert_map_api(src);
+
+	unsigned int wnr = stroll_fbmap_word_nr(src->nr);
+
+	bmap->bits = malloc(wnr * sizeof(bmap->bits[0]));
+	if (!bmap->bits)
+		return -ENOMEM;
+
+	memcpy(bmap->bits, src->bits, wnr * sizeof(bmap->bits[0]));
+
+	bmap->nr = src->nr;
 
 	return 0;
 }
