@@ -24,6 +24,7 @@ you can refer to for further details :
 * Assertions_,
 * `Bit operations`_,
 * `Bitmaps`_,
+* `Fixed sized bitmaps`_,
 * `Length-value strings`_.
 
 Stroll_ sources are distributed under the :ref:`GNU Lesser General Public
@@ -46,6 +47,7 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_VALGRIND`
 * :c:macro:`CONFIG_STROLL_BOPS`
 * :c:macro:`CONFIG_STROLL_BMAP`
+* :c:macro:`CONFIG_STROLL_FBMAP`
 * :c:macro:`CONFIG_STROLL_LVSTR`
 
 .. index:: common definitions, cdefs
@@ -274,6 +276,50 @@ These are:
       * :c:func:`stroll_bmap64_toggle_range`
       * :c:func:`stroll_bmap64_toggle_all`
 
+.. index:: bitmaps, bmap, fixed sized bitmaps, fbmap
+
+Fixed sized bitmaps
+===================
+
+When compiled with the :c:macro:`CONFIG_STROLL_FBMAP` build configuration
+option enabled, the Stroll_ library provides support for manipulating
+:c:struct:`stroll_fbmap` bitmaps stored into memory area of arbitrary fixed
+sizes. These are:
+
+.. hlist::
+
+   * Initialization:
+
+      * :c:func:`stroll_fbmap_fini`
+      * :c:func:`stroll_fbmap_init_clear`
+      * :c:func:`stroll_fbmap_init_dup`
+      * :c:func:`stroll_fbmap_init_set`
+
+   * Modify bit:
+     
+      * :c:func:`stroll_fbmap_clear`
+      * :c:func:`stroll_fbmap_clear_all`
+      * :c:func:`stroll_fbmap_set`
+      * :c:func:`stroll_fbmap_set_all`
+      * :c:func:`stroll_fbmap_toggle`
+      * :c:func:`stroll_fbmap_toggle_all`
+
+   * Test bit:
+     
+      * :c:func:`stroll_fbmap_test`
+      * :c:func:`stroll_fbmap_test_range`
+      * :c:func:`stroll_fbmap_test_all`
+
+   * Iteration:
+
+      * :c:struct:`stroll_fbmap_iter`
+      * :c:macro:`stroll_fbmap_foreach_range_set()`
+      * :c:macro:`stroll_fbmap_foreach_set()`
+
+   * Various:
+
+      * :c:func:`stroll_fbmap_nr`
+
 .. _sect-api-lvstr:
 
 .. index:: length-value string, lvstr
@@ -374,6 +420,11 @@ CONFIG_STROLL_BMAP
 ******************
 
 .. doxygendefine:: CONFIG_STROLL_BMAP
+
+CONFIG_STROLL_FBMAP
+******************
+
+.. doxygendefine:: CONFIG_STROLL_FBMAP
 
 CONFIG_STROLL_LVSTR
 *******************
@@ -608,6 +659,17 @@ stroll_bmap64_foreach_set
 
 .. doxygendefine:: stroll_bmap64_foreach_set
 
+
+stroll_fbmap_foreach_range_set()
+********************************
+
+.. doxygendefine:: stroll_fbmap_foreach_range_set
+
+stroll_fbmap_foreach_set()
+**************************
+
+.. doxygendefine:: stroll_fbmap_foreach_set
+
 stroll_min
 **********
 
@@ -621,6 +683,17 @@ stroll_max
 Structures
 ----------
 
+stroll_fbmap
+************
+
+.. doxygenstruct:: stroll_fbmap
+
+stroll_fbmap_iter
+*****************
+
+.. doxygenstruct:: stroll_fbmap_iter
+
+  
 stroll_lvstr
 ************
 
@@ -906,7 +979,6 @@ stroll_bmap64_clear
 
 .. doxygenfunction:: stroll_bmap64_clear
 
-
 stroll_bmap64_clear_mask
 ************************
 
@@ -1081,6 +1153,76 @@ stroll_bops64_hweight
 *********************
 
 .. doxygenfunction:: stroll_bops64_hweight
+
+stroll_fbmap_clear
+******************
+
+.. doxygenfunction:: stroll_fbmap_clear
+
+stroll_fbmap_clear_all
+**********************
+
+.. doxygenfunction:: stroll_fbmap_clear_all
+
+stroll_fbmap_fini
+*****************
+
+.. doxygenfunction:: stroll_fbmap_fini
+
+stroll_fbmap_init_clear
+***********************
+
+.. doxygenfunction:: stroll_fbmap_init_clear
+
+stroll_fbmap_init_dup
+*********************
+
+.. doxygenfunction:: stroll_fbmap_init_dup
+
+stroll_fbmap_init_set
+*********************
+
+.. doxygenfunction:: stroll_fbmap_init_set
+
+stroll_fbmap_nr
+***************
+
+.. doxygenfunction:: stroll_fbmap_nr
+
+stroll_fbmap_set
+****************
+
+.. doxygenfunction:: stroll_fbmap_set
+
+stroll_fbmap_set_all
+********************
+
+.. doxygenfunction:: stroll_fbmap_set_all
+
+stroll_fbmap_test
+*****************
+
+.. doxygenfunction:: stroll_fbmap_test
+
+stroll_fbmap_test_range
+***********************
+
+.. doxygenfunction:: stroll_fbmap_test_range
+
+stroll_fbmap_test_all
+*********************
+
+.. doxygenfunction:: stroll_fbmap_test_all
+
+stroll_fbmap_toggle
+*******************
+
+.. doxygenfunction:: stroll_fbmap_toggle
+
+stroll_fbmap_toggle_all
+***********************
+
+.. doxygenfunction:: stroll_fbmap_toggle_all
 
 stroll_lvstr_cede
 *****************

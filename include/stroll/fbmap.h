@@ -66,8 +66,28 @@ stroll_fbmap_word_bit_mask(unsigned int bit_no)
 	return 1UL << stroll_fbmap_word_bit_no(bit_no);
 }
 
+/**
+ * Fixed sized bitmap.
+ *
+ * An array of bits which size is set at initialization time where bit values
+ * may be addressed by bit number / index.
+ *
+ * @warning
+ * Cannot hold more than `INT_MAX` bits.
+ */
 struct stroll_fbmap {
+	/**
+	 * @internal
+	 *
+	 * Maximum number of bits this stroll_fbmap may hold.
+	 * MUST BE <= `INT_MAX`.
+	 */
 	unsigned int    nr;
+	/**
+	 * @internal
+	 *
+	 * Memory area holding bit values.
+	 */
 	unsigned long * bits;
 };
 
@@ -168,21 +188,108 @@ extern void
 stroll_fbmap_toggle_all(struct stroll_fbmap * __restrict bmap)
 	__stroll_nonull(1) __stroll_nothrow __leaf;
 
+/**
+ * Initialize fixed sized bitmap with all bits set.
+ *
+ * @param[out] bmap   Fixed sized bitmap
+ * @param[in]  bit_nr Maximum number of bits @p bmap may hold
+ *
+ * @return an errno-like error code
+ * @retval 0       success
+ * @retval -ENOMEM memory allocation failed
+ *
+ * Initialize the @p bmap fixed sized bitmap with all bits set.
+ *
+ * @note
+ * Once client code is done with @p bmap, it *MUST* call stroll_fbmap_fini() to
+ * release allocated resources.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ * @p bit_nr > `INT_MAX` result is undefined. An assertion is triggered
+ * otherwise.
+ *
+ * @see
+ * - stroll_fbmap_init_clear()
+ * - stroll_fbmap_init_dup()
+ * - stroll_fbmap_fini()
+ */
 extern int
 stroll_fbmap_init_set(struct stroll_fbmap * __restrict bmap,
                       unsigned int                     bit_nr)
 	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
+/**
+ * Zero-initialize fixed sized bitmap.
+ *
+ * @param[out] bmap   Fixed sized bitmap
+ * @param[in]  bit_nr Maximum number of bits @p bmap may hold
+ *
+ * @return an errno-like error code
+ * @retval 0       success
+ * @retval -ENOMEM memory allocation failed
+ *
+ * Initialize the @p bmap fixed sized bitmap with all bits cleared.
+ *
+ * @note
+ * Once client code is done with @p bmap, it *MUST* call stroll_fbmap_fini() to
+ * release allocated resources.
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p bit_nr > `INT_MAX` result is undefined. An assertion is triggered
+ *   otherwise.
+ *
+ * @see
+ * - stroll_fbmap_init_set()
+ * - stroll_fbmap_init_dup()
+ * - stroll_fbmap_fini()
+ */
 extern int
 stroll_fbmap_init_clear(struct stroll_fbmap * __restrict bmap,
                         unsigned int                     bit_nr)
 	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
+/**
+ * Initialize fixed sized bitmap using the content of another stroll_fbmap.
+ *
+ * @param[out] bmap  Fixed sized bitmap
+ * @param[in]  src   Fixed sized bitmap to initialize @p bmap with
+ *
+ * @return an errno-like error code
+ * @retval 0       success
+ * @retval -ENOMEM memory allocation failed
+ *
+ * Initialize the @p bmap fixed sized bitmap with all bits set to values of @p
+ * src bitmap.
+ *
+ * @note
+ * Once client code is done with @p bmap, it *MUST* call stroll_fbmap_fini() to
+ * release allocated resources.
+ *
+ * @see
+ * - stroll_fbmap_init_clear()
+ * - stroll_fbmap_init_set()
+ * - stroll_fbmap_fini()
+ */
 extern int
 stroll_fbmap_init_dup(struct stroll_fbmap * __restrict       bmap,
                       const struct stroll_fbmap * __restrict src)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
+/**
+ * Finalize a fixed sized bitmap.
+ *
+ * @param[inout] bmap Fixed sized bitmap
+ *
+ * Release resources allocated for @p bmap. Once called, you *MUST NOT* re-use
+ * @p bmap unless re-initialized first.
+ *
+ * @see
+ * - stroll_fbmap_init_set()
+ * - stroll_fbmap_init_clear()
+ * - stroll_fbmap_init_dup()
+ */
 static inline __stroll_nonull(1) __stroll_nothrow
 void
 stroll_fbmap_fini(struct stroll_fbmap * __restrict bmap)
