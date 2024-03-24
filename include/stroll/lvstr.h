@@ -663,7 +663,7 @@ stroll_lvstr_init(struct stroll_lvstr * __restrict lvstr)
 }
 
 /**
- * Finalize an empty stroll_lvstr.
+ * Finalize a stroll_lvstr.
  *
  * @param[inout] lvstr Length-Value String
  *
