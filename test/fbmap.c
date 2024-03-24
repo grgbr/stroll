@@ -1460,22 +1460,22 @@ CUTE_TEST(strollut_fbmap_iter_assert)
 	struct stroll_fbmap_iter iter;
 	struct stroll_fbmap      bmap;
 
-	cute_expect_assertion(err = stroll_fbmap_init_iter(NULL,
-	                                                   &strollut_fbmap_14));
-	cute_expect_assertion(err = stroll_fbmap_init_iter(&iter, NULL));
+	cute_expect_assertion(
+		err = stroll_fbmap_init_iter_set(NULL, &strollut_fbmap_14));
+	cute_expect_assertion(err = stroll_fbmap_init_iter_set(&iter, NULL));
 
 
 	bmap.nr = 0;
 	bmap.bits = strollut_fbmap_14.bits;
-	cute_expect_assertion(err = stroll_fbmap_init_iter(&iter, &bmap));
+	cute_expect_assertion(err = stroll_fbmap_init_iter_set(&iter, &bmap));
 
 	bmap.nr = UINT_MAX;
 	bmap.bits = strollut_fbmap_14.bits;
-	cute_expect_assertion(err = stroll_fbmap_init_iter(&iter, &bmap));
+	cute_expect_assertion(err = stroll_fbmap_init_iter_set(&iter, &bmap));
 
 	bmap.nr = 14;
 	bmap.bits = NULL;
-	cute_expect_assertion(err = stroll_fbmap_init_iter(&iter, &bmap));
+	cute_expect_assertion(err = stroll_fbmap_init_iter_set(&iter, &bmap));
 }
 #else
 STROLLUT_FBMAP_NOASSERT(strollut_fbmap_iter_assert)
@@ -1490,7 +1490,7 @@ strollut_fbmap_check_iter(const struct stroll_fbmap * bmap,
 	unsigned int             c = 0;
 	int                      b;
 
-	stroll_fbmap_foreach_bit(&iter, bmap, b) {
+	stroll_fbmap_foreach_set(&iter, bmap, b) {
 		cute_check_uint(c, lower, count);
 		cute_check_uint((unsigned int)b, equal, ref[c]);
 		c++;
@@ -1587,45 +1587,45 @@ CUTE_TEST(strollut_fbmap_iter_range_assert)
 	struct stroll_fbmap      bmap;
 
 	cute_expect_assertion(
-		err = stroll_fbmap_init_range_iter(NULL,
-		                                   &strollut_fbmap_14,
-		                                   2,
-		                                   8));
+		err = stroll_fbmap_init_range_iter_set(NULL,
+		                                       &strollut_fbmap_14,
+		                                       2,
+		                                       8));
 	cute_expect_assertion(
-		err = stroll_fbmap_init_range_iter(&iter,
-		                                   NULL,
-		                                   2,
-		                                   8));
+		err = stroll_fbmap_init_range_iter_set(&iter,
+		                                       NULL,
+		                                       2,
+		                                       8));
 	bmap.nr = 0;
 	bmap.bits = strollut_fbmap_14.bits;
-	cute_expect_assertion(err = stroll_fbmap_init_range_iter(&iter,
-	                                                         &bmap,
-	                                                         2,
-	                                                         8));
+	cute_expect_assertion(err = stroll_fbmap_init_range_iter_set(&iter,
+	                                                             &bmap,
+	                                                             2,
+	                                                             8));
 	bmap.nr = 1;
 	bmap.bits = strollut_fbmap_14.bits;
-	cute_expect_assertion(err = stroll_fbmap_init_range_iter(&iter,
-	                                                         &bmap,
-	                                                         2,
-	                                                         8));
+	cute_expect_assertion(err = stroll_fbmap_init_range_iter_set(&iter,
+	                                                             &bmap,
+	                                                             2,
+	                                                             8));
 	bmap.nr = 3;
 	bmap.bits = strollut_fbmap_14.bits;
-	cute_expect_assertion(err = stroll_fbmap_init_range_iter(&iter,
-	                                                         &bmap,
-	                                                         2,
-	                                                         8));
+	cute_expect_assertion(err = stroll_fbmap_init_range_iter_set(&iter,
+	                                                             &bmap,
+	                                                             2,
+	                                                             8));
 	bmap.nr = UINT_MAX;
 	bmap.bits = strollut_fbmap_14.bits;
-	cute_expect_assertion(err = stroll_fbmap_init_range_iter(&iter,
-	                                                         &bmap,
-	                                                         2,
-	                                                         8));
+	cute_expect_assertion(err = stroll_fbmap_init_range_iter_set(&iter,
+	                                                             &bmap,
+	                                                             2,
+	                                                             8));
 	bmap.nr = 14;
 	bmap.bits = NULL;
-	cute_expect_assertion(err = stroll_fbmap_init_range_iter(&iter,
-	                                                         &bmap,
-	                                                         2,
-	                                                         8));
+	cute_expect_assertion(err = stroll_fbmap_init_range_iter_set(&iter,
+	                                                             &bmap,
+	                                                             2,
+	                                                             8));
 }
 #else
 STROLLUT_FBMAP_NOASSERT(strollut_fbmap_iter_range_assert)
@@ -1642,7 +1642,7 @@ strollut_fbmap_check_range_iter(const struct stroll_fbmap * bmap,
 	unsigned int             c = 0;
 	int                      b;
 
-	stroll_fbmap_foreach_range_bit(&iter, bmap, start_bit, bit_count, b) {
+	stroll_fbmap_foreach_range_set(&iter, bmap, start_bit, bit_count, b) {
 		cute_check_uint(c, lower, ref_count);
 		cute_check_uint((unsigned int)b, equal, ref[c]);
 		c++;

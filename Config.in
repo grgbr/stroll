@@ -85,7 +85,6 @@ config STROLL_FBMAP
 	  Build stroll library with a bitmap framework allowing to manipulate
 	  bitmaps stored into memory area of arbitrary fixed sizes.
 	  Multiple functions are exposed to perform usual operations such as:
-	  - and / or / xor operations,
 	  - test bit / mask / bit range,
 	  - hamming weight,
 	  - iteration,

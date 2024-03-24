@@ -172,7 +172,7 @@ stroll_fbmap_init_dup(struct stroll_fbmap * __restrict       bmap,
 	stroll_fbmap_assert_api((_iter)->curr < stroll_fbmap_word_nr(iter->nr))
 
 int
-stroll_fbmap_step_iter(struct stroll_fbmap_iter * __restrict iter)
+stroll_fbmap_step_iter_set(struct stroll_fbmap_iter * __restrict iter)
 {
 	stroll_fbmap_assert_iter(iter);
 
@@ -196,10 +196,11 @@ stroll_fbmap_step_iter(struct stroll_fbmap_iter * __restrict iter)
 }
 
 int
-stroll_fbmap_init_range_iter(struct stroll_fbmap_iter * __restrict  iter,
-                             const struct stroll_fbmap * __restrict bmap,
-                             unsigned int                           start_bit,
-                             unsigned int                           bit_count)
+stroll_fbmap_init_range_iter_set(
+	struct stroll_fbmap_iter * __restrict  iter,
+	const struct stroll_fbmap * __restrict bmap,
+	unsigned int                           start_bit,
+	unsigned int                           bit_count)
 {
 	stroll_fbmap_assert_api(iter);
 	stroll_fbmap_assert_range(bmap, start_bit, bit_count);
@@ -210,5 +211,5 @@ stroll_fbmap_init_range_iter(struct stroll_fbmap_iter * __restrict  iter,
 	iter->nr = start_bit + bit_count;
 	iter->bmap = bmap;
 
-	return stroll_fbmap_step_iter(iter);
+	return stroll_fbmap_step_iter_set(iter);
 }

@@ -200,41 +200,42 @@ struct stroll_fbmap_iter {
 };
 
 extern int
-stroll_fbmap_step_iter(struct stroll_fbmap_iter * __restrict iter)
+stroll_fbmap_step_iter_set(struct stroll_fbmap_iter * __restrict iter)
 	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
 extern int
-stroll_fbmap_init_range_iter(struct stroll_fbmap_iter * __restrict  iter,
-                             const struct stroll_fbmap * __restrict bmap,
-                             unsigned int                           start_bit,
-                             unsigned int                           bit_count)
+stroll_fbmap_init_range_iter_set(
+	struct stroll_fbmap_iter * __restrict  iter,
+	const struct stroll_fbmap * __restrict bmap,
+	unsigned int                           start_bit,
+	unsigned int                           bit_count)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
-#define stroll_fbmap_foreach_range_bit(_iter, \
+#define stroll_fbmap_foreach_range_set(_iter, \
                                        _bmap, \
                                        _start_bit, \
                                        _bit_count, \
                                        _bit_no) \
-	for ((_bit_no) = stroll_fbmap_init_range_iter(_iter, \
-	                                              _bmap, \
-	                                              _start_bit, \
-	                                              _bit_count); \
+	for ((_bit_no) = stroll_fbmap_init_range_iter_set(_iter, \
+	                                                  _bmap, \
+	                                                  _start_bit, \
+	                                                  _bit_count); \
 	     (_bit_no) >= 0; \
-	     (_bit_no) = stroll_fbmap_step_iter(_iter))
+	     (_bit_no) = stroll_fbmap_step_iter_set(_iter))
 
 static inline __stroll_nonull(1, 2) __stroll_nothrow __warn_result
 int
-stroll_fbmap_init_iter(struct stroll_fbmap_iter * __restrict  iter,
-                       const struct stroll_fbmap * __restrict bmap)
+stroll_fbmap_init_iter_set(struct stroll_fbmap_iter * __restrict  iter,
+                           const struct stroll_fbmap * __restrict bmap)
 {
 	stroll_fbmap_assert_api(bmap);
 
-	return stroll_fbmap_init_range_iter(iter, bmap, 0, bmap->nr);
+	return stroll_fbmap_init_range_iter_set(iter, bmap, 0, bmap->nr);
 }
 
-#define stroll_fbmap_foreach_bit(_iter, _bmap, _bit_no) \
-	for ((_bit_no) = stroll_fbmap_init_iter(_iter, _bmap); \
+#define stroll_fbmap_foreach_set(_iter, _bmap, _bit_no) \
+	for ((_bit_no) = stroll_fbmap_init_iter_set(_iter, _bmap); \
 	     (_bit_no) >= 0; \
-	     (_bit_no) = stroll_fbmap_step_iter(_iter))
+	     (_bit_no) = stroll_fbmap_step_iter_set(_iter))
 
 #endif /* _STROLL_FBMAP_H */
