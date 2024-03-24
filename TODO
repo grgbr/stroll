@@ -1,0 +1,3 @@
+fbmap:
+* hamming weight support
+* cleared bit iterator support

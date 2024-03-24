@@ -44,7 +44,7 @@
  * @return Computed mask
  *
  * Compute a 32-bits mask where all bits are set starting from bit which index
- * is @p start_bit to `start_bit + bit_count - 1`. Bit indices starts from 0.
+ * is @p start_bit to `start_bit + bit_count - 1`. Bit indices start from 0.
  *
  * @warning
  * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
@@ -76,7 +76,7 @@ stroll_bmap32_mask(unsigned int start_bit, unsigned int bit_count)
  * @return Computed mask
  *
  * Compute a 64-bits mask where all bits are set starting from bit which index
- * is @p start_bit to `start_bit + bit_count - 1`. Bit indices starts from 0.
+ * is @p start_bit to `start_bit + bit_count - 1`. Bit indices start from 0.
  *
  * @warning
  * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
@@ -790,7 +790,7 @@ stroll_bmap_test_mask(unsigned long bmap, unsigned long mask)
  * @retval false tested bit is cleared
  *
  * Test wether the bit specified by @p bit_no is set into @p bmap bitmap.
- * Bit indices starts from 0.
+ * Bit indices start from 0.
  *
  * @warning
  * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
@@ -815,7 +815,7 @@ stroll_bmap32_test(uint32_t bmap, unsigned int bit_no)
  * @retval false tested bit is cleared
  *
  * Test wether the bit specified by @p bit_no is set into @p bmap bitmap.
- * Bit indices starts from 0.
+ * Bit indices start from 0.
  *
  * @warning
  * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
@@ -840,7 +840,7 @@ stroll_bmap64_test(uint64_t bmap, unsigned int bit_no)
  * @retval false tested bit is cleared
  *
  * Test wether the bit specified by @p bit_no is set into @p bmap bitmap.
- * Bit indices starts from 0.
+ * Bit indices start from 0.
  *
  * @warning
  * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and @p
@@ -1112,7 +1112,7 @@ stroll_bmap_set_mask(unsigned long * __restrict bmap, unsigned long mask)
  * @param[inout] bmap   Bitmap to set
  * @param[in]    bit_no Index of bit to set
  *
- * Set bit specified by @p bit_no into @p bmap bitmap. Bit indices starts from
+ * Set bit specified by @p bit_no into @p bmap bitmap. Bit indices start from
  * 0.
  *
  * @warning
@@ -1134,7 +1134,7 @@ stroll_bmap32_set(uint32_t * __restrict bmap, unsigned int bit_no)
  * @param[inout] bmap   Bitmap to set
  * @param[in]    bit_no Index of bit to set
  *
- * Set bit specified by @p bit_no into @p bmap bitmap. Bit indices starts from
+ * Set bit specified by @p bit_no into @p bmap bitmap. Bit indices start from
  * 0.
  *
  * @warning
@@ -1156,7 +1156,7 @@ stroll_bmap64_set(uint64_t * __restrict bmap, unsigned int bit_no)
  * @param[inout] bmap   Bitmap to set
  * @param[in]    bit_no Index of bit to set
  *
- * Set bit specified by @p bit_no into @p bmap bitmap. Bit indices starts from
+ * Set bit specified by @p bit_no into @p bmap bitmap. Bit indices start from
  * 0.
  *
  * @warning
@@ -1410,7 +1410,7 @@ stroll_bmap_clear_mask(unsigned long * __restrict bmap, unsigned long mask)
  * @param[inout] bmap   Bitmap to clear
  * @param[in]    bit_no Index of bit to clear
  *
- * Clear bit specified by @p bit_no into @p bmap bitmap. Bit indices starts from
+ * Clear bit specified by @p bit_no into @p bmap bitmap. Bit indices start from
  * 0.
  *
  * @warning
@@ -1432,7 +1432,7 @@ stroll_bmap32_clear(uint32_t * __restrict bmap, unsigned int bit_no)
  * @param[inout] bmap   Bitmap to clear
  * @param[in]    bit_no Index of bit to clear
  *
- * Clear bit specified by @p bit_no into @p bmap bitmap. Bit indices starts from
+ * Clear bit specified by @p bit_no into @p bmap bitmap. Bit indices start from
  * 0.
  *
  * @warning
@@ -1454,7 +1454,7 @@ stroll_bmap64_clear(uint64_t * __restrict bmap, unsigned int bit_no)
  * @param[inout] bmap   Bitmap to clear
  * @param[in]    bit_no Index of bit to clear
  *
- * Clear bit specified by @p bit_no into @p bmap bitmap. Bit indices starts from
+ * Clear bit specified by @p bit_no into @p bmap bitmap. Bit indices start from
  * 0.
  *
  * @warning
@@ -1711,7 +1711,7 @@ stroll_bmap_toggle_mask(unsigned long * __restrict bmap, unsigned long mask)
  * @param[in]    bit_no Index of bit to toggle
  *
  * Invert value of bit specified by @p bit_no into @p bmap bitmap.
- * Bit indices starts from 0.
+ * Bit indices start from 0.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
 stroll_bmap32_toggle(uint32_t * __restrict bmap, unsigned int bit_no)
@@ -1729,7 +1729,7 @@ stroll_bmap32_toggle(uint32_t * __restrict bmap, unsigned int bit_no)
  * @param[in]    bit_no Index of bit to toggle
  *
  * Invert value of bit specified by @p bit_no into @p bmap bitmap.
- * Bit indices starts from 0.
+ * Bit indices start from 0.
  */
 static inline void __stroll_nonull(1) __stroll_nothrow
 stroll_bmap64_toggle(uint64_t * __restrict bmap, unsigned int bit_no)
@@ -1747,7 +1747,7 @@ stroll_bmap64_toggle(uint64_t * __restrict bmap, unsigned int bit_no)
  * @param[in]    bit_no Index of bit to toggle
  *
  * Invert value of bit specified by @p bit_no into @p bmap bitmap.
- * Bit indices starts from 0.
+ * Bit indices start from 0.
  */
 
 #if __WORDSIZE == 64
@@ -2139,14 +2139,14 @@ _stroll_bmap32_setup_set_iter(uint32_t * __restrict     iter,
 }
 
 /**
- * Iterater over all bits set in a 32-bits word bitmap.
+ * Iterate over all bits set in a 32-bits word bitmap.
  *
  * @param[in]  _iter   Temporary iteration bitmap
  * @param[in]  _bmap   Bitmap to iterate over
  * @param[out] _bit_no Current bit number
  *
- * Given an uninitialed bitmap @p iter, iterate over bits set in @p bmap
- * bitmap and update @p bit_no to reflect current bit set.
+ * Given an uninitialed bitmap @p iter iterator, iterate over bits set in @p
+ * _bmap bitmap and update @p _bit_no to reflect current bit set.
  */
 #define stroll_bmap32_foreach_set(_iter, _bmap, _bit_no) \
 	for (_stroll_bmap32_setup_set_iter(_iter, _bmap, _bit_no); \
@@ -2167,14 +2167,14 @@ _stroll_bmap64_setup_set_iter(uint64_t * __restrict     iter,
 }
 
 /**
- * Iterater over all bits set in a 64-bits word bitmap.
+ * Iterate over all bits set in a 64-bits word bitmap.
  *
  * @param[in]  _iter   Temporary iteration bitmap
  * @param[in]  _bmap   Bitmap to iterate over
  * @param[out] _bit_no Current bit number
  *
- * Given an uninitialed bitmap @p iter, iterate over bits set in @p bmap
- * bitmap and update @p bit_no to reflect current bit set.
+ * Given an uninitialed bitmap @p iter iterator, iterate over bits set in @p
+ * _bmap bitmap and update @p _bit_no to reflect current bit set.
  */
 #define stroll_bmap64_foreach_set(_iter, _bmap, _bit_no) \
 	for (_stroll_bmap64_setup_set_iter(_iter, _bmap, _bit_no); \
@@ -2204,14 +2204,14 @@ _stroll_bmap_setup_set_iter(unsigned long * __restrict iter,
 #endif
 
 /**
- * Iterater over all bits set in a machine word bitmap.
+ * Iterate over all bits set in a machine word bitmap.
  *
  * @param[in]  _iter   Temporary iteration bitmap
  * @param[in]  _bmap   Bitmap to iterate over
  * @param[out] _bit_no Current bit number
  *
- * Given an uninitialed bitmap @p iter, iterate over bits set in @p bmap
- * bitmap and update @p bit_no to reflect current bit set.
+ * Given an uninitialed bitmap @p iter iterator, iterate over bits set in @p
+ * _bmap bitmap and update @p _bit_no to reflect current bit set.
  */
 #define stroll_bmap_foreach_set(_iter, _bmap, _bit_no) \
 	for (_stroll_bmap_setup_set_iter(_iter, _bmap, _bit_no); \
@@ -2232,14 +2232,14 @@ _stroll_bmap32_setup_clear_iter(uint32_t * __restrict     iter,
 }
 
 /**
- * Iterater over all bits cleared in a 32-bits word bitmap.
+ * Iterate over all bits cleared in a 32-bits word bitmap.
  *
  * @param[in]  _iter   Temporary iteration bitmap
  * @param[in]  _bmap   Bitmap to iterate over
  * @param[out] _bit_no Current bit number
  *
- * Given an uninitialed bitmap @p iter, iterate over bits cleared in @p bmap
- * bitmap and update @p bit_no to reflect current bit cleared
+ * Given an uninitialed bitmap @p iter iterator, iterate over bits cleared in @p
+ * _bmap bitmap and update @p _bit_no to reflect current bit cleared
  */
 #define stroll_bmap32_foreach_clear(_iter, _bmap, _bit_no) \
 	for (_stroll_bmap32_setup_clear_iter(_iter, _bmap, _bit_no); \
@@ -2260,14 +2260,14 @@ _stroll_bmap64_setup_clear_iter(uint64_t * __restrict     iter,
 }
 
 /**
- * Iterater over all bits cleared in a 64-bits word bitmap.
+ * Iterate over all bits cleared in a 64-bits word bitmap.
  *
  * @param[in]  _iter   Temporary iteration bitmap
  * @param[in]  _bmap   Bitmap to iterate over
  * @param[out] _bit_no Current bit number
  *
- * Given an uninitialed bitmap @p iter, iterate over bits cleared in @p bmap
- * bitmap and update @p bit_no to reflect current bit cleared
+ * Given an uninitialed bitmap @p iter iterator, iterate over bits cleared in @p
+ * _bmap bitmap and update @p _bit_no to reflect current bit cleared
  */
 #define stroll_bmap64_foreach_clear(_iter, _bmap, _bit_no) \
 	for (_stroll_bmap64_setup_clear_iter(_iter, _bmap, _bit_no); \
@@ -2297,14 +2297,14 @@ _stroll_bmap_setup_clear_iter(unsigned long * __restrict iter,
 #endif
 
 /**
- * Iterater over all bits cleared in a machine word bitmap.
+ * Iterate over all bits cleared in a machine word bitmap.
  *
  * @param[in]  _iter   Temporary iteration bitmap
  * @param[in]  _bmap   Bitmap to iterate over
  * @param[out] _bit_no Current bit number
  *
- * Given an uninitialed bitmap @p iter, iterate over bits cleared in @p bmap
- * bitmap and update @p bit_no to reflect current bit cleared
+ * Given an uninitialed bitmap @p iter iterator, iterate over bits cleared in @p
+ * _bmap bitmap and update @p _bit_no to reflect current bit cleared
  */
 #define stroll_bmap_foreach_clear(_iter, _bmap, _bit_no) \
 	for (_stroll_bmap_setup_clear_iter(_iter, _bmap, _bit_no); \
