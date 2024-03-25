@@ -106,12 +106,39 @@ static const struct stroll_fbmap strollut_fbmap_null_14 = {
 	.bits = ((unsigned long []){ 0xffffc000UL })
 };
 
+static const struct stroll_fbmap strollut_fbmap_null_32 = {
+	.nr   = 32,
+#if __WORDSIZE == 32
+	.bits = ((unsigned long []){ 0UL })
+#elif __WORDSIZE == 64
+	.bits = ((unsigned long []){ 0xffffffff00000000UL })
+#endif
+};
+
 static const struct stroll_fbmap strollut_fbmap_null_33 = {
 	.nr   = 33,
 #if __WORDSIZE == 32
 	.bits = ((unsigned long []){ 0UL, 0xffffffeUL })
 #elif __WORDSIZE == 64
 	.bits = ((unsigned long []){ 0xfffffffe00000000UL })
+#endif
+};
+
+static const struct stroll_fbmap strollut_fbmap_null_63 = {
+	.nr   = 63,
+#if __WORDSIZE == 32
+	.bits = ((unsigned long []){ 0UL, 0x80000000UL })
+#elif __WORDSIZE == 64
+	.bits = ((unsigned long []){ 0x8000000000000000UL })
+#endif
+};
+
+static const struct stroll_fbmap strollut_fbmap_null_64 = {
+	.nr   = 63,
+#if __WORDSIZE == 32
+	.bits = ((unsigned long []){ 0UL, 0UL })
+#elif __WORDSIZE == 64
+	.bits = ((unsigned long []){ 0UL })
 #endif
 };
 
@@ -254,6 +281,73 @@ STROLLUT_FBMAP_NO64BITS(strollut_fbmap_test_127)
 STROLLUT_FBMAP_NO64BITS(strollut_fbmap_test_128)
 STROLLUT_FBMAP_NO64BITS(strollut_fbmap_test_129)
 #endif /* __WORDSIZE == 64 */
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+CUTE_TEST(strollut_fbmap_hweight_assert)
+{
+	unsigned int nr __unused;
+
+	cute_expect_assertion(nr = stroll_fbmap_hweight(NULL));
+}
+#else
+STROLLUT_FBMAP_NOASSERT(strollut_fbmap_hweight_assert)
+#endif
+
+CUTE_TEST(strollut_fbmap_hweight_14)
+{
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_null_14),
+	                equal,
+	                0);
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_14), equal, 7U);
+}
+
+CUTE_TEST(strollut_fbmap_hweight_32)
+{
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_null_32),
+	                equal,
+	                0);
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_32), equal, 9U);
+}
+
+CUTE_TEST(strollut_fbmap_hweight_33)
+{
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_null_33),
+	                equal,
+	                0);
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_32), equal, 9U);
+}
+
+CUTE_TEST(strollut_fbmap_hweight_63)
+{
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_null_63),
+	                equal,
+	                0);
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_63), equal, 11U);
+}
+
+CUTE_TEST(strollut_fbmap_hweight_64)
+{
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_null_64),
+	                equal,
+	                0);
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_64), equal, 11U);
+}
+
+CUTE_TEST(strollut_fbmap_hweight_65)
+{
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_null_65),
+	                equal,
+	                0);
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_65), equal, 12U);
+}
+
+CUTE_TEST(strollut_fbmap_hweight_129)
+{
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_null_129),
+	                equal,
+	                0);
+	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_129), equal, 23U);
+}
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_fbmap_test_all_assert)
@@ -1748,6 +1842,15 @@ CUTE_GROUP(strollut_fbmap_group) = {
 	CUTE_REF(strollut_fbmap_test_127),
 	CUTE_REF(strollut_fbmap_test_128),
 	CUTE_REF(strollut_fbmap_test_129),
+
+	CUTE_REF(strollut_fbmap_hweight_assert),
+	CUTE_REF(strollut_fbmap_hweight_14),
+	CUTE_REF(strollut_fbmap_hweight_32),
+	CUTE_REF(strollut_fbmap_hweight_33),
+	CUTE_REF(strollut_fbmap_hweight_63),
+	CUTE_REF(strollut_fbmap_hweight_64),
+	CUTE_REF(strollut_fbmap_hweight_65),
+	CUTE_REF(strollut_fbmap_hweight_129),
 
 	CUTE_REF(strollut_fbmap_test_all_assert),
 	CUTE_REF(strollut_fbmap_test_all_null_14),

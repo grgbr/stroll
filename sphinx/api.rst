@@ -296,7 +296,7 @@ sizes. These are:
       * :c:func:`stroll_fbmap_init_set`
 
    * Modify bit:
-     
+
       * :c:func:`stroll_fbmap_clear`
       * :c:func:`stroll_fbmap_clear_all`
       * :c:func:`stroll_fbmap_set`
@@ -305,7 +305,7 @@ sizes. These are:
       * :c:func:`stroll_fbmap_toggle_all`
 
    * Test bit:
-     
+
       * :c:func:`stroll_fbmap_test`
       * :c:func:`stroll_fbmap_test_range`
       * :c:func:`stroll_fbmap_test_all`
@@ -315,6 +315,10 @@ sizes. These are:
       * :c:struct:`stroll_fbmap_iter`
       * :c:macro:`stroll_fbmap_foreach_range_set()`
       * :c:macro:`stroll_fbmap_foreach_set()`
+
+   * Compute number of bits set (:index:`Hammimg weight`):
+
+      * :c:func:`stroll_fbmap_hweight`
 
    * Various:
 
@@ -1168,6 +1172,11 @@ stroll_fbmap_fini
 *****************
 
 .. doxygenfunction:: stroll_fbmap_fini
+
+stroll_fbmap_hweight
+********************
+
+.. doxygenfunction:: stroll_fbmap_hweight
 
 stroll_fbmap_init_clear
 ***********************

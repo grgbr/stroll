@@ -37,6 +37,21 @@ stroll_fbmap_word_low_mask(unsigned int bit_no)
 	return ~(0UL) >> (__WORDSIZE - 1 - stroll_fbmap_word_bit_no(bit_no));
 }
 
+unsigned int
+stroll_fbmap_hweight(const struct stroll_fbmap * __restrict bmap)
+{
+	stroll_fbmap_assert_map_api(bmap);
+
+	unsigned int w, hw = 0;
+
+	for (w = 0; w < (stroll_fbmap_word_nr(bmap->nr) - 1); w++)
+		hw += stroll_bops_hweight(bmap->bits[w]);
+
+	return hw +
+	       stroll_bops_hweight(bmap->bits[w] &
+	                           stroll_fbmap_word_low_mask(bmap->nr - 1));
+}
+
 bool
 stroll_fbmap_test_range(const struct stroll_fbmap * __restrict bmap,
                         unsigned int                           start_bit,

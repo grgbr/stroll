@@ -117,6 +117,20 @@ stroll_fbmap_nr(const struct stroll_fbmap * __restrict bmap)
 }
 
 /**
+ * Find the number of set bits over a fixed sized bitmap.
+ *
+ * @param[in] bmap Fixed sized bitmap
+ *
+ * @return Number of set bits
+ *
+ * Returns the Hamming weight of a stroll_fbmap fixed sized bitmap. The Hamming
+ * weight of a bitmap is the total number of bits set in it.
+ */
+extern unsigned int
+stroll_fbmap_hweight(const struct stroll_fbmap * __restrict bmap)
+	__stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result;
+
+/**
  * Test wether a bit in a fixed sized bitmap is set or not.
  *
  * @param[in] bmap   Bitmap to test
