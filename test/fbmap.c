@@ -633,11 +633,21 @@ STROLLUT_FBMAP_NO64BITS(strollut_fbmap_test_range_129)
 #endif /* __WORDSIZE == 64 */
 
 static struct stroll_fbmap strollut_fbmap;
+static bool                strollut_fbmap_tofree;
+
+static void
+strollut_fbmap_setup(void)
+{
+	strollut_fbmap_tofree = false;
+}
 
 static void
 strollut_fbmap_teardown(void)
 {
-	stroll_fbmap_fini(&strollut_fbmap);
+	if (strollut_fbmap_tofree) {
+		stroll_fbmap_fini(&strollut_fbmap);
+		strollut_fbmap_tofree = false;
+	}
 }
 
 static void
@@ -658,56 +668,50 @@ CUTE_TEST(strollut_fbmap_init_clear_assert)
 	int err __unused;
 
 	cute_expect_assertion(err = stroll_fbmap_init_clear(NULL, 32));
+	strollut_fbmap_tofree = true;
 	cute_expect_assertion(err = stroll_fbmap_init_clear(&strollut_fbmap,
 	                                                    0));
 	cute_expect_assertion(err = stroll_fbmap_init_clear(&strollut_fbmap,
 	                                                    UINT_MAX));
+	strollut_fbmap_tofree = false;
 }
 #else
 STROLLUT_FBMAP_NOASSERT(strollut_fbmap_init_clear_assert)
 #endif
 
-CUTE_TEST_STATIC(strollut_fbmap_init_clear_14,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_init_clear_14)
 {
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, 14),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 	strollut_fbmap_check_value(14, 0);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_init_clear_191,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_init_clear_191)
 {
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, 191),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 	strollut_fbmap_check_value(191, 0);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_init_clear_192,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_init_clear_192)
 {
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, 192),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 	strollut_fbmap_check_value(192, 0);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_init_clear_193,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_init_clear_193)
 {
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, 193),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 	strollut_fbmap_check_value(193, 0);
 }
 
@@ -717,55 +721,49 @@ CUTE_TEST(strollut_fbmap_init_set_assert)
 	int err __unused;
 
 	cute_expect_assertion(err = stroll_fbmap_init_set(NULL, 32));
+	strollut_fbmap_tofree = true;
 	cute_expect_assertion(err = stroll_fbmap_init_set(&strollut_fbmap, 0));
 	cute_expect_assertion(err = stroll_fbmap_init_set(&strollut_fbmap,
 	                                                  UINT_MAX));
+	strollut_fbmap_tofree = false;
 }
 #else
 STROLLUT_FBMAP_NOASSERT(strollut_fbmap_init_set_assert)
 #endif
 
-CUTE_TEST_STATIC(strollut_fbmap_init_set_14,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_init_set_14)
 {
 	cute_check_sint(stroll_fbmap_init_set(&strollut_fbmap, 14),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 	strollut_fbmap_check_value(14, 0xff);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_init_set_191,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_init_set_191)
 {
 	cute_check_sint(stroll_fbmap_init_set(&strollut_fbmap, 191),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 	strollut_fbmap_check_value(191, 0xff);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_init_set_192,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_init_set_192)
 {
 	cute_check_sint(stroll_fbmap_init_set(&strollut_fbmap, 192),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 	strollut_fbmap_check_value(192, 0xff);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_init_set_193,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_init_set_193)
 {
 	cute_check_sint(stroll_fbmap_init_set(&strollut_fbmap, 193),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 	strollut_fbmap_check_value(193, 0xff);
 }
 
@@ -775,20 +773,17 @@ strollut_fbmap_check_set_all(unsigned int bit_count)
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, bit_count),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 	stroll_fbmap_set_all(&strollut_fbmap);
 	strollut_fbmap_check_value(bit_count, 0xff);
 
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST_STATIC(strollut_fbmap_set_all_assert,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_all_assert)
 {
-	strollut_fbmap.nr = 1;
-	strollut_fbmap.bits = NULL;
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, 32), equal, 0);
+	strollut_fbmap_tofree = true;
 
 	cute_expect_assertion(stroll_fbmap_set_all(NULL));
 }
@@ -796,34 +791,22 @@ CUTE_TEST_STATIC(strollut_fbmap_set_all_assert,
 STROLLUT_FBMAP_NOASSERT(strollut_fbmap_set_all_assert)
 #endif
 
-CUTE_TEST_STATIC(strollut_fbmap_set_all_14,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_all_14)
 {
 	strollut_fbmap_check_set_all(14);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_all_191,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_all_191)
 {
 	strollut_fbmap_check_set_all(191);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_all_192,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_all_192)
 {
 	strollut_fbmap_check_set_all(192);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_all_193,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_all_193)
 {
 	strollut_fbmap_check_set_all(193);
 }
@@ -834,20 +817,17 @@ strollut_fbmap_check_clear_all(unsigned int bit_count)
 	cute_check_sint(stroll_fbmap_init_set(&strollut_fbmap, bit_count),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 	stroll_fbmap_clear_all(&strollut_fbmap);
 	strollut_fbmap_check_value(bit_count, 0);
 
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST_STATIC(strollut_fbmap_clear_all_assert,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_all_assert)
 {
-	strollut_fbmap.nr = 1;
-	strollut_fbmap.bits = NULL;
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, 32), equal, 0);
+	strollut_fbmap_tofree = true;
 
 	cute_expect_assertion(stroll_fbmap_clear_all(NULL));
 }
@@ -855,48 +835,31 @@ CUTE_TEST_STATIC(strollut_fbmap_clear_all_assert,
 STROLLUT_FBMAP_NOASSERT(strollut_fbmap_clear_all_assert)
 #endif
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_all_14,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_all_14)
 {
 	strollut_fbmap_check_clear_all(14);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_all_191,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_all_191)
 {
 	strollut_fbmap_check_clear_all(191);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_all_192,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_all_192)
 {
 	strollut_fbmap_check_clear_all(192);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_all_193,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_all_193)
 {
 	strollut_fbmap_check_clear_all(193);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST_STATIC(strollut_fbmap_set_assert,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_assert)
 {
-	strollut_fbmap.nr = 0;
-	strollut_fbmap.bits = NULL;
-
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, 14), equal, 0);
+	strollut_fbmap_tofree = true;
 
 	cute_expect_assertion(stroll_fbmap_set(NULL, 1));
 	cute_expect_assertion(stroll_fbmap_set(&strollut_fbmap, 14));
@@ -913,12 +876,10 @@ strollut_fbmap_check_set(const struct stroll_fbmap * ref_bmap,
 {
 	unsigned int c;
 
-	strollut_fbmap.nr = 0;
-	strollut_fbmap.bits = NULL;
-
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, ref_bmap->nr),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 
 	for (c = 0; c < ref_count; c++)
 		stroll_fbmap_set(&strollut_fbmap, ref_bits[c]);
@@ -926,60 +887,42 @@ strollut_fbmap_check_set(const struct stroll_fbmap * ref_bmap,
 	strollut_fbmap_check_test(&strollut_fbmap, ref_bits, ref_count);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_14,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
 	strollut_fbmap_check_set(&strollut_fbmap_14, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_32,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
 	strollut_fbmap_check_set(&strollut_fbmap_32, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_33,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
 	strollut_fbmap_check_set(&strollut_fbmap_33, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_63,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
 	strollut_fbmap_check_set(&strollut_fbmap_63, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_64,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
 	strollut_fbmap_check_set(&strollut_fbmap_64, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_65,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_65)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
@@ -988,10 +931,7 @@ CUTE_TEST_STATIC(strollut_fbmap_set_65,
 }
 
 #if __WORDSIZE == 64
-CUTE_TEST_STATIC(strollut_fbmap_set_127,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_127)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1001,10 +941,7 @@ CUTE_TEST_STATIC(strollut_fbmap_set_127,
 	strollut_fbmap_check_set(&strollut_fbmap_127, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_128,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_128)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1014,10 +951,7 @@ CUTE_TEST_STATIC(strollut_fbmap_set_128,
 	strollut_fbmap_check_set(&strollut_fbmap_128, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_set_129,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_set_129)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1034,15 +968,10 @@ STROLLUT_FBMAP_NO64BITS(strollut_fbmap_set_129)
 #endif /* __WORDSIZE == 64 */
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST_STATIC(strollut_fbmap_clear_assert,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_assert)
 {
-	strollut_fbmap.nr = 0;
-	strollut_fbmap.bits = NULL;
-
 	cute_check_sint(stroll_fbmap_init_set(&strollut_fbmap, 14), equal, 0);
+	strollut_fbmap_tofree = true;
 
 	cute_expect_assertion(stroll_fbmap_clear(NULL, 1));
 	cute_expect_assertion(stroll_fbmap_clear(&strollut_fbmap, 14));
@@ -1082,12 +1011,10 @@ strollut_fbmap_check_clear(const struct stroll_fbmap * ref_bmap,
 {
 	unsigned int c;
 
-	strollut_fbmap.nr = 0;
-	strollut_fbmap.bits = NULL;
-
 	cute_check_sint(stroll_fbmap_init_set(&strollut_fbmap, ref_bmap->nr),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 
 	for (c = 0; c < ref_count; c++)
 		stroll_fbmap_clear(&strollut_fbmap, ref_bits[c]);
@@ -1095,60 +1022,42 @@ strollut_fbmap_check_clear(const struct stroll_fbmap * ref_bmap,
 	strollut_fbmap_check_test_not(&strollut_fbmap, ref_bits, ref_count);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_14,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
 	strollut_fbmap_check_clear(&strollut_fbmap_14, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_32,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
 	strollut_fbmap_check_clear(&strollut_fbmap_32, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_33,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
 	strollut_fbmap_check_clear(&strollut_fbmap_33, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_63,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
 	strollut_fbmap_check_clear(&strollut_fbmap_63, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_64,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
 	strollut_fbmap_check_clear(&strollut_fbmap_64, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_65,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_65)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
@@ -1157,10 +1066,7 @@ CUTE_TEST_STATIC(strollut_fbmap_clear_65,
 }
 
 #if __WORDSIZE == 64
-CUTE_TEST_STATIC(strollut_fbmap_clear_127,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_127)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1170,10 +1076,7 @@ CUTE_TEST_STATIC(strollut_fbmap_clear_127,
 	strollut_fbmap_check_clear(&strollut_fbmap_127, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_128,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_128)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1183,10 +1086,7 @@ CUTE_TEST_STATIC(strollut_fbmap_clear_128,
 	strollut_fbmap_check_clear(&strollut_fbmap_128, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_clear_129,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_clear_129)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1203,15 +1103,10 @@ STROLLUT_FBMAP_NO64BITS(strollut_fbmap_clear_129)
 #endif /* __WORDSIZE == 64 */
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST_STATIC(strollut_fbmap_toggle_assert,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_assert)
 {
-	strollut_fbmap.nr = 0;
-	strollut_fbmap.bits = NULL;
-
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, 14), equal, 0);
+	strollut_fbmap_tofree = true;
 
 	cute_expect_assertion(stroll_fbmap_toggle(NULL, 1));
 	cute_expect_assertion(stroll_fbmap_toggle(&strollut_fbmap, 14));
@@ -1228,12 +1123,11 @@ strollut_fbmap_check_toggle(const struct stroll_fbmap * ref_bmap,
 {
 	unsigned int c;
 
-	strollut_fbmap.nr = 0;
-	strollut_fbmap.bits = NULL;
-
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, ref_bmap->nr),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
+
 	for (c = 0; c < ref_count; c++)
 		stroll_fbmap_toggle(&strollut_fbmap, ref_bits[c]);
 	strollut_fbmap_check_test(&strollut_fbmap, ref_bits, ref_count);
@@ -1244,60 +1138,42 @@ strollut_fbmap_check_toggle(const struct stroll_fbmap * ref_bmap,
 	strollut_fbmap_check_test_not(&strollut_fbmap, ref_bits, ref_count);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_14,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
 	strollut_fbmap_check_toggle(&strollut_fbmap_14, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_32,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
 	strollut_fbmap_check_toggle(&strollut_fbmap_32, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_33,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
 	strollut_fbmap_check_toggle(&strollut_fbmap_33, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_63,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
 	strollut_fbmap_check_toggle(&strollut_fbmap_63, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_64,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
 	strollut_fbmap_check_toggle(&strollut_fbmap_64, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_65,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_65)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
@@ -1306,10 +1182,7 @@ CUTE_TEST_STATIC(strollut_fbmap_toggle_65,
 }
 
 #if __WORDSIZE == 64
-CUTE_TEST_STATIC(strollut_fbmap_toggle_127,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_127)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1319,10 +1192,7 @@ CUTE_TEST_STATIC(strollut_fbmap_toggle_127,
 	strollut_fbmap_check_toggle(&strollut_fbmap_127, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_128,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_128)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1332,10 +1202,7 @@ CUTE_TEST_STATIC(strollut_fbmap_toggle_128,
 	strollut_fbmap_check_toggle(&strollut_fbmap_128, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_129,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_129)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1356,9 +1223,6 @@ CUTE_TEST(strollut_fbmap_init_dup_assert)
 {
 	int                 err __unused;
 	struct stroll_fbmap bmap;
-
-	strollut_fbmap.nr = 0;
-	strollut_fbmap.bits = NULL;
 
 	cute_expect_assertion(err = stroll_fbmap_init_dup(NULL,
 	                                                  &strollut_fbmap_14));
@@ -1384,18 +1248,13 @@ CUTE_TEST(strollut_fbmap_init_dup_assert)
 STROLLUT_FBMAP_NOASSERT(strollut_fbmap_init_dup_assert)
 #endif
 
-CUTE_TEST_STATIC(strollut_fbmap_init_dup,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_init_dup)
 {
-	strollut_fbmap.nr = 0;
-	strollut_fbmap.bits = NULL;
-
 	cute_check_sint(stroll_fbmap_init_dup(&strollut_fbmap,
 	                                      &strollut_fbmap_65),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
 
 	cute_check_uint(strollut_fbmap.nr, equal, strollut_fbmap_65.nr);
 	cute_check_mem(strollut_fbmap.bits,
@@ -1406,15 +1265,10 @@ CUTE_TEST_STATIC(strollut_fbmap_init_dup,
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST_STATIC(strollut_fbmap_toggle_all_assert,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_all_assert)
 {
-	strollut_fbmap.nr = 0;
-	strollut_fbmap.bits = NULL;
-
 	cute_check_sint(stroll_fbmap_init_clear(&strollut_fbmap, 14), equal, 0);
+	strollut_fbmap_tofree = true;
 
 	cute_expect_assertion(stroll_fbmap_toggle_all(NULL));
 }
@@ -1427,12 +1281,11 @@ strollut_fbmap_check_toggle_all(const struct stroll_fbmap * ref_bmap,
                                 const unsigned int          ref_bits[],
                                 unsigned int                ref_count)
 {
-	strollut_fbmap.nr = 0;
-	strollut_fbmap.bits = NULL;
-
 	cute_check_sint(stroll_fbmap_init_dup(&strollut_fbmap, ref_bmap),
 	                equal,
 	                0);
+	strollut_fbmap_tofree = true;
+
 	stroll_fbmap_toggle_all(&strollut_fbmap);
 	strollut_fbmap_check_test_not(&strollut_fbmap, ref_bits, ref_count);
 
@@ -1440,60 +1293,42 @@ strollut_fbmap_check_toggle_all(const struct stroll_fbmap * ref_bmap,
 	strollut_fbmap_check_test(&strollut_fbmap, ref_bits, ref_count);
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_all_14,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_all_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
 	strollut_fbmap_check_toggle_all(&strollut_fbmap_14, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_all_32,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_all_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
 	strollut_fbmap_check_toggle_all(&strollut_fbmap_32, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_all_33,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_all_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
 	strollut_fbmap_check_toggle_all(&strollut_fbmap_33, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_all_63,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_all_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
 	strollut_fbmap_check_toggle_all(&strollut_fbmap_63, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_all_64,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_all_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
 	strollut_fbmap_check_toggle_all(&strollut_fbmap_64, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_all_65,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_all_65)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
@@ -1502,10 +1337,7 @@ CUTE_TEST_STATIC(strollut_fbmap_toggle_all_65,
 }
 
 #if __WORDSIZE == 64
-CUTE_TEST_STATIC(strollut_fbmap_toggle_all_127,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_all_127)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1515,10 +1347,7 @@ CUTE_TEST_STATIC(strollut_fbmap_toggle_all_127,
 	strollut_fbmap_check_toggle_all(&strollut_fbmap_127, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_all_128,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_all_128)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1528,10 +1357,7 @@ CUTE_TEST_STATIC(strollut_fbmap_toggle_all_128,
 	strollut_fbmap_check_toggle_all(&strollut_fbmap_128, ref, array_nr(ref));
 }
 
-CUTE_TEST_STATIC(strollut_fbmap_toggle_all_129,
-                 CUTE_NULL_SETUP,
-                 strollut_fbmap_teardown,
-                 CUTE_DFLT_TMOUT)
+CUTE_TEST(strollut_fbmap_toggle_all_129)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32,
 	                             48, 63, 64,
@@ -1557,7 +1383,6 @@ CUTE_TEST(strollut_fbmap_iter_set_assert)
 	cute_expect_assertion(
 		err = stroll_fbmap_init_iter_set(NULL, &strollut_fbmap_14));
 	cute_expect_assertion(err = stroll_fbmap_init_iter_set(&iter, NULL));
-
 
 	bmap.nr = 0;
 	bmap.bits = strollut_fbmap_14.bits;
@@ -1858,14 +1683,15 @@ strollut_fbmap_check_iter_clear(const struct stroll_fbmap * bmap,
                                 unsigned int                count)
 {
 	struct stroll_fbmap_iter iter;
-	struct stroll_fbmap      bmp;
 	unsigned int             c = 0;
 	int                      b;
 
-	cute_check_sint(stroll_fbmap_init_dup(&bmp, bmap), equal, 0);
-	stroll_fbmap_toggle_all(&bmp);
+	cute_check_sint(stroll_fbmap_init_dup(&strollut_fbmap, bmap), equal, 0);
+	strollut_fbmap_tofree = true;
 
-	stroll_fbmap_foreach_clear(&iter, &bmp, b) {
+	stroll_fbmap_toggle_all(&strollut_fbmap);
+
+	stroll_fbmap_foreach_clear(&iter, &strollut_fbmap, b) {
 		cute_check_uint(c, lower, count);
 		cute_check_uint((unsigned int)b, equal, ref[c]);
 		c++;
@@ -2020,14 +1846,18 @@ strollut_fbmap_check_range_iter_clear(const struct stroll_fbmap * bmap,
                                       unsigned int                ref_count)
 {
 	struct stroll_fbmap_iter iter;
-	struct stroll_fbmap      bmp;
 	unsigned int             c = 0;
 	int                      b;
 
-	cute_check_sint(stroll_fbmap_init_dup(&bmp, bmap), equal, 0);
-	stroll_fbmap_toggle_all(&bmp);
+	cute_check_sint(stroll_fbmap_init_dup(&strollut_fbmap, bmap), equal, 0);
+	strollut_fbmap_tofree = true;
+	stroll_fbmap_toggle_all(&strollut_fbmap);
 
-	stroll_fbmap_foreach_range_clear(&iter, &bmp, start_bit, bit_count, b) {
+	stroll_fbmap_foreach_range_clear(&iter,
+	                                 &strollut_fbmap,
+	                                 start_bit,
+	                                 bit_count,
+	                                 b) {
 		cute_check_uint(c, lower, ref_count);
 		cute_check_uint((unsigned int)b, equal, ref[c]);
 		c++;
@@ -2258,6 +2088,6 @@ CUTE_GROUP(strollut_fbmap_group) = {
 
 CUTE_SUITE_EXTERN(strollut_fbmap_suite,
                   strollut_fbmap_group,
-                  CUTE_NULL_SETUP,
-                  CUTE_NULL_TEARDOWN,
+                  strollut_fbmap_setup,
+                  strollut_fbmap_teardown,
                   CUTE_DFLT_TMOUT);

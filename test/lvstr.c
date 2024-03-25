@@ -215,17 +215,31 @@ CUTE_TEST(strollut_lvstr_ncede)
 	stroll_lvstr_fini(&lvstr);
 }
 
-#if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_lvstr_cede_assert)
+static char * volatile strollut_lvstr_tofree;
+
+static void
+strollut_lvstr_teardown(void)
 {
-	char * volatile     str1 = strdup("test");
+	free(strollut_lvstr_tofree);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+CUTE_TEST_STATIC(strollut_lvstr_cede_assert,
+                 CUTE_NULL_SETUP,
+                 strollut_lvstr_teardown,
+                 CUTE_DFLT_TMOUT)
+{
 	struct stroll_lvstr lvstr;
 
-	cute_expect_assertion(stroll_lvstr_init_cede(NULL, str1));
+	strollut_lvstr_tofree = strdup("test");
+	cute_check_ptr(strollut_lvstr_tofree, unequal, NULL);
+
+	cute_expect_assertion(stroll_lvstr_init_cede(NULL,
+	                                             strollut_lvstr_tofree));
 	cute_expect_assertion(stroll_lvstr_init_cede(&lvstr, NULL));
 	cute_expect_assertion(stroll_lvstr_init_cede(NULL, NULL));
 
-	cute_expect_assertion(stroll_lvstr_cede(NULL, str1));
+	cute_expect_assertion(stroll_lvstr_cede(NULL, strollut_lvstr_tofree));
 	cute_expect_assertion(stroll_lvstr_cede(&lvstr, NULL));
 	cute_expect_assertion(stroll_lvstr_cede(NULL, NULL));
 }
