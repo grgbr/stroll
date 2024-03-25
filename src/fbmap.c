@@ -228,3 +228,46 @@ stroll_fbmap_init_range_iter_set(
 
 	return stroll_fbmap_step_iter_set(iter);
 }
+
+int
+stroll_fbmap_step_iter_clear(struct stroll_fbmap_iter * __restrict iter)
+{
+	stroll_fbmap_assert_iter(iter);
+
+	unsigned int bit_no;
+
+	while (iter->word == ~(0UL)) {
+		if (++iter->curr >= stroll_fbmap_word_nr(iter->nr))
+			return -ENOENT;
+
+		iter->word = iter->bmap->bits[iter->curr];
+	}
+
+	bit_no = stroll_bops_ffc(iter->word) - 1;
+	iter->word |= 1UL << bit_no;
+
+	bit_no += (iter->curr * __WORDSIZE);
+	if (bit_no >= iter->nr)
+		return -ENOENT;
+
+	return (int)bit_no;
+}
+
+int
+stroll_fbmap_init_range_iter_clear(
+	struct stroll_fbmap_iter * __restrict  iter,
+	const struct stroll_fbmap * __restrict bmap,
+	unsigned int                           start_bit,
+	unsigned int                           bit_count)
+{
+	stroll_fbmap_assert_api(iter);
+	stroll_fbmap_assert_range(bmap, start_bit, bit_count);
+
+	iter->curr = stroll_fbmap_word_no(start_bit);
+	iter->word = bmap->bits[iter->curr] |
+	             ~stroll_fbmap_word_high_mask(start_bit);
+	iter->nr = start_bit + bit_count;
+	iter->bmap = bmap;
+
+	return stroll_fbmap_step_iter_clear(iter);
+}

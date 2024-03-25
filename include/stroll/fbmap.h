@@ -479,6 +479,8 @@ stroll_fbmap_fini(struct stroll_fbmap * __restrict bmap)
  * @see
  * - stroll_fbmap_foreach_range_set()
  * - stroll_fbmap_foreach_set()
+ * - stroll_fbmap_foreach_range_clear()
+ * - stroll_fbmap_foreach_clear()
  */
 struct stroll_fbmap_iter {
 	unsigned long               word;
@@ -516,7 +518,8 @@ stroll_fbmap_init_range_iter_set(
  * [@p start_bit, @p start_bit + @p bit_count[.
  *
  * @see
- * #stroll_fbmap_foreach_set
+ * - stroll_fbmap_foreach_range_clear()
+ * - stroll_fbmap_foreach_set()
  */
 #define stroll_fbmap_foreach_range_set(_iter, \
                                        _bmap, \
@@ -552,11 +555,87 @@ stroll_fbmap_init_iter_set(struct stroll_fbmap_iter * __restrict  iter,
  * bit set.
  *
  * @see
- * #stroll_fbmap_foreach_range_set
+ * - stroll_fbmap_foreach_range_set()
+ * - stroll_fbmap_foreach_clear()
  */
 #define stroll_fbmap_foreach_set(_iter, _bmap, _bit_no) \
 	for ((_bit_no) = stroll_fbmap_init_iter_set(_iter, _bmap); \
 	     (_bit_no) >= 0; \
 	     (_bit_no) = stroll_fbmap_step_iter_set(_iter))
+
+extern int
+stroll_fbmap_step_iter_clear(struct stroll_fbmap_iter * __restrict iter)
+	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
+
+extern int
+stroll_fbmap_init_range_iter_clear(
+	struct stroll_fbmap_iter * __restrict  iter,
+	const struct stroll_fbmap * __restrict bmap,
+	unsigned int                           start_bit,
+	unsigned int                           bit_count)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
+
+/**
+ * Iterate over bits cleared in a fixed sized bitmap given the specified bit
+ * range.
+ *
+ * @param[inout] _iter      Temporary iteration bitmap
+ * @param[in]    _bmap      Bitmap to iterate over
+ * @param[in]    _start_bit Range first bit
+ * @param[in]    _bit_count Number of bits to iterate over
+ * @param[out]   _bit_no    Current bit number
+ *
+ * Given an uninitialed @p iter stroll_fbmap_iter iterator, iterate over bits
+ * set to zero in @p _bmap stroll_fbmap bitmap and update @p _bit_no to reflect
+ * current cleared bit.
+ *
+ * Iteration happens over the range defined as
+ * [@p start_bit, @p start_bit + @p bit_count[.
+ *
+ * @see
+ * - stroll_fbmap_foreach_range_set()
+ * - stroll_fbmap_foreach_clear()
+ */
+#define stroll_fbmap_foreach_range_clear(_iter, \
+                                         _bmap, \
+                                         _start_bit, \
+                                         _bit_count, \
+                                         _bit_no) \
+	for ((_bit_no) = stroll_fbmap_init_range_iter_clear(_iter, \
+	                                                    _bmap, \
+	                                                    _start_bit, \
+	                                                    _bit_count); \
+	     (_bit_no) >= 0; \
+	     (_bit_no) = stroll_fbmap_step_iter_clear(_iter))
+
+static inline __stroll_nonull(1, 2) __stroll_nothrow __warn_result
+int
+stroll_fbmap_init_iter_clear(struct stroll_fbmap_iter * __restrict  iter,
+                             const struct stroll_fbmap * __restrict bmap)
+{
+	stroll_fbmap_assert_api(bmap);
+
+	return stroll_fbmap_init_range_iter_clear(iter, bmap, 0, bmap->nr);
+}
+
+/**
+ * Iterate over all bits cleared in a fixed sized bitmap.
+ *
+ * @param[inout] _iter   Temporary iteration bitmap
+ * @param[in]    _bmap   Bitmap to iterate over
+ * @param[out]   _bit_no Current bit number
+ *
+ * Given an uninitialed @p iter stroll_fbmap_iter iterator, iterate over bits
+ * set to zero in @p _bmap stroll_fbmap bitmap and update @p _bit_no to reflect
+ * current cleared bit.
+ *
+ * @see
+ * - stroll_fbmap_foreach_range_clear()
+ * - stroll_fbmap_foreach_set()
+ */
+#define stroll_fbmap_foreach_clear(_iter, _bmap, _bit_no) \
+	for ((_bit_no) = stroll_fbmap_init_iter_clear(_iter, _bmap); \
+	     (_bit_no) >= 0; \
+	     (_bit_no) = stroll_fbmap_step_iter_clear(_iter))
 
 #endif /* _STROLL_FBMAP_H */

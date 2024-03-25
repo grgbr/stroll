@@ -315,6 +315,8 @@ sizes. These are:
       * :c:struct:`stroll_fbmap_iter`
       * :c:macro:`stroll_fbmap_foreach_range_set()`
       * :c:macro:`stroll_fbmap_foreach_set()`
+      * :c:macro:`stroll_fbmap_foreach_range_clear()`
+      * :c:macro:`stroll_fbmap_foreach_clear()`
 
    * Compute number of bits set (:index:`Hammimg weight`):
 
@@ -663,6 +665,15 @@ stroll_bmap64_foreach_set
 
 .. doxygendefine:: stroll_bmap64_foreach_set
 
+stroll_fbmap_foreach_clear()
+****************************
+
+.. doxygendefine:: stroll_fbmap_foreach_clear
+
+stroll_fbmap_foreach_range_clear()
+**********************************
+
+.. doxygendefine:: stroll_fbmap_foreach_range_clear
 
 stroll_fbmap_foreach_range_set()
 ********************************
