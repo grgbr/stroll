@@ -563,7 +563,7 @@
  *
  * @note Borrowed from Linux's kernel.h header file.
  */
-#define array_nr(_array) \
+#define stroll_array_nr(_array) \
 	compile_eval(_is_array(_array), \
 	             sizeof(_array) / sizeof((_array)[0]), \
 	             "array expected")
@@ -750,7 +750,6 @@
 #define unlikely(_expr) \
 	__builtin_expect(!!(_expr), 0)
 
-
 #define PREFETCH_ACCESS_RO     (0)
 #define PREFETCH_ACCESS_RW     (1)
 #define PREFETCH_LOCALITY_TMP  (0)
@@ -809,7 +808,6 @@
 #else
 #error "Unsupported machine word size !"
 #endif
-
 
 #if __WORDSIZE == 64
 #define STROLL_WORD_SHIFT (6)

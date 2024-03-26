@@ -75,8 +75,8 @@ static void
 strollut_bmap32_setup_mask_oper(uint32_t (* oper)(uint32_t, uint32_t))
 {
 	unsigned int   b, m;
-	unsigned int   bnr = array_nr(strollut_bmap32_words);
-	unsigned int   mnr = array_nr(strollut_bmap32_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap32_masks);
 	uint32_t     * expected;
 
 	expected = malloc(bnr * mnr * sizeof(*expected));
@@ -98,8 +98,8 @@ static void
 strollut_bmap32_run_mask_oper(uint32_t (* oper)(uint32_t, uint32_t))
 {
 	unsigned int     b, m;
-	unsigned int     bnr = array_nr(strollut_bmap32_words);
-	unsigned int     mnr = array_nr(strollut_bmap32_masks);
+	unsigned int     bnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int     mnr = stroll_array_nr(strollut_bmap32_masks);
 	const uint32_t * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -118,8 +118,8 @@ static void
 strollut_bmap32_setup_range_oper(uint32_t (* oper)(uint32_t, uint32_t))
 {
 	unsigned int   b, r;
-	unsigned int   bnr = array_nr(strollut_bmap32_words);
-	unsigned int   rnr = array_nr(strollut_bmap32_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap32_ranges);
 	uint32_t     * expected;
 
 	expected = malloc(bnr * rnr * sizeof(*expected));
@@ -143,8 +143,8 @@ strollut_bmap32_run_range_oper(uint32_t (* oper)(uint32_t,
                                                  unsigned int))
 {
 	unsigned int     b, r;
-	unsigned int     bnr = array_nr(strollut_bmap32_words);
-	unsigned int     rnr = array_nr(strollut_bmap32_ranges);
+	unsigned int     bnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int     rnr = stroll_array_nr(strollut_bmap32_ranges);
 	const uint32_t * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -206,7 +206,7 @@ CUTE_TEST(strollut_bmap32_mask)
 {
 	unsigned int r;
 
-	for (r = 0; r < array_nr(strollut_bmap32_ranges); r++) {
+	for (r = 0; r < stroll_array_nr(strollut_bmap32_ranges); r++) {
 		const struct strollut_bmap32_range * rng;
 
 		rng = &strollut_bmap32_ranges[r];
@@ -221,7 +221,7 @@ CUTE_TEST(strollut_bmap32_hweight)
 {
 	unsigned int m;
 
-	for (m = 0; m < array_nr(strollut_bmap32_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap32_words); m++) {
 		uint32_t     bmp = strollut_bmap32_words[m];
 		unsigned int b;
 		unsigned int cnt;
@@ -390,7 +390,7 @@ CUTE_TEST_STATIC(strollut_bmap32_xor_range,
 CUTE_TEST(strollut_bmap32_test_bit)
 {
 	unsigned int b, m;
-	unsigned int mnr = array_nr(strollut_bmap32_words);
+	unsigned int mnr = stroll_array_nr(strollut_bmap32_words);
 
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < 32; b++) {
@@ -411,7 +411,7 @@ CUTE_TEST(strollut_bmap32_test_bit)
 CUTE_TEST(strollut_bmap32_test_all)
 {
 	unsigned int b, m;
-	unsigned int mnr = array_nr(strollut_bmap32_words);
+	unsigned int mnr = stroll_array_nr(strollut_bmap32_words);
 
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < 32; b++) {
@@ -433,8 +433,8 @@ static void
 strollut_bmap32_setup_test_mask(void)
 {
 	unsigned int   b, m;
-	unsigned int   bnr = array_nr(strollut_bmap32_words);
-	unsigned int   mnr = array_nr(strollut_bmap32_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap32_masks);
 	bool         * expected;
 
 	expected = malloc(bnr * mnr * sizeof(*expected));
@@ -458,8 +458,8 @@ CUTE_TEST_STATIC(strollut_bmap32_test_mask,
                  CUTE_DFLT_TMOUT)
 {
 	unsigned int   b, m;
-	unsigned int   bnr = array_nr(strollut_bmap32_words);
-	unsigned int   mnr = array_nr(strollut_bmap32_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap32_masks);
 	const bool   * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -480,8 +480,8 @@ static void
 strollut_bmap32_setup_test_range(void)
 {
 	unsigned int   b, r;
-	unsigned int   bnr = array_nr(strollut_bmap32_words);
-	unsigned int   rnr = array_nr(strollut_bmap32_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap32_ranges);
 	bool         * expected;
 
 	expected = malloc(bnr * rnr * sizeof(*expected));
@@ -522,8 +522,8 @@ CUTE_TEST_STATIC(strollut_bmap32_test_range,
                  CUTE_DFLT_TMOUT)
 {
 	unsigned int   b, r;
-	unsigned int   bnr = array_nr(strollut_bmap32_words);
-	unsigned int   rnr = array_nr(strollut_bmap32_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap32_ranges);
 	const bool   * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -905,7 +905,7 @@ CUTE_TEST(strollut_bmap32_toggle_all_assert)
 CUTE_TEST(strollut_bmap32_toggle_all)
 {
 	unsigned int b;
-	unsigned int bnr = array_nr(strollut_bmap32_words);
+	unsigned int bnr = stroll_array_nr(strollut_bmap32_words);
 
 	for (b = 0; b < bnr; b++) {
 		uint32_t bmp = strollut_bmap32_words[b];
@@ -942,7 +942,7 @@ CUTE_TEST(strollut_bmap32_set_iter)
 	unsigned int b;
 	unsigned int m;
 
-	for (m = 0; m < array_nr(strollut_bmap32_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap32_words); m++) {
 		unsigned int e = 0;
 
 		bmp = strollut_bmap32_words[m];
@@ -989,7 +989,7 @@ CUTE_TEST(strollut_bmap32_clear_iter)
 	unsigned int b;
 	unsigned int m;
 
-	for (m = 0; m < array_nr(strollut_bmap32_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap32_words); m++) {
 		unsigned int e = 0;
 
 		bmp = strollut_bmap32_words[m];
@@ -1143,8 +1143,8 @@ static void
 strollut_bmap64_setup_mask_oper(uint64_t (* oper)(uint64_t, uint64_t))
 {
 	unsigned int   b, m;
-	unsigned int   bnr = array_nr(strollut_bmap64_words);
-	unsigned int   mnr = array_nr(strollut_bmap64_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap64_masks);
 	uint64_t     * expected;
 
 	expected = malloc(bnr * mnr * sizeof(*expected));
@@ -1166,8 +1166,8 @@ static void
 strollut_bmap64_run_mask_oper(uint64_t  (* oper)(uint64_t, uint64_t))
 {
 	unsigned int     b, m;
-	unsigned int     bnr = array_nr(strollut_bmap64_words);
-	unsigned int     mnr = array_nr(strollut_bmap64_masks);
+	unsigned int     bnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int     mnr = stroll_array_nr(strollut_bmap64_masks);
 	const uint64_t * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -1186,8 +1186,8 @@ static void
 strollut_bmap64_setup_range_oper(uint64_t (* oper)(uint64_t, uint64_t))
 {
 	unsigned int   b, r;
-	unsigned int   bnr = array_nr(strollut_bmap64_words);
-	unsigned int   rnr = array_nr(strollut_bmap64_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap64_ranges);
 	uint64_t     * expected;
 
 	expected = malloc(bnr * rnr * sizeof(*expected));
@@ -1211,8 +1211,8 @@ strollut_bmap64_run_range_oper(uint64_t (* oper)(uint64_t,
                                                  unsigned int))
 {
 	unsigned int     b, r;
-	unsigned int     bnr = array_nr(strollut_bmap64_words);
-	unsigned int     rnr = array_nr(strollut_bmap64_ranges);
+	unsigned int     bnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int     rnr = stroll_array_nr(strollut_bmap64_ranges);
 	const uint64_t * expected = strollut_bmap_xpct;
 
 	for (b = 0; b < bnr; b++) {
@@ -1272,7 +1272,7 @@ CUTE_TEST(strollut_bmap64_mask)
 {
 	unsigned int r;
 
-	for (r = 0; r < array_nr(strollut_bmap64_ranges); r++) {
+	for (r = 0; r < stroll_array_nr(strollut_bmap64_ranges); r++) {
 		const struct strollut_bmap64_range * rng;
 
 		rng = &strollut_bmap64_ranges[r];
@@ -1287,7 +1287,7 @@ CUTE_TEST(strollut_bmap64_hweight)
 {
 	unsigned int m;
 
-	for (m = 0; m < array_nr(strollut_bmap64_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap64_words); m++) {
 		uint64_t     bmp = strollut_bmap64_words[m];
 		unsigned int b;
 		unsigned int cnt;
@@ -1456,7 +1456,7 @@ CUTE_TEST_STATIC(strollut_bmap64_xor_range,
 CUTE_TEST(strollut_bmap64_test_bit)
 {
 	unsigned int b, m;
-	unsigned int mnr = array_nr(strollut_bmap64_words);
+	unsigned int mnr = stroll_array_nr(strollut_bmap64_words);
 
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < 64; b++) {
@@ -1477,7 +1477,7 @@ CUTE_TEST(strollut_bmap64_test_bit)
 CUTE_TEST(strollut_bmap64_test_all)
 {
 	unsigned int b, m;
-	unsigned int mnr = array_nr(strollut_bmap64_words);
+	unsigned int mnr = stroll_array_nr(strollut_bmap64_words);
 
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < 64; b++) {
@@ -1499,8 +1499,8 @@ static void
 strollut_bmap64_setup_test_mask(void)
 {
 	unsigned int   b, m;
-	unsigned int   bnr = array_nr(strollut_bmap64_words);
-	unsigned int   mnr = array_nr(strollut_bmap64_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap64_masks);
 	bool         * expected;
 
 	expected = malloc(bnr * mnr * sizeof(*expected));
@@ -1524,8 +1524,8 @@ CUTE_TEST_STATIC(strollut_bmap64_test_mask,
                  CUTE_DFLT_TMOUT)
 {
 	unsigned int   b, m;
-	unsigned int   bnr = array_nr(strollut_bmap64_words);
-	unsigned int   mnr = array_nr(strollut_bmap64_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap64_masks);
 	const bool   * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -1546,8 +1546,8 @@ static void
 strollut_bmap64_setup_test_range(void)
 {
 	unsigned int   b, r;
-	unsigned int   bnr = array_nr(strollut_bmap64_words);
-	unsigned int   rnr = array_nr(strollut_bmap64_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap64_ranges);
 	bool         * expected;
 
 	expected = malloc(bnr * rnr * sizeof(*expected));
@@ -1589,8 +1589,8 @@ CUTE_TEST_STATIC(strollut_bmap64_test_range,
                  CUTE_DFLT_TMOUT)
 {
 	unsigned int   b, r;
-	unsigned int   bnr = array_nr(strollut_bmap64_words);
-	unsigned int   rnr = array_nr(strollut_bmap64_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap64_ranges);
 	const bool   * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -1971,7 +1971,7 @@ CUTE_TEST(strollut_bmap64_toggle_all_assert)
 CUTE_TEST(strollut_bmap64_toggle_all)
 {
 	unsigned int b;
-	unsigned int bnr = array_nr(strollut_bmap64_words);
+	unsigned int bnr = stroll_array_nr(strollut_bmap64_words);
 
 	for (b = 0; b < bnr; b++) {
 		uint64_t bmp = strollut_bmap64_words[b];
@@ -2008,7 +2008,7 @@ CUTE_TEST(strollut_bmap64_set_iter)
 	unsigned int b;
 	unsigned int m;
 
-	for (m = 0; m < array_nr(strollut_bmap64_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap64_words); m++) {
 		unsigned int e = 0;
 
 		bmp = strollut_bmap64_words[m];
@@ -2053,7 +2053,7 @@ CUTE_TEST(strollut_bmap64_clear_iter)
 	unsigned int b;
 	unsigned int m;
 
-	for (m = 0; m < array_nr(strollut_bmap64_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap64_words); m++) {
 		unsigned int e = 0;
 
 		bmp = strollut_bmap64_words[m];
@@ -2211,8 +2211,8 @@ strollut_bmap_word_setup_mask_oper(unsigned long (* oper)(unsigned long,
                                                           unsigned long))
 {
 	unsigned int    b, m;
-	unsigned int    bnr = array_nr(strollut_bmap_words);
-	unsigned int    mnr = array_nr(strollut_bmap_word_masks);
+	unsigned int    bnr = stroll_array_nr(strollut_bmap_words);
+	unsigned int    mnr = stroll_array_nr(strollut_bmap_word_masks);
 	unsigned long * expected;
 
 	expected = malloc(bnr * mnr * sizeof(*expected));
@@ -2236,8 +2236,8 @@ strollut_bmap_word_setup_range_oper(unsigned long (* oper)(unsigned long,
                                                            unsigned long))
 {
 	unsigned int    b, r;
-	unsigned int    bnr = array_nr(strollut_bmap_words);
-	unsigned int    rnr = array_nr(strollut_bmap_word_ranges);
+	unsigned int    bnr = stroll_array_nr(strollut_bmap_words);
+	unsigned int    rnr = stroll_array_nr(strollut_bmap_word_ranges);
 	unsigned long * expected;
 
 	expected = malloc(bnr * rnr * sizeof(*expected));
@@ -2261,8 +2261,8 @@ strollut_bmap_word_run_mask_oper(unsigned long (* oper)(unsigned long,
                                                         unsigned long))
 {
 	unsigned int          b, m;
-	unsigned int          bnr = array_nr(strollut_bmap_words);
-	unsigned int          mnr = array_nr(strollut_bmap_word_masks);
+	unsigned int          bnr = stroll_array_nr(strollut_bmap_words);
+	unsigned int          mnr = stroll_array_nr(strollut_bmap_word_masks);
 	const unsigned long * expected = strollut_bmap_xpct;
 
 	for (b = 0; b < bnr; b++) {
@@ -2280,8 +2280,8 @@ strollut_bmap_word_run_range_oper(unsigned long (* oper)(unsigned long,
                                                          unsigned int))
 {
 	unsigned int          b, r;
-	unsigned int          bnr = array_nr(strollut_bmap_words);
-	unsigned int          rnr = array_nr(strollut_bmap_word_ranges);
+	unsigned int          bnr = stroll_array_nr(strollut_bmap_words);
+	unsigned int          rnr = stroll_array_nr(strollut_bmap_word_ranges);
 	const unsigned long * expected = strollut_bmap_xpct;
 
 	for (b = 0; b < bnr; b++) {
@@ -2341,7 +2341,7 @@ CUTE_TEST(strollut_bmap_word_mask)
 {
 	unsigned int  r;
 
-	for (r = 0; r < array_nr(strollut_bmap_word_ranges); r++) {
+	for (r = 0; r < stroll_array_nr(strollut_bmap_word_ranges); r++) {
 		const struct strollut_bmap_word_range * rng;
 
 		rng = &strollut_bmap_word_ranges[r];
@@ -2356,7 +2356,7 @@ CUTE_TEST(strollut_bmap_word_hweight)
 {
 	unsigned int m;
 
-	for (m = 0; m < array_nr(strollut_bmap_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap_words); m++) {
 		unsigned long bmp = strollut_bmap_words[m];
 		unsigned int  b;
 		unsigned int  cnt;
@@ -2540,7 +2540,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_xor_range,
 CUTE_TEST(strollut_bmap_word_test_bit)
 {
 	unsigned int b, m;
-	unsigned int mnr = array_nr(strollut_bmap_words);
+	unsigned int mnr = stroll_array_nr(strollut_bmap_words);
 	unsigned long bmp;
 
 	for (m = 0; m < mnr; m++) {
@@ -2556,7 +2556,7 @@ CUTE_TEST(strollut_bmap_word_test_bit)
 CUTE_TEST(strollut_bmap_word_test_all)
 {
 	unsigned int b, m;
-	unsigned int mnr = array_nr(strollut_bmap_words);
+	unsigned int mnr = stroll_array_nr(strollut_bmap_words);
 	unsigned long bmp;
 
 	for (m = 0; m < mnr; m++) {
@@ -2571,8 +2571,8 @@ static void
 strollut_bmap_word_setup_test_mask(void)
 {
 	unsigned int   b, m;
-	unsigned int   bnr = array_nr(strollut_bmap_words);
-	unsigned int   mnr = array_nr(strollut_bmap_word_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap_word_masks);
 	bool         * expected;
 
 	expected = malloc(bnr * mnr * sizeof(*expected));
@@ -2597,8 +2597,8 @@ CUTE_TEST_STATIC(strollut_bmap_word_test_mask,
                  CUTE_DFLT_TMOUT)
 {
 	unsigned int   b, m;
-	unsigned int   bnr = array_nr(strollut_bmap_words);
-	unsigned int   mnr = array_nr(strollut_bmap_word_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap_word_masks);
 	const bool *   expected = strollut_bmap_xpct;
 
 	for (b = 0; b < bnr; b++) {
@@ -2616,8 +2616,8 @@ static void
 strollut_bmap_word_setup_test_range(void)
 {
 	unsigned int   b, r;
-	unsigned int   bnr = array_nr(strollut_bmap_words);
-	unsigned int   rnr = array_nr(strollut_bmap_word_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap_word_ranges);
 	bool         * expected;
 
 	expected = malloc(bnr * rnr * sizeof(*expected));
@@ -2664,8 +2664,8 @@ CUTE_TEST_STATIC(strollut_bmap_word_test_range,
                  CUTE_DFLT_TMOUT)
 {
 	unsigned int   b, r;
-	unsigned int   bnr = array_nr(strollut_bmap_words);
-	unsigned int   rnr = array_nr(strollut_bmap_word_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap_word_ranges);
 	const bool *   expected = strollut_bmap_xpct;
 
 	for (b = 0; b < bnr; b++) {
@@ -3060,7 +3060,7 @@ CUTE_TEST(strollut_bmap_word_toggle_all_assert)
 CUTE_TEST(strollut_bmap_word_toggle_all)
 {
 	unsigned int b;
-	unsigned int bnr = array_nr(strollut_bmap_words);
+	unsigned int bnr = stroll_array_nr(strollut_bmap_words);
 
 	for (b = 0; b < bnr; b++) {
 		unsigned long bmp = strollut_bmap_words[b];
@@ -3097,7 +3097,7 @@ CUTE_TEST(strollut_bmap_word_set_iter)
 	unsigned int  b;
 	unsigned int  m;
 
-	for (m = 0; m < array_nr(strollut_bmap_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap_words); m++) {
 		unsigned int  e = 0;
 
 		bmp = strollut_bmap_words[m];
@@ -3147,7 +3147,7 @@ CUTE_TEST(strollut_bmap_word_clear_iter)
 	unsigned int  b;
 	unsigned int  m;
 
-	for (m = 0; m < array_nr(strollut_bmap_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap_words); m++) {
 		unsigned int  e = 0;
 
 		bmp = strollut_bmap_words[m];

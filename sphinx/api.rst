@@ -74,7 +74,7 @@ internals and meant for application development purposes. These are:
 
    * Various
 
-      * :c:macro:`array_nr`
+      * :c:macro:`stroll_array_nr`
       * :c:macro:`stroll_abs`
       * :c:macro:`stroll_min`
       * :c:macro:`stroll_max`
@@ -605,10 +605,10 @@ STROLL_UNIQ
 
 .. doxygendefine:: STROLL_UNIQ
 
-array_nr
-********
+stroll_array_nr
+***************
 
-.. doxygendefine:: array_nr
+.. doxygendefine:: stroll_array_nr
 
 compile_eval
 ************

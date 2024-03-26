@@ -206,35 +206,45 @@ CUTE_TEST(strollut_fbmap_test_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
-	strollut_fbmap_check_test(&strollut_fbmap_14, ref, array_nr(ref));
+	strollut_fbmap_check_test(&strollut_fbmap_14,
+	                          ref,
+	                          stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_test_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
-	strollut_fbmap_check_test(&strollut_fbmap_32, ref, array_nr(ref));
+	strollut_fbmap_check_test(&strollut_fbmap_32,
+	                          ref,
+	                          stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_test_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
-	strollut_fbmap_check_test(&strollut_fbmap_33, ref, array_nr(ref));
+	strollut_fbmap_check_test(&strollut_fbmap_33,
+	                          ref,
+	                          stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_test_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
-	strollut_fbmap_check_test(&strollut_fbmap_63, ref, array_nr(ref));
+	strollut_fbmap_check_test(&strollut_fbmap_63,
+	                          ref,
+	                          stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_test_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
-	strollut_fbmap_check_test(&strollut_fbmap_64, ref, array_nr(ref));
+	strollut_fbmap_check_test(&strollut_fbmap_64,
+	                          ref,
+	                          stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_test_65)
@@ -242,7 +252,9 @@ CUTE_TEST(strollut_fbmap_test_65)
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
 
-	strollut_fbmap_check_test(&strollut_fbmap_65, ref, array_nr(ref));
+	strollut_fbmap_check_test(&strollut_fbmap_65,
+	                          ref,
+	                          stroll_array_nr(ref));
 }
 
 #if __WORDSIZE == 64
@@ -253,7 +265,9 @@ CUTE_TEST(strollut_fbmap_test_127)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 126 };
 
-	strollut_fbmap_check_test(&strollut_fbmap_127, ref, array_nr(ref));
+	strollut_fbmap_check_test(&strollut_fbmap_127,
+	                          ref,
+	                          stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_test_128)
@@ -263,7 +277,9 @@ CUTE_TEST(strollut_fbmap_test_128)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 127 };
 
-	strollut_fbmap_check_test(&strollut_fbmap_128, ref, array_nr(ref));
+	strollut_fbmap_check_test(&strollut_fbmap_128,
+	                          ref,
+	                          stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_test_129)
@@ -274,7 +290,9 @@ CUTE_TEST(strollut_fbmap_test_129)
 	                             96, 112, 127,
 	                             128 };
 
-	strollut_fbmap_check_test(&strollut_fbmap_129, ref, array_nr(ref));
+	strollut_fbmap_check_test(&strollut_fbmap_129,
+	                          ref,
+	                          stroll_array_nr(ref));
 }
 #else  /* __WORDSIZE != 64 */
 STROLLUT_FBMAP_NO64BITS(strollut_fbmap_test_127)
@@ -449,7 +467,7 @@ CUTE_TEST(strollut_fbmap_test_range_14)
 
 	strollut_fbmap_check_test_range(&strollut_fbmap_14,
 	                                ranges,
-	                                array_nr(ranges));
+	                                stroll_array_nr(ranges));
 }
 
 CUTE_TEST(strollut_fbmap_test_range_32)
@@ -465,7 +483,7 @@ CUTE_TEST(strollut_fbmap_test_range_32)
 
 	strollut_fbmap_check_test_range(&strollut_fbmap_32,
 	                                ranges,
-	                                array_nr(ranges));
+	                                stroll_array_nr(ranges));
 }
 
 CUTE_TEST(strollut_fbmap_test_range_33)
@@ -482,7 +500,7 @@ CUTE_TEST(strollut_fbmap_test_range_33)
 
 	strollut_fbmap_check_test_range(&strollut_fbmap_33,
 	                                ranges,
-	                                array_nr(ranges));
+	                                stroll_array_nr(ranges));
 }
 
 CUTE_TEST(strollut_fbmap_test_range_63)
@@ -501,7 +519,7 @@ CUTE_TEST(strollut_fbmap_test_range_63)
 
 	strollut_fbmap_check_test_range(&strollut_fbmap_63,
 	                                ranges,
-	                                array_nr(ranges));
+	                                stroll_array_nr(ranges));
 }
 
 CUTE_TEST(strollut_fbmap_test_range_64)
@@ -520,7 +538,7 @@ CUTE_TEST(strollut_fbmap_test_range_64)
 
 	strollut_fbmap_check_test_range(&strollut_fbmap_64,
 	                                ranges,
-	                                array_nr(ranges));
+	                                stroll_array_nr(ranges));
 }
 
 CUTE_TEST(strollut_fbmap_test_range_65)
@@ -539,7 +557,7 @@ CUTE_TEST(strollut_fbmap_test_range_65)
 
 	strollut_fbmap_check_test_range(&strollut_fbmap_65,
 	                                ranges,
-	                                array_nr(ranges));
+	                                stroll_array_nr(ranges));
 }
 
 #if __WORDSIZE == 64
@@ -568,7 +586,7 @@ CUTE_TEST(strollut_fbmap_test_range_127)
 
 	strollut_fbmap_check_test_range(&strollut_fbmap_127,
 	                                ranges,
-	                                array_nr(ranges));
+	                                stroll_array_nr(ranges));
 }
 
 CUTE_TEST(strollut_fbmap_test_range_128)
@@ -596,7 +614,7 @@ CUTE_TEST(strollut_fbmap_test_range_128)
 
 	strollut_fbmap_check_test_range(&strollut_fbmap_128,
 	                                ranges,
-	                                array_nr(ranges));
+	                                stroll_array_nr(ranges));
 }
 
 CUTE_TEST(strollut_fbmap_test_range_129)
@@ -624,7 +642,7 @@ CUTE_TEST(strollut_fbmap_test_range_129)
 
 	strollut_fbmap_check_test_range(&strollut_fbmap_129,
 	                                ranges,
-	                                array_nr(ranges));
+	                                stroll_array_nr(ranges));
 }
 #else  /* __WORDSIZE != 64 */
 STROLLUT_FBMAP_NO64BITS(strollut_fbmap_test_range_127)
@@ -891,35 +909,35 @@ CUTE_TEST(strollut_fbmap_set_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
-	strollut_fbmap_check_set(&strollut_fbmap_14, ref, array_nr(ref));
+	strollut_fbmap_check_set(&strollut_fbmap_14, ref, stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_set_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
-	strollut_fbmap_check_set(&strollut_fbmap_32, ref, array_nr(ref));
+	strollut_fbmap_check_set(&strollut_fbmap_32, ref, stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_set_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
-	strollut_fbmap_check_set(&strollut_fbmap_33, ref, array_nr(ref));
+	strollut_fbmap_check_set(&strollut_fbmap_33, ref, stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_set_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
-	strollut_fbmap_check_set(&strollut_fbmap_63, ref, array_nr(ref));
+	strollut_fbmap_check_set(&strollut_fbmap_63, ref, stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_set_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
-	strollut_fbmap_check_set(&strollut_fbmap_64, ref, array_nr(ref));
+	strollut_fbmap_check_set(&strollut_fbmap_64, ref, stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_set_65)
@@ -927,7 +945,7 @@ CUTE_TEST(strollut_fbmap_set_65)
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
 
-	strollut_fbmap_check_set(&strollut_fbmap_65, ref, array_nr(ref));
+	strollut_fbmap_check_set(&strollut_fbmap_65, ref, stroll_array_nr(ref));
 }
 
 #if __WORDSIZE == 64
@@ -938,7 +956,9 @@ CUTE_TEST(strollut_fbmap_set_127)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 126 };
 
-	strollut_fbmap_check_set(&strollut_fbmap_127, ref, array_nr(ref));
+	strollut_fbmap_check_set(&strollut_fbmap_127,
+	                         ref,
+	                         stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_set_128)
@@ -948,7 +968,9 @@ CUTE_TEST(strollut_fbmap_set_128)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 127 };
 
-	strollut_fbmap_check_set(&strollut_fbmap_128, ref, array_nr(ref));
+	strollut_fbmap_check_set(&strollut_fbmap_128,
+	                         ref,
+	                         stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_set_129)
@@ -959,7 +981,9 @@ CUTE_TEST(strollut_fbmap_set_129)
 	                             96, 112, 127,
 	                             128 };
 
-	strollut_fbmap_check_set(&strollut_fbmap_129, ref, array_nr(ref));
+	strollut_fbmap_check_set(&strollut_fbmap_129,
+	                         ref,
+	                         stroll_array_nr(ref));
 }
 #else  /* __WORDSIZE != 64 */
 STROLLUT_FBMAP_NO64BITS(strollut_fbmap_set_127)
@@ -1026,35 +1050,45 @@ CUTE_TEST(strollut_fbmap_clear_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
-	strollut_fbmap_check_clear(&strollut_fbmap_14, ref, array_nr(ref));
+	strollut_fbmap_check_clear(&strollut_fbmap_14,
+	                           ref,
+	                           stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_clear_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
-	strollut_fbmap_check_clear(&strollut_fbmap_32, ref, array_nr(ref));
+	strollut_fbmap_check_clear(&strollut_fbmap_32,
+	                           ref,
+	                           stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_clear_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
-	strollut_fbmap_check_clear(&strollut_fbmap_33, ref, array_nr(ref));
+	strollut_fbmap_check_clear(&strollut_fbmap_33,
+	                           ref,
+	                           stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_clear_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
-	strollut_fbmap_check_clear(&strollut_fbmap_63, ref, array_nr(ref));
+	strollut_fbmap_check_clear(&strollut_fbmap_63,
+	                           ref,
+	                           stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_clear_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
-	strollut_fbmap_check_clear(&strollut_fbmap_64, ref, array_nr(ref));
+	strollut_fbmap_check_clear(&strollut_fbmap_64,
+	                           ref,
+	                           stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_clear_65)
@@ -1062,7 +1096,9 @@ CUTE_TEST(strollut_fbmap_clear_65)
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
 
-	strollut_fbmap_check_clear(&strollut_fbmap_65, ref, array_nr(ref));
+	strollut_fbmap_check_clear(&strollut_fbmap_65,
+	                           ref,
+	                           stroll_array_nr(ref));
 }
 
 #if __WORDSIZE == 64
@@ -1073,7 +1109,9 @@ CUTE_TEST(strollut_fbmap_clear_127)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 126 };
 
-	strollut_fbmap_check_clear(&strollut_fbmap_127, ref, array_nr(ref));
+	strollut_fbmap_check_clear(&strollut_fbmap_127,
+	                           ref,
+	                           stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_clear_128)
@@ -1083,7 +1121,9 @@ CUTE_TEST(strollut_fbmap_clear_128)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 127 };
 
-	strollut_fbmap_check_clear(&strollut_fbmap_128, ref, array_nr(ref));
+	strollut_fbmap_check_clear(&strollut_fbmap_128,
+	                           ref,
+	                           stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_clear_129)
@@ -1094,7 +1134,9 @@ CUTE_TEST(strollut_fbmap_clear_129)
 	                             96, 112, 127,
 	                             128 };
 
-	strollut_fbmap_check_clear(&strollut_fbmap_129, ref, array_nr(ref));
+	strollut_fbmap_check_clear(&strollut_fbmap_129,
+	                           ref,
+	                           stroll_array_nr(ref));
 }
 #else  /* __WORDSIZE != 64 */
 STROLLUT_FBMAP_NO64BITS(strollut_fbmap_clear_127)
@@ -1142,35 +1184,45 @@ CUTE_TEST(strollut_fbmap_toggle_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
-	strollut_fbmap_check_toggle(&strollut_fbmap_14, ref, array_nr(ref));
+	strollut_fbmap_check_toggle(&strollut_fbmap_14,
+	                            ref,
+	                            stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
-	strollut_fbmap_check_toggle(&strollut_fbmap_32, ref, array_nr(ref));
+	strollut_fbmap_check_toggle(&strollut_fbmap_32,
+	                            ref,
+	                            stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
-	strollut_fbmap_check_toggle(&strollut_fbmap_33, ref, array_nr(ref));
+	strollut_fbmap_check_toggle(&strollut_fbmap_33,
+	                            ref,
+	                            stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
-	strollut_fbmap_check_toggle(&strollut_fbmap_63, ref, array_nr(ref));
+	strollut_fbmap_check_toggle(&strollut_fbmap_63,
+	                            ref,
+	                            stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
-	strollut_fbmap_check_toggle(&strollut_fbmap_64, ref, array_nr(ref));
+	strollut_fbmap_check_toggle(&strollut_fbmap_64,
+	                            ref,
+	                            stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_65)
@@ -1178,7 +1230,9 @@ CUTE_TEST(strollut_fbmap_toggle_65)
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
 
-	strollut_fbmap_check_toggle(&strollut_fbmap_65, ref, array_nr(ref));
+	strollut_fbmap_check_toggle(&strollut_fbmap_65,
+	                            ref,
+	                            stroll_array_nr(ref));
 }
 
 #if __WORDSIZE == 64
@@ -1189,7 +1243,9 @@ CUTE_TEST(strollut_fbmap_toggle_127)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 126 };
 
-	strollut_fbmap_check_toggle(&strollut_fbmap_127, ref, array_nr(ref));
+	strollut_fbmap_check_toggle(&strollut_fbmap_127,
+	                            ref,
+	                            stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_128)
@@ -1199,7 +1255,9 @@ CUTE_TEST(strollut_fbmap_toggle_128)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 127 };
 
-	strollut_fbmap_check_toggle(&strollut_fbmap_128, ref, array_nr(ref));
+	strollut_fbmap_check_toggle(&strollut_fbmap_128,
+	                            ref,
+	                            stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_129)
@@ -1210,7 +1268,9 @@ CUTE_TEST(strollut_fbmap_toggle_129)
 	                             96, 112, 127,
 	                             128 };
 
-	strollut_fbmap_check_toggle(&strollut_fbmap_129, ref, array_nr(ref));
+	strollut_fbmap_check_toggle(&strollut_fbmap_129,
+	                            ref,
+	                            stroll_array_nr(ref));
 }
 #else  /* __WORDSIZE != 64 */
 STROLLUT_FBMAP_NO64BITS(strollut_fbmap_toggle_127)
@@ -1297,35 +1357,45 @@ CUTE_TEST(strollut_fbmap_toggle_all_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
-	strollut_fbmap_check_toggle_all(&strollut_fbmap_14, ref, array_nr(ref));
+	strollut_fbmap_check_toggle_all(&strollut_fbmap_14,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_all_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
-	strollut_fbmap_check_toggle_all(&strollut_fbmap_32, ref, array_nr(ref));
+	strollut_fbmap_check_toggle_all(&strollut_fbmap_32,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_all_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
-	strollut_fbmap_check_toggle_all(&strollut_fbmap_33, ref, array_nr(ref));
+	strollut_fbmap_check_toggle_all(&strollut_fbmap_33,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_all_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
-	strollut_fbmap_check_toggle_all(&strollut_fbmap_63, ref, array_nr(ref));
+	strollut_fbmap_check_toggle_all(&strollut_fbmap_63,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_all_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
-	strollut_fbmap_check_toggle_all(&strollut_fbmap_64, ref, array_nr(ref));
+	strollut_fbmap_check_toggle_all(&strollut_fbmap_64,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_all_65)
@@ -1333,7 +1403,9 @@ CUTE_TEST(strollut_fbmap_toggle_all_65)
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
 
-	strollut_fbmap_check_toggle_all(&strollut_fbmap_65, ref, array_nr(ref));
+	strollut_fbmap_check_toggle_all(&strollut_fbmap_65,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 #if __WORDSIZE == 64
@@ -1344,7 +1416,9 @@ CUTE_TEST(strollut_fbmap_toggle_all_127)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 126 };
 
-	strollut_fbmap_check_toggle_all(&strollut_fbmap_127, ref, array_nr(ref));
+	strollut_fbmap_check_toggle_all(&strollut_fbmap_127,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_all_128)
@@ -1354,7 +1428,9 @@ CUTE_TEST(strollut_fbmap_toggle_all_128)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 127 };
 
-	strollut_fbmap_check_toggle_all(&strollut_fbmap_128, ref, array_nr(ref));
+	strollut_fbmap_check_toggle_all(&strollut_fbmap_128,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_toggle_all_129)
@@ -1365,7 +1441,9 @@ CUTE_TEST(strollut_fbmap_toggle_all_129)
 	                             96, 112, 127,
 	                             128 };
 
-	strollut_fbmap_check_toggle_all(&strollut_fbmap_129, ref, array_nr(ref));
+	strollut_fbmap_check_toggle_all(&strollut_fbmap_129,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 #else  /* __WORDSIZE != 64 */
 STROLLUT_FBMAP_NO64BITS(strollut_fbmap_toggle_all_127)
@@ -1422,35 +1500,45 @@ CUTE_TEST(strollut_fbmap_iter_set_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
-	strollut_fbmap_check_iter_set(&strollut_fbmap_14, ref, array_nr(ref));
+	strollut_fbmap_check_iter_set(&strollut_fbmap_14,
+	                              ref,
+	                              stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
-	strollut_fbmap_check_iter_set(&strollut_fbmap_32, ref, array_nr(ref));
+	strollut_fbmap_check_iter_set(&strollut_fbmap_32,
+	                              ref,
+	                              stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
-	strollut_fbmap_check_iter_set(&strollut_fbmap_33, ref, array_nr(ref));
+	strollut_fbmap_check_iter_set(&strollut_fbmap_33,
+	                              ref,
+	                              stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
-	strollut_fbmap_check_iter_set(&strollut_fbmap_63, ref, array_nr(ref));
+	strollut_fbmap_check_iter_set(&strollut_fbmap_63,
+	                              ref,
+	                              stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
-	strollut_fbmap_check_iter_set(&strollut_fbmap_64, ref, array_nr(ref));
+	strollut_fbmap_check_iter_set(&strollut_fbmap_64,
+	                              ref,
+	                              stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_65)
@@ -1458,7 +1546,9 @@ CUTE_TEST(strollut_fbmap_iter_set_65)
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
 
-	strollut_fbmap_check_iter_set(&strollut_fbmap_65, ref, array_nr(ref));
+	strollut_fbmap_check_iter_set(&strollut_fbmap_65,
+	                              ref,
+	                              stroll_array_nr(ref));
 }
 
 #if __WORDSIZE == 64
@@ -1469,7 +1559,9 @@ CUTE_TEST(strollut_fbmap_iter_set_127)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 126 };
 
-	strollut_fbmap_check_iter_set(&strollut_fbmap_127, ref, array_nr(ref));
+	strollut_fbmap_check_iter_set(&strollut_fbmap_127,
+	                              ref,
+	                              stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_128)
@@ -1479,7 +1571,9 @@ CUTE_TEST(strollut_fbmap_iter_set_128)
 	                             76, 78, 85, 87, 92, 93, 94,
 	                             96, 112, 127 };
 
-	strollut_fbmap_check_iter_set(&strollut_fbmap_128, ref, array_nr(ref));
+	strollut_fbmap_check_iter_set(&strollut_fbmap_128,
+	                              ref,
+	                              stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_129)
@@ -1490,7 +1584,9 @@ CUTE_TEST(strollut_fbmap_iter_set_129)
 	                             96, 112, 127,
 	                             128 };
 
-	strollut_fbmap_check_iter_set(&strollut_fbmap_129, ref, array_nr(ref));
+	strollut_fbmap_check_iter_set(&strollut_fbmap_129,
+	                              ref,
+	                              stroll_array_nr(ref));
 }
 #else  /* __WORDSIZE != 64 */
 STROLLUT_FBMAP_NO64BITS(strollut_fbmap_iter_set_127)
@@ -1578,7 +1674,7 @@ CUTE_TEST(strollut_fbmap_iter_set_start_range_14)
 	                                    0,
 	                                    9,
 	                                    ref,
-	                                    array_nr(ref));
+	                                    stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_middle_range_14)
@@ -1589,7 +1685,7 @@ CUTE_TEST(strollut_fbmap_iter_set_middle_range_14)
 	                                    3,
 	                                    7,
 	                                    ref,
-	                                    array_nr(ref));
+	                                    stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_end_range_14)
@@ -1600,7 +1696,7 @@ CUTE_TEST(strollut_fbmap_iter_set_end_range_14)
 	                                    2,
 	                                    12,
 	                                    ref,
-	                                    array_nr(ref));
+	                                    stroll_array_nr(ref));
 }
 
 static const struct stroll_fbmap strollut_fbmap_192 = {
@@ -1624,7 +1720,7 @@ CUTE_TEST(strollut_fbmap_iter_set_start_range_192)
 	                                    0,
 	                                    56,
 	                                    ref,
-	                                    array_nr(ref));
+	                                    stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_middle_range_192)
@@ -1635,7 +1731,7 @@ CUTE_TEST(strollut_fbmap_iter_set_middle_range_192)
 	                                    48,
 	                                    96,
 	                                    ref,
-	                                    array_nr(ref));
+	                                    stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_set_end_range_192)
@@ -1646,7 +1742,7 @@ CUTE_TEST(strollut_fbmap_iter_set_end_range_192)
 	                                    161,
 	                                    31,
 	                                    ref,
-	                                    array_nr(ref));
+	                                    stroll_array_nr(ref));
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
@@ -1704,35 +1800,45 @@ CUTE_TEST(strollut_fbmap_iter_clear_14)
 {
 	const unsigned int ref[] = { 1, 3, 8, 9, 10, 11, 13 };
 
-	strollut_fbmap_check_iter_clear(&strollut_fbmap_14, ref, array_nr(ref));
+	strollut_fbmap_check_iter_clear(&strollut_fbmap_14,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_32)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 31};
 
-	strollut_fbmap_check_iter_clear(&strollut_fbmap_32, ref, array_nr(ref));
+	strollut_fbmap_check_iter_clear(&strollut_fbmap_32,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_33)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32};
 
-	strollut_fbmap_check_iter_clear(&strollut_fbmap_33, ref, array_nr(ref));
+	strollut_fbmap_check_iter_clear(&strollut_fbmap_33,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_63)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 62};
 
-	strollut_fbmap_check_iter_clear(&strollut_fbmap_63, ref, array_nr(ref));
+	strollut_fbmap_check_iter_clear(&strollut_fbmap_63,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_64)
 {
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63};
 
-	strollut_fbmap_check_iter_clear(&strollut_fbmap_64, ref, array_nr(ref));
+	strollut_fbmap_check_iter_clear(&strollut_fbmap_64,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_65)
@@ -1740,7 +1846,9 @@ CUTE_TEST(strollut_fbmap_iter_clear_65)
 	const unsigned int ref[] = { 0, 12, 14, 21, 23, 28, 29, 30, 32, 48, 63,
 	                             64};
 
-	strollut_fbmap_check_iter_clear(&strollut_fbmap_65, ref, array_nr(ref));
+	strollut_fbmap_check_iter_clear(&strollut_fbmap_65,
+	                                ref,
+	                                stroll_array_nr(ref));
 }
 
 #if __WORDSIZE == 64
@@ -1753,7 +1861,7 @@ CUTE_TEST(strollut_fbmap_iter_clear_127)
 
 	strollut_fbmap_check_iter_clear(&strollut_fbmap_127,
 	                                ref,
-	                                array_nr(ref));
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_128)
@@ -1765,7 +1873,7 @@ CUTE_TEST(strollut_fbmap_iter_clear_128)
 
 	strollut_fbmap_check_iter_clear(&strollut_fbmap_128,
 	                                ref,
-	                                array_nr(ref));
+	                                stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_129)
@@ -1778,7 +1886,7 @@ CUTE_TEST(strollut_fbmap_iter_clear_129)
 
 	strollut_fbmap_check_iter_clear(&strollut_fbmap_129,
 	                                ref,
-	                                array_nr(ref));
+	                                stroll_array_nr(ref));
 }
 #else  /* __WORDSIZE != 64 */
 STROLLUT_FBMAP_NO64BITS(strollut_fbmap_iter_clear_127)
@@ -1874,7 +1982,7 @@ CUTE_TEST(strollut_fbmap_iter_clear_start_range_14)
 	                                      0,
 	                                      9,
 	                                      ref,
-	                                      array_nr(ref));
+	                                      stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_middle_range_14)
@@ -1885,7 +1993,7 @@ CUTE_TEST(strollut_fbmap_iter_clear_middle_range_14)
 	                                      3,
 	                                      7,
 	                                      ref,
-	                                      array_nr(ref));
+	                                      stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_end_range_14)
@@ -1896,7 +2004,7 @@ CUTE_TEST(strollut_fbmap_iter_clear_end_range_14)
 	                                      2,
 	                                      12,
 	                                      ref,
-	                                      array_nr(ref));
+	                                      stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_start_range_192)
@@ -1907,7 +2015,7 @@ CUTE_TEST(strollut_fbmap_iter_clear_start_range_192)
 	                                      0,
 	                                      56,
 	                                      ref,
-	                                      array_nr(ref));
+	                                      stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_middle_range_192)
@@ -1918,7 +2026,7 @@ CUTE_TEST(strollut_fbmap_iter_clear_middle_range_192)
 	                                      48,
 	                                      96,
 	                                      ref,
-	                                      array_nr(ref));
+	                                      stroll_array_nr(ref));
 }
 
 CUTE_TEST(strollut_fbmap_iter_clear_end_range_192)
@@ -1929,7 +2037,7 @@ CUTE_TEST(strollut_fbmap_iter_clear_end_range_192)
 	                                      161,
 	                                      31,
 	                                      ref,
-	                                      array_nr(ref));
+	                                      stroll_array_nr(ref));
 }
 
 /******************************************************************************
