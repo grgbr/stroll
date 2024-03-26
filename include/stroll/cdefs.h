@@ -763,7 +763,6 @@
  * @see
  * - [GCC Other Built-in Functions](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html)
  * - stroll_unlikely()
- *
  */
 #define stroll_likely(_expr) \
 	__builtin_expect(!!(_expr), 1)
@@ -791,14 +790,123 @@
 #define stroll_unlikely(_expr) \
 	__builtin_expect(!!(_expr), 0)
 
-#define PREFETCH_ACCESS_RO     (0)
-#define PREFETCH_ACCESS_RW     (1)
-#define PREFETCH_LOCALITY_TMP  (0)
-#define PREFETCH_LOCALITY_LOW  (1)
-#define PREFETCH_LOCALITY_FAIR (2)
-#define PREFETCH_LOCALITY_HIGH (3)
+/**
+ * Request read data cache prefetching.
+ *
+ * If the target supports it and when given as second argument of
+ * stroll_prefetch(), generates a prefetch instruction that prepares of a future
+ * memory read access.
+ *
+ * @see
+ * #STROLL_PREFETCH_ACCESS_RW
+ */
+#define STROLL_PREFETCH_ACCESS_RO (0)
 
-#define prefetch(_address, ...) \
+/**
+ * Request write data cache prefetching.
+ *
+ * If the target supports it and when given as second argument of
+ * stroll_prefetch(), generates a prefetch instruction that prepares of a future
+ * memory write access.
+ *
+ * @see
+ * #STROLL_PREFETCH_ACCESS_RO
+ */
+#define STROLL_PREFETCH_ACCESS_RW (1)
+
+/**
+ * Request data cache prefetching with no temporal locality.
+ *
+ * If the target supports it and when given as third argument of
+ * stroll_prefetch(), generates a prefetch instruction that prepares of a future
+ * memory access with no temporal locality.
+ *
+ * @see
+ * - #STROLL_PREFETCH_LOCALITY_LOW
+ * - #STROLL_PREFETCH_LOCALITY_FAIR
+ * - #STROLL_PREFETCH_LOCALITY_HIGH
+ */
+#define STROLL_PREFETCH_LOCALITY_TMP (0)
+
+/**
+ * Request data cache prefetching with low temporal locality.
+ *
+ * If the target supports it and when given as third argument of
+ * stroll_prefetch(), generates a prefetch instruction that prepares of a future
+ * memory access with low temporal locality.
+ *
+ * @see
+ * - #STROLL_PREFETCH_LOCALITY_TMP
+ * - #STROLL_PREFETCH_LOCALITY_FAIR
+ * - #STROLL_PREFETCH_LOCALITY_HIGH
+ */
+#define STROLL_PREFETCH_LOCALITY_LOW (1)
+
+/**
+ * Request data cache prefetching with moderate temporal locality.
+ *
+ * If the target supports it and when given as third argument of
+ * stroll_prefetch(), generates a prefetch instruction that prepares of a future
+ * memory access with moderate temporal locality.
+ *
+ * @see
+ * - #STROLL_PREFETCH_LOCALITY_TMP
+ * - #STROLL_PREFETCH_LOCALITY_LOW
+ * - #STROLL_PREFETCH_LOCALITY_HIGH
+ */
+#define STROLL_PREFETCH_LOCALITY_FAIR (2)
+
+/**
+ * Request data cache prefetching with high temporal locality.
+ *
+ * If the target supports it and when given as third argument of
+ * stroll_prefetch(), generates a prefetch instruction that prepares of a future
+ * memory access with high temporal locality.
+ *
+ * @see
+ * - #STROLL_PREFETCH_LOCALITY_TMP
+ * - #STROLL_PREFETCH_LOCALITY_LOW
+ * - #STROLL_PREFETCH_LOCALITY_FAIR
+ */
+#define STROLL_PREFETCH_LOCALITY_HIGH (3)
+
+/**
+ * Preload cache(s) given the specified address.
+ *
+ * @param[in] _address Address of data to preload cache(s) with
+ * @param[in] ...      optional read/write and cache locality arguments
+ *
+ * Use this macro to minimize cache-miss latency by moving data into a cache
+ * before it is accessed. You can insert calls to stroll_prefetch() into code
+ * for which you know addresses of data in memory that is likely to be accessed
+ * soon. *If the target supports them*, data prefetch instructions are
+ * generated.  If the prefetch is done *early enough* before the access then the
+ * data will be in the cache by the time it is accessed.
+ *
+ * @p _address is the address of the memory to prefetch.
+ *
+ * There are *two optional arguments*, @p _access and @p _locality. @p _access
+ * may be passed in **second** argument as:
+ * - #STROLL_PREFETCH_ACCESS_RO, the *default*, means that the prefetch is
+ *   preparing a future *read* access ;
+ * - #STROLL_PREFETCH_ACCESS_RW means that prefetch is preparing a future
+ *   *write* access.
+ *
+ * @p _locality may be passed in **third** argument as:
+ * - #STROLL_PREFETCH_LOCALITY_TMP, meaning the data has no temporal locality so
+ *   that it need not be left in the cache after the access ;
+ * - #STROLL_PREFETCH_LOCALITY_LOW, meaning that the data has a low degree of
+ *   temporal locality ;
+ * - #STROLL_PREFETCH_LOCALITY_FAIR, meaning that the data has a moderate degree
+ *   of temporal locality ;
+ * - #STROLL_PREFETCH_LOCALITY_HIGH, the *default*, meaning that the data has a
+ *   high degree of temporal locality and should be left in all levels of cache
+ *   possible.
+ *
+ * @see
+ * [GCC Other Built-in Functions](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html)
+ */
+#define stroll_prefetch(_address, ...) \
 	__builtin_prefetch(_address, ## __VA_ARGS__)
 
 #define unreachable() \

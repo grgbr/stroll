@@ -71,7 +71,17 @@ internals and meant for application development purposes. These are:
       * :c:macro:`compile_assert`
       * :c:macro:`compile_choose`
       * :c:macro:`compile_eval`
+
+   * Branch prediction and prefetching :
+
+      * :c:macro:`STROLL_PREFETCH_ACCESS_RO`
+      * :c:macro:`STROLL_PREFETCH_ACCESS_RW`
+      * :c:macro:`STROLL_PREFETCH_LOCALITY_TMP`
+      * :c:macro:`STROLL_PREFETCH_LOCALITY_LOW`
+      * :c:macro:`STROLL_PREFETCH_LOCALITY_FAIR`
+      * :c:macro:`STROLL_PREFETCH_LOCALITY_HIGH`
       * :c:macro:`stroll_likely`
+      * :c:macro:`stroll_prefetch`
       * :c:macro:`stroll_unlikely`
 
    * Various
@@ -597,6 +607,36 @@ STROLL_LVSTR_LEN_MAX
 
 .. doxygendefine:: STROLL_LVSTR_LEN_MAX
 
+STROLL_PREFETCH_ACCESS_RO
+*************************
+
+.. doxygendefine:: STROLL_PREFETCH_ACCESS_RO
+
+STROLL_PREFETCH_ACCESS_RW
+*************************
+
+.. doxygendefine:: STROLL_PREFETCH_ACCESS_RW
+
+STROLL_PREFETCH_LOCALITY_FAIR
+*****************************
+
+.. doxygendefine:: STROLL_PREFETCH_LOCALITY_FAIR
+
+STROLL_PREFETCH_LOCALITY_HIGH
+*****************************
+
+.. doxygendefine:: STROLL_PREFETCH_LOCALITY_HIGH
+
+STROLL_PREFETCH_LOCALITY_LOW
+****************************
+
+.. doxygendefine:: STROLL_PREFETCH_LOCALITY_LOW
+
+STROLL_PREFETCH_LOCALITY_TMP
+****************************
+
+.. doxygendefine:: STROLL_PREFETCH_LOCALITY_TMP
+
 STROLL_STRING
 *************
 
@@ -701,6 +741,11 @@ stroll_max
 **********
 
 .. doxygendefine:: stroll_max
+
+stroll_prefetch
+***************
+
+.. doxygendefine:: stroll_prefetch
 
 stroll_unlikely
 ***************
