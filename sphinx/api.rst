@@ -71,6 +71,8 @@ internals and meant for application development purposes. These are:
       * :c:macro:`compile_assert`
       * :c:macro:`compile_choose`
       * :c:macro:`compile_eval`
+      * :c:macro:`stroll_likely`
+      * :c:macro:`stroll_unlikely`
 
    * Various
 
@@ -685,6 +687,11 @@ stroll_fbmap_foreach_set()
 
 .. doxygendefine:: stroll_fbmap_foreach_set
 
+stroll_likely
+*************
+
+.. doxygendefine:: stroll_likely
+
 stroll_min
 **********
 
@@ -694,6 +701,11 @@ stroll_max
 **********
 
 .. doxygendefine:: stroll_max
+
+stroll_unlikely
+***************
+
+.. doxygendefine:: stroll_unlikely
 
 Structures
 ----------

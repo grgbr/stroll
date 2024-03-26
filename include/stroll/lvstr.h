@@ -132,7 +132,7 @@ struct stroll_lvstr {
  */
 #define STROLL_LVSTR_INIT_LEND(_cstr) \
 	STROLL_LVSTR_INIT_NLEND(_cstr, \
-	                        compile_eval(_is_const(_cstr), \
+	                        compile_eval(_stroll_is_const(_cstr), \
 	                                     sizeof(_cstr)  - 1, \
 	                                     "string literal expected"))
 
@@ -158,7 +158,7 @@ struct stroll_lvstr {
 #define STROLL_LVSTR_INIT_NCEDE(_cstr, _len) \
 	{ \
 		.len = ((_len) << 1) | STROLL_LVSTR_OWNER, \
-		.rwstr = compile_eval(!_is_const(_cstr), \
+		.rwstr = compile_eval(!_stroll_is_const(_cstr), \
 		                      _cstr, \
 		                      "string literal unexpected") \
 	}

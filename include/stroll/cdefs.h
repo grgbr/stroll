@@ -496,7 +496,7 @@
  *
  * @return `1` if @p _expr is constant at compile time, `0` otherwise.
  */
-#define _is_const(_expr) \
+#define _stroll_is_const(_expr) \
 	__builtin_constant_p(_expr)
 
 /**
@@ -533,7 +533,7 @@
  * Return `1` if unqualified versions of the types of @p _a and @p _b are the
  * same.
  */
-#define _is_same_type(_a, _b) \
+#define _stroll_is_same_type(_a, _b) \
 	__builtin_types_compatible_p(typeof(_a), typeof(_b))
 
 /**
@@ -551,8 +551,8 @@
  *
  * @note Borrowed from Linux's kernel.h header file.
  */
-#define _is_array(_array) \
-	(!_is_same_type(_array, &(_array)[0]))
+#define _stroll_is_array(_array) \
+	(!_stroll_is_same_type(_array, &(_array)[0]))
 
 /**
  * Return the number of elements of a constant array expression.
@@ -564,7 +564,7 @@
  * @note Borrowed from Linux's kernel.h header file.
  */
 #define stroll_array_nr(_array) \
-	compile_eval(_is_array(_array), \
+	compile_eval(_stroll_is_array(_array), \
 	             sizeof(_array) / sizeof((_array)[0]), \
 	             "array expected")
 
@@ -604,7 +604,7 @@
  */
 #define _stroll_cmp(_a, _b, _op) \
 	compile_choose(_warn_incompatible_types(_a, _b) && \
-	               _is_const(_a) && _is_const(_b), \
+	               _stroll_is_const(_a) && _stroll_is_const(_b), \
 	               _stroll_eval_cmp(_a, _b, _op), \
 	               _stroll_eval_cmp_once(_a, \
 	                                     _b, \
@@ -639,7 +639,7 @@
  * Use STROLL_CONST_MIN() within preprocessor directives where arguments are
  * subject to restrictions as stated into
  * [GCC If](https://gcc.gnu.org/onlinedocs/cpp/If.html#If).
- * 
+ *
  * More specifically STROLL_CONST_MIN() should be used with constant arguments
  * known at preprocessing time only. Use stroll_min() otherwise.
  *
@@ -676,7 +676,7 @@
  * Use STROLL_CONST_MAX() within preprocessor directives where arguments are
  * subject to restrictions as stated into
  * [GCC If](https://gcc.gnu.org/onlinedocs/cpp/If.html#If).
- * 
+ *
  * More specifically STROLL_CONST_MAX() should be used with constant arguments
  * known at preprocessing time only. Use stroll_max() otherwise.
  *
@@ -720,7 +720,7 @@
  * Argument is evaluated only once to prevent from runtime side-effects.
  */
 #define stroll_abs(_a) \
-	compile_choose(_is_const(_a), \
+	compile_choose(_stroll_is_const(_a), \
 	               _stroll_eval_abs(_a), \
 	               _stroll_eval_abs_once(_a, STROLL_UNIQ(__a)))
 
@@ -734,7 +734,7 @@
  * Use STROLL_CONST_ABS() within preprocessor directives where argument is
  * subject to restrictions as stated into
  * [GCC If](https://gcc.gnu.org/onlinedocs/cpp/If.html#If).
- * 
+ *
  * More specifically STROLL_CONST_ABS() should be used with a constant argument
  * known at preprocessing time only. Use stroll_abs() otherwise.
  *
@@ -744,10 +744,51 @@
 #define STROLL_CONST_ABS(_a) \
 	_stroll_eval_abs(_a)
 
-#define likely(_expr) \
+/**
+ * Tell compiler which branch is likely to be taken.
+ *
+ * @param[in] _expr expression
+ *
+ * @return value of @p _expr evaluation
+ *
+ * Use stroll_likely() to provide the compiler with branch prediction
+ * information. @p _expr expression should be an integral expression.
+ *
+ * @warning
+ * In general, you should prefer to use actual profile feedback for this
+ * (-fprofile-arcs), as programmers are notoriously bad at predicting how their
+ * programs actually perform. However, there are applications in which this data
+ * is hard to collect.
+ *
+ * @see
+ * - [GCC Other Built-in Functions](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html)
+ * - stroll_unlikely()
+ *
+ */
+#define stroll_likely(_expr) \
 	__builtin_expect(!!(_expr), 1)
 
-#define unlikely(_expr) \
+/**
+ * Tell compiler which branch is unlikely to be taken.
+ *
+ * @param[in] _expr expression
+ *
+ * @return value of @p _expr evaluation
+ *
+ * Use stroll_unlikely() to provide the compiler with branch prediction
+ * information. @p _expr expression should be an integral expression.
+ *
+ * @warning
+ * In general, you should prefer to use actual profile feedback for this
+ * (-fprofile-arcs), as programmers are notoriously bad at predicting how their
+ * programs actually perform. However, there are applications in which this data
+ * is hard to collect.
+ *
+ * @see
+ * - [GCC Other Built-in Functions](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html)
+ * - stroll_likely()
+ */
+#define stroll_unlikely(_expr) \
 	__builtin_expect(!!(_expr), 0)
 
 #define PREFETCH_ACCESS_RO     (0)
