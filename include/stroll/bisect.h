@@ -33,11 +33,11 @@
  *
  * @return Matching array element when found, `NULL` otherwise.
  *
- * Search @p array of @p nr elements for an element identified by @p key key.
+ * Search @p array of @p nr elements for an element identified by @p key.
  * The size of each @p array element is specified by @p size.
  *
  * The returned @p array element is **unspecified** if multiple elements match
- * the @p key key given in argument.
+ * the @p key given in argument.
  *
  * The contents of @p array *MUST BE* in ascending sorted order with respect to
  * the @p compare comparison function.
@@ -45,9 +45,10 @@
  * The @p compare routine is expected to handle 2 arguments:
  * - *first* one points to the @p key argument given to stroll_bisect_search() ;
  * - *second* one points to an @p array element.
- * It *MUST* return an integer less than, equal to, or greater than zero if
- * @p key is found, respectively, to be less than, to match, or be greater than
- * the @p array element.
+ *
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if @p key is found, respectively, to be less than, to match, or be greater
+ * than the @p array element.
  *
  * @see stroll_cmp_fn
  */
