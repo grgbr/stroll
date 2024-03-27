@@ -347,13 +347,36 @@
  * overridden.
  *
  * @see
+ * - #__export_hidden
  * - #__export_protect
+ * - #__export_intern
  * - [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
  * - [GCC common variable attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes)
  * - [GCC common type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
  */
 #define __export_public \
 	__attribute__((visibility("default")))
+
+/**
+ * Assign hidden visibility to a function, variable or type.
+ *
+ * Attach "hidden" visibility to a function, variable or type declaration
+ * linkage.
+ * On ELF, hidden visibility indicates that the entity declared has a new form
+ * of linkage, which we call “hidden linkage”. Two declarations of an object
+ * with hidden linkage refer to the same object if they are in the same shared
+ * object.
+ *
+ * @see
+ * - #__export_public
+ * - #__export_protect
+ * - #__export_intern
+ * - [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
+ * - [GCC common variable attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes)
+ * - [GCC common type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
+ */
+#define __export_hidden \
+	__attribute__((visibility("hidden")))
 
 /**
  * Assign protected visibility to a function, variable or type.
@@ -367,12 +390,38 @@
  *
  * @see
  * - #__export_public
+ * - #__export_hidden
+ * - #__export_intern
  * - [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
  * - [GCC common variable attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes)
  * - [GCC common type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
  */
 #define __export_protect \
 	__attribute__((visibility("protected")))
+
+/**
+ * Assign internal visibility to a function, variable or type.
+ *
+ * Attach "internal" visibility to a function, variable or type declaration
+ * linkage.
+ * On ELF, internal visibility is like hidden visibility, but with additional
+ * processor specific semantics. Unless otherwise specified by the psABI, GCC
+ * defines internal visibility to mean that a function is never called from
+ * another module.
+ * Compare this with hidden functions which, while they cannot be referenced
+ * directly by other modules, can be referenced indirectly via function
+ * pointers.
+ *
+ * @see
+ * - #__export_public
+ * - #__export_hidden
+ * - #__export_protect
+ * - [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
+ * - [GCC common variable attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes)
+ * - [GCC common type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
+ */
+#define __export_intern \
+	__attribute__((visibility("internal")))
 
 #define _STROLL_CONCAT(_a, _b) \
 	_a ## _b

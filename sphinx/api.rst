@@ -99,8 +99,10 @@ internals and meant for application development purposes. These are:
       * :c:macro:`__const`
       * :c:macro:`__ctor`
       * :c:macro:`__dtor`
-      * :c:macro:`__export_public`
+      * :c:macro:`__export_hidden`
+      * :c:macro:`__export_intern`
       * :c:macro:`__export_protect`
+      * :c:macro:`__export_public`
       * :c:macro:`__leaf`
       * :c:macro:`__nonull`
       * :c:macro:`__noreturn`
@@ -483,15 +485,25 @@ __dtor
 
 .. doxygendefine:: __dtor
    
-__export_public
+__export_hidden
 ***************
 
-.. doxygendefine:: __export_public
+.. doxygendefine:: __export_hidden
+
+__export_intern
+***************
+
+.. doxygendefine:: __export_intern
 
 __export_protect
 ****************
 
 .. doxygendefine:: __export_protect
+
+__export_public
+***************
+
+.. doxygendefine:: __export_public
 
 __leaf
 ******
