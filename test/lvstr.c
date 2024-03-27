@@ -215,6 +215,7 @@ CUTE_TEST(strollut_lvstr_ncede)
 	stroll_lvstr_fini(&lvstr);
 }
 
+#if defined(CONFIG_STROLL_ASSERT_API)
 static char * volatile strollut_lvstr_tofree;
 
 static void
@@ -223,7 +224,6 @@ strollut_lvstr_teardown(void)
 	free(strollut_lvstr_tofree);
 }
 
-#if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST_STATIC(strollut_lvstr_cede_assert,
                  CUTE_NULL_SETUP,
                  strollut_lvstr_teardown,
