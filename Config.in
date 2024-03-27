@@ -28,7 +28,7 @@ config STROLL_ASSERT_API
 
 config STROLL_ASSERT_INTERN
 	bool "Internal assertion"
-	select STROLL_ASSERT
+	select STROLL_ASSERT_API
 	default n
 	help
 	  Build stroll library with internal assertions enabled to check for
@@ -99,5 +99,14 @@ config STROLL_LVSTR
 	  Build stroll library with length-value string framework meant to ease
 	  the life-cycle of C strings.
 	  See <stroll/lvstr.h>.
+
+config STROLL_BISECT
+	bool "Bisection / dichotomic search"
+	select STROLL_PROVIDES_LIBS
+	default y
+	help
+	  Build stroll library with support for bisection / dichotomic search
+	  within pre-sorted arrays.
+	  See <stroll/bisect.h>.
 
 # ex: ft=kconfig:

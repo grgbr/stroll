@@ -968,13 +968,13 @@
 
 #define __VA_ARGS_COUNT__( _c0,  _c1,  _c2,  _c3,  _c4,  _c5,  _c6,  _c7, \
                            _c8,  _c9, _c10, _c11, _c12, _c13, _c14, _c15, \
-                          _c16, _c17, _c18, _c19, _c20, _c21, _c22, _c23, \
-                          _c24, _c25, _c26, _c27, _c28, _c29, _c30, _c31, \
-                          _c32, _c33, _c34, _c35, _c36, _c37, _c38, _C39, \
-                          _c40, _c41, _c42, _c43, _c44, _c45, _c46, _c47, \
-                          _c48, _c49, _c50, _c51, _c52, _c53, _c54, _c55, \
-                          _c56, _c57, _c58, _c59, _c60, _c61, _c62, _c63, \
-                          _c64, _cnt, ...) \
+                           _c16, _c17, _c18, _c19, _c20, _c21, _c22, _c23, \
+                           _c24, _c25, _c26, _c27, _c28, _c29, _c30, _c31, \
+                           _c32, _c33, _c34, _c35, _c36, _c37, _c38, _C39, \
+                           _c40, _c41, _c42, _c43, _c44, _c45, _c46, _c47, \
+                           _c48, _c49, _c50, _c51, _c52, _c53, _c54, _c55, \
+                           _c56, _c57, _c58, _c59, _c60, _c61, _c62, _c63, \
+                           _c64, _cnt, ...) \
 	_cnt
 
 #define VA_ARGS_COUNT(...) \
@@ -989,5 +989,20 @@
 	                  23, 22, 21, 20, 19, 18, 17, 16, \
 	                  15, 14, 13, 12, 11, 10,  9,  8, \
 	                   7,  6,  5,  4,  3,  2,  1,  0)
+
+/**
+ * Comparison routine signature.
+ *
+ * Use this to implement a function that compares 2 data blocks given as
+ * arguments according to an arbitrary logic.
+ *
+ * The function *MUST* return an integer less than, equal to, or greater than
+ * zero if first argument is found, respectively, to be less than, to match, or
+ * be greater than the second one.
+ *
+ * @see stroll_bisect_search()
+ */
+typedef int stroll_cmp_fn(const void * __restrict, const void * __restrict)
+	__stroll_nonull(1, 2) __warn_result;
 
 #endif /* _STROLL_CDEFS_H */

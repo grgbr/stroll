@@ -26,13 +26,14 @@ you can refer to for further details :
 * `Bitmaps`_,
 * `Fixed sized bitmaps`_,
 * `Length-value strings`_.
+* `Searching arrays`_.
 
 Stroll_ sources are distributed under the :ref:`GNU Lesser General Public
 License <lgpl>` whereas documentation manuals are distributed under the
 :ref:`GNU General Public License <gpl>`.
 
 .. index:: build configuration, configuration macros
-   
+
 Build configuration
 ===================
 
@@ -49,6 +50,7 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_BMAP`
 * :c:macro:`CONFIG_STROLL_FBMAP`
 * :c:macro:`CONFIG_STROLL_LVSTR`
+* :c:macro:`CONFIG_STROLL_BISECT`
 
 .. index:: common definitions, cdefs
 
@@ -394,8 +396,17 @@ The following manipulations are available:
 
       * :c:func:`stroll_lvstr_fini`
 
+.. index:: search, find, bisection search, dichotomic search
+
+Searching arrays
+================
+
+When compiled with the :c:macro:`CONFIG_STROLL_BISECT` build configuration
+option enabled, the Stroll_ library provides support searching pre-sorted
+arrays thanks to :c:func:`stroll_bisect_search`.
+
 .. index:: API reference, reference
-   
+
 Reference
 =========
 
@@ -752,6 +763,11 @@ stroll_unlikely
 
 .. doxygendefine:: stroll_unlikely
 
+Typedefs
+--------
+
+.. doxygentypedef:: stroll_cmp_fn
+
 Structures
 ----------
 
@@ -773,6 +789,11 @@ stroll_lvstr
 
 Functions
 ---------
+
+stroll_bisect_search
+********************
+
+.. doxygenfunction:: stroll_bisect_search
 
 stroll_bmap_and
 ***************

@@ -38,8 +38,12 @@ conf_syms = frozenset({
                     'CONFIG_STROLL_FBMAP=y' }),
     }),
     frozenset({
-        frozenset({ 'CONFIG_SROLL_LVSTR=n' }),
-        frozenset({ 'CONFIG_SROLL_LVSTR=y' })
+        frozenset({ 'CONFIG_STROLL_LVSTR=n' }),
+        frozenset({ 'CONFIG_STROLL_LVSTR=y' })
+    }),
+    frozenset({
+        frozenset({ 'CONFIG_STROLL_BISECT=n' }),
+        frozenset({ 'CONFIG_STROLL_BISECT=y' })
     }),
     frozenset({
         frozenset({ 'CONFIG_STROLL_UTEST=y', 'CONFIG_STROLL_VALGRIND=y' }),

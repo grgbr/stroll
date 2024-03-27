@@ -48,6 +48,7 @@ stroll-utest-objs    += $(call kconf_enabled,STROLL_BOPS,bops.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BMAP,bmap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_FBMAP,fbmap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_LVSTR,lvstr.o)
+stroll-utest-objs    += $(call kconf_enabled,STROLL_BISECT,bisect.o)
 stroll-utest-cflags  := $(test-cflags)
 stroll-utest-ldflags := $(test-ldflags)
 stroll-utest-pkgconf := libcute
