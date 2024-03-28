@@ -37,7 +37,7 @@ CUTE_TEST(strollut_pow2_low32_assert)
 	cute_expect_assertion(stroll_pow2_lower32(0));
 }
 #else
-CUTE_TEST(strollut_pow2_lowp32_assert)
+CUTE_TEST(strollut_pow2_low32_assert)
 {
 	cute_skip("assertion unsupported");
 }
@@ -175,7 +175,7 @@ CUTE_TEST(strollut_pow2_low64_assert)
 	cute_expect_assertion(stroll_pow2_lower64(0));
 }
 #else
-CUTE_TEST(strollut_pow2_lowp64_assert)
+CUTE_TEST(strollut_pow2_low64_assert)
 {
 	cute_skip("assertion unsupported");
 }
@@ -295,6 +295,162 @@ CUTE_TEST(strollut_pow2_up64_minus)
 	strollut_pow2_check_upper64(tests, stroll_array_nr(tests));
 }
 
+static void
+strollut_pow2_check_lower(const struct strollut_pow2_test * tests,
+                          unsigned int                      nr)
+{
+	unsigned int t;
+
+	for (t = 0; t < nr; t++)
+		cute_check_uint(stroll_pow2_lower(tests[t].ulong),
+		                equal,
+		                tests[t].pow);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+CUTE_TEST(strollut_pow2_low_assert)
+{
+	cute_expect_assertion(stroll_pow2_lower(0));
+}
+#else
+CUTE_TEST(strollut_pow2_low_assert)
+{
+	cute_skip("assertion unsupported");
+}
+#endif
+
+CUTE_TEST(strollut_pow2_low_round)
+{
+	const struct strollut_pow2_test tests[] = {
+		{ .ulong = 1UL << 0,  .pow  = 0 },
+		{ .ulong = 1UL << 1,  .pow  = 1 },
+		{ .ulong = 1UL << 2,  .pow  = 2 },
+		{ .ulong = 1UL << 31, .pow = 31 },
+#if __WORDSIZE == 64
+		{ .ulong = 1UL << 32, .pow = 32 },
+		{ .ulong = 1UL << 33, .pow = 33 },
+		{ .ulong = 1UL << 63, .pow = 63 }
+#endif /* __WORDSIZE == 64 */
+	};
+
+	strollut_pow2_check_lower(tests, stroll_array_nr(tests));
+}
+
+CUTE_TEST(strollut_pow2_low_plus)
+{
+	const struct strollut_pow2_test tests[] = {
+		{ .ulong = (1UL << 1) + 1,  .pow  = 1 },
+		{ .ulong = (1UL << 2) + 1,  .pow  = 2 },
+		{ .ulong = (1UL << 31) + 1, .pow = 31 },
+#if __WORDSIZE == 64
+		{ .ulong = (1UL << 32) + 1, .pow = 32 },
+		{ .ulong = (1UL << 33) + 1, .pow = 33 },
+		{ .ulong = (1UL << 62) + 1, .pow = 62 },
+		{ .ulong = (1UL << 63) + 1, .pow = 63 }
+#endif /* __WORDSIZE == 64 */
+	};
+
+	strollut_pow2_check_lower(tests, stroll_array_nr(tests));
+}
+
+CUTE_TEST(strollut_pow2_low_minus)
+{
+	const struct strollut_pow2_test tests[] = {
+		{ .ulong = (1UL << 2) - 1,  .pow  = 1 },
+		{ .ulong = (1UL << 3) - 1,  .pow  = 2 },
+		{ .ulong = (1UL << 31) - 1, .pow = 30 },
+#if __WORDSIZE == 64
+		{ .ulong = (1UL << 32) - 1, .pow = 31 },
+		{ .ulong = (1UL << 33) - 1, .pow = 32 },
+		{ .ulong = (1UL << 34) - 1, .pow = 33 },
+		{ .ulong = (1UL << 63) - 1, .pow = 62 },
+		{ .ulong = ULONG_MAX,       .pow = 63 }
+#else /* __WORDSIZE != 64 */
+		{ .ulong = ULONG_MAX,       .pow = 31 }
+#endif /* __WORDSIZE == 64 */
+	};
+
+	strollut_pow2_check_lower(tests, stroll_array_nr(tests));
+}
+
+static void
+strollut_pow2_check_upper(const struct strollut_pow2_test * tests,
+                          unsigned int                      nr)
+{
+	unsigned int t;
+
+	for (t = 0; t < nr; t++)
+		cute_check_uint(stroll_pow2_upper(tests[t].ulong),
+		                equal,
+		                tests[t].pow);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+CUTE_TEST(strollut_pow2_up_assert)
+{
+	cute_expect_assertion(stroll_pow2_upper(0));
+}
+#else
+CUTE_TEST(strollut_pow2_up_assert)
+{
+	cute_skip("assertion unsupported");
+}
+#endif
+
+CUTE_TEST(strollut_pow2_up_round)
+{
+	const struct strollut_pow2_test tests[] = {
+		{ .ulong = 1UL << 0,  .pow  = 0 },
+		{ .ulong = 1UL << 1,  .pow  = 1 },
+		{ .ulong = 1UL << 2,  .pow  = 2 },
+		{ .ulong = 1UL << 31, .pow = 31 },
+#if __WORDSIZE == 64
+		{ .ulong = 1UL << 32, .pow = 32 },
+		{ .ulong = 1UL << 33, .pow = 33 },
+		{ .ulong = 1UL << 63, .pow = 63 }
+#endif /* __WORDSIZE == 64 */
+	};
+
+	strollut_pow2_check_upper(tests, stroll_array_nr(tests));
+}
+
+CUTE_TEST(strollut_pow2_up_plus)
+{
+	const struct strollut_pow2_test tests[] = {
+		{ .ulong = (1UL << 1) + 1,  .pow  = 2 },
+		{ .ulong = (1UL << 2) + 1,  .pow  = 3 },
+		{ .ulong = (1UL << 31) + 1, .pow = 32 },
+#if __WORDSIZE == 64
+		{ .ulong = (1UL << 32) + 1, .pow = 33 },
+		{ .ulong = (1UL << 33) + 1, .pow = 34 },
+		{ .ulong = (1UL << 62) + 1, .pow = 63 },
+		{ .ulong = (1UL << 63) + 1, .pow = 64 }
+#endif /* __WORDSIZE == 64 */
+	};
+
+	strollut_pow2_check_upper(tests, stroll_array_nr(tests));
+}
+
+CUTE_TEST(strollut_pow2_up_minus)
+{
+	const struct strollut_pow2_test tests[] = {
+		{ .ulong = (1UL << 2) - 1,  .pow = 2 },
+		{ .ulong = (1UL << 3) - 1,  .pow = 3 },
+		{ .ulong = (1UL << 31) - 1, .pow = 31 },
+#if __WORDSIZE == 64
+		{ .ulong = (1UL << 32) - 1, .pow = 32 },
+		{ .ulong = (1UL << 33) - 1, .pow = 33 },
+		{ .ulong = (1UL << 34) - 1, .pow = 34 },
+		{ .ulong = (1UL << 63) - 1, .pow = 63 },
+		{ .ulong = ULONG_MAX,       .pow = 64 }
+#else  /* __WORDSIZE != 64 */
+		{ .ulong = ULONG_MAX,       .pow = 32 }
+#endif /* __WORDSIZE == 64 */
+	};
+
+	strollut_pow2_check_upper(tests, stroll_array_nr(tests));
+}
+
 CUTE_GROUP(strollut_pow2_group) = {
 	CUTE_REF(strollut_pow2_low32_assert),
 	CUTE_REF(strollut_pow2_low32_round),
@@ -315,6 +471,16 @@ CUTE_GROUP(strollut_pow2_group) = {
 	CUTE_REF(strollut_pow2_up64_round),
 	CUTE_REF(strollut_pow2_up64_plus),
 	CUTE_REF(strollut_pow2_up64_minus),
+
+	CUTE_REF(strollut_pow2_low_assert),
+	CUTE_REF(strollut_pow2_low_round),
+	CUTE_REF(strollut_pow2_low_plus),
+	CUTE_REF(strollut_pow2_low_minus),
+
+	CUTE_REF(strollut_pow2_up_assert),
+	CUTE_REF(strollut_pow2_up_round),
+	CUTE_REF(strollut_pow2_up_plus),
+	CUTE_REF(strollut_pow2_up_minus),
 };
 
 CUTE_SUITE_EXTERN(strollut_pow2_suite,

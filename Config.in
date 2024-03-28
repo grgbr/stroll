@@ -64,6 +64,8 @@ config STROLL_BOPS
 config STROLL_POW2
 	bool "Power of 2 operations"
 	default y
+	select STROLL_BOPS
+	select STROLL_PROVIDES_LIBS
 	help
 	  Build stroll library basic power of 2 operations framework exposing
 	  functions to find closes lower / upper power of 2 of a word.
