@@ -40,6 +40,7 @@ endif # ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),
 ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
 solibs               := libstroll.so
 libstroll.so-objs    += $(call kconf_enabled,STROLL_ASSERT,shared/assert.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_POW2,shared/pow2.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_FBMAP,shared/fbmap.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_LVSTR,shared/lvstr.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_BISECT,shared/bisect.o)
@@ -49,6 +50,7 @@ libstroll.so-ldflags := $(filter-out -pie -fpie -fPIE,$(common-ldflags)) \
 
 arlibs               := libstroll.a
 libstroll.a-objs     += $(call kconf_enabled,STROLL_ASSERT,static/assert.o)
+libstroll.a-objs     += $(call kconf_enabled,STROLL_POW2,static/pow2.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_FBMAP,static/fbmap.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_LVSTR,static/lvstr.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_BISECT,static/bisect.o)

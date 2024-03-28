@@ -23,6 +23,7 @@ you can refer to for further details :
 * `Common definitions`_,
 * Assertions_,
 * `Bit operations`_,
+* `Power of 2 operations`_,
 * `Bitmaps`_,
 * `Fixed sized bitmaps`_,
 * `Length-value strings`_.
@@ -47,6 +48,7 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_UTEST`
 * :c:macro:`CONFIG_STROLL_VALGRIND`
 * :c:macro:`CONFIG_STROLL_BOPS`
+* :c:macro:`CONFIG_STROLL_POW2`
 * :c:macro:`CONFIG_STROLL_BMAP`
 * :c:macro:`CONFIG_STROLL_FBMAP`
 * :c:macro:`CONFIG_STROLL_LVSTR`
@@ -123,7 +125,7 @@ When compiled with the :c:macro:`CONFIG_STROLL_ASSERT` build configuration
 option enabled, the Stroll_ library exposes the :c:macro:`stroll_assert` macro so
 that developper may perform standard assertion checking.
 
-.. index:: bit operations, bitops
+.. index:: bit operations, bitops, bops
 
 Bit operations
 ==============
@@ -157,6 +159,29 @@ operations. These are:
       * :c:func:`stroll_bops_hweight`
       * :c:func:`stroll_bops32_hweight`
       * :c:func:`stroll_bops64_hweight`
+
+.. index:: power of 2 operations, pow2
+
+Power of 2 operations
+=====================
+
+When compiled with the :c:macro:`CONFIG_STROLL_POW2` build configuration
+option enabled, the Stroll_ library provides support for basic power of 2
+operations. These are:
+
+.. hlist::
+
+   * Find closest lower power of 2:
+
+      * :c:func:`stroll_pow2_lower`
+      * :c:func:`stroll_pow2_lower32`
+      * :c:func:`stroll_pow2_lower64`
+
+   * Find closest upper power of 2:
+
+      * :c:func:`stroll_pow2_upper`
+      * :c:func:`stroll_pow2_upper32`
+      * :c:func:`stroll_pow2_upper64`
 
 .. index:: bitmaps, bmap
 
@@ -453,7 +478,7 @@ CONFIG_STROLL_BMAP
 .. doxygendefine:: CONFIG_STROLL_BMAP
 
 CONFIG_STROLL_FBMAP
-******************
+*******************
 
 .. doxygendefine:: CONFIG_STROLL_FBMAP
 
@@ -461,6 +486,11 @@ CONFIG_STROLL_LVSTR
 *******************
 
 .. doxygendefine:: CONFIG_STROLL_LVSTR
+
+CONFIG_STROLL_POW2
+******************
+
+.. doxygendefine:: CONFIG_STROLL_POW2
 
 Macros
 ------
@@ -793,7 +823,6 @@ stroll_fbmap_iter
 
 .. doxygenstruct:: stroll_fbmap_iter
 
-  
 stroll_lvstr
 ************
 
@@ -1422,3 +1451,33 @@ stroll_lvstr_nlend
 ******************
 
 .. doxygenfunction:: stroll_lvstr_nlend
+
+stroll_pow2_lower
+*****************
+
+.. doxygenfunction:: stroll_pow2_lower
+
+stroll_pow2_lower32
+*******************
+
+.. doxygenfunction:: stroll_pow2_lower32
+
+stroll_pow2_lower64
+*******************
+
+.. doxygenfunction:: stroll_pow2_lower64
+
+stroll_pow2_upper
+*****************
+
+.. doxygenfunction:: stroll_pow2_upper
+
+stroll_pow2_upper32
+*******************
+
+.. doxygenfunction:: stroll_pow2_upper32
+
+stroll_pow2_upper64
+*******************
+
+.. doxygenfunction:: stroll_pow2_upper64

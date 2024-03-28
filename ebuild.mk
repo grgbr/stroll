@@ -13,6 +13,7 @@ HEADERDIR := $(CURDIR)/include
 headers    = stroll/cdefs.h
 headers   += $(call kconf_enabled,STROLL_ASSERT,stroll/assert.h)
 headers   += $(call kconf_enabled,STROLL_BOPS,stroll/bops.h)
+headers   += $(call kconf_enabled,STROLL_POW2,stroll/pow2.h)
 headers   += $(call kconf_enabled,STROLL_BMAP,stroll/bmap.h)
 headers   += $(call kconf_enabled,STROLL_FBMAP,stroll/fbmap.h)
 headers   += $(call kconf_enabled,STROLL_LVSTR,stroll/lvstr.h)

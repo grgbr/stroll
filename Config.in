@@ -61,6 +61,14 @@ config STROLL_BOPS
 	  * etc...
 	  See <stroll/bops.h>.
 
+config STROLL_POW2
+	bool "Power of 2 operations"
+	default y
+	help
+	  Build stroll library basic power of 2 operations framework exposing
+	  functions to find closes lower / upper power of 2 of a word.
+	  See <stroll/pow2.h>.
+
 config STROLL_BMAP
 	bool "Bitmap"
 	default y

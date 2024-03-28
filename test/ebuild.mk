@@ -45,6 +45,7 @@ checkbins            := stroll-utest
 
 stroll-utest-objs    := cdefs.o
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BOPS,bops.o)
+stroll-utest-objs    += $(call kconf_enabled,STROLL_POW2,pow2.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BMAP,bmap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_FBMAP,fbmap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_LVSTR,lvstr.o)
