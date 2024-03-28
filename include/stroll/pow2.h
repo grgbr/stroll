@@ -51,7 +51,7 @@
  * assertion otherwise.
  */
 static inline unsigned int __stroll_const __stroll_nothrow
-stroll_pow2_lower32(uint32_t value)
+stroll_pow2_low32(uint32_t value)
 {
 	stroll_pow2_assert_api(value);
 
@@ -71,11 +71,29 @@ stroll_pow2_lower32(uint32_t value)
  * assertion otherwise.
  */
 static inline unsigned int __stroll_const __stroll_nothrow
-stroll_pow2_lower64(uint64_t value)
+stroll_pow2_low64(uint64_t value)
 {
 	stroll_pow2_assert_api(value);
 
 	return stroll_bops64_fls(value) - 1;
+}
+
+/**
+ * Find the closest lower power of 2 of an integer.
+ *
+ * @param[in] value integer
+ *
+ * @return closest lower power of 2
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ * @p value is zero, result is undefined. A zero @p value triggers an
+ * assertion otherwise.
+ */
+static inline unsigned int __stroll_const __stroll_nothrow
+stroll_pow2_low(unsigned int value)
+{
+	return stroll_pow2_low32(value);
 }
 
 /**
@@ -94,17 +112,17 @@ stroll_pow2_lower64(uint64_t value)
 #if __WORDSIZE == 64
 
 static inline unsigned int __stroll_const __stroll_nothrow
-stroll_pow2_lower(unsigned long value)
+stroll_pow2_lowul(unsigned long value)
 {
-	return stroll_pow2_lower64(value);
+	return stroll_pow2_low64(value);
 }
 
 #elif __WORDSIZE == 32
 
 static inline unsigned int __stroll_const __stroll_nothrow
-stroll_pow2_lower(unsigned long value)
+stroll_pow2_lowul(unsigned long value)
 {
-	return stroll_pow2_lower32(value);
+	return stroll_pow2_low32(value);
 }
 
 #endif
@@ -122,7 +140,7 @@ stroll_pow2_lower(unsigned long value)
  * assertion otherwise.
  */
 extern unsigned int
-stroll_pow2_upper32(uint32_t value) __stroll_const __stroll_nothrow __leaf;
+stroll_pow2_up32(uint32_t value) __stroll_const __stroll_nothrow __leaf;
 
 /**
  * Find the closest upper power of 2 of a 64 bits word.
@@ -137,7 +155,25 @@ stroll_pow2_upper32(uint32_t value) __stroll_const __stroll_nothrow __leaf;
  * assertion otherwise.
  */
 extern unsigned int
-stroll_pow2_upper64(uint64_t value) __stroll_const __stroll_nothrow __leaf;
+stroll_pow2_up64(uint64_t value) __stroll_const __stroll_nothrow __leaf;
+
+/**
+ * Find the closest upper power of 2 of an integer.
+ *
+ * @param[in] value integer
+ *
+ * @return closest upper power of 2
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ * @p value is zero, result is undefined. A zero @p value triggers an
+ * assertion otherwise.
+ */
+static inline unsigned int __stroll_const __stroll_nothrow
+stroll_pow2_up(unsigned int value)
+{
+	return stroll_pow2_up32(value);
+}
 
 /**
  * Find the closest upper power of 2 of a machine word.
@@ -155,17 +191,17 @@ stroll_pow2_upper64(uint64_t value) __stroll_const __stroll_nothrow __leaf;
 #if __WORDSIZE == 64
 
 static inline unsigned int __stroll_const __stroll_nothrow
-stroll_pow2_upper(unsigned long value)
+stroll_pow2_upul(unsigned long value)
 {
-	return stroll_pow2_upper64(value);
+	return stroll_pow2_up64(value);
 }
 
 #elif __WORDSIZE == 32
 
 static inline unsigned int __stroll_const __stroll_nothrow
-stroll_pow2_upper(unsigned long value)
+stroll_pow2_upul(unsigned long value)
 {
-	return stroll_pow2_upper32(value);
+	return stroll_pow2_up32(value);
 }
 
 #endif

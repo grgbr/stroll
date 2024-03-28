@@ -173,15 +173,17 @@ operations. These are:
 
    * Find closest lower power of 2:
 
-      * :c:func:`stroll_pow2_lower`
-      * :c:func:`stroll_pow2_lower32`
-      * :c:func:`stroll_pow2_lower64`
+      * :c:func:`stroll_pow2_low`
+      * :c:func:`stroll_pow2_low32`
+      * :c:func:`stroll_pow2_low64`
+      * :c:func:`stroll_pow2_lowul`
 
    * Find closest upper power of 2:
 
-      * :c:func:`stroll_pow2_upper`
-      * :c:func:`stroll_pow2_upper32`
-      * :c:func:`stroll_pow2_upper64`
+      * :c:func:`stroll_pow2_up`
+      * :c:func:`stroll_pow2_up32`
+      * :c:func:`stroll_pow2_up64`
+      * :c:func:`stroll_pow2_upul`
 
 .. index:: bitmaps, bmap
 
@@ -1452,32 +1454,42 @@ stroll_lvstr_nlend
 
 .. doxygenfunction:: stroll_lvstr_nlend
 
-stroll_pow2_lower
+stroll_pow2_low
+***************
+
+.. doxygenfunction:: stroll_pow2_low
+
+stroll_pow2_low32
 *****************
 
-.. doxygenfunction:: stroll_pow2_lower
+.. doxygenfunction:: stroll_pow2_low32
 
-stroll_pow2_lower32
+stroll_pow2_low64
 *******************
 
-.. doxygenfunction:: stroll_pow2_lower32
+.. doxygenfunction:: stroll_pow2_low64
 
-stroll_pow2_lower64
-*******************
-
-.. doxygenfunction:: stroll_pow2_lower64
-
-stroll_pow2_upper
+stroll_pow2_lowul
 *****************
 
-.. doxygenfunction:: stroll_pow2_upper
+.. doxygenfunction:: stroll_pow2_lowul
 
-stroll_pow2_upper32
-*******************
+stroll_pow2_up
+**************
 
-.. doxygenfunction:: stroll_pow2_upper32
+.. doxygenfunction:: stroll_pow2_up
 
-stroll_pow2_upper64
-*******************
+stroll_pow2_up32
+****************
 
-.. doxygenfunction:: stroll_pow2_upper64
+.. doxygenfunction:: stroll_pow2_up32
+
+stroll_pow2_up64
+****************
+
+.. doxygenfunction:: stroll_pow2_up64
+
+stroll_pow2_upul
+****************
+
+.. doxygenfunction:: stroll_pow2_upul

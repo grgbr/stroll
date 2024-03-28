@@ -8,7 +8,7 @@
 #include "stroll/pow2.h"
 
 unsigned int __stroll_const __stroll_nothrow
-stroll_pow2_upper32(uint32_t value)
+stroll_pow2_up32(uint32_t value)
 {
 	/* Would overflow otherwise... */
 	stroll_pow2_assert_api(value);
@@ -16,20 +16,20 @@ stroll_pow2_upper32(uint32_t value)
 	if (value > (UINT32_C(1) << 31))
 		return 32;
 
-	return stroll_pow2_lower32(value +
-	                           (UINT32_C(1) << stroll_pow2_lower32(value)) -
-	                           1);
+	return stroll_pow2_low32(value +
+	                         (UINT32_C(1) << stroll_pow2_low32(value)) -
+	                         1);
 }
 
 unsigned int __stroll_const __stroll_nothrow
-stroll_pow2_upper64(uint64_t value)
+stroll_pow2_up64(uint64_t value)
 {
 	stroll_pow2_assert_api(value);
 
 	if (value > (UINT64_C(1) << 63))
 		return 64;
 
-	return stroll_pow2_lower64(value +
-	                           (UINT64_C(1) << stroll_pow2_lower64(value)) -
-	                           1);
+	return stroll_pow2_low64(value +
+	                         (UINT64_C(1) << stroll_pow2_low64(value)) -
+	                         1);
 }
