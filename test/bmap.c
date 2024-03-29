@@ -30,7 +30,7 @@ strollut_bmap_teardown(void)
  * Unsigned 32-bits support
  ******************************************************************************/
 
-static const uint32_t strollut_bmap32_words[] = {
+static const uint32_t strollut_bmap_words32[] = {
 	0x00000000,
 	0xffff0000,
 	0x0000ffff,
@@ -45,7 +45,7 @@ static const uint32_t strollut_bmap32_words[] = {
 	0xffffffff
 };
 
-static const uint32_t strollut_bmap32_masks[] = {
+static const uint32_t strollut_bmap_masks32[] = {
 	0x00000000,
 	0xffffffff,
 	0x0000ffff,
@@ -56,11 +56,11 @@ static const uint32_t strollut_bmap32_masks[] = {
 	0x005500aa
 };
 
-static const struct strollut_bmap32_range {
+static const struct stroll_bmap_range32 {
 	uint32_t     mask;
 	unsigned int start;
 	unsigned int count;
-} strollut_bmap32_ranges[] = {
+} strollut_bmap_ranges32[] = {
 	{ 0xffffffff,  0, 32 },
 	{ 0x0000ffff,  0, 16 },
 	{ 0xffff0000, 16, 16 },
@@ -72,11 +72,11 @@ static const struct strollut_bmap32_range {
 };
 
 static void
-strollut_bmap32_setup_mask_oper(uint32_t (* oper)(uint32_t, uint32_t))
+strollut_bmap_setup_mask_oper32(uint32_t (* oper)(uint32_t, uint32_t))
 {
 	unsigned int   b, m;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
-	unsigned int   mnr = stroll_array_nr(strollut_bmap32_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words32);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap_masks32);
 	uint32_t     * expected;
 
 	expected = malloc(bnr * mnr * sizeof(*expected));
@@ -86,8 +86,8 @@ strollut_bmap32_setup_mask_oper(uint32_t (* oper)(uint32_t, uint32_t))
 		for (m = 0; m < mnr; m++) {
 			uint32_t * exp = &expected[(b * mnr) + m];
 
-			*exp = oper(strollut_bmap32_words[b],
-			            strollut_bmap32_masks[m]);
+			*exp = oper(strollut_bmap_words32[b],
+			            strollut_bmap_masks32[m]);
 		}
 	}
 
@@ -95,19 +95,19 @@ strollut_bmap32_setup_mask_oper(uint32_t (* oper)(uint32_t, uint32_t))
 }
 
 static void
-strollut_bmap32_run_mask_oper(uint32_t (* oper)(uint32_t, uint32_t))
+strollut_bmap_run_mask_oper32(uint32_t (* oper)(uint32_t, uint32_t))
 {
 	unsigned int     b, m;
-	unsigned int     bnr = stroll_array_nr(strollut_bmap32_words);
-	unsigned int     mnr = stroll_array_nr(strollut_bmap32_masks);
+	unsigned int     bnr = stroll_array_nr(strollut_bmap_words32);
+	unsigned int     mnr = stroll_array_nr(strollut_bmap_masks32);
 	const uint32_t * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
 
 	for (b = 0; b < bnr; b++) {
 		for (m = 0; m < mnr; m++) {
-			cute_check_hex(oper(strollut_bmap32_words[b],
-			                    strollut_bmap32_masks[m]),
+			cute_check_hex(oper(strollut_bmap_words32[b],
+			                    strollut_bmap_masks32[m]),
 			               equal,
 			               expected[(b * mnr) + m]);
 		}
@@ -115,11 +115,11 @@ strollut_bmap32_run_mask_oper(uint32_t (* oper)(uint32_t, uint32_t))
 }
 
 static void
-strollut_bmap32_setup_range_oper(uint32_t (* oper)(uint32_t, uint32_t))
+strollut_bmap_setup_range_oper32(uint32_t (* oper)(uint32_t, uint32_t))
 {
 	unsigned int   b, r;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
-	unsigned int   rnr = stroll_array_nr(strollut_bmap32_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words32);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap_ranges32);
 	uint32_t     * expected;
 
 	expected = malloc(bnr * rnr * sizeof(*expected));
@@ -129,8 +129,8 @@ strollut_bmap32_setup_range_oper(uint32_t (* oper)(uint32_t, uint32_t))
 		for (r = 0; r < rnr; r++) {
 			uint32_t * exp = &expected[(b * rnr) + r];
 
-			*exp = oper(strollut_bmap32_words[b],
-			            strollut_bmap32_ranges[r].mask);
+			*exp = oper(strollut_bmap_words32[b],
+			            strollut_bmap_ranges32[r].mask);
 		}
 	}
 
@@ -138,13 +138,13 @@ strollut_bmap32_setup_range_oper(uint32_t (* oper)(uint32_t, uint32_t))
 }
 
 static void
-strollut_bmap32_run_range_oper(uint32_t (* oper)(uint32_t,
+strollut_bmap_run_range_oper32(uint32_t (* oper)(uint32_t,
                                                  unsigned int,
                                                  unsigned int))
 {
 	unsigned int     b, r;
-	unsigned int     bnr = stroll_array_nr(strollut_bmap32_words);
-	unsigned int     rnr = stroll_array_nr(strollut_bmap32_ranges);
+	unsigned int     bnr = stroll_array_nr(strollut_bmap_words32);
+	unsigned int     rnr = stroll_array_nr(strollut_bmap_ranges32);
 	const uint32_t * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -152,9 +152,9 @@ strollut_bmap32_run_range_oper(uint32_t (* oper)(uint32_t,
 	for (b = 0; b < bnr; b++) {
 		for (r = 0; r < rnr; r++) {
 			cute_check_hex(
-				oper(strollut_bmap32_words[b],
-				     strollut_bmap32_ranges[r].start,
-				     strollut_bmap32_ranges[r].count),
+				oper(strollut_bmap_words32[b],
+				     strollut_bmap_ranges32[r].start,
+				     strollut_bmap_ranges32[r].count),
 				equal,
 				expected[(b * rnr) + r]);
 		}
@@ -162,67 +162,67 @@ strollut_bmap32_run_range_oper(uint32_t (* oper)(uint32_t,
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_init_assert)
+CUTE_TEST(strollut_bmap_init_assert32)
 {
-	cute_expect_assertion(stroll_bmap32_setup_set(NULL));
-	cute_expect_assertion(stroll_bmap32_setup_clear(NULL));
+	cute_expect_assertion(stroll_bmap_setup_set32(NULL));
+	cute_expect_assertion(stroll_bmap_setup_clear32(NULL));
 }
 #else
-CUTE_TEST(strollut_bmap32_init_assert)
+CUTE_TEST(strollut_bmap_init_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap32_init)
+CUTE_TEST(strollut_bmap_init32)
 {
 	uint32_t bmp = 0x5A5A5A5A;
 
-	stroll_bmap32_setup_set(&bmp);
+	stroll_bmap_setup_set32(&bmp);
 	cute_check_hex(bmp, equal, UINT32_MAX);
 
-	stroll_bmap32_setup_clear(&bmp);
+	stroll_bmap_setup_clear32(&bmp);
 	cute_check_hex(bmp, equal, 0);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_mask_assert)
+CUTE_TEST(strollut_bmap_mask_assert32)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap32_mask(0, 0));
-	cute_expect_assertion(stroll_bmap32_mask(0, 33));
-	cute_expect_assertion(stroll_bmap32_mask(3, 30));
+	cute_expect_assertion(stroll_bmap_mask32(0, 0));
+	cute_expect_assertion(stroll_bmap_mask32(0, 33));
+	cute_expect_assertion(stroll_bmap_mask32(3, 30));
 #pragma GCC diagnostic pop
 }
 #else
-CUTE_TEST(strollut_bmap32_mask_assert)
+CUTE_TEST(strollut_bmap_mask_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap32_mask)
+CUTE_TEST(strollut_bmap_mask32)
 {
 	unsigned int r;
 
-	for (r = 0; r < stroll_array_nr(strollut_bmap32_ranges); r++) {
-		const struct strollut_bmap32_range * rng;
+	for (r = 0; r < stroll_array_nr(strollut_bmap_ranges32); r++) {
+		const struct stroll_bmap_range32 * rng;
 
-		rng = &strollut_bmap32_ranges[r];
+		rng = &strollut_bmap_ranges32[r];
 
-		cute_check_hex(stroll_bmap32_mask(rng->start, rng->count),
+		cute_check_hex(stroll_bmap_mask32(rng->start, rng->count),
 		               equal,
 		               rng->mask);
 	}
 }
 
-CUTE_TEST(strollut_bmap32_hweight)
+CUTE_TEST(strollut_bmap_hweight32)
 {
 	unsigned int m;
 
-	for (m = 0; m < stroll_array_nr(strollut_bmap32_words); m++) {
-		uint32_t     bmp = strollut_bmap32_words[m];
+	for (m = 0; m < stroll_array_nr(strollut_bmap_words32); m++) {
+		uint32_t     bmp = strollut_bmap_words32[m];
 		unsigned int b;
 		unsigned int cnt;
 
@@ -230,199 +230,199 @@ CUTE_TEST(strollut_bmap32_hweight)
 			if (bmp & (1U << b))
 				cnt++;
 
-		cute_check_hex(stroll_bmap32_hweight(bmp), equal, cnt);
+		cute_check_hex(stroll_bmap_hweight32(bmp), equal, cnt);
 	}
 }
 
 static uint32_t
-strollut_bmap32_and_oper(uint32_t bmap, uint32_t mask)
+strollut_bmap_and_oper32(uint32_t bmap, uint32_t mask)
 {
 	return bmap & mask;
 }
 
 static void
-strollut_bmap32_setup_and(void)
+strollut_bmap_setup_and32(void)
 {
-	strollut_bmap32_setup_mask_oper(strollut_bmap32_and_oper);
+	strollut_bmap_setup_mask_oper32(strollut_bmap_and_oper32);
 }
 
-CUTE_TEST_STATIC(strollut_bmap32_and,
-                 strollut_bmap32_setup_and,
+CUTE_TEST_STATIC(strollut_bmap_and32,
+                 strollut_bmap_setup_and32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_mask_oper(stroll_bmap32_and);
+	strollut_bmap_run_mask_oper32(stroll_bmap_and32);
 }
 
 static void
-strollut_bmap32_setup_and_range(void)
+strollut_bmap_setup_and_range32(void)
 {
-	strollut_bmap32_setup_range_oper(strollut_bmap32_and_oper);
+	strollut_bmap_setup_range_oper32(strollut_bmap_and_oper32);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_and_range_assert)
+CUTE_TEST(strollut_bmap_and_range_assert32)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap32_and_range(0, 0, 0));
-	cute_expect_assertion(stroll_bmap32_and_range(0, 32, 1));
-	cute_expect_assertion(stroll_bmap32_and_range(0, 30, 3));
+	cute_expect_assertion(stroll_bmap_and_range32(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_and_range32(0, 32, 1));
+	cute_expect_assertion(stroll_bmap_and_range32(0, 30, 3));
 #pragma GCC diagnostic pop
 }
 #else
-CUTE_TEST(strollut_bmap32_and_range_assert)
+CUTE_TEST(strollut_bmap_and_range_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap32_and_range,
-                 strollut_bmap32_setup_and_range,
+CUTE_TEST_STATIC(strollut_bmap_and_range32,
+                 strollut_bmap_setup_and_range32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_range_oper(stroll_bmap32_and_range);
+	strollut_bmap_run_range_oper32(stroll_bmap_and_range32);
 }
 
 static uint32_t
-strollut_bmap32_or_oper(uint32_t bmap, uint32_t mask)
+strollut_bmap_or_oper32(uint32_t bmap, uint32_t mask)
 {
 	return bmap | mask;
 }
 
 static void
-strollut_bmap32_setup_or(void)
+strollut_bmap_setup_or32(void)
 {
-	strollut_bmap32_setup_mask_oper(strollut_bmap32_or_oper);
+	strollut_bmap_setup_mask_oper32(strollut_bmap_or_oper32);
 }
 
-CUTE_TEST_STATIC(strollut_bmap32_or,
-                 strollut_bmap32_setup_or,
+CUTE_TEST_STATIC(strollut_bmap_or32,
+                 strollut_bmap_setup_or32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_mask_oper(stroll_bmap32_or);
+	strollut_bmap_run_mask_oper32(stroll_bmap_or32);
 }
 
 static void
-strollut_bmap32_setup_or_range(void)
+strollut_bmap_setup_or_range32(void)
 {
-	strollut_bmap32_setup_range_oper(strollut_bmap32_or_oper);
+	strollut_bmap_setup_range_oper32(strollut_bmap_or_oper32);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_or_range_assert)
+CUTE_TEST(strollut_bmap_or_range_assert32)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap32_or_range(0, 0, 0));
-	cute_expect_assertion(stroll_bmap32_or_range(0, 32, 1));
-	cute_expect_assertion(stroll_bmap32_or_range(0, 30, 3));
+	cute_expect_assertion(stroll_bmap_or_range32(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_or_range32(0, 32, 1));
+	cute_expect_assertion(stroll_bmap_or_range32(0, 30, 3));
 #pragma GCC diagnostic pop
 }
 #else
-CUTE_TEST(strollut_bmap32_or_range_assert)
+CUTE_TEST(strollut_bmap_or_range_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap32_or_range,
-                 strollut_bmap32_setup_or_range,
+CUTE_TEST_STATIC(strollut_bmap_or_range32,
+                 strollut_bmap_setup_or_range32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_range_oper(stroll_bmap32_or_range);
+	strollut_bmap_run_range_oper32(stroll_bmap_or_range32);
 }
 
 static uint32_t
-strollut_bmap32_xor_oper(uint32_t bmap, uint32_t mask)
+strollut_bmap_xor_oper32(uint32_t bmap, uint32_t mask)
 {
 	return bmap ^ mask;
 }
 
 static void
-strollut_bmap32_setup_xor(void)
+strollut_bmap_setup_xor32(void)
 {
-	strollut_bmap32_setup_mask_oper(strollut_bmap32_xor_oper);
+	strollut_bmap_setup_mask_oper32(strollut_bmap_xor_oper32);
 }
 
-CUTE_TEST_STATIC(strollut_bmap32_xor,
-                 strollut_bmap32_setup_xor,
+CUTE_TEST_STATIC(strollut_bmap_xor32,
+                 strollut_bmap_setup_xor32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_mask_oper(stroll_bmap32_xor);
+	strollut_bmap_run_mask_oper32(stroll_bmap_xor32);
 }
 
 static void
-strollut_bmap32_setup_xor_range(void)
+strollut_bmap_setup_xor_range32(void)
 {
-	strollut_bmap32_setup_range_oper(strollut_bmap32_xor_oper);
+	strollut_bmap_setup_range_oper32(strollut_bmap_xor_oper32);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_xor_range_assert)
+CUTE_TEST(strollut_bmap_xor_range_assert32)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap32_xor_range(0, 0, 0));
-	cute_expect_assertion(stroll_bmap32_xor_range(0, 32, 1));
-	cute_expect_assertion(stroll_bmap32_xor_range(0, 30, 3));
+	cute_expect_assertion(stroll_bmap_xor_range32(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_xor_range32(0, 32, 1));
+	cute_expect_assertion(stroll_bmap_xor_range32(0, 30, 3));
 #pragma GCC diagnostic pop
 }
 #else
-CUTE_TEST(strollut_bmap32_xor_range_assert)
+CUTE_TEST(strollut_bmap_xor_range_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap32_xor_range,
-                 strollut_bmap32_setup_xor_range,
+CUTE_TEST_STATIC(strollut_bmap_xor_range32,
+                 strollut_bmap_setup_xor_range32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_range_oper(stroll_bmap32_xor_range);
+	strollut_bmap_run_range_oper32(stroll_bmap_xor_range32);
 }
 
-CUTE_TEST(strollut_bmap32_test_bit)
+CUTE_TEST(strollut_bmap_test_bit32)
 {
 	unsigned int b, m;
-	unsigned int mnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int mnr = stroll_array_nr(strollut_bmap_words32);
 
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < 32; b++) {
-			uint32_t bmp = strollut_bmap32_words[m];
+			uint32_t bmp = strollut_bmap_words32[m];
 
 			if (bmp & (1U << b))
-				cute_check_bool(stroll_bmap32_test(bmp, b),
+				cute_check_bool(stroll_bmap_test32(bmp, b),
 				                is,
 				                true);
 			else
-				cute_check_bool(stroll_bmap32_test(bmp, b),
+				cute_check_bool(stroll_bmap_test32(bmp, b),
 				                is,
 				                false);
 		}
 	}
 }
 
-CUTE_TEST(strollut_bmap32_test_all)
+CUTE_TEST(strollut_bmap_test_all32)
 {
 	unsigned int b, m;
-	unsigned int mnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int mnr = stroll_array_nr(strollut_bmap_words32);
 
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < 32; b++) {
-			uint32_t bmp = strollut_bmap32_words[m];
+			uint32_t bmp = strollut_bmap_words32[m];
 
 			if (!!bmp)
-				cute_check_bool(stroll_bmap32_test_all(bmp),
+				cute_check_bool(stroll_bmap_test_all32(bmp),
 				                is,
 				                true);
 			else
-				cute_check_bool(stroll_bmap32_test_all(bmp),
+				cute_check_bool(stroll_bmap_test_all32(bmp),
 				                is,
 				                false);
 		}
@@ -430,11 +430,11 @@ CUTE_TEST(strollut_bmap32_test_all)
 }
 
 static void
-strollut_bmap32_setup_test_mask(void)
+strollut_bmap_setup_test_mask32(void)
 {
 	unsigned int   b, m;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
-	unsigned int   mnr = stroll_array_nr(strollut_bmap32_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words32);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap_masks32);
 	bool         * expected;
 
 	expected = malloc(bnr * mnr * sizeof(*expected));
@@ -444,22 +444,22 @@ strollut_bmap32_setup_test_mask(void)
 		for (m = 0; m < mnr; m++) {
 			bool * exp = &expected[(b * mnr) + m];
 
-			*exp = !!(strollut_bmap32_words[b] &
-			          strollut_bmap32_masks[m]);
+			*exp = !!(strollut_bmap_words32[b] &
+			          strollut_bmap_masks32[m]);
 		}
 	}
 
 	strollut_bmap_xpct = expected;
 }
 
-CUTE_TEST_STATIC(strollut_bmap32_test_mask,
-                 strollut_bmap32_setup_test_mask,
+CUTE_TEST_STATIC(strollut_bmap_test_mask32,
+                 strollut_bmap_setup_test_mask32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
 	unsigned int   b, m;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
-	unsigned int   mnr = stroll_array_nr(strollut_bmap32_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words32);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap_masks32);
 	const bool   * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -468,20 +468,20 @@ CUTE_TEST_STATIC(strollut_bmap32_test_mask,
 		for (m = 0; m < mnr; m++) {
 			bool res;
 
-			res = stroll_bmap32_test_mask(
-				strollut_bmap32_words[b],
-				strollut_bmap32_masks[m]);
+			res = stroll_bmap_test_mask32(
+				strollut_bmap_words32[b],
+				strollut_bmap_masks32[m]);
 			cute_check_bool(res, is, expected[(b * mnr) + m]);
 		}
 	}
 }
 
 static void
-strollut_bmap32_setup_test_range(void)
+strollut_bmap_setup_test_range32(void)
 {
 	unsigned int   b, r;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
-	unsigned int   rnr = stroll_array_nr(strollut_bmap32_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words32);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap_ranges32);
 	bool         * expected;
 
 	expected = malloc(bnr * rnr * sizeof(*expected));
@@ -491,8 +491,8 @@ strollut_bmap32_setup_test_range(void)
 		for (r = 0; r < rnr; r++) {
 			bool * exp = &expected[(b * rnr) + r];
 
-			*exp = !!(strollut_bmap32_words[b] &
-			          strollut_bmap32_ranges[r].mask);
+			*exp = !!(strollut_bmap_words32[b] &
+			          strollut_bmap_ranges32[r].mask);
 		}
 	}
 
@@ -500,30 +500,30 @@ strollut_bmap32_setup_test_range(void)
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_test_range_assert)
+CUTE_TEST(strollut_bmap_test_range_assert32)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap32_test_range(0, 0, 0));
-	cute_expect_assertion(stroll_bmap32_test_range(0, 32, 1));
-	cute_expect_assertion(stroll_bmap32_test_range(0, 30, 3));
+	cute_expect_assertion(stroll_bmap_test_range32(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_test_range32(0, 32, 1));
+	cute_expect_assertion(stroll_bmap_test_range32(0, 30, 3));
 #pragma GCC diagnostic pop
 }
 #else
-CUTE_TEST(strollut_bmap32_test_range_assert)
+CUTE_TEST(strollut_bmap_test_range_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap32_test_range,
-                 strollut_bmap32_setup_test_range,
+CUTE_TEST_STATIC(strollut_bmap_test_range32,
+                 strollut_bmap_setup_test_range32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
 	unsigned int   b, r;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap32_words);
-	unsigned int   rnr = stroll_array_nr(strollut_bmap32_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words32);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap_ranges32);
 	const bool   * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -532,422 +532,422 @@ CUTE_TEST_STATIC(strollut_bmap32_test_range,
 		for (r = 0; r < rnr; r++) {
 			bool res;
 
-			res = stroll_bmap32_test_range(
-				strollut_bmap32_words[b],
-				strollut_bmap32_ranges[r].start,
-				strollut_bmap32_ranges[r].count);
+			res = stroll_bmap_test_range32(
+				strollut_bmap_words32[b],
+				strollut_bmap_ranges32[r].start,
+				strollut_bmap_ranges32[r].count);
 			cute_check_bool(res, is, expected[(b * rnr) + r]);
 		}
 	}
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_set_bit_assert)
+CUTE_TEST(strollut_bmap_set_bit_assert32)
 {
-	cute_expect_assertion(stroll_bmap32_set(NULL, 1));
+	cute_expect_assertion(stroll_bmap_set32(NULL, 1));
 }
 #else
-CUTE_TEST(strollut_bmap32_set_bit_assert)
+CUTE_TEST(strollut_bmap_set_bit_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap32_set_bit)
+CUTE_TEST(strollut_bmap_set_bit32)
 {
 	uint32_t     bmp = 0;
 	unsigned int b;
 
 	for (b = 0; b < 32; b++) {
 		bmp = 0;
-		stroll_bmap32_set(&bmp, b);
+		stroll_bmap_set32(&bmp, b);
 		cute_check_bool(!!(bmp & (1U << b)), is, true);
 		cute_check_bool(!!(bmp & ~(1U << b)), is, false);
 	}
 }
 
 static uint32_t
-strollut_bmap32_set_mask_oper(uint32_t bmap, uint32_t mask)
+strollut_bmap_set_mask_oper32(uint32_t bmap, uint32_t mask)
 {
 	uint32_t bmp = bmap;
 
-	stroll_bmap32_set_mask(&bmp, mask);
+	stroll_bmap_set_mask32(&bmp, mask);
 
 	return bmp;
 }
 
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_set_mask_assert)
+CUTE_TEST(strollut_bmap_set_mask_assert32)
 {
-	cute_expect_assertion(stroll_bmap32_set_mask(NULL, 0xf));
+	cute_expect_assertion(stroll_bmap_set_mask32(NULL, 0xf));
 }
 #else
-CUTE_TEST(strollut_bmap32_set_mask_assert)
+CUTE_TEST(strollut_bmap_set_mask_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap32_set_mask,
-                 strollut_bmap32_setup_or,
+CUTE_TEST_STATIC(strollut_bmap_set_mask32,
+                 strollut_bmap_setup_or32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_mask_oper(strollut_bmap32_set_mask_oper);
+	strollut_bmap_run_mask_oper32(strollut_bmap_set_mask_oper32);
 }
 
 static uint32_t
-strollut_bmap32_set_range_oper(uint32_t     bmap,
+strollut_bmap_set_range_oper32(uint32_t     bmap,
                                unsigned int start_bit,
                                unsigned int bit_count)
 {
 	uint32_t bmp = bmap;
 
-	stroll_bmap32_set_range(&bmp, start_bit, bit_count);
+	stroll_bmap_set_range32(&bmp, start_bit, bit_count);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_set_range_assert)
+CUTE_TEST(strollut_bmap_set_range_assert32)
 {
 	uint32_t bmp = 0;
 
-	cute_expect_assertion(stroll_bmap32_set_range(NULL, 1, 1));
-	cute_expect_assertion(stroll_bmap32_set_range(&bmp, 0, 0));
-	cute_expect_assertion(stroll_bmap32_set_range(&bmp, 32, 1));
-	cute_expect_assertion(stroll_bmap32_set_range(&bmp, 30, 3));
+	cute_expect_assertion(stroll_bmap_set_range32(NULL, 1, 1));
+	cute_expect_assertion(stroll_bmap_set_range32(&bmp, 0, 0));
+	cute_expect_assertion(stroll_bmap_set_range32(&bmp, 32, 1));
+	cute_expect_assertion(stroll_bmap_set_range32(&bmp, 30, 3));
 }
 #else
-CUTE_TEST(strollut_bmap32_set_range_assert)
+CUTE_TEST(strollut_bmap_set_range_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap32_set_range,
-                 strollut_bmap32_setup_or_range,
+CUTE_TEST_STATIC(strollut_bmap_set_range32,
+                 strollut_bmap_setup_or_range32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_range_oper(strollut_bmap32_set_range_oper);
+	strollut_bmap_run_range_oper32(strollut_bmap_set_range_oper32);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_set_all_assert)
+CUTE_TEST(strollut_bmap_set_all_assert32)
 {
-	cute_expect_assertion(stroll_bmap32_set_all(NULL));
+	cute_expect_assertion(stroll_bmap_set_all32(NULL));
 }
 #else
-CUTE_TEST(strollut_bmap32_set_all_assert)
+CUTE_TEST(strollut_bmap_set_all_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap32_set_all)
+CUTE_TEST(strollut_bmap_set_all32)
 {
 	uint32_t bmp = 0;
 
-	stroll_bmap32_set_all(&bmp);
+	stroll_bmap_set_all32(&bmp);
 	cute_check_hex(bmp, equal, ~(0U));
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_clear_bit_assert)
+CUTE_TEST(strollut_bmap_clear_bit_assert32)
 {
-	cute_expect_assertion(stroll_bmap32_clear(NULL, 1));
+	cute_expect_assertion(stroll_bmap_clear32(NULL, 1));
 }
 #else
-CUTE_TEST(strollut_bmap32_clear_bit_assert)
+CUTE_TEST(strollut_bmap_clear_bit_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap32_clear_bit)
+CUTE_TEST(strollut_bmap_clear_bit32)
 {
 	uint32_t     bmp = ~(0U);
 	unsigned int b;
 
 	for (b = 0; b < 32; b++) {
 		bmp = ~(0U);
-		stroll_bmap32_clear(&bmp, b);
+		stroll_bmap_clear32(&bmp, b);
 		cute_check_hex(bmp, equal, ~(0U) & ~(1U << b));
 	}
 }
 
 static uint32_t
-strollut_bmap32_notand_oper(uint32_t bmap, uint32_t mask)
+strollut_bmap_notand_oper32(uint32_t bmap, uint32_t mask)
 {
 	return bmap & ~mask;
 }
 
 static void
-strollut_bmap32_setup_clear_mask(void)
+strollut_bmap_setup_clear_mask32(void)
 {
-	strollut_bmap32_setup_mask_oper(strollut_bmap32_notand_oper);
+	strollut_bmap_setup_mask_oper32(strollut_bmap_notand_oper32);
 }
 
 static uint32_t
-strollut_bmap32_clear_mask_oper(uint32_t bmap, uint32_t mask)
+strollut_bmap_clear_mask_oper32(uint32_t bmap, uint32_t mask)
 {
 	uint32_t bmp = bmap;
 
-	stroll_bmap32_clear_mask(&bmp, mask);
+	stroll_bmap_clear_mask32(&bmp, mask);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_clear_mask_assert)
+CUTE_TEST(strollut_bmap_clear_mask_assert32)
 {
-	cute_expect_assertion(stroll_bmap32_clear_mask(NULL, 0xf));
+	cute_expect_assertion(stroll_bmap_clear_mask32(NULL, 0xf));
 }
 #else
-CUTE_TEST(strollut_bmap32_clear_mask_assert)
+CUTE_TEST(strollut_bmap_clear_mask_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap32_clear_mask,
-                 strollut_bmap32_setup_clear_mask,
+CUTE_TEST_STATIC(strollut_bmap_clear_mask32,
+                 strollut_bmap_setup_clear_mask32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_mask_oper(strollut_bmap32_clear_mask_oper);
+	strollut_bmap_run_mask_oper32(strollut_bmap_clear_mask_oper32);
 }
 
 static void
-strollut_bmap32_setup_clear_range(void)
+strollut_bmap_setup_clear_range32(void)
 {
-	strollut_bmap32_setup_range_oper(strollut_bmap32_notand_oper);
+	strollut_bmap_setup_range_oper32(strollut_bmap_notand_oper32);
 }
 
 static uint32_t
-strollut_bmap32_clear_range_oper(uint32_t     bmap,
+strollut_bmap_clear_range_oper32(uint32_t     bmap,
                                  unsigned int start_bit,
                                  unsigned int bit_count)
 {
 	uint32_t bmp = bmap;
 
-	stroll_bmap32_clear_range(&bmp, start_bit, bit_count);
+	stroll_bmap_clear_range32(&bmp, start_bit, bit_count);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_clear_range_assert)
+CUTE_TEST(strollut_bmap_clear_range_assert32)
 {
 	uint32_t bmp = ~(0U);
 
-	cute_expect_assertion(stroll_bmap32_clear_range(NULL, 1, 1));
-	cute_expect_assertion(stroll_bmap32_clear_range(&bmp, 0, 0));
-	cute_expect_assertion(stroll_bmap32_clear_range(&bmp, 32, 1));
-	cute_expect_assertion(stroll_bmap32_clear_range(&bmp, 30, 3));
+	cute_expect_assertion(stroll_bmap_clear_range32(NULL, 1, 1));
+	cute_expect_assertion(stroll_bmap_clear_range32(&bmp, 0, 0));
+	cute_expect_assertion(stroll_bmap_clear_range32(&bmp, 32, 1));
+	cute_expect_assertion(stroll_bmap_clear_range32(&bmp, 30, 3));
 }
 #else
-CUTE_TEST(strollut_bmap32_clear_range_assert)
+CUTE_TEST(strollut_bmap_clear_range_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap32_clear_range,
-                 strollut_bmap32_setup_clear_range,
+CUTE_TEST_STATIC(strollut_bmap_clear_range32,
+                 strollut_bmap_setup_clear_range32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_range_oper(strollut_bmap32_clear_range_oper);
+	strollut_bmap_run_range_oper32(strollut_bmap_clear_range_oper32);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_clear_all_assert)
+CUTE_TEST(strollut_bmap_clear_all_assert32)
 {
-	cute_expect_assertion(stroll_bmap32_clear_all(NULL));
+	cute_expect_assertion(stroll_bmap_clear_all32(NULL));
 }
 #else
-CUTE_TEST(strollut_bmap32_clear_all_assert)
+CUTE_TEST(strollut_bmap_clear_all_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap32_clear_all)
+CUTE_TEST(strollut_bmap_clear_all32)
 {
 	uint32_t bmp = ~(0U);
 
-	stroll_bmap32_clear_all(&bmp);
+	stroll_bmap_clear_all32(&bmp);
 	cute_check_hex(bmp, equal, 0);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_toggle_bit_assert)
+CUTE_TEST(strollut_bmap_toggle_bit_assert32)
 {
-	cute_expect_assertion(stroll_bmap32_toggle(NULL, 1));
+	cute_expect_assertion(stroll_bmap_toggle32(NULL, 1));
 }
 #else
-CUTE_TEST(strollut_bmap32_toggle_bit_assert)
+CUTE_TEST(strollut_bmap_toggle_bit_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap32_toggle_bit)
+CUTE_TEST(strollut_bmap_toggle_bit32)
 {
 	uint32_t     bmp = 0;
 	unsigned int b;
 
 	for (b = 0; b < 32; b++) {
 		bmp = 0;
-		stroll_bmap32_toggle(&bmp, b);
+		stroll_bmap_toggle32(&bmp, b);
 		cute_check_hex(bmp, equal, 1U << b);
 
 		bmp = ~(0U);
-		stroll_bmap32_toggle(&bmp, b);
+		stroll_bmap_toggle32(&bmp, b);
 		cute_check_hex(bmp, equal, ~(1U << b));
 	}
 }
 
 static void
-strollut_bmap32_setup_toggle_mask(void)
+strollut_bmap_setup_toggle_mask32(void)
 {
-	strollut_bmap32_setup_mask_oper(strollut_bmap32_xor_oper);
+	strollut_bmap_setup_mask_oper32(strollut_bmap_xor_oper32);
 }
 
 static uint32_t
-strollut_bmap32_toggle_mask_oper(uint32_t bmap, uint32_t mask)
+strollut_bmap_toggle_mask_oper32(uint32_t bmap, uint32_t mask)
 {
 	uint32_t bmp = bmap;
 
-	stroll_bmap32_toggle_mask(&bmp, mask);
+	stroll_bmap_toggle_mask32(&bmp, mask);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_toggle_mask_assert)
+CUTE_TEST(strollut_bmap_toggle_mask_assert32)
 {
-	cute_expect_assertion(stroll_bmap32_toggle_mask(NULL, 0xf));
+	cute_expect_assertion(stroll_bmap_toggle_mask32(NULL, 0xf));
 }
 #else
-CUTE_TEST(strollut_bmap32_toggle_mask_assert)
+CUTE_TEST(strollut_bmap_toggle_mask_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap32_toggle_mask,
-                 strollut_bmap32_setup_toggle_mask,
+CUTE_TEST_STATIC(strollut_bmap_toggle_mask32,
+                 strollut_bmap_setup_toggle_mask32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_mask_oper(strollut_bmap32_toggle_mask_oper);
+	strollut_bmap_run_mask_oper32(strollut_bmap_toggle_mask_oper32);
 }
 
 static void
-strollut_bmap32_setup_toggle_range(void)
+strollut_bmap_setup_toggle_range32(void)
 {
-	strollut_bmap32_setup_range_oper(strollut_bmap32_xor_oper);
+	strollut_bmap_setup_range_oper32(strollut_bmap_xor_oper32);
 }
 
 static uint32_t
-strollut_bmap32_toggle_range_oper(uint32_t     bmap,
+strollut_bmap_toggle_range_oper32(uint32_t     bmap,
                                   unsigned int start_bit,
                                   unsigned int bit_count)
 {
 	uint32_t bmp = bmap;
 
-	stroll_bmap32_toggle_range(&bmp, start_bit, bit_count);
+	stroll_bmap_toggle_range32(&bmp, start_bit, bit_count);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_toggle_range_assert)
+CUTE_TEST(strollut_bmap_toggle_range_assert32)
 {
 	uint32_t bmp = 0;
 
-	cute_expect_assertion(stroll_bmap32_toggle_range(NULL, 1, 1));
-	cute_expect_assertion(stroll_bmap32_toggle_range(&bmp, 0, 0));
-	cute_expect_assertion(stroll_bmap32_toggle_range(&bmp, 32, 1));
-	cute_expect_assertion(stroll_bmap32_toggle_range(&bmp, 30, 3));
+	cute_expect_assertion(stroll_bmap_toggle_range32(NULL, 1, 1));
+	cute_expect_assertion(stroll_bmap_toggle_range32(&bmp, 0, 0));
+	cute_expect_assertion(stroll_bmap_toggle_range32(&bmp, 32, 1));
+	cute_expect_assertion(stroll_bmap_toggle_range32(&bmp, 30, 3));
 }
 #else
-CUTE_TEST(strollut_bmap32_toggle_range_assert)
+CUTE_TEST(strollut_bmap_toggle_range_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap32_toggle_range,
-                 strollut_bmap32_setup_toggle_range,
+CUTE_TEST_STATIC(strollut_bmap_toggle_range32,
+                 strollut_bmap_setup_toggle_range32,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap32_run_range_oper(strollut_bmap32_toggle_range_oper);
+	strollut_bmap_run_range_oper32(strollut_bmap_toggle_range_oper32);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_toggle_all_assert)
+CUTE_TEST(strollut_bmap_toggle_all_assert32)
 {
-	cute_expect_assertion(stroll_bmap32_toggle_all(NULL));
+	cute_expect_assertion(stroll_bmap_toggle_all32(NULL));
 }
 #else
-CUTE_TEST(strollut_bmap32_toggle_all_assert)
+CUTE_TEST(strollut_bmap_toggle_all_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap32_toggle_all)
+CUTE_TEST(strollut_bmap_toggle_all32)
 {
 	unsigned int b;
-	unsigned int bnr = stroll_array_nr(strollut_bmap32_words);
+	unsigned int bnr = stroll_array_nr(strollut_bmap_words32);
 
 	for (b = 0; b < bnr; b++) {
-		uint32_t bmp = strollut_bmap32_words[b];
+		uint32_t bmp = strollut_bmap_words32[b];
 		uint32_t exp = bmp ^ UINT32_MAX;
 
-		stroll_bmap32_toggle_all(&bmp);
+		stroll_bmap_toggle_all32(&bmp);
 		cute_check_hex(bmp, equal, exp);
 	}
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_set_iter_assert)
+CUTE_TEST(strollut_bmap_set_iter_assert32)
 {
 	uint32_t     iter;
 	uint32_t     bmp = 0;
 	unsigned int b;
 
-	cute_expect_assertion(_stroll_bmap32_setup_set_iter(NULL, bmp, &b));
-	cute_expect_assertion(_stroll_bmap32_setup_set_iter(&iter, bmp, NULL));
-	cute_expect_assertion(_stroll_bmap32_step_iter(NULL, &b));
-	cute_expect_assertion(_stroll_bmap32_step_iter(&iter, NULL));
+	cute_expect_assertion(_stroll_bmap_setup_set_iter32(NULL, bmp, &b));
+	cute_expect_assertion(_stroll_bmap_setup_set_iter32(&iter, bmp, NULL));
+	cute_expect_assertion(_stroll_bmap_step_iter32(NULL, &b));
+	cute_expect_assertion(_stroll_bmap_step_iter32(&iter, NULL));
 }
 #else
-CUTE_TEST(strollut_bmap32_set_iter_assert)
+CUTE_TEST(strollut_bmap_set_iter_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap32_set_iter)
+CUTE_TEST(strollut_bmap_set_iter32)
 {
 	uint32_t     iter;
 	uint32_t     bmp = 0;
 	unsigned int b;
 	unsigned int m;
 
-	for (m = 0; m < stroll_array_nr(strollut_bmap32_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap_words32); m++) {
 		unsigned int e = 0;
 
-		bmp = strollut_bmap32_words[m];
+		bmp = strollut_bmap_words32[m];
 		b = 0;
-		stroll_bmap32_foreach_set(&iter, bmp, &b) {
+		stroll_bmap_foreach_set32(&iter, bmp, &b) {
 			while ((e < 32) && !(bmp & (UINT32_C(1) << e)))
 				e++;
 			cute_check_uint(b, equal, e);
@@ -962,39 +962,39 @@ CUTE_TEST(strollut_bmap32_set_iter)
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap32_clear_iter_assert)
+CUTE_TEST(strollut_bmap_clear_iter_assert32)
 {
 	uint32_t     iter;
 	uint32_t     bmp = 0;
 	unsigned int b;
 
-	cute_expect_assertion(_stroll_bmap32_setup_clear_iter(NULL, bmp, &b));
-	cute_expect_assertion(_stroll_bmap32_setup_clear_iter(&iter,
+	cute_expect_assertion(_stroll_bmap_setup_clear_iter32(NULL, bmp, &b));
+	cute_expect_assertion(_stroll_bmap_setup_clear_iter32(&iter,
 	                                                      bmp,
 							      NULL));
-	cute_expect_assertion(_stroll_bmap32_step_iter(NULL, &b));
-	cute_expect_assertion(_stroll_bmap32_step_iter(&iter, NULL));
+	cute_expect_assertion(_stroll_bmap_step_iter32(NULL, &b));
+	cute_expect_assertion(_stroll_bmap_step_iter32(&iter, NULL));
 }
 #else
-CUTE_TEST(strollut_bmap32_clear_iter_assert)
+CUTE_TEST(strollut_bmap_clear_iter_assert32)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap32_clear_iter)
+CUTE_TEST(strollut_bmap_clear_iter32)
 {
 	uint32_t     iter;
 	uint32_t     bmp = 0;
 	unsigned int b;
 	unsigned int m;
 
-	for (m = 0; m < stroll_array_nr(strollut_bmap32_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap_words32); m++) {
 		unsigned int e = 0;
 
-		bmp = strollut_bmap32_words[m];
+		bmp = strollut_bmap_words32[m];
 		b = 0;
-		stroll_bmap32_foreach_clear(&iter, bmp, &b) {
+		stroll_bmap_foreach_clear32(&iter, bmp, &b) {
 			while ((e < 32) && (bmp & (UINT32_C(1) << e)))
 				e++;
 			cute_check_uint(b, equal, e);
@@ -1008,71 +1008,71 @@ CUTE_TEST(strollut_bmap32_clear_iter)
 	}
 }
 
-CUTE_GROUP(strollut_bmap32_group) = {
-	CUTE_REF(strollut_bmap32_init_assert),
-	CUTE_REF(strollut_bmap32_init),
-	CUTE_REF(strollut_bmap32_mask_assert),
-	CUTE_REF(strollut_bmap32_mask),
-	CUTE_REF(strollut_bmap32_hweight),
+CUTE_GROUP(strollut_bmap_group32) = {
+	CUTE_REF(strollut_bmap_init_assert32),
+	CUTE_REF(strollut_bmap_init32),
+	CUTE_REF(strollut_bmap_mask_assert32),
+	CUTE_REF(strollut_bmap_mask32),
+	CUTE_REF(strollut_bmap_hweight32),
 
-	CUTE_REF(strollut_bmap32_and),
-	CUTE_REF(strollut_bmap32_and_range_assert),
-	CUTE_REF(strollut_bmap32_and_range),
+	CUTE_REF(strollut_bmap_and32),
+	CUTE_REF(strollut_bmap_and_range_assert32),
+	CUTE_REF(strollut_bmap_and_range32),
 
-	CUTE_REF(strollut_bmap32_or),
-	CUTE_REF(strollut_bmap32_or_range_assert),
-	CUTE_REF(strollut_bmap32_or_range),
+	CUTE_REF(strollut_bmap_or32),
+	CUTE_REF(strollut_bmap_or_range_assert32),
+	CUTE_REF(strollut_bmap_or_range32),
 
-	CUTE_REF(strollut_bmap32_xor),
-	CUTE_REF(strollut_bmap32_xor_range_assert),
-	CUTE_REF(strollut_bmap32_xor_range),
+	CUTE_REF(strollut_bmap_xor32),
+	CUTE_REF(strollut_bmap_xor_range_assert32),
+	CUTE_REF(strollut_bmap_xor_range32),
 
-	CUTE_REF(strollut_bmap32_test_bit),
-	CUTE_REF(strollut_bmap32_test_all),
-	CUTE_REF(strollut_bmap32_test_mask),
-	CUTE_REF(strollut_bmap32_test_range_assert),
-	CUTE_REF(strollut_bmap32_test_range),
+	CUTE_REF(strollut_bmap_test_bit32),
+	CUTE_REF(strollut_bmap_test_all32),
+	CUTE_REF(strollut_bmap_test_mask32),
+	CUTE_REF(strollut_bmap_test_range_assert32),
+	CUTE_REF(strollut_bmap_test_range32),
 
-	CUTE_REF(strollut_bmap32_set_bit_assert),
-	CUTE_REF(strollut_bmap32_set_bit),
-	CUTE_REF(strollut_bmap32_set_mask_assert),
-	CUTE_REF(strollut_bmap32_set_mask),
-	CUTE_REF(strollut_bmap32_set_range_assert),
-	CUTE_REF(strollut_bmap32_set_range),
-	CUTE_REF(strollut_bmap32_set_all_assert),
-	CUTE_REF(strollut_bmap32_set_all),
+	CUTE_REF(strollut_bmap_set_bit_assert32),
+	CUTE_REF(strollut_bmap_set_bit32),
+	CUTE_REF(strollut_bmap_set_mask_assert32),
+	CUTE_REF(strollut_bmap_set_mask32),
+	CUTE_REF(strollut_bmap_set_range_assert32),
+	CUTE_REF(strollut_bmap_set_range32),
+	CUTE_REF(strollut_bmap_set_all_assert32),
+	CUTE_REF(strollut_bmap_set_all32),
 
-	CUTE_REF(strollut_bmap32_clear_bit_assert),
-	CUTE_REF(strollut_bmap32_clear_bit),
-	CUTE_REF(strollut_bmap32_clear_mask_assert),
-	CUTE_REF(strollut_bmap32_clear_mask),
-	CUTE_REF(strollut_bmap32_clear_range_assert),
-	CUTE_REF(strollut_bmap32_clear_range),
-	CUTE_REF(strollut_bmap32_clear_all_assert),
-	CUTE_REF(strollut_bmap32_clear_all),
+	CUTE_REF(strollut_bmap_clear_bit_assert32),
+	CUTE_REF(strollut_bmap_clear_bit32),
+	CUTE_REF(strollut_bmap_clear_mask_assert32),
+	CUTE_REF(strollut_bmap_clear_mask32),
+	CUTE_REF(strollut_bmap_clear_range_assert32),
+	CUTE_REF(strollut_bmap_clear_range32),
+	CUTE_REF(strollut_bmap_clear_all_assert32),
+	CUTE_REF(strollut_bmap_clear_all32),
 
-	CUTE_REF(strollut_bmap32_toggle_bit_assert),
-	CUTE_REF(strollut_bmap32_toggle_bit),
-	CUTE_REF(strollut_bmap32_toggle_mask_assert),
-	CUTE_REF(strollut_bmap32_toggle_mask),
-	CUTE_REF(strollut_bmap32_toggle_range_assert),
-	CUTE_REF(strollut_bmap32_toggle_range),
-	CUTE_REF(strollut_bmap32_toggle_all_assert),
-	CUTE_REF(strollut_bmap32_toggle_all),
+	CUTE_REF(strollut_bmap_toggle_bit_assert32),
+	CUTE_REF(strollut_bmap_toggle_bit32),
+	CUTE_REF(strollut_bmap_toggle_mask_assert32),
+	CUTE_REF(strollut_bmap_toggle_mask32),
+	CUTE_REF(strollut_bmap_toggle_range_assert32),
+	CUTE_REF(strollut_bmap_toggle_range32),
+	CUTE_REF(strollut_bmap_toggle_all_assert32),
+	CUTE_REF(strollut_bmap_toggle_all32),
 
-	CUTE_REF(strollut_bmap32_set_iter_assert),
-	CUTE_REF(strollut_bmap32_set_iter),
-	CUTE_REF(strollut_bmap32_clear_iter_assert),
-	CUTE_REF(strollut_bmap32_clear_iter)
+	CUTE_REF(strollut_bmap_set_iter_assert32),
+	CUTE_REF(strollut_bmap_set_iter32),
+	CUTE_REF(strollut_bmap_clear_iter_assert32),
+	CUTE_REF(strollut_bmap_clear_iter32)
 };
 
-CUTE_SUITE(strollut_bmap32_suite, strollut_bmap32_group);
+CUTE_SUITE(strollut_bmap_suite32, strollut_bmap_group32);
 
 /******************************************************************************
  * Unsigned 64-bits support
  ******************************************************************************/
 
-static const uint64_t strollut_bmap64_words[] = {
+static const uint64_t strollut_bmap_words64[] = {
 	        0x00000000,
 	        0xffff0000,
 	        0x0000ffff,
@@ -1096,7 +1096,7 @@ static const uint64_t strollut_bmap64_words[] = {
 	0xffffffffffffffff
 };
 
-static const uint64_t strollut_bmap64_masks[] = {
+static const uint64_t strollut_bmap_masks64[] = {
 	        0x00000000,
 	        0xffffffff,
 	        0x0000ffff,
@@ -1115,11 +1115,11 @@ static const uint64_t strollut_bmap64_masks[] = {
 	0x005500aa005500aa
 };
 
-static const struct strollut_bmap64_range {
+static const struct strollut_bmap_range64 {
 	uint64_t     mask;
 	unsigned int start;
 	unsigned int count;
-} strollut_bmap64_ranges[] = {
+} strollut_bmap_ranges64[] = {
 	{ 0x00000000ffffffff,  0, 32 },
 	{ 0x000000000000ffff,  0, 16 },
 	{ 0x00000000ffff0000, 16, 16 },
@@ -1140,11 +1140,11 @@ static const struct strollut_bmap64_range {
 };
 
 static void
-strollut_bmap64_setup_mask_oper(uint64_t (* oper)(uint64_t, uint64_t))
+strollut_bmap_setup_mask_oper64(uint64_t (* oper)(uint64_t, uint64_t))
 {
 	unsigned int   b, m;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
-	unsigned int   mnr = stroll_array_nr(strollut_bmap64_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words64);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap_masks64);
 	uint64_t     * expected;
 
 	expected = malloc(bnr * mnr * sizeof(*expected));
@@ -1154,8 +1154,8 @@ strollut_bmap64_setup_mask_oper(uint64_t (* oper)(uint64_t, uint64_t))
 		for (m = 0; m < mnr; m++) {
 			uint64_t * exp = &expected[(b * mnr) + m];
 
-			*exp = oper(strollut_bmap64_words[b],
-			            strollut_bmap64_masks[m]);
+			*exp = oper(strollut_bmap_words64[b],
+			            strollut_bmap_masks64[m]);
 		}
 	}
 
@@ -1163,19 +1163,19 @@ strollut_bmap64_setup_mask_oper(uint64_t (* oper)(uint64_t, uint64_t))
 }
 
 static void
-strollut_bmap64_run_mask_oper(uint64_t  (* oper)(uint64_t, uint64_t))
+strollut_bmap_run_mask_oper64(uint64_t  (* oper)(uint64_t, uint64_t))
 {
 	unsigned int     b, m;
-	unsigned int     bnr = stroll_array_nr(strollut_bmap64_words);
-	unsigned int     mnr = stroll_array_nr(strollut_bmap64_masks);
+	unsigned int     bnr = stroll_array_nr(strollut_bmap_words64);
+	unsigned int     mnr = stroll_array_nr(strollut_bmap_masks64);
 	const uint64_t * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
 
 	for (b = 0; b < bnr; b++) {
 		for (m = 0; m < mnr; m++) {
-			cute_check_hex(oper(strollut_bmap64_words[b],
-			                    strollut_bmap64_masks[m]),
+			cute_check_hex(oper(strollut_bmap_words64[b],
+			                    strollut_bmap_masks64[m]),
 			               equal,
 			               expected[(b * mnr) + m]);
 		}
@@ -1183,11 +1183,11 @@ strollut_bmap64_run_mask_oper(uint64_t  (* oper)(uint64_t, uint64_t))
 }
 
 static void
-strollut_bmap64_setup_range_oper(uint64_t (* oper)(uint64_t, uint64_t))
+strollut_bmap_setup_range_oper64(uint64_t (* oper)(uint64_t, uint64_t))
 {
 	unsigned int   b, r;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
-	unsigned int   rnr = stroll_array_nr(strollut_bmap64_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words64);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap_ranges64);
 	uint64_t     * expected;
 
 	expected = malloc(bnr * rnr * sizeof(*expected));
@@ -1197,8 +1197,8 @@ strollut_bmap64_setup_range_oper(uint64_t (* oper)(uint64_t, uint64_t))
 		for (r = 0; r < rnr; r++) {
 			uint64_t * exp = &expected[(b * rnr) + r];
 
-			*exp = oper(strollut_bmap64_words[b],
-			            strollut_bmap64_ranges[r].mask);
+			*exp = oper(strollut_bmap_words64[b],
+			            strollut_bmap_ranges64[r].mask);
 		}
 	}
 
@@ -1206,20 +1206,20 @@ strollut_bmap64_setup_range_oper(uint64_t (* oper)(uint64_t, uint64_t))
 }
 
 static void
-strollut_bmap64_run_range_oper(uint64_t (* oper)(uint64_t,
+strollut_bmap_run_range_oper64(uint64_t (* oper)(uint64_t,
                                                  unsigned int,
                                                  unsigned int))
 {
 	unsigned int     b, r;
-	unsigned int     bnr = stroll_array_nr(strollut_bmap64_words);
-	unsigned int     rnr = stroll_array_nr(strollut_bmap64_ranges);
+	unsigned int     bnr = stroll_array_nr(strollut_bmap_words64);
+	unsigned int     rnr = stroll_array_nr(strollut_bmap_ranges64);
 	const uint64_t * expected = strollut_bmap_xpct;
 
 	for (b = 0; b < bnr; b++) {
 		for (r = 0; r < rnr; r++) {
-			cute_check_hex(oper(strollut_bmap64_words[b],
-			                    strollut_bmap64_ranges[r].start,
-			                    strollut_bmap64_ranges[r].count),
+			cute_check_hex(oper(strollut_bmap_words64[b],
+			                    strollut_bmap_ranges64[r].start,
+			                    strollut_bmap_ranges64[r].count),
 			               equal,
 			               expected[(b * rnr) + r]);
 		}
@@ -1227,68 +1227,68 @@ strollut_bmap64_run_range_oper(uint64_t (* oper)(uint64_t,
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_init_assert)
+CUTE_TEST(strollut_bmap_init_assert64)
 {
-	cute_expect_assertion(stroll_bmap64_setup_set(NULL));
-	cute_expect_assertion(stroll_bmap64_setup_clear(NULL));
+	cute_expect_assertion(stroll_bmap_setup_set64(NULL));
+	cute_expect_assertion(stroll_bmap_setup_clear64(NULL));
 }
 #else
-CUTE_TEST(strollut_bmap64_init_assert)
+CUTE_TEST(strollut_bmap_init_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap64_init)
+CUTE_TEST(strollut_bmap_init64)
 {
 	uint64_t bmp = 0x5A5A5A5A5A5A5A5A;
 
-	stroll_bmap64_setup_set(&bmp);
+	stroll_bmap_setup_set64(&bmp);
 	cute_check_hex(bmp, equal, UINT64_MAX);
 
-	stroll_bmap64_setup_clear(&bmp);
+	stroll_bmap_setup_clear64(&bmp);
 	cute_check_hex(bmp, equal, 0);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_mask_assert)
+CUTE_TEST(strollut_bmap_mask_assert64)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap64_mask(0, 0));
-	cute_expect_assertion(stroll_bmap64_mask(0, 65));
-	cute_expect_assertion(stroll_bmap64_mask(3, 63));
+	cute_expect_assertion(stroll_bmap_mask64(0, 0));
+	cute_expect_assertion(stroll_bmap_mask64(0, 65));
+	cute_expect_assertion(stroll_bmap_mask64(3, 63));
 #pragma GCC diagnostic pop
 
 }
 #else
-CUTE_TEST(strollut_bmap64_mask_assert)
+CUTE_TEST(strollut_bmap_mask_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap64_mask)
+CUTE_TEST(strollut_bmap_mask64)
 {
 	unsigned int r;
 
-	for (r = 0; r < stroll_array_nr(strollut_bmap64_ranges); r++) {
-		const struct strollut_bmap64_range * rng;
+	for (r = 0; r < stroll_array_nr(strollut_bmap_ranges64); r++) {
+		const struct strollut_bmap_range64 * rng;
 
-		rng = &strollut_bmap64_ranges[r];
+		rng = &strollut_bmap_ranges64[r];
 
-		cute_check_hex(stroll_bmap64_mask(rng->start, rng->count),
+		cute_check_hex(stroll_bmap_mask64(rng->start, rng->count),
 		               equal,
 		               rng->mask);
 	}
 }
 
-CUTE_TEST(strollut_bmap64_hweight)
+CUTE_TEST(strollut_bmap_hweight64)
 {
 	unsigned int m;
 
-	for (m = 0; m < stroll_array_nr(strollut_bmap64_words); m++) {
-		uint64_t     bmp = strollut_bmap64_words[m];
+	for (m = 0; m < stroll_array_nr(strollut_bmap_words64); m++) {
+		uint64_t     bmp = strollut_bmap_words64[m];
 		unsigned int b;
 		unsigned int cnt;
 
@@ -1296,199 +1296,199 @@ CUTE_TEST(strollut_bmap64_hweight)
 			if (bmp & (UINT64_C(1) << b))
 				cnt++;
 
-		cute_check_hex(stroll_bmap64_hweight(bmp), equal, cnt);
+		cute_check_hex(stroll_bmap_hweight64(bmp), equal, cnt);
 	}
 }
 
 static uint64_t
-strollut_bmap64_and_oper(uint64_t bmap, uint64_t mask)
+strollut_bmap_and_oper64(uint64_t bmap, uint64_t mask)
 {
 	return bmap & mask;
 }
 
 static void
-strollut_bmap64_setup_and(void)
+strollut_bmap_setup_and64(void)
 {
-	strollut_bmap64_setup_mask_oper(strollut_bmap64_and_oper);
+	strollut_bmap_setup_mask_oper64(strollut_bmap_and_oper64);
 }
 
-CUTE_TEST_STATIC(strollut_bmap64_and,
-                 strollut_bmap64_setup_and,
+CUTE_TEST_STATIC(strollut_bmap_and64,
+                 strollut_bmap_setup_and64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_mask_oper(stroll_bmap64_and);
+	strollut_bmap_run_mask_oper64(stroll_bmap_and64);
 }
 
 static void
-strollut_bmap64_setup_and_range(void)
+strollut_bmap_setup_and_range64(void)
 {
-	strollut_bmap64_setup_range_oper(strollut_bmap64_and_oper);
+	strollut_bmap_setup_range_oper64(strollut_bmap_and_oper64);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_and_range_assert)
+CUTE_TEST(strollut_bmap_and_range_assert64)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap64_and_range(0, 0, 0));
-	cute_expect_assertion(stroll_bmap64_and_range(0, 64, 1));
-	cute_expect_assertion(stroll_bmap64_and_range(0, 60, 5));
+	cute_expect_assertion(stroll_bmap_and_range64(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_and_range64(0, 64, 1));
+	cute_expect_assertion(stroll_bmap_and_range64(0, 60, 5));
 #pragma GCC diagnostic pop
 }
 #else
-CUTE_TEST(strollut_bmap64_and_range_assert)
+CUTE_TEST(strollut_bmap_and_range_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap64_and_range,
-                 strollut_bmap64_setup_and_range,
+CUTE_TEST_STATIC(strollut_bmap_and_range64,
+                 strollut_bmap_setup_and_range64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_range_oper(stroll_bmap64_and_range);
+	strollut_bmap_run_range_oper64(stroll_bmap_and_range64);
 }
 
 static uint64_t
-strollut_bmap64_or_oper(uint64_t bmap, uint64_t mask)
+strollut_bmap_or_oper64(uint64_t bmap, uint64_t mask)
 {
 	return bmap | mask;
 }
 
 static void
-strollut_bmap64_setup_or(void)
+strollut_bmap_setup_or64(void)
 {
-	strollut_bmap64_setup_mask_oper(strollut_bmap64_or_oper);
+	strollut_bmap_setup_mask_oper64(strollut_bmap_or_oper64);
 }
 
-CUTE_TEST_STATIC(strollut_bmap64_or,
-                 strollut_bmap64_setup_or,
+CUTE_TEST_STATIC(strollut_bmap_or64,
+                 strollut_bmap_setup_or64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_mask_oper(stroll_bmap64_or);
+	strollut_bmap_run_mask_oper64(stroll_bmap_or64);
 }
 
 static void
-strollut_bmap64_setup_or_range(void)
+strollut_bmap_setup_or_range64(void)
 {
-	strollut_bmap64_setup_range_oper(strollut_bmap64_or_oper);
+	strollut_bmap_setup_range_oper64(strollut_bmap_or_oper64);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_or_range_assert)
+CUTE_TEST(strollut_bmap_or_range_assert64)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap64_or_range(0, 0, 0));
-	cute_expect_assertion(stroll_bmap64_or_range(0, 64, 1));
-	cute_expect_assertion(stroll_bmap64_or_range(0, 60, 5));
+	cute_expect_assertion(stroll_bmap_or_range64(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_or_range64(0, 64, 1));
+	cute_expect_assertion(stroll_bmap_or_range64(0, 60, 5));
 #pragma GCC diagnostic pop
 }
 #else
-CUTE_TEST(strollut_bmap64_or_range_assert)
+CUTE_TEST(strollut_bmap_or_range_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap64_or_range,
-                 strollut_bmap64_setup_or_range,
+CUTE_TEST_STATIC(strollut_bmap_or_range64,
+                 strollut_bmap_setup_or_range64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_range_oper(stroll_bmap64_or_range);
+	strollut_bmap_run_range_oper64(stroll_bmap_or_range64);
 }
 
 static uint64_t
-strollut_bmap64_xor_oper(uint64_t bmap, uint64_t mask)
+strollut_bmap_xor_oper64(uint64_t bmap, uint64_t mask)
 {
 	return bmap ^ mask;
 }
 
 static void
-strollut_bmap64_setup_xor(void)
+strollut_bmap_setup_xor64(void)
 {
-	strollut_bmap64_setup_mask_oper(strollut_bmap64_xor_oper);
+	strollut_bmap_setup_mask_oper64(strollut_bmap_xor_oper64);
 }
 
-CUTE_TEST_STATIC(strollut_bmap64_xor,
-                 strollut_bmap64_setup_xor,
+CUTE_TEST_STATIC(strollut_bmap_xor64,
+                 strollut_bmap_setup_xor64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_mask_oper(stroll_bmap64_xor);
+	strollut_bmap_run_mask_oper64(stroll_bmap_xor64);
 }
 
 static void
-strollut_bmap64_setup_xor_range(void)
+strollut_bmap_setup_xor_range64(void)
 {
-	strollut_bmap64_setup_range_oper(strollut_bmap64_xor_oper);
+	strollut_bmap_setup_range_oper64(strollut_bmap_xor_oper64);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_xor_range_assert)
+CUTE_TEST(strollut_bmap_xor_range_assert64)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap64_xor_range(0, 0, 0));
-	cute_expect_assertion(stroll_bmap64_xor_range(0, 64, 1));
-	cute_expect_assertion(stroll_bmap64_xor_range(0, 60, 5));
+	cute_expect_assertion(stroll_bmap_xor_range64(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_xor_range64(0, 64, 1));
+	cute_expect_assertion(stroll_bmap_xor_range64(0, 60, 5));
 #pragma GCC diagnostic pop
 }
 #else
-CUTE_TEST(strollut_bmap64_xor_range_assert)
+CUTE_TEST(strollut_bmap_xor_range_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap64_xor_range,
-                 strollut_bmap64_setup_xor_range,
+CUTE_TEST_STATIC(strollut_bmap_xor_range64,
+                 strollut_bmap_setup_xor_range64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_range_oper(stroll_bmap64_xor_range);
+	strollut_bmap_run_range_oper64(stroll_bmap_xor_range64);
 }
 
-CUTE_TEST(strollut_bmap64_test_bit)
+CUTE_TEST(strollut_bmap_test_bit64)
 {
 	unsigned int b, m;
-	unsigned int mnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int mnr = stroll_array_nr(strollut_bmap_words64);
 
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < 64; b++) {
-			uint64_t bmp = strollut_bmap64_words[m];
+			uint64_t bmp = strollut_bmap_words64[m];
 
 			if (bmp & (UINT64_C(1) << b))
-				cute_check_bool(stroll_bmap64_test(bmp, b),
+				cute_check_bool(stroll_bmap_test64(bmp, b),
 				                is,
 				                true);
 			else
-				cute_check_bool(stroll_bmap64_test(bmp, b),
+				cute_check_bool(stroll_bmap_test64(bmp, b),
 				                is,
 				                false);
 		}
 	}
 }
 
-CUTE_TEST(strollut_bmap64_test_all)
+CUTE_TEST(strollut_bmap_test_all64)
 {
 	unsigned int b, m;
-	unsigned int mnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int mnr = stroll_array_nr(strollut_bmap_words64);
 
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < 64; b++) {
-			uint64_t bmp = strollut_bmap64_words[m];
+			uint64_t bmp = strollut_bmap_words64[m];
 
 			if (!!bmp)
-				cute_check_bool(stroll_bmap64_test_all(bmp),
+				cute_check_bool(stroll_bmap_test_all64(bmp),
 				                is,
 				                true);
 			else
-				cute_check_bool(stroll_bmap64_test_all(bmp),
+				cute_check_bool(stroll_bmap_test_all64(bmp),
 				                is,
 				                false);
 		}
@@ -1496,11 +1496,11 @@ CUTE_TEST(strollut_bmap64_test_all)
 }
 
 static void
-strollut_bmap64_setup_test_mask(void)
+strollut_bmap_setup_test_mask64(void)
 {
 	unsigned int   b, m;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
-	unsigned int   mnr = stroll_array_nr(strollut_bmap64_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words64);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap_masks64);
 	bool         * expected;
 
 	expected = malloc(bnr * mnr * sizeof(*expected));
@@ -1510,22 +1510,22 @@ strollut_bmap64_setup_test_mask(void)
 		for (m = 0; m < mnr; m++) {
 			bool * exp = &expected[(b * mnr) + m];
 
-			*exp = !!(strollut_bmap64_words[b] &
-			          strollut_bmap64_masks[m]);
+			*exp = !!(strollut_bmap_words64[b] &
+			          strollut_bmap_masks64[m]);
 		}
 	}
 
 	strollut_bmap_xpct = expected;
 }
 
-CUTE_TEST_STATIC(strollut_bmap64_test_mask,
-                 strollut_bmap64_setup_test_mask,
+CUTE_TEST_STATIC(strollut_bmap_test_mask64,
+                 strollut_bmap_setup_test_mask64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
 	unsigned int   b, m;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
-	unsigned int   mnr = stroll_array_nr(strollut_bmap64_masks);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words64);
+	unsigned int   mnr = stroll_array_nr(strollut_bmap_masks64);
 	const bool   * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -1534,20 +1534,20 @@ CUTE_TEST_STATIC(strollut_bmap64_test_mask,
 		for (m = 0; m < mnr; m++) {
 			bool res;
 
-			res = stroll_bmap64_test_mask(
-				strollut_bmap64_words[b],
-				strollut_bmap64_masks[m]);
+			res = stroll_bmap_test_mask64(
+				strollut_bmap_words64[b],
+				strollut_bmap_masks64[m]);
 			cute_check_bool(res, is, expected[(b * mnr) + m]);
 		}
 	}
 }
 
 static void
-strollut_bmap64_setup_test_range(void)
+strollut_bmap_setup_test_range64(void)
 {
 	unsigned int   b, r;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
-	unsigned int   rnr = stroll_array_nr(strollut_bmap64_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words64);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap_ranges64);
 	bool         * expected;
 
 	expected = malloc(bnr * rnr * sizeof(*expected));
@@ -1557,8 +1557,8 @@ strollut_bmap64_setup_test_range(void)
 		for (r = 0; r < rnr; r++) {
 			bool * exp = &expected[(b * rnr) + r];
 
-			*exp = !!(strollut_bmap64_words[b] &
-			          strollut_bmap64_ranges[r].mask);
+			*exp = !!(strollut_bmap_words64[b] &
+			          strollut_bmap_ranges64[r].mask);
 		}
 	}
 
@@ -1566,31 +1566,31 @@ strollut_bmap64_setup_test_range(void)
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_test_range_assert)
+CUTE_TEST(strollut_bmap_test_range_assert64)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap64_test_range(0, 0, 0));
-	cute_expect_assertion(stroll_bmap64_test_range(0, 64, 1));
-	cute_expect_assertion(stroll_bmap64_test_range(0, 60, 5));
+	cute_expect_assertion(stroll_bmap_test_range64(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_test_range64(0, 64, 1));
+	cute_expect_assertion(stroll_bmap_test_range64(0, 60, 5));
 #pragma GCC diagnostic pop
 
 }
 #else
-CUTE_TEST(strollut_bmap64_test_range_assert)
+CUTE_TEST(strollut_bmap_test_range_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap64_test_range,
-                 strollut_bmap64_setup_test_range,
+CUTE_TEST_STATIC(strollut_bmap_test_range64,
+                 strollut_bmap_setup_test_range64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
 	unsigned int   b, r;
-	unsigned int   bnr = stroll_array_nr(strollut_bmap64_words);
-	unsigned int   rnr = stroll_array_nr(strollut_bmap64_ranges);
+	unsigned int   bnr = stroll_array_nr(strollut_bmap_words64);
+	unsigned int   rnr = stroll_array_nr(strollut_bmap_ranges64);
 	const bool   * expected = strollut_bmap_xpct;
 
 	cute_check_ptr(expected, unequal, NULL);
@@ -1599,421 +1599,421 @@ CUTE_TEST_STATIC(strollut_bmap64_test_range,
 		for (r = 0; r < rnr; r++) {
 			bool res;
 
-			res = stroll_bmap64_test_range(
-				strollut_bmap64_words[b],
-				strollut_bmap64_ranges[r].start,
-				strollut_bmap64_ranges[r].count);
+			res = stroll_bmap_test_range64(
+				strollut_bmap_words64[b],
+				strollut_bmap_ranges64[r].start,
+				strollut_bmap_ranges64[r].count);
 			cute_check_bool(res, is, expected[(b * rnr) + r]);
 		}
 	}
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_set_bit_assert)
+CUTE_TEST(strollut_bmap_set_bit_assert64)
 {
-	cute_expect_assertion(stroll_bmap64_set(NULL, 1));
+	cute_expect_assertion(stroll_bmap_set64(NULL, 1));
 }
 #else
-CUTE_TEST(strollut_bmap64_set_bit_assert)
+CUTE_TEST(strollut_bmap_set_bit_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap64_set_bit)
+CUTE_TEST(strollut_bmap_set_bit64)
 {
 	uint64_t     bmp = 0;
 	unsigned int b;
 
 	for (b = 0; b < 64; b++) {
 		bmp = 0;
-		stroll_bmap64_set(&bmp, b);
+		stroll_bmap_set64(&bmp, b);
 		cute_check_bool(!!(bmp & (UINT64_C(1) << b)), is, true);
 		cute_check_bool(!!(bmp & ~(UINT64_C(1) << b)), is, false);
 	}
 }
 
 static uint64_t
-strollut_bmap64_set_mask_oper(uint64_t bmap, uint64_t mask)
+strollut_bmap_set_mask_oper64(uint64_t bmap, uint64_t mask)
 {
 	uint64_t bmp = bmap;
 
-	stroll_bmap64_set_mask(&bmp, mask);
+	stroll_bmap_set_mask64(&bmp, mask);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_set_mask_assert)
+CUTE_TEST(strollut_bmap_set_mask_assert64)
 {
-	cute_expect_assertion(stroll_bmap64_set_mask(NULL, 0xf));
+	cute_expect_assertion(stroll_bmap_set_mask64(NULL, 0xf));
 }
 #else
-CUTE_TEST(strollut_bmap64_set_mask_assert)
+CUTE_TEST(strollut_bmap_set_mask_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap64_set_mask,
-                 strollut_bmap64_setup_or,
+CUTE_TEST_STATIC(strollut_bmap_set_mask64,
+                 strollut_bmap_setup_or64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_mask_oper(strollut_bmap64_set_mask_oper);
+	strollut_bmap_run_mask_oper64(strollut_bmap_set_mask_oper64);
 }
 
 static uint64_t
-strollut_bmap64_set_range_oper(uint64_t     bmap,
+strollut_bmap_set_range_oper64(uint64_t     bmap,
                                unsigned int start_bit,
                                unsigned int bit_count)
 {
 	uint64_t bmp = bmap;
 
-	stroll_bmap64_set_range(&bmp, start_bit, bit_count);
+	stroll_bmap_set_range64(&bmp, start_bit, bit_count);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_set_range_assert)
+CUTE_TEST(strollut_bmap_set_range_assert64)
 {
 	uint64_t bmp = 0;
 
-	cute_expect_assertion(stroll_bmap64_set_range(NULL, 1, 1));
-	cute_expect_assertion(stroll_bmap64_set_range(&bmp, 0, 0));
-	cute_expect_assertion(stroll_bmap64_set_range(&bmp, 64, 1));
-	cute_expect_assertion(stroll_bmap64_set_range(&bmp, 60, 5));
+	cute_expect_assertion(stroll_bmap_set_range64(NULL, 1, 1));
+	cute_expect_assertion(stroll_bmap_set_range64(&bmp, 0, 0));
+	cute_expect_assertion(stroll_bmap_set_range64(&bmp, 64, 1));
+	cute_expect_assertion(stroll_bmap_set_range64(&bmp, 60, 5));
 }
 #else
-CUTE_TEST(strollut_bmap64_set_range_assert)
+CUTE_TEST(strollut_bmap_set_range_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap64_set_range,
-                 strollut_bmap64_setup_or_range,
+CUTE_TEST_STATIC(strollut_bmap_set_range64,
+                 strollut_bmap_setup_or_range64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_range_oper(strollut_bmap64_set_range_oper);
+	strollut_bmap_run_range_oper64(strollut_bmap_set_range_oper64);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_set_all_assert)
+CUTE_TEST(strollut_bmap_set_all_assert64)
 {
-	cute_expect_assertion(stroll_bmap64_set_all(NULL));
+	cute_expect_assertion(stroll_bmap_set_all64(NULL));
 }
 #else
-CUTE_TEST(strollut_bmap64_set_all_assert)
+CUTE_TEST(strollut_bmap_set_all_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap64_set_all)
+CUTE_TEST(strollut_bmap_set_all64)
 {
 	uint64_t bmp = 0;
 
-	stroll_bmap64_set_all(&bmp);
+	stroll_bmap_set_all64(&bmp);
 	cute_check_hex(bmp, equal, UINT64_MAX);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_clear_bit_assert)
+CUTE_TEST(strollut_bmap_clear_bit_assert64)
 {
-	cute_expect_assertion(stroll_bmap64_clear(NULL, 1));
+	cute_expect_assertion(stroll_bmap_clear64(NULL, 1));
 }
 #else
-CUTE_TEST(strollut_bmap64_clear_bit_assert)
+CUTE_TEST(strollut_bmap_clear_bit_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap64_clear_bit)
+CUTE_TEST(strollut_bmap_clear_bit64)
 {
 	uint64_t     bmp = UINT64_MAX;
 	unsigned int b;
 
 	for (b = 0; b < 64; b++) {
 		bmp = UINT64_MAX;
-		stroll_bmap64_clear(&bmp, b);
+		stroll_bmap_clear64(&bmp, b);
 		cute_check_hex(bmp, equal, UINT64_MAX & ~(UINT64_C(1) << b));
 	}
 }
 
 static uint64_t
-strollut_bmap64_notand_oper(uint64_t bmap, uint64_t mask)
+strollut_bmap_notand_oper64(uint64_t bmap, uint64_t mask)
 {
 	return bmap & ~mask;
 }
 
 static void
-strollut_bmap64_setup_clear_mask(void)
+strollut_bmap_setup_clear_mask64(void)
 {
-	strollut_bmap64_setup_mask_oper(strollut_bmap64_notand_oper);
+	strollut_bmap_setup_mask_oper64(strollut_bmap_notand_oper64);
 }
 
 static uint64_t
-strollut_bmap64_clear_mask_oper(uint64_t bmap, uint64_t mask)
+strollut_bmap_clear_mask_oper64(uint64_t bmap, uint64_t mask)
 {
 	uint64_t bmp = bmap;
 
-	stroll_bmap64_clear_mask(&bmp, mask);
+	stroll_bmap_clear_mask64(&bmp, mask);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_clear_mask_assert)
+CUTE_TEST(strollut_bmap_clear_mask_assert64)
 {
-	cute_expect_assertion(stroll_bmap64_clear_mask(NULL, 0xf));
+	cute_expect_assertion(stroll_bmap_clear_mask64(NULL, 0xf));
 }
 #else
-CUTE_TEST(strollut_bmap64_clear_mask_assert)
+CUTE_TEST(strollut_bmap_clear_mask_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap64_clear_mask,
-                 strollut_bmap64_setup_clear_mask,
+CUTE_TEST_STATIC(strollut_bmap_clear_mask64,
+                 strollut_bmap_setup_clear_mask64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_mask_oper(strollut_bmap64_clear_mask_oper);
+	strollut_bmap_run_mask_oper64(strollut_bmap_clear_mask_oper64);
 }
 
 static void
-strollut_bmap64_setup_clear_range(void)
+strollut_bmap_setup_clear_range64(void)
 {
-	strollut_bmap64_setup_range_oper(strollut_bmap64_notand_oper);
+	strollut_bmap_setup_range_oper64(strollut_bmap_notand_oper64);
 }
 
 static uint64_t
-strollut_bmap64_clear_range_oper(uint64_t     bmap,
+strollut_bmap_clear_range_oper64(uint64_t     bmap,
                                  unsigned int start_bit,
                                  unsigned int bit_count)
 {
 	uint64_t bmp = bmap;
 
-	stroll_bmap64_clear_range(&bmp, start_bit, bit_count);
+	stroll_bmap_clear_range64(&bmp, start_bit, bit_count);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_clear_range_assert)
+CUTE_TEST(strollut_bmap_clear_range_assert64)
 {
 	uint64_t bmp = UINT64_MAX;
 
-	cute_expect_assertion(stroll_bmap64_clear_range(NULL, 1, 1));
-	cute_expect_assertion(stroll_bmap64_clear_range(&bmp, 0, 0));
-	cute_expect_assertion(stroll_bmap64_clear_range(&bmp, 64, 1));
-	cute_expect_assertion(stroll_bmap64_clear_range(&bmp, 60, 5));
+	cute_expect_assertion(stroll_bmap_clear_range64(NULL, 1, 1));
+	cute_expect_assertion(stroll_bmap_clear_range64(&bmp, 0, 0));
+	cute_expect_assertion(stroll_bmap_clear_range64(&bmp, 64, 1));
+	cute_expect_assertion(stroll_bmap_clear_range64(&bmp, 60, 5));
 }
 #else
-CUTE_TEST(strollut_bmap64_clear_range_assert)
+CUTE_TEST(strollut_bmap_clear_range_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap64_clear_range,
-                 strollut_bmap64_setup_clear_range,
+CUTE_TEST_STATIC(strollut_bmap_clear_range64,
+                 strollut_bmap_setup_clear_range64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_range_oper(strollut_bmap64_clear_range_oper);
+	strollut_bmap_run_range_oper64(strollut_bmap_clear_range_oper64);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_clear_all_assert)
+CUTE_TEST(strollut_bmap_clear_all_assert64)
 {
-	cute_expect_assertion(stroll_bmap64_clear_all(NULL));
+	cute_expect_assertion(stroll_bmap_clear_all64(NULL));
 }
 #else
-CUTE_TEST(strollut_bmap64_clear_all_assert)
+CUTE_TEST(strollut_bmap_clear_all_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap64_clear_all)
+CUTE_TEST(strollut_bmap_clear_all64)
 {
 	uint64_t bmp = UINT64_MAX;
 
-	stroll_bmap64_clear_all(&bmp);
+	stroll_bmap_clear_all64(&bmp);
 	cute_check_hex(bmp, equal, 0);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_toggle_bit_assert)
+CUTE_TEST(strollut_bmap_toggle_bit_assert64)
 {
-	cute_expect_assertion(stroll_bmap64_toggle(NULL, 1));
+	cute_expect_assertion(stroll_bmap_toggle64(NULL, 1));
 }
 #else
-CUTE_TEST(strollut_bmap64_toggle_bit_assert)
+CUTE_TEST(strollut_bmap_toggle_bit_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap64_toggle_bit)
+CUTE_TEST(strollut_bmap_toggle_bit64)
 {
 	uint64_t     bmp = 0;
 	unsigned int b;
 
 	for (b = 0; b < 64; b++) {
 		bmp = 0;
-		stroll_bmap64_toggle(&bmp, b);
+		stroll_bmap_toggle64(&bmp, b);
 		cute_check_hex(bmp, equal, UINT64_C(1) << b);
 
 		bmp = UINT64_MAX;
-		stroll_bmap64_toggle(&bmp, b);
+		stroll_bmap_toggle64(&bmp, b);
 		cute_check_hex(bmp, equal, ~(UINT64_C(1) << b));
 	}
 }
 
 static void
-strollut_bmap64_setup_toggle_mask(void)
+strollut_bmap_setup_toggle_mask64(void)
 {
-	strollut_bmap64_setup_mask_oper(strollut_bmap64_xor_oper);
+	strollut_bmap_setup_mask_oper64(strollut_bmap_xor_oper64);
 }
 
 static uint64_t
-strollut_bmap64_toggle_mask_oper(uint64_t bmap, uint64_t mask)
+strollut_bmap_toggle_mask_oper64(uint64_t bmap, uint64_t mask)
 {
 	uint64_t bmp = bmap;
 
-	stroll_bmap64_toggle_mask(&bmp, mask);
+	stroll_bmap_toggle_mask64(&bmp, mask);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_toggle_mask_assert)
+CUTE_TEST(strollut_bmap_toggle_mask_assert64)
 {
-	cute_expect_assertion(stroll_bmap64_toggle_mask(NULL, 0xf));
+	cute_expect_assertion(stroll_bmap_toggle_mask64(NULL, 0xf));
 }
 #else
-CUTE_TEST(strollut_bmap64_toggle_mask_assert)
+CUTE_TEST(strollut_bmap_toggle_mask_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap64_toggle_mask,
-                 strollut_bmap64_setup_toggle_mask,
+CUTE_TEST_STATIC(strollut_bmap_toggle_mask64,
+                 strollut_bmap_setup_toggle_mask64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_mask_oper(strollut_bmap64_toggle_mask_oper);
+	strollut_bmap_run_mask_oper64(strollut_bmap_toggle_mask_oper64);
 }
 
 static void
-strollut_bmap64_setup_toggle_range(void)
+strollut_bmap_setup_toggle_range64(void)
 {
-	strollut_bmap64_setup_range_oper(strollut_bmap64_xor_oper);
+	strollut_bmap_setup_range_oper64(strollut_bmap_xor_oper64);
 }
 
 static uint64_t
-strollut_bmap64_toggle_range_oper(uint64_t     bmap,
+strollut_bmap_toggle_range_oper64(uint64_t     bmap,
                                   unsigned int start_bit,
                                   unsigned int bit_count)
 {
 	uint64_t bmp = bmap;
 
-	stroll_bmap64_toggle_range(&bmp, start_bit, bit_count);
+	stroll_bmap_toggle_range64(&bmp, start_bit, bit_count);
 
 	return bmp;
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_toggle_range_assert)
+CUTE_TEST(strollut_bmap_toggle_range_assert64)
 {
 	uint64_t bmp = 0;
 
-	cute_expect_assertion(stroll_bmap64_toggle_range(NULL, 1, 1));
-	cute_expect_assertion(stroll_bmap64_toggle_range(&bmp, 0, 0));
-	cute_expect_assertion(stroll_bmap64_toggle_range(&bmp, 64, 1));
-	cute_expect_assertion(stroll_bmap64_toggle_range(&bmp, 60, 5));
+	cute_expect_assertion(stroll_bmap_toggle_range64(NULL, 1, 1));
+	cute_expect_assertion(stroll_bmap_toggle_range64(&bmp, 0, 0));
+	cute_expect_assertion(stroll_bmap_toggle_range64(&bmp, 64, 1));
+	cute_expect_assertion(stroll_bmap_toggle_range64(&bmp, 60, 5));
 }
 #else
-CUTE_TEST(strollut_bmap64_toggle_range_assert)
+CUTE_TEST(strollut_bmap_toggle_range_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST_STATIC(strollut_bmap64_toggle_range,
-                 strollut_bmap64_setup_toggle_range,
+CUTE_TEST_STATIC(strollut_bmap_toggle_range64,
+                 strollut_bmap_setup_toggle_range64,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap64_run_range_oper(strollut_bmap64_toggle_range_oper);
+	strollut_bmap_run_range_oper64(strollut_bmap_toggle_range_oper64);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_toggle_all_assert)
+CUTE_TEST(strollut_bmap_toggle_all_assert64)
 {
-	cute_expect_assertion(stroll_bmap64_toggle_all(NULL));
+	cute_expect_assertion(stroll_bmap_toggle_all64(NULL));
 }
 #else
-CUTE_TEST(strollut_bmap64_toggle_all_assert)
+CUTE_TEST(strollut_bmap_toggle_all_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap64_toggle_all)
+CUTE_TEST(strollut_bmap_toggle_all64)
 {
 	unsigned int b;
-	unsigned int bnr = stroll_array_nr(strollut_bmap64_words);
+	unsigned int bnr = stroll_array_nr(strollut_bmap_words64);
 
 	for (b = 0; b < bnr; b++) {
-		uint64_t bmp = strollut_bmap64_words[b];
+		uint64_t bmp = strollut_bmap_words64[b];
 		uint64_t exp = bmp ^ UINT64_MAX;
 
-		stroll_bmap64_toggle_all(&bmp);
+		stroll_bmap_toggle_all64(&bmp);
 		cute_check_hex(bmp, equal, exp);
 	}
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_set_iter_assert)
+CUTE_TEST(strollut_bmap_set_iter_assert64)
 {
 	uint64_t     iter;
 	uint64_t     bmp = 0;
 	unsigned int b;
 
-	cute_expect_assertion(_stroll_bmap64_setup_set_iter(NULL, bmp, &b));
-	cute_expect_assertion(_stroll_bmap64_setup_set_iter(&iter, bmp, NULL));
-	cute_expect_assertion(_stroll_bmap64_step_iter(NULL, &b));
-	cute_expect_assertion(_stroll_bmap64_step_iter(&iter, NULL));
+	cute_expect_assertion(_stroll_bmap_setup_set_iter64(NULL, bmp, &b));
+	cute_expect_assertion(_stroll_bmap_setup_set_iter64(&iter, bmp, NULL));
+	cute_expect_assertion(_stroll_bmap_step_iter64(NULL, &b));
+	cute_expect_assertion(_stroll_bmap_step_iter64(&iter, NULL));
 }
 #else
-CUTE_TEST(strollut_bmap64_set_iter_assert)
+CUTE_TEST(strollut_bmap_set_iter_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap64_set_iter)
+CUTE_TEST(strollut_bmap_set_iter64)
 {
 	uint64_t     iter;
 	uint64_t     bmp = 0;
 	unsigned int b;
 	unsigned int m;
 
-	for (m = 0; m < stroll_array_nr(strollut_bmap64_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap_words64); m++) {
 		unsigned int e = 0;
 
-		bmp = strollut_bmap64_words[m];
+		bmp = strollut_bmap_words64[m];
 		b = 0;
-		stroll_bmap64_foreach_set(&iter, bmp, &b) {
+		stroll_bmap_foreach_set64(&iter, bmp, &b) {
 			while ((e < 64) && !(bmp & (UINT64_C(1) << e)))
 				e++;
 			cute_check_uint(b, equal, e);
@@ -2028,37 +2028,37 @@ CUTE_TEST(strollut_bmap64_set_iter)
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
-CUTE_TEST(strollut_bmap64_clear_iter_assert)
+CUTE_TEST(strollut_bmap_clear_iter_assert64)
 {
 	uint64_t     iter;
 	uint64_t     bmp = 0;
 	unsigned int b;
 
-	cute_expect_assertion(_stroll_bmap64_setup_clear_iter(NULL, bmp, &b));
-	cute_expect_assertion(_stroll_bmap64_setup_clear_iter(&iter, bmp, NULL));
-	cute_expect_assertion(_stroll_bmap64_step_iter(NULL, &b));
-	cute_expect_assertion(_stroll_bmap64_step_iter(&iter, NULL));
+	cute_expect_assertion(_stroll_bmap_setup_clear_iter64(NULL, bmp, &b));
+	cute_expect_assertion(_stroll_bmap_setup_clear_iter64(&iter, bmp, NULL));
+	cute_expect_assertion(_stroll_bmap_step_iter64(NULL, &b));
+	cute_expect_assertion(_stroll_bmap_step_iter64(&iter, NULL));
 }
 #else
-CUTE_TEST(strollut_bmap64_clear_iter_assert)
+CUTE_TEST(strollut_bmap_clear_iter_assert64)
 {
 	cute_skip("assertion unsupported");
 }
 #endif
 
-CUTE_TEST(strollut_bmap64_clear_iter)
+CUTE_TEST(strollut_bmap_clear_iter64)
 {
 	uint64_t     iter;
 	uint64_t     bmp = 0;
 	unsigned int b;
 	unsigned int m;
 
-	for (m = 0; m < stroll_array_nr(strollut_bmap64_words); m++) {
+	for (m = 0; m < stroll_array_nr(strollut_bmap_words64); m++) {
 		unsigned int e = 0;
 
-		bmp = strollut_bmap64_words[m];
+		bmp = strollut_bmap_words64[m];
 		b = 0;
-		stroll_bmap64_foreach_clear(&iter, bmp, &b) {
+		stroll_bmap_foreach_clear64(&iter, bmp, &b) {
 			while ((e < 64) && (bmp & (UINT64_C(1) << e)))
 				e++;
 			cute_check_uint(b, equal, e);
@@ -2072,65 +2072,65 @@ CUTE_TEST(strollut_bmap64_clear_iter)
 	}
 }
 
-CUTE_GROUP(strollut_bmap64_group) = {
-	CUTE_REF(strollut_bmap64_init_assert),
-	CUTE_REF(strollut_bmap64_init),
-	CUTE_REF(strollut_bmap64_mask_assert),
-	CUTE_REF(strollut_bmap64_mask),
-	CUTE_REF(strollut_bmap64_hweight),
+CUTE_GROUP(strollut_bmap_group64) = {
+	CUTE_REF(strollut_bmap_init_assert64),
+	CUTE_REF(strollut_bmap_init64),
+	CUTE_REF(strollut_bmap_mask_assert64),
+	CUTE_REF(strollut_bmap_mask64),
+	CUTE_REF(strollut_bmap_hweight64),
 
-	CUTE_REF(strollut_bmap64_and),
-	CUTE_REF(strollut_bmap64_and_range_assert),
-	CUTE_REF(strollut_bmap64_and_range),
+	CUTE_REF(strollut_bmap_and64),
+	CUTE_REF(strollut_bmap_and_range_assert64),
+	CUTE_REF(strollut_bmap_and_range64),
 
-	CUTE_REF(strollut_bmap64_or),
-	CUTE_REF(strollut_bmap64_or_range_assert),
-	CUTE_REF(strollut_bmap64_or_range),
+	CUTE_REF(strollut_bmap_or64),
+	CUTE_REF(strollut_bmap_or_range_assert64),
+	CUTE_REF(strollut_bmap_or_range64),
 
-	CUTE_REF(strollut_bmap64_xor),
-	CUTE_REF(strollut_bmap64_xor_range_assert),
-	CUTE_REF(strollut_bmap64_xor_range),
+	CUTE_REF(strollut_bmap_xor64),
+	CUTE_REF(strollut_bmap_xor_range_assert64),
+	CUTE_REF(strollut_bmap_xor_range64),
 
-	CUTE_REF(strollut_bmap64_test_bit),
-	CUTE_REF(strollut_bmap64_test_all),
-	CUTE_REF(strollut_bmap64_test_mask),
-	CUTE_REF(strollut_bmap64_test_range_assert),
-	CUTE_REF(strollut_bmap64_test_range),
+	CUTE_REF(strollut_bmap_test_bit64),
+	CUTE_REF(strollut_bmap_test_all64),
+	CUTE_REF(strollut_bmap_test_mask64),
+	CUTE_REF(strollut_bmap_test_range_assert64),
+	CUTE_REF(strollut_bmap_test_range64),
 
-	CUTE_REF(strollut_bmap64_set_bit_assert),
-	CUTE_REF(strollut_bmap64_set_bit),
-	CUTE_REF(strollut_bmap64_set_mask_assert),
-	CUTE_REF(strollut_bmap64_set_mask),
-	CUTE_REF(strollut_bmap64_set_range_assert),
-	CUTE_REF(strollut_bmap64_set_range),
-	CUTE_REF(strollut_bmap64_set_all_assert),
-	CUTE_REF(strollut_bmap64_set_all),
+	CUTE_REF(strollut_bmap_set_bit_assert64),
+	CUTE_REF(strollut_bmap_set_bit64),
+	CUTE_REF(strollut_bmap_set_mask_assert64),
+	CUTE_REF(strollut_bmap_set_mask64),
+	CUTE_REF(strollut_bmap_set_range_assert64),
+	CUTE_REF(strollut_bmap_set_range64),
+	CUTE_REF(strollut_bmap_set_all_assert64),
+	CUTE_REF(strollut_bmap_set_all64),
 
-	CUTE_REF(strollut_bmap64_clear_bit_assert),
-	CUTE_REF(strollut_bmap64_clear_bit),
-	CUTE_REF(strollut_bmap64_clear_mask_assert),
-	CUTE_REF(strollut_bmap64_clear_mask),
-	CUTE_REF(strollut_bmap64_clear_range_assert),
-	CUTE_REF(strollut_bmap64_clear_range),
-	CUTE_REF(strollut_bmap64_clear_all_assert),
-	CUTE_REF(strollut_bmap64_clear_all),
+	CUTE_REF(strollut_bmap_clear_bit_assert64),
+	CUTE_REF(strollut_bmap_clear_bit64),
+	CUTE_REF(strollut_bmap_clear_mask_assert64),
+	CUTE_REF(strollut_bmap_clear_mask64),
+	CUTE_REF(strollut_bmap_clear_range_assert64),
+	CUTE_REF(strollut_bmap_clear_range64),
+	CUTE_REF(strollut_bmap_clear_all_assert64),
+	CUTE_REF(strollut_bmap_clear_all64),
 
-	CUTE_REF(strollut_bmap64_toggle_bit_assert),
-	CUTE_REF(strollut_bmap64_toggle_bit),
-	CUTE_REF(strollut_bmap64_toggle_mask_assert),
-	CUTE_REF(strollut_bmap64_toggle_mask),
-	CUTE_REF(strollut_bmap64_toggle_range_assert),
-	CUTE_REF(strollut_bmap64_toggle_range),
-	CUTE_REF(strollut_bmap64_toggle_all_assert),
-	CUTE_REF(strollut_bmap64_toggle_all),
+	CUTE_REF(strollut_bmap_toggle_bit_assert64),
+	CUTE_REF(strollut_bmap_toggle_bit64),
+	CUTE_REF(strollut_bmap_toggle_mask_assert64),
+	CUTE_REF(strollut_bmap_toggle_mask64),
+	CUTE_REF(strollut_bmap_toggle_range_assert64),
+	CUTE_REF(strollut_bmap_toggle_range64),
+	CUTE_REF(strollut_bmap_toggle_all_assert64),
+	CUTE_REF(strollut_bmap_toggle_all64),
 
-	CUTE_REF(strollut_bmap64_set_iter_assert),
-	CUTE_REF(strollut_bmap64_set_iter),
-	CUTE_REF(strollut_bmap64_clear_iter_assert),
-	CUTE_REF(strollut_bmap64_clear_iter)
+	CUTE_REF(strollut_bmap_set_iter_assert64),
+	CUTE_REF(strollut_bmap_set_iter64),
+	CUTE_REF(strollut_bmap_clear_iter_assert64),
+	CUTE_REF(strollut_bmap_clear_iter64)
 };
 
-CUTE_SUITE(strollut_bmap64_suite, strollut_bmap64_group);
+CUTE_SUITE(strollut_bmap_suite64, strollut_bmap_group64);
 
 /******************************************************************************
  * Machine word support
@@ -2298,8 +2298,8 @@ strollut_bmap_word_run_range_oper(unsigned long (* oper)(unsigned long,
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_setup_assert)
 {
-	cute_expect_assertion(stroll_bmap_setup_set(NULL));
-	cute_expect_assertion(stroll_bmap_setup_clear(NULL));
+	cute_expect_assertion(stroll_bmap_setup_setul(NULL));
+	cute_expect_assertion(stroll_bmap_setup_clearul(NULL));
 }
 #else
 CUTE_TEST(strollut_bmap_word_setup_assert)
@@ -2313,10 +2313,10 @@ CUTE_TEST(strollut_bmap_word_setup)
 	unsigned long   bmp = 0x5A5A5A5A;
 	unsigned long * null __unused = NULL;
 
-	stroll_bmap_setup_set(&bmp);
+	stroll_bmap_setup_setul(&bmp);
 	cute_check_hex(bmp, equal, ULONG_MAX);
 
-	stroll_bmap_setup_clear(&bmp);
+	stroll_bmap_setup_clearul(&bmp);
 	cute_check_hex(bmp, equal, 0);
 }
 
@@ -2325,9 +2325,9 @@ CUTE_TEST(strollut_bmap_word_mask_assert)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap_mask(0, 0));
-	cute_expect_assertion(stroll_bmap_mask(0, 65));
-	cute_expect_assertion(stroll_bmap_mask(3, 63));
+	cute_expect_assertion(stroll_bmap_maskul(0, 0));
+	cute_expect_assertion(stroll_bmap_maskul(0, 65));
+	cute_expect_assertion(stroll_bmap_maskul(3, 63));
 #pragma GCC diagnostic pop
 }
 #else
@@ -2346,7 +2346,7 @@ CUTE_TEST(strollut_bmap_word_mask)
 
 		rng = &strollut_bmap_word_ranges[r];
 
-		cute_check_hex(stroll_bmap_mask(rng->start, rng->count),
+		cute_check_hex(stroll_bmap_maskul(rng->start, rng->count),
 		               equal,
 		               rng->mask);
 	}
@@ -2365,7 +2365,7 @@ CUTE_TEST(strollut_bmap_word_hweight)
 			if (bmp & (1UL << b))
 				cnt++;
 
-		cute_check_uint(stroll_bmap_hweight(bmp), equal, cnt);
+		cute_check_uint(stroll_bmap_hweightul(bmp), equal, cnt);
 	}
 }
 
@@ -2386,7 +2386,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_and,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap_word_run_mask_oper(stroll_bmap_and);
+	strollut_bmap_word_run_mask_oper(stroll_bmap_andul);
 }
 
 static void
@@ -2400,13 +2400,13 @@ CUTE_TEST(strollut_bmap_word_and_range_assert)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap_and_range(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_and_rangeul(0, 0, 0));
 #if (__WORDSIZE == 64)
-	cute_expect_assertion(stroll_bmap_and_range(0, 64, 1));
-	cute_expect_assertion(stroll_bmap_and_range(0, 60, 5));
+	cute_expect_assertion(stroll_bmap_and_rangeul(0, 64, 1));
+	cute_expect_assertion(stroll_bmap_and_rangeul(0, 60, 5));
 #else
-	cute_expect_assertion(stroll_bmap_and_range(0, 32, 1));
-	cute_expect_assertion(stroll_bmap_and_range(0, 30, 3));
+	cute_expect_assertion(stroll_bmap_and_rangeul(0, 32, 1));
+	cute_expect_assertion(stroll_bmap_and_rangeul(0, 30, 3));
 #endif
 #pragma GCC diagnostic pop
 }
@@ -2422,7 +2422,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_and_range,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap_word_run_range_oper(stroll_bmap_and_range);
+	strollut_bmap_word_run_range_oper(stroll_bmap_and_rangeul);
 }
 
 static unsigned long
@@ -2442,7 +2442,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_or,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap_word_run_mask_oper(stroll_bmap_or);
+	strollut_bmap_word_run_mask_oper(stroll_bmap_orul);
 }
 
 static void
@@ -2456,13 +2456,13 @@ CUTE_TEST(strollut_bmap_word_or_range_assert)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap_or_range(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_or_rangeul(0, 0, 0));
 #if (__WORDSIZE == 64)
-	cute_expect_assertion(stroll_bmap_or_range(0, 64, 1));
-	cute_expect_assertion(stroll_bmap_or_range(0, 60, 5));
+	cute_expect_assertion(stroll_bmap_or_rangeul(0, 64, 1));
+	cute_expect_assertion(stroll_bmap_or_rangeul(0, 60, 5));
 #else
-	cute_expect_assertion(stroll_bmap_or_range(0, 32, 1));
-	cute_expect_assertion(stroll_bmap_or_range(0, 30, 3));
+	cute_expect_assertion(stroll_bmap_or_rangeul(0, 32, 1));
+	cute_expect_assertion(stroll_bmap_or_rangeul(0, 30, 3));
 #endif
 #pragma GCC diagnostic pop
 }
@@ -2478,7 +2478,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_or_range,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap_word_run_range_oper(stroll_bmap_or_range);
+	strollut_bmap_word_run_range_oper(stroll_bmap_or_rangeul);
 }
 
 static unsigned long
@@ -2498,7 +2498,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_xor,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap_word_run_mask_oper(stroll_bmap_xor);
+	strollut_bmap_word_run_mask_oper(stroll_bmap_xorul);
 }
 
 static void
@@ -2512,13 +2512,13 @@ CUTE_TEST(strollut_bmap_word_xor_range_assert)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap_xor_range(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_xor_rangeul(0, 0, 0));
 #if (__WORDSIZE == 64)
-	cute_expect_assertion(stroll_bmap_xor_range(0, 64, 1));
-	cute_expect_assertion(stroll_bmap_xor_range(0, 60, 5));
+	cute_expect_assertion(stroll_bmap_xor_rangeul(0, 64, 1));
+	cute_expect_assertion(stroll_bmap_xor_rangeul(0, 60, 5));
 #else
-	cute_expect_assertion(stroll_bmap_xor_range(0, 62, 1));
-	cute_expect_assertion(stroll_bmap_xor_range(0, 30, 3));
+	cute_expect_assertion(stroll_bmap_xor_rangeul(0, 62, 1));
+	cute_expect_assertion(stroll_bmap_xor_rangeul(0, 30, 3));
 #endif
 #pragma GCC diagnostic pop
 }
@@ -2534,7 +2534,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_xor_range,
                  strollut_bmap_teardown,
                  CUTE_DFLT_TMOUT)
 {
-	strollut_bmap_word_run_range_oper(stroll_bmap_xor_range);
+	strollut_bmap_word_run_range_oper(stroll_bmap_xor_rangeul);
 }
 
 CUTE_TEST(strollut_bmap_word_test_bit)
@@ -2546,7 +2546,7 @@ CUTE_TEST(strollut_bmap_word_test_bit)
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
 			bmp = strollut_bmap_words[m];
-			cute_check_bool(stroll_bmap_test(bmp, b),
+			cute_check_bool(stroll_bmap_testul(bmp, b),
 			                is,
 			                !!(bmp & (1UL << b)));
 		}
@@ -2562,7 +2562,7 @@ CUTE_TEST(strollut_bmap_word_test_all)
 	for (m = 0; m < mnr; m++) {
 		for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
 			bmp = strollut_bmap_words[m];
-			cute_check_bool(stroll_bmap_test_all(bmp), is, !!bmp);
+			cute_check_bool(stroll_bmap_test_allul(bmp), is, !!bmp);
 		}
 	}
 }
@@ -2603,7 +2603,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_test_mask,
 
 	for (b = 0; b < bnr; b++) {
 		for (m = 0; m < mnr; m++) {
-			bool res = stroll_bmap_test_mask(
+			bool res = stroll_bmap_test_maskul(
 				strollut_bmap_words[b],
 				strollut_bmap_word_masks[m]);
 
@@ -2641,13 +2641,13 @@ CUTE_TEST(strollut_bmap_word_test_range_assert)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-	cute_expect_assertion(stroll_bmap_test_range(0, 0, 0));
+	cute_expect_assertion(stroll_bmap_test_rangeul(0, 0, 0));
 #if (__WORDSIZE == 64)
-	cute_expect_assertion(stroll_bmap_test_range(0, 64, 1));
-	cute_expect_assertion(stroll_bmap_test_range(0, 60, 5));
+	cute_expect_assertion(stroll_bmap_test_rangeul(0, 64, 1));
+	cute_expect_assertion(stroll_bmap_test_rangeul(0, 60, 5));
 #else
-	cute_expect_assertion(stroll_bmap_test_range(0, 32, 1));
-	cute_expect_assertion(stroll_bmap_test_range(0, 30, 3));
+	cute_expect_assertion(stroll_bmap_test_rangeul(0, 32, 1));
+	cute_expect_assertion(stroll_bmap_test_rangeul(0, 30, 3));
 #endif
 #pragma GCC diagnostic pop
 }
@@ -2670,7 +2670,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_test_range,
 
 	for (b = 0; b < bnr; b++) {
 		for (r = 0; r < rnr; r++) {
-			bool res = stroll_bmap_test_range(
+			bool res = stroll_bmap_test_rangeul(
 				strollut_bmap_words[b],
 				strollut_bmap_word_ranges[r].start,
 				strollut_bmap_word_ranges[r].count);
@@ -2683,7 +2683,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_test_range,
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_set_bit_assert)
 {
-	cute_expect_assertion(stroll_bmap_set(NULL, 1));
+	cute_expect_assertion(stroll_bmap_setul(NULL, 1));
 }
 #else
 CUTE_TEST(strollut_bmap_word_set_bit_assert)
@@ -2699,7 +2699,7 @@ CUTE_TEST(strollut_bmap_word_set_bit)
 
 	for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
 		bmp = 0;
-		stroll_bmap_set(&bmp, b);
+		stroll_bmap_setul(&bmp, b);
 		cute_check_hex(bmp, equal, 1UL << b);
 	}
 }
@@ -2709,7 +2709,7 @@ strollut_bmap_word_set_mask_oper(unsigned long bmap, unsigned long mask)
 {
 	unsigned long bmp = bmap;
 
-	stroll_bmap_set_mask(&bmp, mask);
+	stroll_bmap_set_maskul(&bmp, mask);
 
 	return bmp;
 }
@@ -2717,7 +2717,7 @@ strollut_bmap_word_set_mask_oper(unsigned long bmap, unsigned long mask)
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_set_mask_assert)
 {
-	cute_expect_assertion(stroll_bmap_set_mask(NULL, 0xf));
+	cute_expect_assertion(stroll_bmap_set_maskul(NULL, 0xf));
 }
 #else
 CUTE_TEST(strollut_bmap_word_set_mask_assert)
@@ -2741,7 +2741,7 @@ strollut_bmap_word_set_range_oper(unsigned long bmap,
 {
 	unsigned long bmp = bmap;
 
-	stroll_bmap_set_range(&bmp, start_bit, bit_count);
+	stroll_bmap_set_rangeul(&bmp, start_bit, bit_count);
 
 	return bmp;
 }
@@ -2751,14 +2751,14 @@ CUTE_TEST(strollut_bmap_word_set_range_assert)
 {
 	unsigned long bmp = 0;
 
-	cute_expect_assertion(stroll_bmap_set_range(NULL, 1, 1));
-	cute_expect_assertion(stroll_bmap_set_range(&bmp, 0, 0));
+	cute_expect_assertion(stroll_bmap_set_rangeul(NULL, 1, 1));
+	cute_expect_assertion(stroll_bmap_set_rangeul(&bmp, 0, 0));
 #if (__WORDSIZE == 64)
-	cute_expect_assertion(stroll_bmap_set_range(&bmp, 64, 1));
-	cute_expect_assertion(stroll_bmap_set_range(&bmp, 60, 5));
+	cute_expect_assertion(stroll_bmap_set_rangeul(&bmp, 64, 1));
+	cute_expect_assertion(stroll_bmap_set_rangeul(&bmp, 60, 5));
 #else
-	cute_expect_assertion(stroll_bmap_set_range(&bmp, 32, 1));
-	cute_expect_assertion(stroll_bmap_set_range(&bmp, 30, 3));
+	cute_expect_assertion(stroll_bmap_set_rangeul(&bmp, 32, 1));
+	cute_expect_assertion(stroll_bmap_set_rangeul(&bmp, 30, 3));
 #endif
 }
 #else
@@ -2779,7 +2779,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_set_range,
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_set_all_assert)
 {
-	cute_expect_assertion(stroll_bmap_set_all(NULL));
+	cute_expect_assertion(stroll_bmap_set_allul(NULL));
 }
 #else
 CUTE_TEST(strollut_bmap_word_set_all_assert)
@@ -2792,14 +2792,14 @@ CUTE_TEST(strollut_bmap_word_set_all)
 {
 	unsigned long bmp = 0;
 
-	stroll_bmap_set_all(&bmp);
+	stroll_bmap_set_allul(&bmp);
 	cute_check_hex(bmp, equal, ULONG_MAX);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_clear_bit_assert)
 {
-	cute_expect_assertion(stroll_bmap_clear(NULL, 1));
+	cute_expect_assertion(stroll_bmap_clearul(NULL, 1));
 }
 #else
 CUTE_TEST(strollut_bmap_word_clear_bit_assert)
@@ -2815,7 +2815,7 @@ CUTE_TEST(strollut_bmap_word_clear_bit)
 
 	for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
 		bmp = ~(0UL);
-		stroll_bmap_clear(&bmp, b);
+		stroll_bmap_clearul(&bmp, b);
 		cute_check_hex(bmp, equal, ~(0UL) & ~(1UL << b));
 	}
 }
@@ -2837,7 +2837,7 @@ strollut_bmap_word_clear_mask_oper(unsigned long bmap, unsigned long mask)
 {
 	unsigned long bmp = bmap;
 
-	stroll_bmap_clear_mask(&bmp, mask);
+	stroll_bmap_clear_maskul(&bmp, mask);
 
 	return bmp;
 }
@@ -2845,7 +2845,7 @@ strollut_bmap_word_clear_mask_oper(unsigned long bmap, unsigned long mask)
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_clear_mask_assert)
 {
-	cute_expect_assertion(stroll_bmap_clear_mask(NULL, 0xf));
+	cute_expect_assertion(stroll_bmap_clear_maskul(NULL, 0xf));
 }
 #else
 CUTE_TEST(strollut_bmap_word_clear_mask_assert)
@@ -2875,7 +2875,7 @@ strollut_bmap_word_clear_range_oper(unsigned long bmap,
 {
 	unsigned long bmp = bmap;
 
-	stroll_bmap_clear_range(&bmp, start_bit, bit_count);
+	stroll_bmap_clear_rangeul(&bmp, start_bit, bit_count);
 
 	return bmp;
 }
@@ -2885,14 +2885,14 @@ CUTE_TEST(strollut_bmap_word_clear_range_assert)
 {
 	unsigned long bmp = ~(0UL);
 
-	cute_expect_assertion(stroll_bmap_clear_range(NULL, 1, 1));
-	cute_expect_assertion(stroll_bmap_clear_range(&bmp, 0, 0));
+	cute_expect_assertion(stroll_bmap_clear_rangeul(NULL, 1, 1));
+	cute_expect_assertion(stroll_bmap_clear_rangeul(&bmp, 0, 0));
 #if (__WORDSIZE == 64)
-	cute_expect_assertion(stroll_bmap_clear_range(&bmp, 64, 1));
-	cute_expect_assertion(stroll_bmap_clear_range(&bmp, 60, 5));
+	cute_expect_assertion(stroll_bmap_clear_rangeul(&bmp, 64, 1));
+	cute_expect_assertion(stroll_bmap_clear_rangeul(&bmp, 60, 5));
 #else
-	cute_expect_assertion(stroll_bmap_clear_range(&bmp, 32, 1));
-	cute_expect_assertion(stroll_bmap_clear_range(&bmp, 30, 3));
+	cute_expect_assertion(stroll_bmap_clear_rangeul(&bmp, 32, 1));
+	cute_expect_assertion(stroll_bmap_clear_rangeul(&bmp, 30, 3));
 #endif
 }
 #else
@@ -2913,7 +2913,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_clear_range,
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_clear_all_assert)
 {
-	cute_expect_assertion(stroll_bmap_clear_all(NULL));
+	cute_expect_assertion(stroll_bmap_clear_allul(NULL));
 }
 #else
 CUTE_TEST(strollut_bmap_word_clear_all_assert)
@@ -2926,14 +2926,14 @@ CUTE_TEST(strollut_bmap_word_clear_all)
 {
 	unsigned long bmp = ~(0UL);
 
-	stroll_bmap_clear_all(&bmp);
+	stroll_bmap_clear_allul(&bmp);
 	cute_check_hex(bmp, equal, 0);
 }
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_toggle_bit_assert)
 {
-	cute_expect_assertion(stroll_bmap_toggle(NULL, 1));
+	cute_expect_assertion(stroll_bmap_toggleul(NULL, 1));
 }
 #else
 CUTE_TEST(strollut_bmap_word_toggle_bit_assert)
@@ -2958,11 +2958,11 @@ CUTE_TEST_STATIC(strollut_bmap_word_toggle_bit,
 
 	for (b = 0; b < stroll_bops_bitsof(bmp); b++) {
 		bmp = 0;
-		stroll_bmap_toggle(&bmp, b);
+		stroll_bmap_toggleul(&bmp, b);
 		cute_check_hex(bmp, equal, 1UL << b);
 
 		bmp = ~(0UL);
-		stroll_bmap_toggle(&bmp, b);
+		stroll_bmap_toggleul(&bmp, b);
 		cute_check_hex(bmp, equal, ~(1UL << b));
 	}
 }
@@ -2972,7 +2972,7 @@ strollut_bmap_word_toggle_mask_oper(unsigned long bmap, unsigned long mask)
 {
 	unsigned long bmp = bmap;
 
-	stroll_bmap_toggle_mask(&bmp, mask);
+	stroll_bmap_toggle_maskul(&bmp, mask);
 
 	return bmp;
 }
@@ -2980,7 +2980,7 @@ strollut_bmap_word_toggle_mask_oper(unsigned long bmap, unsigned long mask)
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_toggle_mask_assert)
 {
-	cute_expect_assertion(stroll_bmap_toggle_mask(NULL, 0xf));
+	cute_expect_assertion(stroll_bmap_toggle_maskul(NULL, 0xf));
 }
 #else
 CUTE_TEST(strollut_bmap_word_toggle_mask_assert)
@@ -3010,7 +3010,7 @@ strollut_bmap_word_toggle_range_oper(unsigned long bmap,
 {
 	unsigned long bmp = bmap;
 
-	stroll_bmap_toggle_range(&bmp, start_bit, bit_count);
+	stroll_bmap_toggle_rangeul(&bmp, start_bit, bit_count);
 
 	return bmp;
 }
@@ -3020,14 +3020,14 @@ CUTE_TEST(strollut_bmap_word_toggle_range_assert)
 {
 	unsigned long bmp = 0;
 
-	cute_expect_assertion(stroll_bmap_toggle_range(NULL, 1, 1));
-	cute_expect_assertion(stroll_bmap_toggle_range(&bmp, 0, 0));
+	cute_expect_assertion(stroll_bmap_toggle_rangeul(NULL, 1, 1));
+	cute_expect_assertion(stroll_bmap_toggle_rangeul(&bmp, 0, 0));
 #if (__WORDSIZE == 64)
-	cute_expect_assertion(stroll_bmap_toggle_range(&bmp, 64, 1));
-	cute_expect_assertion(stroll_bmap_toggle_range(&bmp, 60, 5));
+	cute_expect_assertion(stroll_bmap_toggle_rangeul(&bmp, 64, 1));
+	cute_expect_assertion(stroll_bmap_toggle_rangeul(&bmp, 60, 5));
 #else
-	cute_expect_assertion(stroll_bmap_toggle_range(&bmp, 32, 1));
-	cute_expect_assertion(stroll_bmap_toggle_range(&bmp, 30, 3));
+	cute_expect_assertion(stroll_bmap_toggle_rangeul(&bmp, 32, 1));
+	cute_expect_assertion(stroll_bmap_toggle_rangeul(&bmp, 30, 3));
 #endif
 }
 #else
@@ -3048,7 +3048,7 @@ CUTE_TEST_STATIC(strollut_bmap_word_toggle_range,
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_toggle_all_assert)
 {
-	cute_expect_assertion(stroll_bmap_toggle_all(NULL));
+	cute_expect_assertion(stroll_bmap_toggle_allul(NULL));
 }
 #else
 CUTE_TEST(strollut_bmap_word_toggle_all_assert)
@@ -3066,7 +3066,7 @@ CUTE_TEST(strollut_bmap_word_toggle_all)
 		unsigned long bmp = strollut_bmap_words[b];
 		unsigned long exp = bmp ^ ~(0UL);
 
-		stroll_bmap_toggle_all(&bmp);
+		stroll_bmap_toggle_allul(&bmp);
 		cute_check_hex(bmp, equal, exp);
 	}
 }
@@ -3078,10 +3078,17 @@ CUTE_TEST(strollut_bmap_word_set_iter_assert)
 	unsigned long bmp = 0;
 	unsigned int  b;
 
-	cute_expect_assertion(_stroll_bmap_setup_set_iter(NULL, bmp, &b));
-	cute_expect_assertion(_stroll_bmap_setup_set_iter(&iter, bmp, NULL));
-	cute_expect_assertion(_stroll_bmap_step_iter(NULL, &b));
-	cute_expect_assertion(_stroll_bmap_step_iter(&iter, NULL));
+#if __WORDSIZE == 64
+	cute_expect_assertion(_stroll_bmap_setup_set_iter64(NULL, bmp, &b));
+	cute_expect_assertion(_stroll_bmap_setup_set_iter64(&iter, bmp, NULL));
+	cute_expect_assertion(_stroll_bmap_step_iter64(NULL, &b));
+	cute_expect_assertion(_stroll_bmap_step_iter64(&iter, NULL));
+#elif __WORDSIZE == 32
+	cute_expect_assertion(_stroll_bmap_setup_set_iter32(NULL, bmp, &b));
+	cute_expect_assertion(_stroll_bmap_setup_set_iter32(&iter, bmp, NULL));
+	cute_expect_assertion(_stroll_bmap_step_iter32(NULL, &b));
+	cute_expect_assertion(_stroll_bmap_step_iter32(&iter, NULL));
+#endif
 }
 #else
 CUTE_TEST(strollut_bmap_word_set_iter_assert)
@@ -3102,7 +3109,7 @@ CUTE_TEST(strollut_bmap_word_set_iter)
 
 		bmp = strollut_bmap_words[m];
 		b = 0;
-		stroll_bmap_foreach_set(&iter, bmp, &b) {
+		stroll_bmap_foreach_setul(&iter, bmp, &b) {
 			while ((e < stroll_bops_bitsof(bmp)) &&
 			       !(bmp & (1UL << e)))
 				e++;
@@ -3128,10 +3135,17 @@ CUTE_TEST(strollut_bmap_word_clear_iter_assert)
 	unsigned long bmp = 0;
 	unsigned int  b;
 
-	cute_expect_assertion(_stroll_bmap_setup_clear_iter(NULL, bmp, &b));
-	cute_expect_assertion(_stroll_bmap_setup_clear_iter(&iter, bmp, NULL));
-	cute_expect_assertion(_stroll_bmap_step_iter(NULL, &b));
-	cute_expect_assertion(_stroll_bmap_step_iter(&iter, NULL));
+#if __WORDSIZE == 64
+	cute_expect_assertion(_stroll_bmap_setup_clear_iter64(NULL, bmp, &b));
+	cute_expect_assertion(_stroll_bmap_setup_clear_iter64(&iter, bmp, NULL));
+	cute_expect_assertion(_stroll_bmap_step_iter64(NULL, &b));
+	cute_expect_assertion(_stroll_bmap_step_iter64(&iter, NULL));
+#elif __WORDSIZE == 32
+	cute_expect_assertion(_stroll_bmap_setup_clear_iter32(NULL, bmp, &b));
+	cute_expect_assertion(_stroll_bmap_setup_clear_iter32(&iter, bmp, NULL));
+	cute_expect_assertion(_stroll_bmap_step_iter32(NULL, &b));
+	cute_expect_assertion(_stroll_bmap_step_iter32(&iter, NULL));
+#endif
 }
 #else
 CUTE_TEST(strollut_bmap_word_clear_iter_assert)
@@ -3152,7 +3166,7 @@ CUTE_TEST(strollut_bmap_word_clear_iter)
 
 		bmp = strollut_bmap_words[m];
 		b = 0;
-		stroll_bmap_foreach_clear(&iter, bmp, &b) {
+		stroll_bmap_foreach_clearul(&iter, bmp, &b) {
 			while ((e < stroll_bops_bitsof(bmp)) &&
 			       (bmp & (1UL << e)))
 				e++;
@@ -3236,8 +3250,8 @@ CUTE_SUITE(strollut_bmap_word_suite, strollut_bmap_word_group);
  ******************************************************************************/
 
 CUTE_GROUP(strollut_bmap_group) = {
-	CUTE_REF(strollut_bmap32_suite),
-	CUTE_REF(strollut_bmap64_suite),
+	CUTE_REF(strollut_bmap_suite32),
+	CUTE_REF(strollut_bmap_suite64),
 	CUTE_REF(strollut_bmap_word_suite),
 };
 

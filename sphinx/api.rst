@@ -203,26 +203,32 @@ These are:
    * Initialization:
 
       * :c:macro:`STROLL_BMAP_INIT_CLEAR`
+      * :c:macro:`STROLL_BMAP_INIT_CLEAR32`
+      * :c:macro:`STROLL_BMAP_INIT_CLEAR64`
+      * :c:macro:`STROLL_BMAP_INIT_CLEARUL`
       * :c:macro:`STROLL_BMAP_INIT_SET`
-      * :c:macro:`STROLL_BMAP32_INIT_CLEAR`
-      * :c:macro:`STROLL_BMAP32_INIT_SET`
-      * :c:macro:`STROLL_BMAP64_INIT_CLEAR`
-      * :c:macro:`STROLL_BMAP64_INIT_SET`
+      * :c:macro:`STROLL_BMAP_INIT_SET32`
+      * :c:macro:`STROLL_BMAP_INIT_SET64`
+      * :c:macro:`STROLL_BMAP_INIT_SETUL`
       * :c:func:`stroll_bmap_setup_clear`
-      * :c:func:`stroll_bmap32_setup_clear`
-      * :c:func:`stroll_bmap64_setup_clear`
+      * :c:func:`stroll_bmap_setup_clear32`
+      * :c:func:`stroll_bmap_setup_clear64`
+      * :c:func:`stroll_bmap_setup_clearul`
       * :c:func:`stroll_bmap_setup_set`
-      * :c:func:`stroll_bmap32_setup_set`
-      * :c:func:`stroll_bmap64_setup_set`
+      * :c:func:`stroll_bmap_setup_set32`
+      * :c:func:`stroll_bmap_setup_set64`
+      * :c:func:`stroll_bmap_setup_setul`
 
    * Iteration:
 
       * :c:macro:`stroll_bmap_foreach_clear`
-      * :c:macro:`stroll_bmap32_foreach_clear`
-      * :c:macro:`stroll_bmap64_foreach_clear`
+      * :c:macro:`stroll_bmap_foreach_clear32`
+      * :c:macro:`stroll_bmap_foreach_clear64`
+      * :c:macro:`stroll_bmap_foreach_clearul`
       * :c:macro:`stroll_bmap_foreach_set`
-      * :c:macro:`stroll_bmap32_foreach_set`
-      * :c:macro:`stroll_bmap64_foreach_set`
+      * :c:macro:`stroll_bmap_foreach_set32`
+      * :c:macro:`stroll_bmap_foreach_set64`
+      * :c:macro:`stroll_bmap_foreach_setul`
 
    * Compute masks:
 
@@ -263,71 +269,89 @@ These are:
    * Perform bitwise XOR operation:
 
       * :c:func:`stroll_bmap_xor`
+      * :c:func:`stroll_bmap_xor32`
+      * :c:func:`stroll_bmap_xor64`
+      * :c:func:`stroll_bmap_xorul`
       * :c:func:`stroll_bmap_xor_range`
-      * :c:func:`stroll_bmap32_xor`
-      * :c:func:`stroll_bmap32_xor_range`
-      * :c:func:`stroll_bmap64_xor`
-      * :c:func:`stroll_bmap64_xor_range`
+      * :c:func:`stroll_bmap_xor_range32`
+      * :c:func:`stroll_bmap_xor_range64`
+      * :c:func:`stroll_bmap_xor_rangeul`
 
    * Test set bit(s):
 
       * :c:func:`stroll_bmap_test`
+      * :c:func:`stroll_bmap_test32`
+      * :c:func:`stroll_bmap_test64`
+      * :c:func:`stroll_bmap_testul`
       * :c:func:`stroll_bmap_test_all`
+      * :c:func:`stroll_bmap_test_all32`
+      * :c:func:`stroll_bmap_test_all64`
+      * :c:func:`stroll_bmap_test_allul`
       * :c:func:`stroll_bmap_test_mask`
+      * :c:func:`stroll_bmap_test_mask32`
+      * :c:func:`stroll_bmap_test_mask64`
+      * :c:func:`stroll_bmap_test_maskul`
       * :c:func:`stroll_bmap_test_range`
-      * :c:func:`stroll_bmap32_test`
-      * :c:func:`stroll_bmap32_test_all`
-      * :c:func:`stroll_bmap32_test_mask`
-      * :c:func:`stroll_bmap32_test_range`
-      * :c:func:`stroll_bmap64_test`
-      * :c:func:`stroll_bmap64_test_all`
-      * :c:func:`stroll_bmap64_test_mask`
-      * :c:func:`stroll_bmap64_test_range`
+      * :c:func:`stroll_bmap_test_range32`
+      * :c:func:`stroll_bmap_test_range64`
+      * :c:func:`stroll_bmap_test_rangeul`
 
    * Set bit(s):
 
       * :c:func:`stroll_bmap_set`
-      * :c:func:`stroll_bmap_set_mask`
-      * :c:func:`stroll_bmap_set_range`
+      * :c:func:`stroll_bmap_set32`
+      * :c:func:`stroll_bmap_set64`
+      * :c:func:`stroll_bmap_setul`
       * :c:func:`stroll_bmap_set_all`
-      * :c:func:`stroll_bmap32_set`
-      * :c:func:`stroll_bmap32_set_mask`
-      * :c:func:`stroll_bmap32_set_range`
-      * :c:func:`stroll_bmap32_set_all`
-      * :c:func:`stroll_bmap64_set`
-      * :c:func:`stroll_bmap64_set_mask`
-      * :c:func:`stroll_bmap64_set_range`
-      * :c:func:`stroll_bmap64_set_all`
+      * :c:func:`stroll_bmap_set_all32`
+      * :c:func:`stroll_bmap_set_all64`
+      * :c:func:`stroll_bmap_set_allul`
+      * :c:func:`stroll_bmap_set_mask`
+      * :c:func:`stroll_bmap_set_mask32`
+      * :c:func:`stroll_bmap_set_mask64`
+      * :c:func:`stroll_bmap_set_maskul`
+      * :c:func:`stroll_bmap_set_range`
+      * :c:func:`stroll_bmap_set_range32`
+      * :c:func:`stroll_bmap_set_range64`
+      * :c:func:`stroll_bmap_set_rangeul`
 
    * Clear bit(s):
 
       * :c:func:`stroll_bmap_clear`
-      * :c:func:`stroll_bmap_clear_mask`
-      * :c:func:`stroll_bmap_clear_range`
+      * :c:func:`stroll_bmap_clear32`
+      * :c:func:`stroll_bmap_clear64`
+      * :c:func:`stroll_bmap_clearul`
       * :c:func:`stroll_bmap_clear_all`
-      * :c:func:`stroll_bmap32_clear`
-      * :c:func:`stroll_bmap32_clear_mask`
-      * :c:func:`stroll_bmap32_clear_range`
-      * :c:func:`stroll_bmap32_clear_all`
-      * :c:func:`stroll_bmap64_clear`
-      * :c:func:`stroll_bmap64_clear_mask`
-      * :c:func:`stroll_bmap64_clear_range`
-      * :c:func:`stroll_bmap64_clear_all`
+      * :c:func:`stroll_bmap_clear_all32`
+      * :c:func:`stroll_bmap_clear_all64`
+      * :c:func:`stroll_bmap_clear_allul`
+      * :c:func:`stroll_bmap_clear_mask`
+      * :c:func:`stroll_bmap_clear_mask32`
+      * :c:func:`stroll_bmap_clear_mask64`
+      * :c:func:`stroll_bmap_clear_maskul`
+      * :c:func:`stroll_bmap_clear_range`
+      * :c:func:`stroll_bmap_clear_range32`
+      * :c:func:`stroll_bmap_clear_range64`
+      * :c:func:`stroll_bmap_clear_rangeul`
 
    * Toggle bit(s):
 
       * :c:func:`stroll_bmap_toggle`
-      * :c:func:`stroll_bmap_toggle_mask`
-      * :c:func:`stroll_bmap_toggle_range`
+      * :c:func:`stroll_bmap_toggle32`
+      * :c:func:`stroll_bmap_toggle64`
+      * :c:func:`stroll_bmap_toggleul`
       * :c:func:`stroll_bmap_toggle_all`
-      * :c:func:`stroll_bmap32_toggle`
-      * :c:func:`stroll_bmap32_toggle_mask`
-      * :c:func:`stroll_bmap32_toggle_range`
-      * :c:func:`stroll_bmap32_toggle_all`
-      * :c:func:`stroll_bmap64_toggle`
-      * :c:func:`stroll_bmap64_toggle_mask`
-      * :c:func:`stroll_bmap64_toggle_range`
-      * :c:func:`stroll_bmap64_toggle_all`
+      * :c:func:`stroll_bmap_toggle_all32`
+      * :c:func:`stroll_bmap_toggle_all64`
+      * :c:func:`stroll_bmap_toggle_allul`
+      * :c:func:`stroll_bmap_toggle_mask`
+      * :c:func:`stroll_bmap_toggle_mask32`
+      * :c:func:`stroll_bmap_toggle_mask64`
+      * :c:func:`stroll_bmap_toggle_maskul`
+      * :c:func:`stroll_bmap_toggle_range`
+      * :c:func:`stroll_bmap_toggle_range32`
+      * :c:func:`stroll_bmap_toggle_range64`
+      * :c:func:`stroll_bmap_toggle_rangeul`
 
 .. index:: bitmaps, bmap, fixed sized bitmaps, fbmap
 
@@ -602,30 +626,40 @@ STROLL_BMAP_INIT_CLEAR
 
 .. doxygendefine:: STROLL_BMAP_INIT_CLEAR
 
+STROLL_BMAP_INIT_CLEAR32
+************************
+
+.. doxygendefine:: STROLL_BMAP_INIT_CLEAR32
+
+STROLL_BMAP_INIT_CLEAR64
+************************
+
+.. doxygendefine:: STROLL_BMAP_INIT_CLEAR64
+
+STROLL_BMAP_INIT_CLEARUL
+************************
+
+.. doxygendefine:: STROLL_BMAP_INIT_CLEARUL
+
 STROLL_BMAP_INIT_SET
 ********************
 
 .. doxygendefine:: STROLL_BMAP_INIT_SET
 
-STROLL_BMAP32_INIT_CLEAR
-************************
-
-.. doxygendefine:: STROLL_BMAP32_INIT_CLEAR
-
-STROLL_BMAP32_INIT_SET
+STROLL_BMAP_INIT_SET32
 **********************
 
-.. doxygendefine:: STROLL_BMAP32_INIT_SET
+.. doxygendefine:: STROLL_BMAP_INIT_SET32
 
-STROLL_BMAP64_INIT_CLEAR
-************************
-
-.. doxygendefine:: STROLL_BMAP64_INIT_CLEAR
-
-STROLL_BMAP64_INIT_SET
+STROLL_BMAP_INIT_SET64
 **********************
 
-.. doxygendefine:: STROLL_BMAP64_INIT_SET
+.. doxygendefine:: STROLL_BMAP_INIT_SET64
+
+STROLL_BMAP_INIT_SETUL
+**********************
+
+.. doxygendefine:: STROLL_BMAP_INIT_SETUL
 
 STROLL_CONCAT
 *************
@@ -747,30 +781,40 @@ stroll_bmap_foreach_clear
 
 .. doxygendefine:: stroll_bmap_foreach_clear
 
+stroll_bmap_foreach_clear32
+***************************
+
+.. doxygendefine:: stroll_bmap_foreach_clear32
+
+stroll_bmap_foreach_clear64
+***************************
+
+.. doxygendefine:: stroll_bmap_foreach_clear64
+
+stroll_bmap_foreach_clearul
+***************************
+
+.. doxygendefine:: stroll_bmap_foreach_clearul
+
 stroll_bmap_foreach_set
 ***********************
 
 .. doxygendefine:: stroll_bmap_foreach_set
 
-stroll_bmap32_foreach_clear
-***************************
-
-.. doxygendefine:: stroll_bmap32_foreach_clear
-
-stroll_bmap32_foreach_set
+stroll_bmap_foreach_set32
 *************************
 
-.. doxygendefine:: stroll_bmap32_foreach_set
+.. doxygendefine:: stroll_bmap_foreach_set32
 
-stroll_bmap64_foreach_clear
-***************************
-
-.. doxygendefine:: stroll_bmap64_foreach_clear
-
-stroll_bmap64_foreach_set
+stroll_bmap_foreach_set64
 *************************
 
-.. doxygendefine:: stroll_bmap64_foreach_set
+.. doxygendefine:: stroll_bmap_foreach_set64
+
+stroll_bmap_foreach_setul
+*************************
+
+.. doxygendefine:: stroll_bmap_foreach_setul
 
 stroll_fbmap_foreach_clear()
 ****************************
@@ -893,20 +937,80 @@ stroll_bmap_clear
 
 .. doxygenfunction:: stroll_bmap_clear
 
+stroll_bmap_clear32
+*******************
+
+.. doxygenfunction:: stroll_bmap_clear32
+
+stroll_bmap_clear64
+*******************
+
+.. doxygenfunction:: stroll_bmap_clear64
+
+stroll_bmap_clearul
+*******************
+
+.. doxygenfunction:: stroll_bmap_clearul
+
+stroll_bmap_clear_all
+*********************
+
+.. doxygenfunction:: stroll_bmap_clear_all
+
+stroll_bmap_clear_all32
+***********************
+
+.. doxygenfunction:: stroll_bmap_clear_all32
+
+stroll_bmap_clear_all64
+***********************
+
+.. doxygenfunction:: stroll_bmap_clear_all64
+
+stroll_bmap_clear_allul
+***********************
+
+.. doxygenfunction:: stroll_bmap_clear_allul
+
 stroll_bmap_clear_mask
 **********************
 
 .. doxygenfunction:: stroll_bmap_clear_mask
+
+stroll_bmap_clear_mask32
+************************
+
+.. doxygenfunction:: stroll_bmap_clear_mask32
+
+stroll_bmap_clear_mask64
+************************
+
+.. doxygenfunction:: stroll_bmap_clear_mask64
+
+stroll_bmap_clear_maskul
+************************
+
+.. doxygenfunction:: stroll_bmap_clear_maskul
 
 stroll_bmap_clear_range
 ***********************
 
 .. doxygenfunction:: stroll_bmap_clear_range
 
-stroll_bmap_clear_all
-*********************
+stroll_bmap_clear_range32
+*************************
 
-.. doxygenfunction:: stroll_bmap_clear_all
+.. doxygenfunction:: stroll_bmap_clear_range32
+
+stroll_bmap_clear_range64
+*************************
+
+.. doxygenfunction:: stroll_bmap_clear_range64
+
+stroll_bmap_clear_rangeul
+*************************
+
+.. doxygenfunction:: stroll_bmap_clear_rangeul
 
 stroll_bmap_hweight
 *******************
@@ -993,25 +1097,100 @@ stroll_bmap_set
 
 .. doxygenfunction:: stroll_bmap_set
 
-stroll_bmap_set_mask
-********************
+stroll_bmap_set32
+*****************
 
-.. doxygenfunction:: stroll_bmap_set_mask
+.. doxygenfunction:: stroll_bmap_set32
 
-stroll_bmap_set_range
-*********************
+stroll_bmap_set64
+*****************
 
-.. doxygenfunction:: stroll_bmap_set_range
+.. doxygenfunction:: stroll_bmap_set64
+
+stroll_bmap_setul
+*****************
+
+.. doxygenfunction:: stroll_bmap_setul
 
 stroll_bmap_set_all
 *******************
 
 .. doxygenfunction:: stroll_bmap_set_all
 
+stroll_bmap_set_all32
+*********************
+
+.. doxygenfunction:: stroll_bmap_set_all32
+
+stroll_bmap_set_all64
+*********************
+
+.. doxygenfunction:: stroll_bmap_set_all64
+
+stroll_bmap_set_allul
+*********************
+
+.. doxygenfunction:: stroll_bmap_set_allul
+
+stroll_bmap_set_mask
+********************
+
+.. doxygenfunction:: stroll_bmap_set_mask
+
+stroll_bmap_set_mask32
+**********************
+
+.. doxygenfunction:: stroll_bmap_set_mask32
+
+stroll_bmap_set_mask64
+**********************
+
+.. doxygenfunction:: stroll_bmap_set_mask64
+
+stroll_bmap_set_maskul
+**********************
+
+.. doxygenfunction:: stroll_bmap_set_maskul
+
+stroll_bmap_set_range
+*********************
+
+.. doxygenfunction:: stroll_bmap_set_range
+
+stroll_bmap_set_range32
+***********************
+
+.. doxygenfunction:: stroll_bmap_set_range32
+
+stroll_bmap_set_range64
+***********************
+
+.. doxygenfunction:: stroll_bmap_set_range64
+
+stroll_bmap_set_rangeul
+***********************
+
+.. doxygenfunction:: stroll_bmap_set_rangeul
+
 stroll_bmap_setup_clear
 ***********************
 
 .. doxygenfunction:: stroll_bmap_setup_clear
+
+stroll_bmap_setup_clear32
+*************************
+
+.. doxygenfunction:: stroll_bmap_setup_clear32
+
+stroll_bmap_setup_clear64
+*************************
+
+.. doxygenfunction:: stroll_bmap_setup_clear64
+
+stroll_bmap_setup_clearul
+*************************
+
+.. doxygenfunction:: stroll_bmap_setup_clearul
 
 stroll_bmap_setup_set
 *********************
@@ -1023,251 +1202,215 @@ stroll_bmap_test
 
 .. doxygenfunction:: stroll_bmap_test
 
+stroll_bmap_test32
+******************
+
+.. doxygenfunction:: stroll_bmap_test32
+
+stroll_bmap_test64
+******************
+
+.. doxygenfunction:: stroll_bmap_test64
+
+stroll_bmap_testul
+******************
+
+.. doxygenfunction:: stroll_bmap_testul
+
 stroll_bmap_test_all
 ********************
 
 .. doxygenfunction:: stroll_bmap_test_all
+
+stroll_bmap_test_all32
+**********************
+
+.. doxygenfunction:: stroll_bmap_test_all32
+
+stroll_bmap_test_all64
+**********************
+
+.. doxygenfunction:: stroll_bmap_test_all64
+
+stroll_bmap_test_allul
+**********************
+
+.. doxygenfunction:: stroll_bmap_test_allul
 
 stroll_bmap_test_mask
 *********************
 
 .. doxygenfunction:: stroll_bmap_test_mask
 
+stroll_bmap_test_mask32
+***********************
+
+.. doxygenfunction:: stroll_bmap_test_mask32
+
+stroll_bmap_test_mask64
+***********************
+
+.. doxygenfunction:: stroll_bmap_test_mask64
+
+stroll_bmap_test_maskul
+***********************
+
+.. doxygenfunction:: stroll_bmap_test_maskul
+
 stroll_bmap_test_range
 **********************
 
 .. doxygenfunction:: stroll_bmap_test_range
+
+stroll_bmap_test_range32
+************************
+
+.. doxygenfunction:: stroll_bmap_test_range32
+
+stroll_bmap_test_range64
+************************
+
+.. doxygenfunction:: stroll_bmap_test_range64
+
+stroll_bmap_test_rangeul
+************************
+
+.. doxygenfunction:: stroll_bmap_test_rangeul
 
 stroll_bmap_toggle
 ******************
 
 .. doxygenfunction:: stroll_bmap_toggle
 
-stroll_bmap_toggle_mask
-***********************
+stroll_bmap_toggle32
+********************
 
-.. doxygenfunction:: stroll_bmap_toggle_mask
+.. doxygenfunction:: stroll_bmap_toggle32
 
-stroll_bmap_toggle_range
-************************
+stroll_bmap_toggle64
+********************
 
-.. doxygenfunction:: stroll_bmap_toggle_range
+.. doxygenfunction:: stroll_bmap_toggle64
+
+stroll_bmap_toggleul
+********************
+
+.. doxygenfunction:: stroll_bmap_toggleul
 
 stroll_bmap_toggle_all
 **********************
 
 .. doxygenfunction:: stroll_bmap_toggle_all
 
+stroll_bmap_toggle_all32
+************************
+
+.. doxygenfunction:: stroll_bmap_toggle_all32
+
+stroll_bmap_toggle_all64
+************************
+
+.. doxygenfunction:: stroll_bmap_toggle_all64
+
+stroll_bmap_toggle_allul
+************************
+
+.. doxygenfunction:: stroll_bmap_toggle_allul
+
+stroll_bmap_toggle_mask
+***********************
+
+.. doxygenfunction:: stroll_bmap_toggle_mask
+
+stroll_bmap_toggle_mask32
+*************************
+
+.. doxygenfunction:: stroll_bmap_toggle_mask32
+
+stroll_bmap_toggle_mask64
+*************************
+
+.. doxygenfunction:: stroll_bmap_toggle_mask64
+
+stroll_bmap_toggle_maskul
+*************************
+
+.. doxygenfunction:: stroll_bmap_toggle_maskul
+
+stroll_bmap_toggle_range
+************************
+
+.. doxygenfunction:: stroll_bmap_toggle_range
+
+stroll_bmap_toggle_range32
+**************************
+
+.. doxygenfunction:: stroll_bmap_toggle_range32
+
+stroll_bmap_toggle_range64
+**************************
+
+.. doxygenfunction:: stroll_bmap_toggle_range64
+
+stroll_bmap_toggle_rangeul
+**************************
+
+.. doxygenfunction:: stroll_bmap_toggle_rangeul
+
 stroll_bmap_xor
 ***************
 
 .. doxygenfunction:: stroll_bmap_xor
+
+stroll_bmap_xor32
+*****************
+
+.. doxygenfunction:: stroll_bmap_xor32
+
+stroll_bmap_xor64
+*****************
+
+.. doxygenfunction:: stroll_bmap_xor64
+
+stroll_bmap_xorul
+*****************
+
+.. doxygenfunction:: stroll_bmap_xorul
 
 stroll_bmap_xor_range
 *********************
 
 .. doxygenfunction:: stroll_bmap_xor_range
 
-stroll_bmap32_clear
-*******************
-
-.. doxygenfunction:: stroll_bmap32_clear
-
-
-stroll_bmap32_clear_mask
-************************
-
-.. doxygenfunction:: stroll_bmap32_clear_mask
-
-stroll_bmap32_clear_range
-*************************
-
-.. doxygenfunction:: stroll_bmap32_clear_range
-
-stroll_bmap32_clear_all
+stroll_bmap_xor_range32
 ***********************
 
-.. doxygenfunction:: stroll_bmap32_clear_all
+.. doxygenfunction:: stroll_bmap_xor_range32
 
-stroll_bmap32_set
-*****************
-
-.. doxygenfunction:: stroll_bmap32_set
-
-stroll_bmap32_set_mask
-**********************
-
-.. doxygenfunction:: stroll_bmap32_set_mask
-
-stroll_bmap32_set_range
+stroll_bmap_xor_range64
 ***********************
 
-.. doxygenfunction:: stroll_bmap32_set_range
+.. doxygenfunction:: stroll_bmap_xor_range64
 
-stroll_bmap32_set_all
-*********************
-
-.. doxygenfunction:: stroll_bmap32_set_all
-
-stroll_bmap32_setup_clear
-*************************
-
-.. doxygenfunction:: stroll_bmap32_setup_clear
-
-stroll_bmap32_setup_set
+stroll_bmap_xor_rangeul
 ***********************
 
-.. doxygenfunction:: stroll_bmap32_setup_set
+.. doxygenfunction:: stroll_bmap_xor_rangeul
 
-stroll_bmap32_test
-******************
-
-.. doxygenfunction:: stroll_bmap32_test
-
-stroll_bmap32_test_all
-**********************
-
-.. doxygenfunction:: stroll_bmap32_test_all
-
-stroll_bmap32_test_mask
+stroll_bmap_setup_set32
 ***********************
 
-.. doxygenfunction:: stroll_bmap32_test_mask
+.. doxygenfunction:: stroll_bmap_setup_set32
 
-stroll_bmap32_test_range
-************************
-
-.. doxygenfunction:: stroll_bmap32_test_range
-
-stroll_bmap32_toggle
-********************
-
-.. doxygenfunction:: stroll_bmap32_toggle
-
-stroll_bmap32_toggle_mask
-*************************
-
-.. doxygenfunction:: stroll_bmap32_toggle_mask
-
-stroll_bmap32_toggle_range
-**************************
-
-.. doxygenfunction:: stroll_bmap32_toggle_range
-
-stroll_bmap32_toggle_all
-************************
-
-.. doxygenfunction:: stroll_bmap32_toggle_all
-
-stroll_bmap32_xor
-*****************
-
-.. doxygenfunction:: stroll_bmap32_xor
-
-stroll_bmap32_xor_range
+stroll_bmap_setup_set64
 ***********************
 
-.. doxygenfunction:: stroll_bmap32_xor_range
+.. doxygenfunction:: stroll_bmap_setup_set64
 
-stroll_bmap64_clear
-*******************
-
-.. doxygenfunction:: stroll_bmap64_clear
-
-stroll_bmap64_clear_mask
-************************
-
-.. doxygenfunction:: stroll_bmap64_clear_mask
-
-stroll_bmap64_clear_range
-*************************
-
-.. doxygenfunction:: stroll_bmap64_clear_range
-
-stroll_bmap64_clear_all
+stroll_bmap_setup_setul
 ***********************
 
-.. doxygenfunction:: stroll_bmap64_clear_all
-
-stroll_bmap64_set
-*****************
-
-.. doxygenfunction:: stroll_bmap64_set
-
-stroll_bmap64_set_mask
-**********************
-
-.. doxygenfunction:: stroll_bmap64_set_mask
-
-stroll_bmap64_set_range
-***********************
-
-.. doxygenfunction:: stroll_bmap64_set_range
-
-stroll_bmap64_set_all
-*********************
-
-.. doxygenfunction:: stroll_bmap64_set_all
-
-stroll_bmap64_setup_clear
-*************************
-
-.. doxygenfunction:: stroll_bmap64_setup_clear
-
-stroll_bmap64_setup_set
-***********************
-
-.. doxygenfunction:: stroll_bmap64_setup_set
-
-stroll_bmap64_test
-******************
-
-.. doxygenfunction:: stroll_bmap64_test
-
-stroll_bmap64_test_all
-**********************
-
-.. doxygenfunction:: stroll_bmap64_test_all
-
-stroll_bmap64_test_mask
-***********************
-
-.. doxygenfunction:: stroll_bmap64_test_mask
-
-stroll_bmap64_test_range
-************************
-
-.. doxygenfunction:: stroll_bmap64_test_range
-
-stroll_bmap64_toggle
-********************
-
-.. doxygenfunction:: stroll_bmap64_toggle
-
-stroll_bmap64_toggle_mask
-*************************
-
-.. doxygenfunction:: stroll_bmap64_toggle_mask
-
-stroll_bmap64_toggle_range
-**************************
-
-.. doxygenfunction:: stroll_bmap64_toggle_range
-
-stroll_bmap64_toggle_all
-************************
-
-.. doxygenfunction:: stroll_bmap64_toggle_all
-
-stroll_bmap64_xor
-*****************
-
-.. doxygenfunction:: stroll_bmap64_xor
-
-stroll_bmap64_xor_range
-***********************
-
-.. doxygenfunction:: stroll_bmap64_xor_range
+.. doxygenfunction:: stroll_bmap_setup_setul
 
 stroll_bops_ffc
 ***************
