@@ -139,26 +139,30 @@ operations. These are:
    * Find First bit Set:
 
       * :c:func:`stroll_bops_ffs`
-      * :c:func:`stroll_bops32_ffs`
-      * :c:func:`stroll_bops64_ffs`
+      * :c:func:`stroll_bops_ffs32`
+      * :c:func:`stroll_bops_ffs64`
+      * :c:func:`stroll_bops_ffsul`
 
    * Find Last bit Set:
 
       * :c:func:`stroll_bops_fls`
-      * :c:func:`stroll_bops32_fls`
-      * :c:func:`stroll_bops64_fls`
+      * :c:func:`stroll_bops_fls32`
+      * :c:func:`stroll_bops_fls64`
+      * :c:func:`stroll_bops_flsul`
 
    * Find First bit Cleared:
 
       * :c:func:`stroll_bops_ffc`
-      * :c:func:`stroll_bops32_ffc`
-      * :c:func:`stroll_bops64_ffc`
+      * :c:func:`stroll_bops_ffc32`
+      * :c:func:`stroll_bops_ffc64`
+      * :c:func:`stroll_bops_ffcul`
 
    * Find number of set bits (:index:`Hammimg weight`):
 
       * :c:func:`stroll_bops_hweight`
-      * :c:func:`stroll_bops32_hweight`
-      * :c:func:`stroll_bops64_hweight`
+      * :c:func:`stroll_bops_hweight32`
+      * :c:func:`stroll_bops_hweight64`
+      * :c:func:`stroll_bops_hweightul`
 
 .. index:: power of 2 operations, pow2
 
@@ -223,32 +227,38 @@ These are:
    * Compute masks:
 
       * :c:func:`stroll_bmap_mask`
-      * :c:func:`stroll_bmap32_mask`
-      * :c:func:`stroll_bmap64_mask`
+      * :c:func:`stroll_bmap_mask32`
+      * :c:func:`stroll_bmap_mask64`
+      * :c:func:`stroll_bmap_maskul`
 
    * Compute number of bits set (:index:`Hammimg weight`):
 
       * :c:func:`stroll_bmap_hweight`
-      * :c:func:`stroll_bmap32_hweight`
-      * :c:func:`stroll_bmap64_hweight`
+      * :c:func:`stroll_bmap_hweight32`
+      * :c:func:`stroll_bmap_hweight64`
+      * :c:func:`stroll_bmap_hweightul`
 
    * Perform bitwise AND operation:
 
       * :c:func:`stroll_bmap_and`
+      * :c:func:`stroll_bmap_and32`
+      * :c:func:`stroll_bmap_and64`
+      * :c:func:`stroll_bmap_andul`
       * :c:func:`stroll_bmap_and_range`
-      * :c:func:`stroll_bmap32_and`
-      * :c:func:`stroll_bmap32_and_range`
-      * :c:func:`stroll_bmap64_and`
-      * :c:func:`stroll_bmap64_and_range`
+      * :c:func:`stroll_bmap_and_range32`
+      * :c:func:`stroll_bmap_and_range64`
+      * :c:func:`stroll_bmap_and_rangeul`
 
    * Perform bitwise OR operation:
 
       * :c:func:`stroll_bmap_or`
+      * :c:func:`stroll_bmap_or32`
+      * :c:func:`stroll_bmap_or64`
+      * :c:func:`stroll_bmap_orul`
       * :c:func:`stroll_bmap_or_range`
-      * :c:func:`stroll_bmap32_or`
-      * :c:func:`stroll_bmap32_or_range`
-      * :c:func:`stroll_bmap64_or`
-      * :c:func:`stroll_bmap64_or_range`
+      * :c:func:`stroll_bmap_or_range32`
+      * :c:func:`stroll_bmap_or_range64`
+      * :c:func:`stroll_bmap_or_rangeul`
 
    * Perform bitwise XOR operation:
 
@@ -843,16 +853,45 @@ stroll_bmap_and
 
 .. doxygenfunction:: stroll_bmap_and
 
+stroll_bmap_and32
+*****************
+
+.. doxygenfunction:: stroll_bmap_and32
+
+stroll_bmap_and64
+*****************
+
+.. doxygenfunction:: stroll_bmap_and64
+
+stroll_bmap_andul
+*****************
+
+.. doxygenfunction:: stroll_bmap_andul
+
 stroll_bmap_and_range
 *********************
 
 .. doxygenfunction:: stroll_bmap_and_range
 
+stroll_bmap_and_range32
+***********************
+
+.. doxygenfunction:: stroll_bmap_and_range32
+
+stroll_bmap_and_range64
+***********************
+
+.. doxygenfunction:: stroll_bmap_and_range64
+
+stroll_bmap_and_rangeul
+***********************
+
+.. doxygenfunction:: stroll_bmap_and_rangeul
+
 stroll_bmap_clear
 *****************
 
 .. doxygenfunction:: stroll_bmap_clear
-
 
 stroll_bmap_clear_mask
 **********************
@@ -874,20 +913,80 @@ stroll_bmap_hweight
 
 .. doxygenfunction:: stroll_bmap_hweight
 
+stroll_bmap_hweight32
+*********************
+
+.. doxygenfunction:: stroll_bmap_hweight32
+
+stroll_bmap_hweight64
+*********************
+
+.. doxygenfunction:: stroll_bmap_hweight64
+
+stroll_bmap_hweightul
+*********************
+
+.. doxygenfunction:: stroll_bmap_hweightul
+
 stroll_bmap_mask
 ****************
-   
+
 .. doxygenfunction:: stroll_bmap_mask
+
+stroll_bmap_mask32
+******************
+
+.. doxygenfunction:: stroll_bmap_mask32
+
+stroll_bmap_mask64
+******************
+
+.. doxygenfunction:: stroll_bmap_mask64
+
+stroll_bmap_maskul
+******************
+
+.. doxygenfunction:: stroll_bmap_maskul
 
 stroll_bmap_or
 **************
 
 .. doxygenfunction:: stroll_bmap_or
 
+stroll_bmap_or32
+****************
+
+.. doxygenfunction:: stroll_bmap_or32
+
+stroll_bmap_or64
+****************
+
+.. doxygenfunction:: stroll_bmap_or64
+
+stroll_bmap_orul
+****************
+
+.. doxygenfunction:: stroll_bmap_orul
+
 stroll_bmap_or_range
 ********************
 
 .. doxygenfunction:: stroll_bmap_or_range
+
+stroll_bmap_or_range32
+**********************
+
+.. doxygenfunction:: stroll_bmap_or_range32
+
+stroll_bmap_or_range64
+**********************
+
+.. doxygenfunction:: stroll_bmap_or_range64
+
+stroll_bmap_or_rangeul
+**********************
+
+.. doxygenfunction:: stroll_bmap_or_rangeul
 
 stroll_bmap_set
 ***************
@@ -969,16 +1068,6 @@ stroll_bmap_xor_range
 
 .. doxygenfunction:: stroll_bmap_xor_range
 
-stroll_bmap32_and
-*****************
-
-.. doxygenfunction:: stroll_bmap32_and
-
-stroll_bmap32_and_range
-***********************
-
-.. doxygenfunction:: stroll_bmap32_and_range
-
 stroll_bmap32_clear
 *******************
 
@@ -999,26 +1088,6 @@ stroll_bmap32_clear_all
 ***********************
 
 .. doxygenfunction:: stroll_bmap32_clear_all
-
-stroll_bmap32_hweight
-*********************
-
-.. doxygenfunction:: stroll_bmap32_hweight
-
-stroll_bmap32_mask
-******************
-
-.. doxygenfunction:: stroll_bmap32_mask
-   
-stroll_bmap32_or
-****************
-
-.. doxygenfunction:: stroll_bmap32_or
-
-stroll_bmap32_or_range
-**********************
-
-.. doxygenfunction:: stroll_bmap32_or_range
 
 stroll_bmap32_set
 *****************
@@ -1100,16 +1169,6 @@ stroll_bmap32_xor_range
 
 .. doxygenfunction:: stroll_bmap32_xor_range
 
-stroll_bmap64_and
-*****************
-
-.. doxygenfunction:: stroll_bmap64_and
-
-stroll_bmap64_and_range
-***********************
-
-.. doxygenfunction:: stroll_bmap64_and_range
-
 stroll_bmap64_clear
 *******************
 
@@ -1129,26 +1188,6 @@ stroll_bmap64_clear_all
 ***********************
 
 .. doxygenfunction:: stroll_bmap64_clear_all
-
-stroll_bmap64_hweight
-*********************
-
-.. doxygenfunction:: stroll_bmap64_hweight
-
-stroll_bmap64_mask
-******************
-   
-.. doxygenfunction:: stroll_bmap64_mask
-
-stroll_bmap64_or
-****************
-
-.. doxygenfunction:: stroll_bmap64_or
-
-stroll_bmap64_or_range
-**********************
-
-.. doxygenfunction:: stroll_bmap64_or_range
 
 stroll_bmap64_set
 *****************
@@ -1250,45 +1289,65 @@ stroll_bops_hweight
 
 .. doxygenfunction:: stroll_bops_hweight
 
-stroll_bops32_ffc
+stroll_bops_ffc32
 *****************
 
-.. doxygenfunction:: stroll_bops32_ffc
+.. doxygenfunction:: stroll_bops_ffc32
 
-stroll_bops64_ffc
+stroll_bops_ffc64
 *****************
 
-.. doxygenfunction:: stroll_bops64_ffc
+.. doxygenfunction:: stroll_bops_ffc64
 
-stroll_bops32_ffs
+stroll_bops_ffcul
 *****************
 
-.. doxygenfunction:: stroll_bops32_ffs
+.. doxygenfunction:: stroll_bops_ffcul
 
-stroll_bops64_ffs
+stroll_bops_ffs32
 *****************
 
-.. doxygenfunction:: stroll_bops64_ffs
+.. doxygenfunction:: stroll_bops_ffs32
 
-stroll_bops32_fls
+stroll_bops_ffs64
 *****************
 
-.. doxygenfunction:: stroll_bops32_fls
+.. doxygenfunction:: stroll_bops_ffs64
 
-stroll_bops64_fls
+stroll_bops_ffsul
 *****************
 
-.. doxygenfunction:: stroll_bops64_fls
+.. doxygenfunction:: stroll_bops_ffsul
 
-stroll_bops32_hweight
+stroll_bops_fls32
+*****************
+
+.. doxygenfunction:: stroll_bops_fls32
+
+stroll_bops_fls64
+*****************
+
+.. doxygenfunction:: stroll_bops_fls64
+
+stroll_bops_flsul
+*****************
+
+.. doxygenfunction:: stroll_bops_flsul
+
+stroll_bops_hweight32
 *********************
 
-.. doxygenfunction:: stroll_bops32_hweight
+.. doxygenfunction:: stroll_bops_hweight32
 
-stroll_bops64_hweight
+stroll_bops_hweight64
 *********************
 
-.. doxygenfunction:: stroll_bops64_hweight
+.. doxygenfunction:: stroll_bops_hweight64
+
+stroll_bops_hweightul
+*********************
+
+.. doxygenfunction:: stroll_bops_hweightul
 
 stroll_fbmap_clear
 ******************

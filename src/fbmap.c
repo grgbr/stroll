@@ -9,11 +9,11 @@
 #include "stroll/bops.h"
 #include <errno.h>
 
-#define stroll_fbmap_assert_range(_bmap, _start_bit, _bit_count) \
-	stroll_fbmap_assert_map_api(_bmap); \
+#define stroll_fbmap_assert_range(_bits, _start_bit, _bit_count) \
+	stroll_fbmap_assert_api(_bits); \
 	stroll_fbmap_assert_api(_bit_count); \
-	stroll_fbmap_assert_api((_start_bit) < (_bmap)->nr); \
-	stroll_fbmap_assert_api(((_start_bit) + (_bit_count)) <= (_bmap)->nr)
+	stroll_fbmap_assert_api(((_start_bit) + (_bit_count)) <= \
+	                        (unsigned int)INT_MAX)
 
 /*
  * Return a bit mask suitable for masking out all bits lower that the bit index
@@ -38,26 +38,26 @@ stroll_fbmap_word_low_mask(unsigned int bit_no)
 }
 
 unsigned int
-stroll_fbmap_hweight(const struct stroll_fbmap * __restrict bmap)
+_stroll_fbmap_hweight(const unsigned long * __restrict bits, unsigned int nr)
 {
-	stroll_fbmap_assert_map_api(bmap);
+	stroll_fbmap_assert_api(bits);
 
 	unsigned int w, hw = 0;
 
-	for (w = 0; w < (stroll_fbmap_word_nr(bmap->nr) - 1); w++)
-		hw += stroll_bops_hweight(bmap->bits[w]);
+	for (w = 0; w < (stroll_fbmap_word_nr(nr) - 1); w++)
+		hw += stroll_bops_hweightul(bits[w]);
 
 	return hw +
-	       stroll_bops_hweight(bmap->bits[w] &
-	                           stroll_fbmap_word_low_mask(bmap->nr - 1));
+	       stroll_bops_hweightul(bits[w] &
+	                             stroll_fbmap_word_low_mask(nr - 1));
 }
 
 bool
-stroll_fbmap_test_range(const struct stroll_fbmap * __restrict bmap,
-                        unsigned int                           start_bit,
-                        unsigned int                           bit_count)
+_stroll_fbmap_test_range(const unsigned long * __restrict bits,
+                         unsigned int                     start_bit,
+                         unsigned int                     bit_count)
 {
-	stroll_fbmap_assert_range(bmap, start_bit, bit_count);
+	stroll_fbmap_assert_range(bits, start_bit, bit_count);
 
 	unsigned int  stop_bit = start_bit + bit_count - 1;
 	unsigned int  curr = stroll_fbmap_word_no(start_bit);
@@ -70,7 +70,7 @@ stroll_fbmap_test_range(const struct stroll_fbmap * __restrict bmap,
 		 * Mask out unwanted least significant bits and check if 0 or
 		 * not.
 		 */
-		if (bmap->bits[curr++] & msb)
+		if (bits[curr++] & msb)
 			return true;
 	}
 	else
@@ -78,68 +78,65 @@ stroll_fbmap_test_range(const struct stroll_fbmap * __restrict bmap,
 		 * Range applies to a single word only: mask out unwanted most
 		 * and least significant bits and check if 0 or not.
 		 */
-		return !!(bmap->bits[curr] & msb & lsb);
+		return !!(bits[curr] & msb & lsb);
 
 	/* Iterate over all remaining words but the last and test if 0. */
 	while (curr < last)
-		if (bmap->bits[curr++])
+		if (bits[curr++])
 			return true;
 
 	/*
 	 * Mask out last word's unwanted most significant bits and check if 0 or
 	 * not.
 	 */
-	return !!(bmap->bits[curr] & lsb);
+	return !!(bits[curr] & lsb);
 }
 
 bool
-stroll_fbmap_test_all(const struct stroll_fbmap * __restrict bmap)
+_stroll_fbmap_test_all(const unsigned long * __restrict bits, unsigned int nr)
 {
-	stroll_fbmap_assert_map_api(bmap);
+	stroll_fbmap_assert_bits_api(bits, nr);
 
 	unsigned int w;
 
-	for (w = 0; w < (stroll_fbmap_word_nr(bmap->nr) - 1); w++) {
-		if (bmap->bits[w])
+	for (w = 0; w < (stroll_fbmap_word_nr(nr) - 1); w++) {
+		if (bits[w])
 			return true;
 	}
 
-	if (bmap->bits[w] & stroll_fbmap_word_low_mask(bmap->nr - 1))
+	if (bits[w] & stroll_fbmap_word_low_mask(nr - 1))
 		return true;
 
 	return false;
 }
 
 void
-stroll_fbmap_toggle_all(struct stroll_fbmap * __restrict bmap)
+_stroll_fbmap_toggle_all(unsigned long * __restrict bits, unsigned int nr)
 {
-	stroll_fbmap_assert_map_api(bmap);
+	stroll_fbmap_assert_bits_api(bits, nr);
 
 	unsigned int w;
 
-	for (w = 0; w < stroll_fbmap_word_nr(bmap->nr); w++)
-		bmap->bits[w] = ~bmap->bits[w];
+	for (w = 0; w < stroll_fbmap_word_nr(nr); w++)
+		bits[w] = ~bits[w];
 }
 
-int
-stroll_fbmap_init_set(struct stroll_fbmap * __restrict bmap,
-                      unsigned int                     bit_nr)
+unsigned long *
+_stroll_fbmap_create_bits_clear(unsigned int bit_nr)
 {
-	stroll_fbmap_assert_api(bmap);
 	stroll_fbmap_assert_api(bit_nr);
-	stroll_fbmap_assert_api(bit_nr <= INT_MAX);
+	stroll_fbmap_assert_api(bit_nr <= (unsigned int)INT_MAX);
 
-	unsigned int wnr = stroll_fbmap_word_nr(bit_nr);
+	unsigned long * bits;
+	unsigned int    sz = stroll_fbmap_word_nr(bit_nr) * sizeof(bits[0]);
 
-	bmap->bits = malloc(wnr * sizeof(bmap->bits[0]));
-	if (!bmap->bits)
-		return -ENOMEM;
+	bits = malloc(sz);
+	if (!bits)
+		return NULL;
 
-	memset(bmap->bits, 0xff, wnr * sizeof(bmap->bits[0]));
+	memset(bits, 0, sz);
 
-	bmap->nr = bit_nr;
-
-	return 0;
+	return bits;
 }
 
 int
@@ -148,16 +145,70 @@ stroll_fbmap_init_clear(struct stroll_fbmap * __restrict bmap,
 {
 	stroll_fbmap_assert_api(bmap);
 	stroll_fbmap_assert_api(bit_nr);
-	stroll_fbmap_assert_api(bit_nr <= INT_MAX);
+	stroll_fbmap_assert_api(bit_nr <= (unsigned int)INT_MAX);
 
-	bmap->bits = calloc(stroll_fbmap_word_nr(bit_nr),
-	                    sizeof(bmap->bits[0]));
+	bmap->bits = _stroll_fbmap_create_bits_clear(bit_nr);
 	if (!bmap->bits)
-		return -ENOMEM;
+		return -errno;
 
 	bmap->nr = bit_nr;
 
 	return 0;
+}
+
+unsigned long *
+_stroll_fbmap_create_bits_set(unsigned int bit_nr)
+{
+	stroll_fbmap_assert_api(bit_nr);
+	stroll_fbmap_assert_api(bit_nr <= (unsigned int)INT_MAX);
+
+	unsigned long * bits;
+	unsigned int    sz = stroll_fbmap_word_nr(bit_nr) * sizeof(bits[0]);
+
+	bits = malloc(sz);
+	if (!bits)
+		return NULL;
+
+	memset(bits, 0xff, sz);
+
+	return bits;
+}
+
+int
+stroll_fbmap_init_set(struct stroll_fbmap * __restrict bmap,
+                      unsigned int                     bit_nr)
+{
+	stroll_fbmap_assert_api(bmap);
+	stroll_fbmap_assert_api(bit_nr);
+	stroll_fbmap_assert_api(bit_nr <= (unsigned int)INT_MAX);
+
+	bmap->bits = _stroll_fbmap_create_bits_set(bit_nr);
+	if (!bmap->bits)
+		return -errno;
+
+	bmap->nr = bit_nr;
+
+	return 0;
+}
+
+unsigned long *
+_stroll_fbmap_create_bits_dup(unsigned long * __restrict src,
+                              unsigned int               bit_nr)
+{
+	stroll_fbmap_assert_api(src);
+	stroll_fbmap_assert_api(bit_nr);
+	stroll_fbmap_assert_api(bit_nr <= (unsigned int)INT_MAX);
+
+	unsigned long * bits;
+	unsigned int    sz = stroll_fbmap_word_nr(bit_nr) * sizeof(bits[0]);
+
+	bits = malloc(sz);
+	if (!bits)
+		return NULL;
+
+	memcpy(bits, src, sz);
+
+	return bits;
 }
 
 int
@@ -167,13 +218,9 @@ stroll_fbmap_init_dup(struct stroll_fbmap * __restrict       bmap,
 	stroll_fbmap_assert_api(bmap);
 	stroll_fbmap_assert_map_api(src);
 
-	unsigned int wnr = stroll_fbmap_word_nr(src->nr);
-
-	bmap->bits = malloc(wnr * sizeof(bmap->bits[0]));
+	bmap->bits = _stroll_fbmap_create_bits_dup(src->bits, src->nr);
 	if (!bmap->bits)
-		return -ENOMEM;
-
-	memcpy(bmap->bits, src->bits, wnr * sizeof(bmap->bits[0]));
+		return -errno;
 
 	bmap->nr = src->nr;
 
@@ -182,8 +229,7 @@ stroll_fbmap_init_dup(struct stroll_fbmap * __restrict       bmap,
 
 #define stroll_fbmap_assert_iter(_iter) \
 	stroll_fbmap_assert_api(_iter); \
-	stroll_fbmap_assert_map_api((_iter)->bmap); \
-	stroll_fbmap_assert_api((_iter)->nr <= (_iter)->bmap->nr); \
+	stroll_fbmap_assert_bits_api((_iter)->bits, (_iter)->nr); \
 	stroll_fbmap_assert_api((_iter)->curr < stroll_fbmap_word_nr(iter->nr))
 
 int
@@ -197,10 +243,10 @@ stroll_fbmap_step_iter_set(struct stroll_fbmap_iter * __restrict iter)
 		if (++iter->curr >= stroll_fbmap_word_nr(iter->nr))
 			return -ENOENT;
 
-		iter->word = iter->bmap->bits[iter->curr];
+		iter->word = iter->bits[iter->curr];
 	}
 
-	bit_no = stroll_bops_ffs(iter->word) - 1;
+	bit_no = stroll_bops_ffsul(iter->word) - 1;
 	iter->word &= ~(1UL << bit_no);
 
 	bit_no += (iter->curr * __WORDSIZE);
@@ -211,20 +257,19 @@ stroll_fbmap_step_iter_set(struct stroll_fbmap_iter * __restrict iter)
 }
 
 int
-stroll_fbmap_init_range_iter_set(
-	struct stroll_fbmap_iter * __restrict  iter,
-	const struct stroll_fbmap * __restrict bmap,
-	unsigned int                           start_bit,
-	unsigned int                           bit_count)
+_stroll_fbmap_init_range_iter_set(
+	struct stroll_fbmap_iter * __restrict iter,
+	const unsigned long * __restrict      bits,
+	unsigned int                          start_bit,
+	unsigned int                          bit_count)
 {
 	stroll_fbmap_assert_api(iter);
-	stroll_fbmap_assert_range(bmap, start_bit, bit_count);
+	stroll_fbmap_assert_range(bits, start_bit, bit_count);
 
 	iter->curr = stroll_fbmap_word_no(start_bit);
-	iter->word = bmap->bits[iter->curr] &
-	             stroll_fbmap_word_high_mask(start_bit);
+	iter->word = bits[iter->curr] & stroll_fbmap_word_high_mask(start_bit);
 	iter->nr = start_bit + bit_count;
-	iter->bmap = bmap;
+	iter->bits = bits;
 
 	return stroll_fbmap_step_iter_set(iter);
 }
@@ -240,10 +285,10 @@ stroll_fbmap_step_iter_clear(struct stroll_fbmap_iter * __restrict iter)
 		if (++iter->curr >= stroll_fbmap_word_nr(iter->nr))
 			return -ENOENT;
 
-		iter->word = iter->bmap->bits[iter->curr];
+		iter->word = iter->bits[iter->curr];
 	}
 
-	bit_no = stroll_bops_ffc(iter->word) - 1;
+	bit_no = stroll_bops_ffcul(iter->word) - 1;
 	iter->word |= 1UL << bit_no;
 
 	bit_no += (iter->curr * __WORDSIZE);
@@ -254,20 +299,19 @@ stroll_fbmap_step_iter_clear(struct stroll_fbmap_iter * __restrict iter)
 }
 
 int
-stroll_fbmap_init_range_iter_clear(
-	struct stroll_fbmap_iter * __restrict  iter,
-	const struct stroll_fbmap * __restrict bmap,
-	unsigned int                           start_bit,
-	unsigned int                           bit_count)
+_stroll_fbmap_init_range_iter_clear(
+	struct stroll_fbmap_iter * __restrict iter,
+	const unsigned long * __restrict      bits,
+	unsigned int                          start_bit,
+	unsigned int                          bit_count)
 {
 	stroll_fbmap_assert_api(iter);
-	stroll_fbmap_assert_range(bmap, start_bit, bit_count);
+	stroll_fbmap_assert_range(bits, start_bit, bit_count);
 
 	iter->curr = stroll_fbmap_word_no(start_bit);
-	iter->word = bmap->bits[iter->curr] |
-	             ~stroll_fbmap_word_high_mask(start_bit);
+	iter->word = bits[iter->curr] | ~stroll_fbmap_word_high_mask(start_bit);
 	iter->nr = start_bit + bit_count;
-	iter->bmap = bmap;
+	iter->bits = bits;
 
 	return stroll_fbmap_step_iter_clear(iter);
 }

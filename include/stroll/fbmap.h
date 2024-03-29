@@ -91,11 +91,14 @@ struct stroll_fbmap {
 	unsigned long * bits;
 };
 
+#define stroll_fbmap_assert_bits_api(_bits, _nr) \
+	stroll_fbmap_assert_api(_bits); \
+	stroll_fbmap_assert_api(_nr); \
+	stroll_fbmap_assert_api((_nr) <= (unsigned int)INT_MAX)
+
 #define stroll_fbmap_assert_map_api(_bmap) \
 	stroll_fbmap_assert_api(_bmap); \
-	stroll_fbmap_assert_api((_bmap)->nr); \
-	stroll_fbmap_assert_api((_bmap)->nr <= (unsigned int)INT_MAX); \
-	stroll_fbmap_assert_api((_bmap)->bits)
+	stroll_fbmap_assert_bits_api((_bmap)->bits, (_bmap)->nr)
 
 /**
  * Return the maximum number of bits a fixed sized bitmap may hold.
@@ -116,6 +119,10 @@ stroll_fbmap_nr(const struct stroll_fbmap * __restrict bmap)
 	return bmap->nr;
 }
 
+extern unsigned int
+_stroll_fbmap_hweight(const unsigned long * __restrict bits, unsigned int nr)
+	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
+
 /**
  * Find the number of set bits over a fixed sized bitmap.
  *
@@ -126,9 +133,24 @@ stroll_fbmap_nr(const struct stroll_fbmap * __restrict bmap)
  * Returns the Hamming weight of a stroll_fbmap fixed sized bitmap. The Hamming
  * weight of a bitmap is the total number of bits set in it.
  */
-extern unsigned int
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
+unsigned int
 stroll_fbmap_hweight(const struct stroll_fbmap * __restrict bmap)
-	__stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result;
+{
+	stroll_fbmap_assert_map_api(bmap);
+
+	return _stroll_fbmap_hweight(bmap->bits, bmap->nr);
+}
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
+bool
+_stroll_fbmap_test(const unsigned long * __restrict bits, unsigned int bit_no)
+{
+	stroll_fbmap_assert_bits_api(bits, bit_no + 1);
+
+	return !!(bits[stroll_fbmap_word_no(bit_no)] &
+	          stroll_fbmap_word_bit_mask(bit_no));
+}
 
 /**
  * Test wether a bit in a fixed sized bitmap is set or not.
@@ -161,9 +183,14 @@ stroll_fbmap_test(const struct stroll_fbmap * __restrict bmap,
 	stroll_fbmap_assert_map_api(bmap);
 	stroll_fbmap_assert_api(bit_no < bmap->nr);
 
-	return !!(bmap->bits[stroll_fbmap_word_no(bit_no)] &
-	          stroll_fbmap_word_bit_mask(bit_no));
+	return _stroll_fbmap_test(bmap->bits, bit_no);
 }
+
+extern bool
+_stroll_fbmap_test_range(const unsigned long * __restrict bits,
+                         unsigned int                     start_bit,
+                         unsigned int                     bit_count)
+	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
 
 /**
  * Test wether a range of bits in a fixed sized bitmap are set or not.
@@ -193,10 +220,19 @@ stroll_fbmap_test(const struct stroll_fbmap * __restrict bmap,
  * - stroll_fbmap_test()
  * - stroll_fbmap_test_all()
  */
-extern bool
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
+bool
 stroll_fbmap_test_range(const struct stroll_fbmap * __restrict bmap,
                         unsigned int                           start_bit,
                         unsigned int                           bit_count)
+{
+	stroll_fbmap_assert_map_api(bmap);
+
+	return _stroll_fbmap_test_range(bmap->bits, start_bit, bit_count);
+}
+
+extern bool
+_stroll_fbmap_test_all(const unsigned long * __restrict bits, unsigned int nr)
 	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
 
 /**
@@ -212,9 +248,24 @@ stroll_fbmap_test_range(const struct stroll_fbmap * __restrict bmap,
  * - stroll_fbmap_test()
  * - stroll_fbmap_test_range()
  */
-extern bool
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
+bool
 stroll_fbmap_test_all(const struct stroll_fbmap * __restrict bmap)
-	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
+{
+	stroll_fbmap_assert_map_api(bmap);
+
+	return _stroll_fbmap_test_all(bmap->bits, bmap->nr);
+}
+
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+_stroll_fbmap_set(unsigned long * __restrict bits, unsigned int bit_no)
+{
+	stroll_fbmap_assert_bits_api(bits, bit_no + 1);
+
+	bits[stroll_fbmap_word_no(bit_no)] |=
+		stroll_fbmap_word_bit_mask(bit_no);
+}
 
 /**
  * Set a bit in a fixed sized bitmap.
@@ -239,11 +290,19 @@ static inline __stroll_nonull(1) __stroll_nothrow
 void
 stroll_fbmap_set(struct stroll_fbmap * __restrict bmap, unsigned int bit_no)
 {
-	stroll_fbmap_assert_map_api( bmap);
+	stroll_fbmap_assert_map_api(bmap);
 	stroll_fbmap_assert_api(bit_no < bmap->nr);
 
-	 bmap->bits[stroll_fbmap_word_no(bit_no)] |=
-		stroll_fbmap_word_bit_mask(bit_no);
+	return _stroll_fbmap_set(bmap->bits, bit_no);
+}
+
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+_stroll_fbmap_set_all(unsigned long * __restrict bits, unsigned int nr)
+{
+	stroll_fbmap_assert_bits_api(bits, nr);
+
+	memset(bits, 0xff, stroll_fbmap_word_nr(nr) * sizeof(bits[0]));
 }
 
 /**
@@ -261,9 +320,17 @@ stroll_fbmap_set_all(struct stroll_fbmap * __restrict bmap)
 {
 	stroll_fbmap_assert_map_api(bmap);
 
-	memset(bmap->bits,
-	       0xff,
-	       stroll_fbmap_word_nr(bmap->nr) * sizeof(bmap->bits[0]));
+	return _stroll_fbmap_set_all(bmap->bits, bmap->nr);
+}
+
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+_stroll_fbmap_clear(unsigned long * __restrict bits, unsigned int bit_no)
+{
+	stroll_fbmap_assert_bits_api(bits, bit_no + 1);
+
+	bits[stroll_fbmap_word_no(bit_no)] &=
+		~(stroll_fbmap_word_bit_mask(bit_no));
 }
 
 /**
@@ -292,8 +359,16 @@ stroll_fbmap_clear(struct stroll_fbmap * __restrict bmap, unsigned int bit_no)
 	stroll_fbmap_assert_map_api(bmap);
 	stroll_fbmap_assert_api(bit_no < bmap->nr);
 
-	bmap->bits[stroll_fbmap_word_no(bit_no)] &=
-		~(stroll_fbmap_word_bit_mask(bit_no));
+	return _stroll_fbmap_clear(bmap->bits, bit_no);
+}
+
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+_stroll_fbmap_clear_all(unsigned long * __restrict bits, unsigned int nr)
+{
+	stroll_fbmap_assert_bits_api(bits, nr);
+
+	memset(bits, 0, stroll_fbmap_word_nr(nr) * sizeof(bits[0]));
 }
 
 /**
@@ -311,9 +386,17 @@ stroll_fbmap_clear_all(struct stroll_fbmap * __restrict bmap)
 {
 	stroll_fbmap_assert_map_api(bmap);
 
-	memset(bmap->bits,
-	       0,
-	       stroll_fbmap_word_nr(bmap->nr) * sizeof(bmap->bits[0]));
+	return _stroll_fbmap_clear_all(bmap->bits, bmap->nr);
+}
+
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+_stroll_fbmap_toggle(unsigned long * __restrict bits, unsigned int bit_no)
+{
+	stroll_fbmap_assert_bits_api(bits, bit_no + 1);
+
+	bits[stroll_fbmap_word_no(bit_no)] ^=
+		stroll_fbmap_word_bit_mask(bit_no);
 }
 
 /**
@@ -342,9 +425,12 @@ stroll_fbmap_toggle(struct stroll_fbmap * __restrict bmap, unsigned int bit_no)
 	stroll_fbmap_assert_map_api(bmap);
 	stroll_fbmap_assert_api(bit_no < bmap->nr);
 
-	bmap->bits[stroll_fbmap_word_no(bit_no)] ^=
-		stroll_fbmap_word_bit_mask(bit_no);
+	return _stroll_fbmap_toggle(bmap->bits, bit_no);
 }
+
+extern void
+_stroll_fbmap_toggle_all(unsigned long * __restrict bits, unsigned int nr)
+	__stroll_nonull(1) __stroll_nothrow __leaf;
 
 /**
  * Toggle all bits of a fixed sized bitmap.
@@ -355,40 +441,18 @@ stroll_fbmap_toggle(struct stroll_fbmap * __restrict bmap, unsigned int bit_no)
  * - stroll_fbmap_set_all()
  * - stroll_fbmap_toggle_all()
  */
-extern void
+static inline __stroll_nonull(1) __stroll_nothrow
+void
 stroll_fbmap_toggle_all(struct stroll_fbmap * __restrict bmap)
-	__stroll_nonull(1) __stroll_nothrow __leaf;
+{
+	stroll_fbmap_assert_map_api(bmap);
 
-/**
- * Initialize fixed sized bitmap with all bits set.
- *
- * @param[out] bmap   Fixed sized bitmap
- * @param[in]  bit_nr Maximum number of bits @p bmap may hold
- *
- * @return an errno-like error code
- * @retval 0       success
- * @retval -ENOMEM memory allocation failed
- *
- * Initialize the @p bmap fixed sized bitmap with all bits set.
- *
- * @note
- * Once client code is done with @p bmap, it *MUST* call stroll_fbmap_fini() to
- * release allocated resources.
- *
- * @warning
- * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
- * @p bit_nr > `INT_MAX` result is undefined. An assertion is triggered
- * otherwise.
- *
- * @see
- * - stroll_fbmap_init_clear()
- * - stroll_fbmap_init_dup()
- * - stroll_fbmap_fini()
- */
-extern int
-stroll_fbmap_init_set(struct stroll_fbmap * __restrict bmap,
-                      unsigned int                     bit_nr)
-	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
+	return _stroll_fbmap_toggle_all(bmap->bits, bmap->nr);
+}
+
+extern unsigned long *
+_stroll_fbmap_create_bits_clear(unsigned int bit_nr)
+	__stroll_nothrow __leaf __warn_result;
 
 /**
  * Zero-initialize fixed sized bitmap.
@@ -421,6 +485,46 @@ stroll_fbmap_init_clear(struct stroll_fbmap * __restrict bmap,
                         unsigned int                     bit_nr)
 	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
+extern unsigned long *
+_stroll_fbmap_create_bits_set(unsigned int bit_nr)
+	__stroll_nothrow __leaf __warn_result;
+
+/**
+ * Initialize fixed sized bitmap with all bits set.
+ *
+ * @param[out] bmap   Fixed sized bitmap
+ * @param[in]  bit_nr Maximum number of bits @p bmap may hold
+ *
+ * @return an errno-like error code
+ * @retval 0       success
+ * @retval -ENOMEM memory allocation failed
+ *
+ * Initialize the @p bmap fixed sized bitmap with all bits set.
+ *
+ * @note
+ * Once client code is done with @p bmap, it *MUST* call stroll_fbmap_fini() to
+ * release allocated resources.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ * @p bit_nr > `INT_MAX` result is undefined. An assertion is triggered
+ * otherwise.
+ *
+ * @see
+ * - stroll_fbmap_init_clear()
+ * - stroll_fbmap_init_dup()
+ * - stroll_fbmap_fini()
+ */
+extern int
+stroll_fbmap_init_set(struct stroll_fbmap * __restrict bmap,
+                      unsigned int                     bit_nr)
+	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
+
+extern unsigned long *
+_stroll_fbmap_create_bits_dup(unsigned long * __restrict src,
+                              unsigned int               bit_nr)
+	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
+
 /**
  * Initialize fixed sized bitmap using the content of another stroll_fbmap.
  *
@@ -448,6 +552,15 @@ stroll_fbmap_init_dup(struct stroll_fbmap * __restrict       bmap,
                       const struct stroll_fbmap * __restrict src)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
 
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+_stroll_fbmap_destroy_bits(unsigned long * bits)
+{
+	stroll_fbmap_assert_api(bits);
+
+	free(bits);
+}
+
 /**
  * Finalize a fixed sized bitmap.
  *
@@ -467,7 +580,7 @@ stroll_fbmap_fini(struct stroll_fbmap * __restrict bmap)
 {
 	stroll_fbmap_assert_map_api(bmap);
 
-	free(bmap->bits);
+	_stroll_fbmap_destroy_bits(bmap->bits);
 }
 
 /**
@@ -483,10 +596,10 @@ stroll_fbmap_fini(struct stroll_fbmap * __restrict bmap)
  * - stroll_fbmap_foreach_clear()
  */
 struct stroll_fbmap_iter {
-	unsigned long               word;
-	unsigned int                curr;
-	unsigned int                nr;
-	const struct stroll_fbmap * bmap;
+	unsigned long         word;
+	unsigned int          curr;
+	unsigned int          nr;
+	const unsigned long * bits;
 };
 
 extern int
@@ -494,12 +607,42 @@ stroll_fbmap_step_iter_set(struct stroll_fbmap_iter * __restrict iter)
 	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
 extern int
+_stroll_fbmap_init_range_iter_set(
+	struct stroll_fbmap_iter * __restrict  iter,
+	const unsigned long * __restrict       bits,
+	unsigned int                           start_bit,
+	unsigned int                           bit_count)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
+
+#define _stroll_fbmap_foreach_range_set(_iter, \
+                                        _bits, \
+                                        _start_bit, \
+                                        _bit_count, \
+                                        _bit_no) \
+	for ((_bit_no) = _stroll_fbmap_init_range_iter_set(_iter, \
+	                                                   _bits, \
+	                                                   _start_bit, \
+	                                                   _bit_count); \
+	     (_bit_no) >= 0; \
+	     (_bit_no) = stroll_fbmap_step_iter_set(_iter))
+
+static inline __stroll_nonull(1, 2) __stroll_nothrow __warn_result
+int
 stroll_fbmap_init_range_iter_set(
 	struct stroll_fbmap_iter * __restrict  iter,
 	const struct stroll_fbmap * __restrict bmap,
 	unsigned int                           start_bit,
 	unsigned int                           bit_count)
-	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
+{
+	stroll_fbmap_assert_api(iter);
+	stroll_fbmap_assert_map_api(bmap);
+	stroll_fbmap_assert_api((start_bit + bit_count) <= bmap->nr);
+
+	return _stroll_fbmap_init_range_iter_set(iter,
+	                                         bmap->bits,
+	                                         start_bit,
+	                                         bit_count);
+}
 
 /**
  * Iterate over bits set in a fixed sized bitmap given the specified bit range.
@@ -538,6 +681,7 @@ int
 stroll_fbmap_init_iter_set(struct stroll_fbmap_iter * __restrict  iter,
                            const struct stroll_fbmap * __restrict bmap)
 {
+	stroll_fbmap_assert_api(iter);
 	stroll_fbmap_assert_api(bmap);
 
 	return stroll_fbmap_init_range_iter_set(iter, bmap, 0, bmap->nr);
@@ -568,12 +712,42 @@ stroll_fbmap_step_iter_clear(struct stroll_fbmap_iter * __restrict iter)
 	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
 extern int
+_stroll_fbmap_init_range_iter_clear(
+	struct stroll_fbmap_iter * __restrict iter,
+	const unsigned long * __restrict      bits,
+	unsigned int                          start_bit,
+	unsigned int                          bit_count)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
+
+static inline __stroll_nonull(1, 2) __stroll_nothrow __warn_result
+int
 stroll_fbmap_init_range_iter_clear(
 	struct stroll_fbmap_iter * __restrict  iter,
 	const struct stroll_fbmap * __restrict bmap,
 	unsigned int                           start_bit,
 	unsigned int                           bit_count)
-	__stroll_nonull(1, 2) __stroll_nothrow __leaf __warn_result;
+{
+	stroll_fbmap_assert_api(iter);
+	stroll_fbmap_assert_map_api(bmap);
+	stroll_fbmap_assert_api((start_bit + bit_count) <= bmap->nr);
+
+	return _stroll_fbmap_init_range_iter_clear(iter,
+	                                           bmap->bits,
+	                                           start_bit,
+	                                           bit_count);
+}
+
+#define _stroll_fbmap_foreach_range_clear(_iter, \
+                                          _bits, \
+                                          _start_bit, \
+                                          _bit_count, \
+                                          _bit_no) \
+	for ((_bit_no) = _stroll_fbmap_init_range_iter_clear(_iter, \
+	                                                     _bits, \
+	                                                     _start_bit, \
+	                                                     _bit_count); \
+	     (_bit_no) >= 0; \
+	     (_bit_no) = stroll_fbmap_step_iter_clear(_iter))
 
 /**
  * Iterate over bits cleared in a fixed sized bitmap given the specified bit
@@ -613,6 +787,7 @@ int
 stroll_fbmap_init_iter_clear(struct stroll_fbmap_iter * __restrict  iter,
                              const struct stroll_fbmap * __restrict bmap)
 {
+	stroll_fbmap_assert_api(iter);
 	stroll_fbmap_assert_api(bmap);
 
 	return stroll_fbmap_init_range_iter_clear(iter, bmap, 0, bmap->nr);

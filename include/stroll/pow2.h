@@ -55,7 +55,7 @@ stroll_pow2_low32(uint32_t value)
 {
 	stroll_pow2_assert_api(value);
 
-	return stroll_bops32_fls(value) - 1;
+	return stroll_bops_fls32(value) - 1;
 }
 
 /**
@@ -75,7 +75,7 @@ stroll_pow2_low64(uint64_t value)
 {
 	stroll_pow2_assert_api(value);
 
-	return stroll_bops64_fls(value) - 1;
+	return stroll_bops_fls64(value) - 1;
 }
 
 /**
