@@ -10,9 +10,9 @@ Glossary
       order in its input to speed the process up. See `Sorting algorithms`_.
 
    complexity
-      Sorting algorithms are qualified according to their computational and
-      space (i.e., memory) *complexity* using the usual `Big O`_ notation.
-      See `Sorting algorithms`_.
+      Sorting algorithms efficiency is qualified according to their
+      computational and space (i.e., memory) *complexity* using the usual
+      `Big O`_ notation. See `Sorting algorithms`_.
 
    in-place
       Sorting algorithms known to be *in-place* only require a constant amount
@@ -26,7 +26,7 @@ Glossary
       Sorting algorithms logic may be *recursive* or *non-recursive*.
       See `Sorting algorithms`_.
 
-   sorting algorithm properties
+   sorting properties
       A set of attributes that qualifies sorting algorithms. These are
       |adaptive|, |stable|, |in-place|, |online|, |recursive|, time and space
       |complexity|. See `Sorting algorithms`_.

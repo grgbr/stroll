@@ -47,6 +47,7 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT`
 * :c:macro:`CONFIG_STROLL_ARRAY_INSERT_SORT`
 * :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT`
+* :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD`
 * :c:macro:`CONFIG_STROLL_ARRAY_SELECT_SORT`
 * :c:macro:`CONFIG_STROLL_ASSERT`
 * :c:macro:`CONFIG_STROLL_ASSERT_API`
@@ -481,59 +482,140 @@ pre-sorted arrays thanks to :c:func:`stroll_array_bisect_search`.
 Sorting arrays
 --------------
 
-.. todo:: explain how to select sorting algo !
+The Stroll_ library provides support for sorting arrays thanks to multiple
+algorithms.
+
+The table below presents available implementations with their related
+:term:`sorting properties` to help you to select the right algorithm according
+to your applicative requirements.
+
+.. table:: Sorting algorithm properties
+
+    +------------------------+------------------------------------------------------------------------+
+    |                        | Algorithms                                                             |
+    | Properties             +---------------------+----------------+----------------+----------------+
+    |                        | `Quick              | `Insertion     | `Selection     | `Bubble        |
+    |                        | sort`_              | sort`_         | sort`_         | sort`_         |
+    +========================+=====================+================+================+================+
+    | |adaptive|             | no                  | yes            | no             | yes            |
+    +------------------------+---------------------+----------------+----------------+----------------+
+    | |online|               | no                  | yes            | no             | no             |
+    +------------------------+---------------------+----------------+----------------+----------------+
+    | |stable|               | no                  | yes            | no             | yes            |
+    +------------------------+---------------------+----------------+----------------+----------------+
+    | |recursive|            | no                  | no             | no             | no             |
+    +------------------------+---------------------+----------------+----------------+----------------+
+    | |in-place|             | yes                 | yes            | yes            | yes            |
+    +------------------------+---------------------+----------------+----------------+----------------+
+    | **allocation**         | on stack            | none           | none           | none           |
+    +--------------+---------+---------------------+----------------+----------------+----------------+
+    |              | worst   | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    |              +---------+---------------------+----------------+----------------+----------------+
+    | **space**    | average | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    | |complexity| +---------+---------------------+----------------+----------------+----------------+
+    |              | best    | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    +--------------+---------+---------------------+----------------+----------------+----------------+
+    |              | worst   | :math:`O(n^2)`      | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
+    |              +---------+---------------------+----------------+----------------+----------------+
+    | **time**     | average | :math:`O(n log(n))` | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
+    | |complexity| +---------+---------------------+----------------+----------------+----------------+
+    |              | best    | :math:`O(n log(n))` | :math:`O(n)`   | :math:`O(n^2)` | :math:`O(n)`   |
+    +--------------+---------+---------------------+----------------+----------------+----------------+
+
+.. index:: sort, quick sort
+
+Quick sort
+**********
+
+When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`Quick`_ sort algorithm thanks to :c:func:`stroll_array_quick_sort`.
+
+Current implementation includes the following usual optimizations:
+
+* recursion converted to iterative process thanks to additional
+  :math:`O(log(n))` stack space,
+* *partition* elements according to the Hoare_ scheme,
+* choose *pivot* according to the median-of-three_ strategy,
+* when the number of partition elements is less than
+  :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD`, switch to
+  `insertion sort`_.
+
+You may customize `quick sort`_ switch to `insertion sort`_ at Stroll_ building
+time thanks to the :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD`
+build configuration macro.
+For each partition, when the number of elements left to sort is below this
+threshold, `quick sort`_ will switch to `insertion sort`_ to minimize the number
+of element swap operations.
+
+.. note::
+
+   * efficient, general-purpose sorting algorithm ;
+   * exhibits poor performance for inputs containing many duplicate elements
+     (prefer 3-way Quicksort instead) ;
+   * refer to `Sorting arrays`_ for more informations related to algorithm
+     selection.
+
+.. index:: sort, insertion sort
+
+Insertion sort
+**************
+
+When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_INSERT_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`Insertion`_ sort algorithm thanks to :c:func:`stroll_array_insert_sort`.
+
+The alternate :c:func:`stroll_array_insert_presort` function may be used when
+adding elements to an input array that is known (for sure) to be already
+sorted. This allows to optimize situations where sorting a *continuous stream of
+input elements*.
+
+.. note::
+
+   * simple implementation ;
+   * limited number of items swaps ;
+   * very efficient on small and presorted data sets ;
+   * poor efficiency over large data sets ;
+   * refer to `Sorting arrays`_ for more informations related to algorithm
+     selection.
+
+.. index:: sort, selection sort
+
+Selection sort
+**************
+
+When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_SELECT_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`Selection`_ sort algorithm thanks to :c:func:`stroll_array_select_sort`.
+
+.. note::
+
+   * poor to extremely low efficiency even over small data sets.
+
+.. warning::
+
+   Implemented for reference only: **DO NOT USE IT**. Refer to
+   `Sorting arrays`_ for more informations related to algorithm selection.
+
+.. index:: sort, bubble sort
+
+Bubble sort
+***********
 
 When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT` build
 configuration option enabled, the Stroll_ library provides support for
 `Bubble`_ sort algorithm thanks to :c:func:`stroll_array_bubble_sort`.
 
-.. table:: Available Sorting algorithms
+.. note::
 
-  +------------+---------------------------------------+--------------------------------------------+---------------------+
-  | Algorithms | Functions                             | Build configuration                        | Notes               |
-  |            |                                       | option                                     |                     |
-  +============+=======================================+============================================+=====================+
-  | `Quick`_   | :c:func:`stroll_array_quick_sort`     | :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT`  |                     |
-  +------------+---------------------------------------+--------------------------------------------+---------------------+
-  | `Insert`_  | :c:func:`stroll_array_insert_sort`    | :c:macro:`CONFIG_STROLL_ARRAY_INSERT_SORT` |                     |
-  |            | :c:func:`stroll_array_insert_presort` |                                            |                     |
-  +------------+---------------------------------------+--------------------------------------------+---------------------+
-  | `Select`_  | :c:func:`stroll_array_select_sort`    | :c:macro:`CONFIG_STROLL_ARRAY_SELECT_SORT` |                     |
-  +------------+---------------------------------------+--------------------------------------------+---------------------+
-  | `Bubble`_  | :c:func:`stroll_array_bubble_sort`    | :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT` |                     |
-  +------------+---------------------------------------+--------------------------------------------+---------------------+
+   * high number of items swaps ;
+   * decent efficiency with presorted data sets ;
+   * poor to extremely low efficiency even over small data sets.
 
-.. table:: Sorting algorithm properties
+.. warning::
 
-    +-----------------+------------------------------------------------------------------------+
-    |                 | Algorithms                                                             |
-    | Properties      +---------------------+----------------+----------------+----------------+
-    |                 | `Quick`_            | `Insert`_      | `Select`_      | `Bubble`_      |
-    +=================+=====================+================+================+================+
-    | |adaptive|      | no                  | yes            | no             | yes            |
-    +-----------------+---------------------+----------------+----------------+----------------+
-    | |online|        | no                  | yes            | no             | no             |
-    +-----------------+---------------------+----------------+----------------+----------------+
-    | |stable|        | no                  | yes            | no             | yes            |
-    +-----------------+---------------------+----------------+----------------+----------------+
-    | |recursive|     | no                  | no             | no             | no             |
-    +-----------------+---------------------+----------------+----------------+----------------+
-    | |in-place|      | yes                 | yes            | yes            | yes            |
-    +-----------------+---------------------+----------------+----------------+----------------+
-    | Allocation      | on stack            | none           | none           | none           |
-    +-------+---------+---------------------+----------------+----------------+----------------+
-    | Space | worst   | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    |       +---------+---------------------+----------------+----------------+----------------+
-    |       | average | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    |       +---------+---------------------+----------------+----------------+----------------+
-    |       | best    | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    +-------+---------+---------------------+----------------+----------------+----------------+
-    | Time  | worst   | :math:`O(n^2)`      | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
-    |       +---------+---------------------+----------------+----------------+----------------+
-    |       | average | :math:`O(n log(n))` | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
-    |       +---------+---------------------+----------------+----------------+----------------+
-    |       | best    | :math:`O(n log(n))` | :math:`O(n)`   | :math:`O(n^2)` | :math:`O(n)`   |
-    +-------+---------+---------------------+----------------+----------------+----------------+
+   Implemented for reference only: **DO NOT USE IT**. Refer to
+   `Sorting arrays`_ for more informations related to algorithm selection.
 
 .. index:: API reference, reference
 
@@ -567,6 +649,11 @@ CONFIG_STROLL_ARRAY_QUICK_SORT
 ******************************
 
 .. doxygendefine:: CONFIG_STROLL_ARRAY_QUICK_SORT
+
+CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
+***********************************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
 
 CONFIG_STROLL_ARRAY_SELECT_SORT
 *******************************
@@ -988,6 +1075,26 @@ stroll_array_bubble_sort
 ************************
 
 .. doxygenfunction:: stroll_array_bubble_sort
+
+stroll_array_insert_sort
+************************
+
+.. doxygenfunction:: stroll_array_insert_sort
+
+stroll_array_insert_presort
+***************************
+
+.. doxygenfunction:: stroll_array_insert_presort
+
+stroll_array_quick_sort
+***********************
+
+.. doxygenfunction:: stroll_array_quick_sort
+
+stroll_array_select_sort
+************************
+
+.. doxygenfunction:: stroll_array_select_sort
 
 stroll_bmap_and
 ***************

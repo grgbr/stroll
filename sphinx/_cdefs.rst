@@ -7,9 +7,11 @@
 .. _sorting algorithms: https://en.wikipedia.org/wiki/Sorting_algorithm
 .. _big o:              https://en.wikipedia.org/wiki/Big_O_notation
 .. _bubble:             https://en.wikipedia.org/wiki/Bubble_sort
-.. _insert:             https://en.wikipedia.org/wiki/Insertion_sort
-.. _select:             https://en.wikipedia.org/wiki/Selection_sort
+.. _insertion:          https://en.wikipedia.org/wiki/Insertion_sort
+.. _selection:          https://en.wikipedia.org/wiki/Selection_sort
 .. _quick:              https://en.wikipedia.org/wiki/Quicksort
+.. _hoare:              https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
+.. _median-of-three:    https://en.wikipedia.org/wiki/Quicksort#Choice_of_pivot
    
 .. |adaptive|           replace:: :term:`adaptive`
 .. |stable|             replace:: :term:`stable`

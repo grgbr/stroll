@@ -233,65 +233,70 @@ stroll_array_insert_sort(void * __restrict     array,
  *  - docs !! see https://stackoverflow.com/questions/6709055/quicksort-stack-size
  *  https://stackoverflow.com/questions/1582356/fastest-way-of-finding-the-middle-value-of-a-triple
  *  https://stackoverflow.com/questions/7559608/median-of-three-values-strategy
+ *
+ * Pivot is choosen according to the median-of-three strategy, e.g.:
+ *     mid = (begin + end) / 2.
+ * However, to prevent from addition overflow compute it as following:
+ *     mid = begin + ((end - begin) / 2)
  */
 static __stroll_nonull(1, 2, 4)
 char *
-_stroll_array_quick_hoare_part(char *                array,
-                               char *                last,
+_stroll_array_quick_hoare_part(char *                begin,
+                               char *                end,
                                size_t                size,
                                stroll_array_cmp_fn * compare)
 {
 	char   pivot[size];
-	char * mid = array + (((size_t)(last - array) / (2 * size)) * size);
+	char * mid = begin + (((size_t)(end - begin) / (2 * size)) * size);
 
-	if (compare(array, mid) > 0)
-		stroll_array_swap(array, mid, size);
+	if (compare(begin, mid) > 0)
+		stroll_array_swap(begin, mid, size);
 
-	if (compare(mid, last) > 0) {
-		stroll_array_swap(mid, last, size);
+	if (compare(mid, end) > 0) {
+		stroll_array_swap(mid, end, size);
 
-		if (compare(array, mid) > 0)
-			stroll_array_swap(array, mid, size);
+		if (compare(begin, mid) > 0)
+			stroll_array_swap(begin, mid, size);
 	}
 
 	memcpy(pivot, mid, size);
 
-	array -= size;
-	last += size;
+	begin -= size;
+	end += size;
 	while (true) {
 		do {
-			array += size;
-		} while (compare(pivot, array) > 0);
+			begin += size;
+		} while (compare(pivot, begin) > 0);
 
 		do {
-			last -= size;
-		} while (compare(last, pivot) > 0);
+			end -= size;
+		} while (compare(end, pivot) > 0);
 
-		if (array >= last)
-			return last;
+		if (begin >= end)
+			return end;
 
-		stroll_array_swap(array, last, size);
+		stroll_array_swap(begin, end, size);
 	}
 }
 
 static __stroll_nonull(1, 2, 4)
 char *
-stroll_array_quick_hoare_part(char *                array,
-                              char *                last,
+stroll_array_quick_hoare_part(char *                begin,
+                              char *                end,
                               size_t                size,
                               stroll_array_cmp_fn * compare)
 {
-	stroll_array_assert_intern(array);
-	stroll_array_assert_intern(last > array);
+	stroll_array_assert_intern(begin);
+	stroll_array_assert_intern(end > begin);
 	stroll_array_assert_intern(size);
 	stroll_array_assert_intern(compare);
 
 	char * pivot;
 
-	pivot = _stroll_array_quick_hoare_part(array, last, size, compare);
+	pivot = _stroll_array_quick_hoare_part(begin, end, size, compare);
 
-	stroll_array_assert_intern(array <= pivot);
-	stroll_array_assert_intern(pivot < last);
+	stroll_array_assert_intern(begin <= pivot);
+	stroll_array_assert_intern(pivot < end);
 
 	return pivot;
 }
@@ -321,15 +326,15 @@ stroll_array_stack_depth(unsigned int nr)
 
 static __stroll_nonull(1, 2) __stroll_const __stroll_nothrow
 bool
-stroll_array_quick_switch_insert(const char * __restrict array,
-                                 const char * __restrict last,
+stroll_array_quick_switch_insert(const char * __restrict begin,
+                                 const char * __restrict end,
                                  size_t                  size)
 {
-	stroll_array_assert_intern(array);
-	stroll_array_assert_intern(last >= array);
+	stroll_array_assert_intern(begin);
+	stroll_array_assert_intern(end >= begin);
 	stroll_array_assert_intern(size);
 
-	return ((size_t)(last - array) <=
+	return ((size_t)(end - begin) <=
 	        ((STROLL_QSORT_INSERT_THRESHOLD - 1) * size));
 }
 

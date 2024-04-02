@@ -131,23 +131,23 @@ config STROLL_ARRAY_BUBBLE_SORT
 	select STROLL_PROVIDES_LIBS
 	default n
 	help
-	  FILL ME!!
-	  See <stroll/array.h>.
+	  Build stroll library with support for the bubble sort algorithm.
+	  Implemented for reference only: **DO NOT USE IT**.
 
 config STROLL_ARRAY_SELECT_SORT
 	bool "Selection sort"
 	select STROLL_PROVIDES_LIBS
 	default n
 	help
-	  FILL ME!!
-	  See <stroll/array.h>.
+	  Build stroll library with support for the selection sort algorithm.
+	  Implemented for reference only: **DO NOT USE IT**.
 
 config STROLL_ARRAY_INSERT_SORT
 	bool "Insertion sort"
 	select STROLL_PROVIDES_LIBS
 	default y
 	help
-	  FILL ME!!
+	  Build stroll library with support for the insertion sort algorithm.
 	  See <stroll/array.h>.
 
 config STROLL_ARRAY_QUICK_SORT_UTILS
@@ -162,7 +162,8 @@ config STROLL_ARRAY_QUICK_SORT
 	select STROLL_POW2
 	default y
 	help
-	  FILL ME!!
+	  Build stroll library with support for an optimized hybrid version of
+	  the quick sort algorithm.
 	  See <stroll/array.h>.
 
 config STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
@@ -170,6 +171,11 @@ config STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
 	depends on STROLL_ARRAY_QUICK_SORT
 	range 2 128
 	default 32
+	help
+	  Threshold that configures the switch of quick sort to insertion sort.
+	  For each partition, when the number of elements left to sort is below
+	  this threshold, quick sort will switch to insertion sort to minimize
+	  the number of element swap operations.
 
 endif # STROLL_ARRAY
 

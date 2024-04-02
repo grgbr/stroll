@@ -86,13 +86,13 @@ stroll_array_bisect_search(const void *          key,
 /**
  * Sort an array according to the bubble sort algorithm.
  *
- * @param[in] array   Array to sort
- * @param[in] size    Size of a single @p array element
- * @param[in] nr      @p array number of elements
- * @param[in] compare @p array elements comparison function
+ * @param[inout] array   Array to sort
+ * @param[in]    size    Size of a single @p array element
+ * @param[in]    nr      @p array number of elements
+ * @param[in]    compare @p array elements comparison function
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
- * comparison function according to the @rstlnk{Bubble} sort algorithm.
+ * comparison function according to the @rstlnk{Bubble sort} algorithm.
  *
  * The @p compare routine is expected to handle 2 arguments, both pointing to
  * distinct @p array elements.
@@ -100,32 +100,32 @@ stroll_array_bisect_search(const void *          key,
  * if first argument is found, respectively, to be less than, to match, or be
  * greater than the second one.
  *
- * @rsttable{Sorting algorithm properties}
- * +---------------------------------+---------------------------------------+
- * | |adaptive|                      | yes                                   |
- * +---------------------------------+---------------------------------------+
- * | |online|                        | no                                    |
- * +---------------------------------+---------------------------------------+
- * | |stable|                        | yes                                   |
- * +---------------------------------+---------------------------------------+
- * | |recursive|                     | no                                    |
- * +---------------------------------+---------------------------------------+
- * | allocation                      | none                                  |
- * +---------------------------------+---------------------------------------+
- * | |in-place|                      | yes                                   |
- * +--------------+-------+----------+---------------------------------------+
- * |              |       | worst    | :math:`O(1)`                          |
- * |              |       +----------+---------------------------------------+
- * |              | space | average  | :math:`O(1)`                          |
- * |              |       +----------+---------------------------------------+
- * |              |       | best     | :math:`O(1)`                          |
- * | |complexity| +-------+----------+---------------------------------------+
- * |              |       | worst    | :math:`O(n^2))`                       |
- * |              |       +----------+---------------------------------------+
- * |              | time  | average  | :math:`O(n^2))`                       |
- * |              |       +----------+---------------------------------------+
- * |              |       | best     | :math:`O(n)`                          |
- * +--------------+-------+----------+---------------------------------------+
+ * @rsttable{Sorting properties}
+ * +-------------------------+-----------------------------------------------+
+ * | |adaptive|              | yes                                           |
+ * +-------------------------+-----------------------------------------------+
+ * | |online|                | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |stable|                | yes                                           |
+ * +-------------------------+-----------------------------------------------+
+ * | |Recursive|             | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |In-place|              | yes                                           |
+ * +-------------------------+-----------------------------------------------+
+ * | **Allocation**          | none                                          |
+ * +--------------+----------+-----------------------------------------------+
+ * |              | worst    | :math:`O(1)`                                  |
+ * | **space**    +----------+-----------------------------------------------+
+ * | |complexity| | average  | :math:`O(1)`                                  |
+ * |              +----------+-----------------------------------------------+
+ * |              | best     | :math:`O(1)`                                  |
+ * +--------------+----------+-----------------------------------------------+
+ * |              | worst    | :math:`O(n^2)`                                |
+ * | **time**     +----------+-----------------------------------------------+
+ * | |complexity| | average  | :math:`O(n^2)`                                |
+ * |              +----------+-----------------------------------------------+
+ * |              | best     | :math:`O(n)`                                  |
+ * +--------------+----------+-----------------------------------------------+
  * @endrsttable
  *
  * @note
@@ -151,14 +151,54 @@ stroll_array_bubble_sort(void * __restrict     array,
 /**
  * Sort an array according to the selection sort algorithm.
  *
- * @param[in] array   Array to sort
- * @param[in] size    Size of a single @p array element
- * @param[in] nr      @p array number of elements
- * @param[in] compare @p array elements comparison function
+ * @param[inout] array   Array to sort
+ * @param[in]    size    Size of a single @p array element
+ * @param[in]    nr      @p array number of elements
+ * @param[in]    compare @p array elements comparison function
  *
- * FILL ME!!
+ * Sort @p array containing @p nr elements of size @p size using the @p compare
+ * comparison function according to the @rstlnk{Selection sort} algorithm.
  *
- * @see stroll_array_cmp_fn
+ * The @p compare routine is expected to handle 2 arguments, both pointing to
+ * distinct @p array elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * @rsttable{Sorting properties}
+ * +-------------------------+-----------------------------------------------+
+ * | |adaptive|              | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |online|                | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |stable|                | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |Recursive|             | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |In-place|              | yes                                           |
+ * +-------------------------+-----------------------------------------------+
+ * | **Allocation**          | none                                          |
+ * +--------------+----------+-----------------------------------------------+
+ * |              | worst    | :math:`O(1)`                                  |
+ * | **space**    +----------+-----------------------------------------------+
+ * | |complexity| | average  | :math:`O(1)`                                  |
+ * |              +----------+-----------------------------------------------+
+ * |              | best     | :math:`O(1)`                                  |
+ * +--------------+----------+-----------------------------------------------+
+ * |              | worst    | :math:`O(n^2)`                                |
+ * | **time**     +----------+-----------------------------------------------+
+ * | |complexity| | average  | :math:`O(n^2)`                                |
+ * |              +----------+-----------------------------------------------+
+ * |              | best     | :math:`O(n^2)                                 |
+ * +--------------+----------+-----------------------------------------------+
+ * @endrsttable
+ *
+ * @note
+ * - poor to extremely low efficiency even over small data sets.
+ *
+ * @warning
+ * Implemented for reference only: **DO NOT USE IT**. Refer to
+ * @rstlnk{Sorting arrays} for more informations related to algorithm selection.
  */
 extern void
 stroll_array_select_sort(void * __restrict     array,
@@ -174,14 +214,57 @@ stroll_array_select_sort(void * __restrict     array,
 /**
  * Sort an array according to the insertion sort algorithm.
  *
- * @param[in] array   Array to sort
- * @param[in] size    Size of a single @p array element
- * @param[in] nr      @p array number of elements
- * @param[in] compare @p array elements comparison function
+ * @param[inout] array   Array to sort
+ * @param[in]    size    Size of a single @p array element
+ * @param[in]    nr      @p array number of elements
+ * @param[in]    compare @p array elements comparison function
  *
- * FILL ME!!
+ * Sort @p array containing @p nr elements of size @p size using the @p compare
+ * comparison function according to the @rstlnk{Insertion sort} algorithm.
  *
- * @see stroll_array_cmp_fn
+ * The @p compare routine is expected to handle 2 arguments, both pointing to
+ * distinct @p array elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * @rsttable{Sorting properties}
+ * +-------------------------+-----------------------------------------------+
+ * | |adaptive|              | yes                                           |
+ * +-------------------------+-----------------------------------------------+
+ * | |online|                | yes                                           |
+ * +-------------------------+-----------------------------------------------+
+ * | |stable|                | yes                                           |
+ * +-------------------------+-----------------------------------------------+
+ * | |Recursive|             | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |In-place|              | yes                                           |
+ * +-------------------------+-----------------------------------------------+
+ * | **Allocation**          | none                                          |
+ * +--------------+----------+-----------------------------------------------+
+ * |              | worst    | :math:`O(1)`                                  |
+ * | **space**    +----------+-----------------------------------------------+
+ * | |complexity| | average  | :math:`O(1)`                                  |
+ * |              +----------+-----------------------------------------------+
+ * |              | best     | :math:`O(1)`                                  |
+ * +--------------+----------+-----------------------------------------------+
+ * |              | worst    | :math:`O(n^2)`                                |
+ * | **time**     +----------+-----------------------------------------------+
+ * | |complexity| | average  | :math:`O(n^2)`                                |
+ * |              +----------+-----------------------------------------------+
+ * |              | best     | :math:`O(n)`                                  |
+ * +--------------+----------+-----------------------------------------------+
+ * @endrsttable
+ *
+ * @note
+ * - simple implementation ;
+ * - limited number of items swaps ;
+ * - very efficient on small and presorted data sets ;
+ * - poor efficiency over large data sets ;
+ * - refer to @rstlnk{Sorting arrays} for more informations related to algorithm
+ *   selection.
+ *
+ * @see stroll_array_insert_presort()
  */
 extern void
 stroll_array_insert_sort(void * __restrict     array,
@@ -191,17 +274,30 @@ stroll_array_insert_sort(void * __restrict     array,
 	__stroll_nonull(1, 4);
 
 /**
- * Describe me!!
+ * Sort an array according to the insertion sort algorithm.
  *
- * @param[in] array   Array to sort
- * @param[in] unsort  last unsorted element of @p array
- * @param[in] size    Size of a single @p array element
- * @param[in] nr      @p array number of elements
- * @param[in] compare @p array elements comparison function
+ * @param[inout] array   Array to sort
+ * @param[inout] unsort  First unsorted and last element of @p array
+ * @param[in]    size    Size of a single @p array element
+ * @param[in]    compare @p array elements comparison function
  *
- * FILL ME!!
+ * Sort @p array containing @p nr elements of size @p size using the @p compare
+ * comparison function according to the @rstlnk{Insertion sort} algorithm.
  *
- * @see stroll_array_cmp_fn
+ * @p unsort *MUST* point to the first unsorted and last element of @p array.
+ *
+ * The @p compare routine is expected to handle 2 arguments, both pointing to
+ * distinct @p array elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * Use stroll_array_insert_presort() when you know for sure that all elements
+ * of @p array up to @p unsort (exclusive) are in sorted order.
+ * This allows to optimize situations where sorting a *continuous stream of
+ * input elements*.
+ *
+ * @see stroll_array_insert_sort()
  */
 extern void
 stroll_array_insert_presort(void * __restrict     array,
@@ -215,17 +311,65 @@ stroll_array_insert_presort(void * __restrict     array,
 #if defined(CONFIG_STROLL_ARRAY_QUICK_SORT)
 
 /**
- * Describe me!!
+ * Sort an array according to the quick sort algorithm.
  *
- * @param[in] array   Array to sort
- * @param[in] unsort  last unsorted element of @p array
- * @param[in] size    Size of a single @p array element
- * @param[in] nr      @p array number of elements
- * @param[in] compare @p array elements comparison function
+ * @param[inout] array   Array to sort
+ * @param[in]    size    Size of a single @p array element
+ * @param[in]    nr      @p array number of elements
+ * @param[in]    compare @p array elements comparison function
  *
- * FILL ME!!
+ * Sort @p array containing @p nr elements of size @p size using the @p compare
+ * comparison function according to the @rstlnk{Quick sort} algorithm.
  *
- * @see stroll_array_cmp_fn
+ * The @p compare routine is expected to handle 2 arguments, both pointing to
+ * distinct @p array elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * Implementation includes the following usual optimizations:
+ * - recursion converted to iterative process thanks to additional
+ *   @rstmath{O(log(n))} stack space,
+ * - *partition* according to the Hoare_ scheme,
+ * - choose *pivot* according to the median-of-three_ strategy,
+ * - when the number of partition elements is less than
+ *   #CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD, switch to
+ *   @rstlnk{Insertion sort}.
+ *
+ * @rsttable{Sorting properties}
+ * +-------------------------+-----------------------------------------------+
+ * | |adaptive|              | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |online|                | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |stable|                | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |Recursive|             | no                                            |
+ * +-------------------------+-----------------------------------------------+
+ * | |In-place|              | yes                                           |
+ * +-------------------------+-----------------------------------------------+
+ * | **Allocation**          | on stack                                      |
+ * +--------------+----------+-----------------------------------------------+
+ * |              | worst    | :math:`O(log(n))`                             |
+ * | **space**    +----------+-----------------------------------------------+
+ * | |complexity| | average  | :math:`O(log(n))`                             |
+ * |              +----------+-----------------------------------------------+
+ * |              | best     | :math:`O(log(n))`                             |
+ * +--------------+----------+-----------------------------------------------+
+ * |              | worst    | :math:`O(n^2)`                                |
+ * | **time**     +----------+-----------------------------------------------+
+ * | |complexity| | average  | :math:`O(n log(n))`                           |
+ * |              +----------+-----------------------------------------------+
+ * |              | best     | :math:`O(n log(n))`                           |
+ * +--------------+----------+-----------------------------------------------+
+ * @endrsttable
+ *
+ * @note
+ * - efficient, general-purpose sorting algorithm ;
+ * - exhibits poor performance for inputs containing many duplicate elements
+ *   (prefer 3-way Quicksort instead).
+ * - refer to @rstlnk{Sorting arrays} for more informations related to algorithm
+ *   selection.
  */
 extern void
 stroll_array_quick_sort(void * __restrict     array,
