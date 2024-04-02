@@ -92,7 +92,7 @@ stroll_array_bisect_search(const void *          key,
  * @param[in] compare @p array elements comparison function
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
- * comparison function according to the @rstlnk{Bubble sort} algorithm.
+ * comparison function according to the @rstlnk{Bubble} sort algorithm.
  *
  * The @p compare routine is expected to handle 2 arguments, both pointing to
  * distinct @p array elements.
@@ -102,7 +102,7 @@ stroll_array_bisect_search(const void *          key,
  *
  * @rsttable{Sorting algorithm properties}
  * +---------------------------------+---------------------------------------+
- * | |adaptative|                    | yes                                   |
+ * | |adaptive|                      | yes                                   |
  * +---------------------------------+---------------------------------------+
  * | |online|                        | no                                    |
  * +---------------------------------+---------------------------------------+

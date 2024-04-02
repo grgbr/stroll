@@ -160,7 +160,7 @@ config STROLL_ARRAY_QUICK_SORT
 	select STROLL_ARRAY_QUICK_SORT_UTILS
 	select STROLL_ARRAY_INSERT
 	select STROLL_POW2
-	default n
+	default y
 	help
 	  FILL ME!!
 	  See <stroll/array.h>.

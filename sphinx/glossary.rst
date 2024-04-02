@@ -5,8 +5,8 @@ Glossary
 
 .. glossary::
 
-   adaptative
-      Sorting algorithms known to be *adaptative* take advantage of existing
+   adaptive
+      Sorting algorithms known to be *adaptive* take advantage of existing
       order in its input to speed the process up. See `Sorting algorithms`_.
 
    complexity
@@ -28,7 +28,7 @@ Glossary
 
    sorting algorithm properties
       A set of attributes that qualifies sorting algorithms. These are
-      |adaptative|, |stable|, |in-place|, |online|, |recursive|, time and space
+      |adaptive|, |stable|, |in-place|, |online|, |recursive|, time and space
       |complexity|. See `Sorting algorithms`_.
 
    stable

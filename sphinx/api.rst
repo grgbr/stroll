@@ -45,6 +45,9 @@ may eventually refer to the corresponding C macros listed below:
 
 * :c:macro:`CONFIG_STROLL_ARRAY_BISECT_SEARCH`
 * :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT`
+* :c:macro:`CONFIG_STROLL_ARRAY_INSERT_SORT`
+* :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT`
+* :c:macro:`CONFIG_STROLL_ARRAY_SELECT_SORT`
 * :c:macro:`CONFIG_STROLL_ASSERT`
 * :c:macro:`CONFIG_STROLL_ASSERT_API`
 * :c:macro:`CONFIG_STROLL_ASSERT_INTERN`
@@ -482,7 +485,55 @@ Sorting arrays
 
 When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT` build
 configuration option enabled, the Stroll_ library provides support for
-`Bubble sort`_ algorithm thanks to :c:func:`stroll_array_bubble_sort`.
+`Bubble`_ sort algorithm thanks to :c:func:`stroll_array_bubble_sort`.
+
+.. table:: Available Sorting algorithms
+
+  +------------+---------------------------------------+--------------------------------------------+---------------------+
+  | Algorithms | Functions                             | Build configuration                        | Notes               |
+  |            |                                       | option                                     |                     |
+  +============+=======================================+============================================+=====================+
+  | `Quick`_   | :c:func:`stroll_array_quick_sort`     | :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT`  |                     |
+  +------------+---------------------------------------+--------------------------------------------+---------------------+
+  | `Insert`_  | :c:func:`stroll_array_insert_sort`    | :c:macro:`CONFIG_STROLL_ARRAY_INSERT_SORT` |                     |
+  |            | :c:func:`stroll_array_insert_presort` |                                            |                     |
+  +------------+---------------------------------------+--------------------------------------------+---------------------+
+  | `Select`_  | :c:func:`stroll_array_select_sort`    | :c:macro:`CONFIG_STROLL_ARRAY_SELECT_SORT` |                     |
+  +------------+---------------------------------------+--------------------------------------------+---------------------+
+  | `Bubble`_  | :c:func:`stroll_array_bubble_sort`    | :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT` |                     |
+  +------------+---------------------------------------+--------------------------------------------+---------------------+
+
+.. table:: Sorting algorithm properties
+
+    +-----------------+------------------------------------------------------------------------+
+    |                 | Algorithms                                                             |
+    | Properties      +---------------------+----------------+----------------+----------------+
+    |                 | `Quick`_            | `Insert`_      | `Select`_      | `Bubble`_      |
+    +=================+=====================+================+================+================+
+    | |adaptive|      | no                  | yes            | no             | yes            |
+    +-----------------+---------------------+----------------+----------------+----------------+
+    | |online|        | no                  | yes            | no             | no             |
+    +-----------------+---------------------+----------------+----------------+----------------+
+    | |stable|        | no                  | yes            | no             | yes            |
+    +-----------------+---------------------+----------------+----------------+----------------+
+    | |recursive|     | no                  | no             | no             | no             |
+    +-----------------+---------------------+----------------+----------------+----------------+
+    | |in-place|      | yes                 | yes            | yes            | yes            |
+    +-----------------+---------------------+----------------+----------------+----------------+
+    | Allocation      | on stack            | none           | none           | none           |
+    +-------+---------+---------------------+----------------+----------------+----------------+
+    | Space | worst   | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    |       +---------+---------------------+----------------+----------------+----------------+
+    |       | average | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    |       +---------+---------------------+----------------+----------------+----------------+
+    |       | best    | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    +-------+---------+---------------------+----------------+----------------+----------------+
+    | Time  | worst   | :math:`O(n^2)`      | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
+    |       +---------+---------------------+----------------+----------------+----------------+
+    |       | average | :math:`O(n log(n))` | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
+    |       +---------+---------------------+----------------+----------------+----------------+
+    |       | best    | :math:`O(n log(n))` | :math:`O(n)`   | :math:`O(n^2)` | :math:`O(n)`   |
+    +-------+---------+---------------------+----------------+----------------+----------------+
 
 .. index:: API reference, reference
 
@@ -506,6 +557,21 @@ CONFIG_STROLL_ARRAY_BUBBLE_SORT
 *******************************
 
 .. doxygendefine:: CONFIG_STROLL_ARRAY_BUBBLE_SORT
+
+CONFIG_STROLL_ARRAY_INSERT_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_INSERT_SORT
+
+CONFIG_STROLL_ARRAY_QUICK_SORT
+******************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_QUICK_SORT
+
+CONFIG_STROLL_ARRAY_SELECT_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_SELECT_SORT
 
 CONFIG_STROLL_ASSERT_API
 ************************
