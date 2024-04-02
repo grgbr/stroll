@@ -28,6 +28,7 @@ you can refer to for further details :
 * `Fixed sized bitmaps`_,
 * `Length-value strings`_.
 * `Searching arrays`_.
+* `Sorting arrays`_.
 
 Stroll_ sources are distributed under the :ref:`GNU Lesser General Public
 License <lgpl>` whereas documentation manuals are distributed under the
@@ -42,17 +43,18 @@ At :ref:`Build configuration time <workflow-configure-phase>`, multiple build
 options are available to customize final Stroll_ build. From client code, you
 may eventually refer to the corresponding C macros listed below:
 
+* :c:macro:`CONFIG_STROLL_ARRAY_BISECT_SEARCH`
+* :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT`
 * :c:macro:`CONFIG_STROLL_ASSERT`
 * :c:macro:`CONFIG_STROLL_ASSERT_API`
 * :c:macro:`CONFIG_STROLL_ASSERT_INTERN`
-* :c:macro:`CONFIG_STROLL_UTEST`
-* :c:macro:`CONFIG_STROLL_VALGRIND`
 * :c:macro:`CONFIG_STROLL_BOPS`
-* :c:macro:`CONFIG_STROLL_POW2`
 * :c:macro:`CONFIG_STROLL_BMAP`
 * :c:macro:`CONFIG_STROLL_FBMAP`
 * :c:macro:`CONFIG_STROLL_LVSTR`
-* :c:macro:`CONFIG_STROLL_BISECT`
+* :c:macro:`CONFIG_STROLL_POW2`
+* :c:macro:`CONFIG_STROLL_UTEST`
+* :c:macro:`CONFIG_STROLL_VALGRIND`
 
 .. index:: common definitions, cdefs
 
@@ -459,14 +461,28 @@ The following manipulations are available:
 
       * :c:func:`stroll_lvstr_fini`
 
+Array operations
+================
+
 .. index:: search, find, bisection search, dichotomic search
 
 Searching arrays
-================
+----------------
 
-When compiled with the :c:macro:`CONFIG_STROLL_BISECT` build configuration
-option enabled, the Stroll_ library provides support searching pre-sorted
-arrays thanks to :c:func:`stroll_bisect_search`.
+When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_BISECT_SEARCH` build
+configuration option enabled, the Stroll_ library provides support for searching
+pre-sorted arrays thanks to :c:func:`stroll_array_bisect_search`.
+
+.. index:: sort
+
+Sorting arrays
+--------------
+
+.. todo:: explain how to select sorting algo !
+
+When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`Bubble sort`_ algorithm thanks to :c:func:`stroll_array_bubble_sort`.
 
 .. index:: API reference, reference
 
@@ -481,6 +497,16 @@ CONFIG_STROLL_ASSERT
 
 .. doxygendefine:: CONFIG_STROLL_ASSERT
 
+CONFIG_STROLL_ARRAY_BISECT_SEARCH
+*********************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_BISECT_SEARCH
+
+CONFIG_STROLL_ARRAY_BUBBLE_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_BUBBLE_SORT
+
 CONFIG_STROLL_ASSERT_API
 ************************
 
@@ -490,18 +516,6 @@ CONFIG_STROLL_ASSERT_INTERN
 ***************************
 
 .. doxygendefine:: CONFIG_STROLL_ASSERT_INTERN
-
-.. _CONFIG_STROLL_UTEST:
-
-CONFIG_STROLL_UTEST
-*******************
-
-.. doxygendefine:: CONFIG_STROLL_UTEST
-
-CONFIG_STROLL_VALGRIND
-**********************
-
-.. doxygendefine:: CONFIG_STROLL_VALGRIND
 
 CONFIG_STROLL_BOPS
 ******************
@@ -527,6 +541,18 @@ CONFIG_STROLL_POW2
 ******************
 
 .. doxygendefine:: CONFIG_STROLL_POW2
+
+.. _CONFIG_STROLL_UTEST:
+
+CONFIG_STROLL_UTEST
+*******************
+
+.. doxygendefine:: CONFIG_STROLL_UTEST
+
+CONFIG_STROLL_VALGRIND
+**********************
+
+.. doxygendefine:: CONFIG_STROLL_VALGRIND
 
 Macros
 ------
@@ -864,7 +890,7 @@ stroll_unlikely
 Typedefs
 --------
 
-.. doxygentypedef:: stroll_cmp_fn
+.. doxygentypedef:: stroll_array_cmp_fn
 
 Structures
 ----------
@@ -887,10 +913,15 @@ stroll_lvstr
 Functions
 ---------
 
-stroll_bisect_search
-********************
+stroll_array_bisect_search
+**************************
 
-.. doxygenfunction:: stroll_bisect_search
+.. doxygenfunction:: stroll_array_bisect_search
+
+stroll_array_bubble_sort
+************************
+
+.. doxygenfunction:: stroll_array_bubble_sort
 
 stroll_bmap_and
 ***************

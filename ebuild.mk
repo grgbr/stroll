@@ -17,7 +17,7 @@ headers   += $(call kconf_enabled,STROLL_POW2,stroll/pow2.h)
 headers   += $(call kconf_enabled,STROLL_BMAP,stroll/bmap.h)
 headers   += $(call kconf_enabled,STROLL_FBMAP,stroll/fbmap.h)
 headers   += $(call kconf_enabled,STROLL_LVSTR,stroll/lvstr.h)
-headers   += $(call kconf_enabled,STROLL_BISECT,stroll/bisect.h)
+headers   += $(call kconf_enabled,STROLL_ARRAY,stroll/array.h)
 
 subdirs   := src
 

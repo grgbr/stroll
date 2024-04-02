@@ -110,13 +110,67 @@ config STROLL_LVSTR
 	  the life-cycle of C strings.
 	  See <stroll/lvstr.h>.
 
-config STROLL_BISECT
+menuconfig STROLL_ARRAY
+	bool "Array based algorithms"
+	select STROLL_PROVIDES_LIBS
+	default y
+
+if STROLL_ARRAY
+
+config STROLL_ARRAY_BISECT_SEARCH
 	bool "Bisection / dichotomic search"
 	select STROLL_PROVIDES_LIBS
 	default y
 	help
 	  Build stroll library with support for bisection / dichotomic search
 	  within pre-sorted arrays.
-	  See <stroll/bisect.h>.
+	  See <stroll/array.h>.
+
+config STROLL_ARRAY_BUBBLE_SORT
+	bool "Bubble sort"
+	select STROLL_PROVIDES_LIBS
+	default n
+	help
+	  FILL ME!!
+	  See <stroll/array.h>.
+
+config STROLL_ARRAY_SELECT_SORT
+	bool "Selection sort"
+	select STROLL_PROVIDES_LIBS
+	default n
+	help
+	  FILL ME!!
+	  See <stroll/array.h>.
+
+config STROLL_ARRAY_INSERT_SORT
+	bool "Insertion sort"
+	select STROLL_PROVIDES_LIBS
+	default y
+	help
+	  FILL ME!!
+	  See <stroll/array.h>.
+
+config STROLL_ARRAY_QUICK_SORT_UTILS
+	bool
+	select STROLL_PROVIDES_LIBS
+	default n
+
+config STROLL_ARRAY_QUICK_SORT
+	bool "Quick sort"
+	select STROLL_ARRAY_QUICK_SORT_UTILS
+	select STROLL_ARRAY_INSERT
+	select STROLL_POW2
+	default n
+	help
+	  FILL ME!!
+	  See <stroll/array.h>.
+
+config STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
+	int "Quicksort intertion threshold"
+	depends on STROLL_ARRAY_QUICK_SORT
+	range 2 128
+	default 32
+
+endif # STROLL_ARRAY
 
 # ex: ft=kconfig:

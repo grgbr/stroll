@@ -5,7 +5,7 @@
  * Copyright (C) 2017-2024 Grégor Boirie <gregor.boirie@free.fr>
  ******************************************************************************/
 
-#include "stroll/bisect.h"
+#include "stroll/array.h"
 #include <cute/cute.h>
 #include <cute/check.h>
 #include <cute/expect.h>

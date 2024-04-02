@@ -1039,19 +1039,4 @@
 	                  15, 14, 13, 12, 11, 10,  9,  8, \
 	                   7,  6,  5,  4,  3,  2,  1,  0)
 
-/**
- * Comparison routine signature.
- *
- * Use this to implement a function that compares 2 data blocks given as
- * arguments according to an arbitrary logic.
- *
- * The function *MUST* return an integer less than, equal to, or greater than
- * zero if first argument is found, respectively, to be less than, to match, or
- * be greater than the second one.
- *
- * @see stroll_bisect_search()
- */
-typedef int stroll_cmp_fn(const void * __restrict, const void * __restrict)
-	__stroll_nonull(1, 2) __warn_result;
-
 #endif /* _STROLL_CDEFS_H */
