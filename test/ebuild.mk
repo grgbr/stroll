@@ -25,16 +25,23 @@ test-cflags  := -Wall \
 # This is required since we want stroll_assert_fail() defined into utest.c to
 # override stroll_assert_fail() defined into libstroll.so for assertions testing
 # purposes.
-test-ldflags := $(test-cflags) \
-                -L$(BUILDDIR)/../src \
-                $(EXTRA_LDFLAGS) \
-                -Wl,-z,start-stop-visibility=hidden \
-                -Wl,-whole-archive $(BUILDDIR)/builtin.a -Wl,-no-whole-archive \
-                -lstroll
+utest-ldflags := $(test-cflags) \
+                 -L$(BUILDDIR)/../src \
+                 $(EXTRA_LDFLAGS) \
+                 -Wl,-z,start-stop-visibility=hidden \
+                 -Wl,-whole-archive $(BUILDDIR)/builtin.a -Wl,-no-whole-archive \
+                 -lstroll
+
+ptest-ldflags := $(test-cflags) \
+                 -L$(BUILDDIR)/../src \
+                 $(EXTRA_LDFLAGS) \
+                 -Wl,-z,start-stop-visibility=hidden \
+                 -lstroll
 
 ifneq ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
-test-cflags  := $(filter-out -DNDEBUG,$(test-cflags))
-test-ldflags := $(filter-out -DNDEBUG,$(test-ldflags))
+test-cflags   := $(filter-out -DNDEBUG,$(test-cflags))
+utest-ldflags := $(filter-out -DNDEBUG,$(utest-ldflags))
+ptest-ldflags := $(filter-out -DNDEBUG,$(ptest-ldflags))
 endif # ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
 
 builtins             := builtin.a
@@ -42,7 +49,6 @@ builtin.a-objs       := utest.o $(config-obj)
 builtin.a-cflags     := $(test-cflags)
 
 checkbins            := stroll-utest
-
 stroll-utest-objs    := cdefs.o
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BOPS,bops.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_POW2,pow2.o)
@@ -51,8 +57,13 @@ stroll-utest-objs    += $(call kconf_enabled,STROLL_FBMAP,fbmap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_LVSTR,lvstr.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_ARRAY,array.o array_data.o)
 stroll-utest-cflags  := $(test-cflags)
-stroll-utest-ldflags := $(test-ldflags)
+stroll-utest-ldflags := $(utest-ldflags)
 stroll-utest-pkgconf := libcute
+
+checkbins                  += stroll-array-ptest
+stroll-array-ptest-objs    := ptest.o array_ptest.o
+stroll-array-ptest-cflags  := $(test-cflags)
+stroll-array-ptest-ldflags := $(ptest-ldflags)
 
 install-check: _install-check
 
