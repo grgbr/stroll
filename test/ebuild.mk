@@ -54,4 +54,18 @@ stroll-utest-cflags  := $(test-cflags)
 stroll-utest-ldflags := $(test-ldflags)
 stroll-utest-pkgconf := libcute
 
+install-check: _install-check
+
+.PHONY: _install-check
+_install-check:
+	$(call install_recipe, -m755, \
+	                       ptest-data.py, \
+	                       $(DESTDIR)$(BINDIR)/stroll-ptest-data)
+
+uninstall-check: _uninstall-check
+
+.PHONY: _uninstall-check
+_uninstall-check:
+	$(call rm_recipe,$(DESTDIR)$(BINDIR)/stroll-ptest-data)
+
 # ex: filetype=make :
