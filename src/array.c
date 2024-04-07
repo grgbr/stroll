@@ -236,7 +236,7 @@ stroll_array_insert_sort(void * __restrict     array,
  *
  * Pivot is choosen according to the median-of-three strategy, e.g.:
  *     mid = (begin + end) / 2.
- * However, to prevent from addition overflow compute it as following:
+ * However, to prevent from addition overflow, compute it as following:
  *     mid = begin + ((end - begin) / 2)
  */
 static __stroll_nonull(1, 2, 4)

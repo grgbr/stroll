@@ -65,8 +65,24 @@ conf_syms = frozenset({
         frozenset({ 'CONFIG_STROLL_LVSTR=y' })
     }),
     frozenset({
-        frozenset({ 'CONFIG_STROLL_BISECT=n' }),
-        frozenset({ 'CONFIG_STROLL_BISECT=y' })
+        frozenset({ 'CONFIG_STROLL_ARRAY_BISECT=n' }),
+        frozenset({ 'CONFIG_STROLL_ARRAY_BISECT=y' })
+    }),
+    frozenset({
+        frozenset({ 'CONFIG_STROLL_ARRAY_BUBBLE_SORT=n' }),
+        frozenset({ 'CONFIG_STROLL_ARRAY_BUBBLE_SORT=y' })
+    }),
+    frozenset({
+        frozenset({ 'CONFIG_STROLL_ARRAY_SELECT_SORT=n' }),
+        frozenset({ 'CONFIG_STROLL_ARRAY_SELECT_SORT=y' })
+    }),
+    frozenset({
+        frozenset({ 'CONFIG_STROLL_ARRAY_INSERT_SORT=n',
+                    'CONFIG_STROLL_ARRAY_QUICK_SORT=n' }),
+        frozenset({ 'CONFIG_STROLL_ARRAY_INSERT_SORT=y',
+                    'CONFIG_STROLL_ARRAY_QUICK_SORT=n' }),
+        frozenset({ 'CONFIG_STROLL_ARRAY_INSERT_SORT=y',
+                    'CONFIG_STROLL_ARRAY_QUICK_SORT=y' })
     }),
     frozenset({
         frozenset({ 'CONFIG_STROLL_UTEST=y', 'CONFIG_STROLL_VALGRIND=y' }),
