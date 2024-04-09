@@ -242,10 +242,8 @@ int main(int argc, char *argv[])
 	       "    min:     %llu\n"
 	       "    max:     %llu\n"
 	       "    med:     %llu\n"
-	       "    avg:     %.2lf\n"
-	       "    dev:     %.2lf\n"
-	       "    inliers: %u/%u (%.2lf%%)\n"
-	       "    mean:    %.2lf\n",
+	       "    mean:    %.2lf\n"
+	       "    count:   %u (%.2lf%%)\n",
 	       data.nr,
 	       data.ratio,
 	       algo->name,
@@ -253,10 +251,8 @@ int main(int argc, char *argv[])
 	       stats.min,
 	       stats.max,
 	       stats.med,
-	       stats.avg,
-	       stats.dev,
-	       stats.inliers, loops, ((double)stats.inliers * 100.0) / (double)loops,
-	       stats.mean);
+	       stats.mean,
+	       stats.count, ((double)stats.count * 100.0) / (double)loops);
 
 	ret = EXIT_SUCCESS;
 

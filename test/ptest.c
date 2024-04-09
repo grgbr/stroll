@@ -62,11 +62,11 @@ strollpt_calc_stdev(double                          mean,
 	assert(nr > 0);
 
 	unsigned int v;
-	double       var = 0.0;
+	double       diff = (double)values[0] - mean;
+	double       var = diff * diff;
 
-	for (v = 0; v < nr; v++) {
-		double diff = (double)values[v] - mean;
-
+	for (v = 1; v < nr; v++) {
+		diff = (double)values[v] - mean;
 		var = strollpt_update_mean(var, (diff * diff), v);
 	}
 
@@ -90,7 +90,7 @@ strollpt_probe_outliers(double                          mean,
 	unsigned long long thres;
 	unsigned int       v;
 
-	/* At first, find index of lower inlier. */
+	/* At first, find index of lowest inlier. */
 	thres = (unsigned long long)round(mean - cutoff);
 	for (v = 0; v < nr; v++) {
 		if (values[v] >= thres)
@@ -100,6 +100,7 @@ strollpt_probe_outliers(double                          mean,
 		return EXIT_FAILURE;
 	*low = v;
 
+	/* Then, find index of highest inlier. */
 	thres = (unsigned long long)round(mean + cutoff);
 	v = nr;
 	while (v--) {
@@ -122,41 +123,43 @@ strollpt_calc_stats(struct strollpt_stats * __restrict stats,
 	assert(values);
 	assert(nr > 0);
 
-	unsigned int low;
-	unsigned int high;
+	double       mean;
+	double       stdev; /* standard deviation */
+	unsigned int low;   /* index of lowest inlier */
+	unsigned int high;  /* index of highest inlier */
+	unsigned int count; /* count of inliers */
 
 	qsort(values, nr, sizeof(*values), strollpt_compare_sample);
 
-	stats->min = values[0];
-	stats->max = values[nr - 1];
-	stats->med = values[nr / 2];
-	stats->avg = (double)values[0];
+	mean = strollpt_calc_mean(values, nr);
 
-	if (nr == 1) {
-		stats->dev = 0.0;
-		stats->inliers = 0;
-		stats->mean = stats->avg;
+	stdev = strollpt_calc_stdev(mean, values, nr);
 
-		return EXIT_SUCCESS;
-	}
-
-	stats->avg = strollpt_calc_mean(values, nr);
-
-	stats->dev = strollpt_calc_stdev(stats->avg, values, nr);
-
-	if (strollpt_probe_outliers(stats->avg,
-	                            2 * stats->dev,
+	if (strollpt_probe_outliers(mean,
+	                            2.0 * stdev,
 	                            values,
 	                            nr,
 	                            &low,
 	                            &high))
-		return EXIT_FAILURE;
+		goto inval;
 
-	stats->inliers = high + 1 - low;
+	count = (unsigned int)floor((double)nr * 95.4 / 100.0);
+	stats->count = high + 1 - low;
+	if (stats->count < count)
+		goto inval;
 
-	stats->mean = strollpt_calc_mean(&values[low], stats->inliers);
+	stats->min = values[low];
+	stats->max = values[high];
+	stats->med = values[(high + 1 + low) / 2];
+
+	stats->mean = strollpt_calc_mean(&values[low], stats->count);
 
 	return EXIT_SUCCESS;
+
+inval:
+	strollpt_err("invalid sampled timings: too many outliers.\n");
+
+	return EXIT_FAILURE;
 }
 
 struct timespec

@@ -41,11 +41,9 @@ strollpt_compare_max(const void * __restrict a, const void * __restrict b)
 struct strollpt_stats {
 	unsigned long long min;
 	unsigned long long max;
-	unsigned long long med;     /* median */
-	double             avg;     /* average */
-	double             dev;     /* standard deviation */
-	unsigned int       inliers; /* number of outliers */
-	double             mean;    /* average of inliers */
+	unsigned long long med;
+	unsigned int       count;
+	double             mean;
 };
 
 extern int
