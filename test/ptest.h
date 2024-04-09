@@ -21,8 +21,6 @@
 static inline int
 strollpt_compare_min(const void * __restrict a, const void * __restrict b)
 {
-	return -1;
-#if 0
 	unsigned int _a = *(const unsigned int *)a;
 	unsigned int _b = *(const unsigned int *)b;
 
@@ -32,7 +30,6 @@ strollpt_compare_min(const void * __restrict a, const void * __restrict b)
 		return 1;
 	else
 		return 0;
-#endif
 }
 
 static inline int
@@ -40,6 +37,21 @@ strollpt_compare_max(const void * __restrict a, const void * __restrict b)
 {
 	return 0 - strollpt_compare_min(a, b);
 }
+
+struct strollpt_stats {
+	unsigned long long min;
+	unsigned long long max;
+	unsigned long long med;     /* median */
+	double             avg;     /* average */
+	double             dev;     /* standard deviation */
+	unsigned int       inliers; /* number of outliers */
+	double             mean;    /* average of inliers */
+};
+
+extern int
+strollpt_calc_stats(struct strollpt_stats * __restrict stats,
+                    unsigned long long * __restrict    values,
+                    unsigned int                       nr);
 
 extern struct timespec
 strollpt_tspec_sub(const struct timespec * __restrict a,

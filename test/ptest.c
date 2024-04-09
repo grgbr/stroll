@@ -10,10 +10,154 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <errno.h>
-#include <sched.h>
+#include <math.h>
 #include <unistd.h>
+#include <sched.h>
+#include <assert.h>
+#include <errno.h>
 #include <sys/types.h>
+
+static int
+strollpt_compare_sample(const void * __restrict a, const void * __restrict b)
+{
+	unsigned long long _a = *(const unsigned long long *)a;
+	unsigned long long _b = *(const unsigned long long *)b;
+
+	if (_a < _b)
+		return -1;
+	else if (_a > _b)
+		return 1;
+	else
+		return 0;
+}
+
+static double
+strollpt_update_mean(double mean, double value, unsigned int iter)
+{
+	return ((mean * (double)iter) + value) / ((double)iter + 1.0);
+}
+
+static double
+strollpt_calc_mean(unsigned long long * __restrict    values,
+                   unsigned int                       nr)
+{
+	assert(values);
+	assert(nr > 0);
+
+	unsigned int v;
+	double       mean = (double)values[0];
+
+	for (v = 1; v < nr; v++)
+		mean = strollpt_update_mean(mean, (double)values[v], v);
+
+	return mean;
+}
+
+static double
+strollpt_calc_stdev(double                          mean,
+                    unsigned long long * __restrict values,
+                    unsigned int                    nr)
+{
+	assert(values);
+	assert(nr > 0);
+
+	unsigned int v;
+	double       var = 0.0;
+
+	for (v = 0; v < nr; v++) {
+		double diff = (double)values[v] - mean;
+
+		var = strollpt_update_mean(var, (diff * diff), v);
+	}
+
+	assert(var >= 0.0);
+
+	return sqrt(var);
+}
+
+static int
+strollpt_probe_outliers(double                          mean,
+                        double                          cutoff,
+                        unsigned long long * __restrict values,
+                        unsigned int                    nr,
+                        unsigned int *                  low,
+                        unsigned int *                  high)
+{
+	assert(cutoff >= 0.0);
+	assert(values);
+	assert(nr > 0);
+
+	unsigned long long thres;
+	unsigned int       v;
+
+	/* At first, find index of lower inlier. */
+	thres = (unsigned long long)round(mean - cutoff);
+	for (v = 0; v < nr; v++) {
+		if (values[v] >= thres)
+			break;
+	}
+	if (v == nr)
+		return EXIT_FAILURE;
+	*low = v;
+
+	thres = (unsigned long long)round(mean + cutoff);
+	v = nr;
+	while (v--) {
+		if (values[v] <= thres)
+			break;
+	}
+	if (v == UINT_MAX)
+		return EXIT_FAILURE;
+	*high = v;
+
+	return EXIT_SUCCESS;
+}
+
+int
+strollpt_calc_stats(struct strollpt_stats * __restrict stats,
+                    unsigned long long * __restrict    values,
+                    unsigned int                       nr)
+{
+	assert(stats);
+	assert(values);
+	assert(nr > 0);
+
+	unsigned int low;
+	unsigned int high;
+
+	qsort(values, nr, sizeof(*values), strollpt_compare_sample);
+
+	stats->min = values[0];
+	stats->max = values[nr - 1];
+	stats->med = values[nr / 2];
+	stats->avg = (double)values[0];
+
+	if (nr == 1) {
+		stats->dev = 0.0;
+		stats->inliers = 0;
+		stats->mean = stats->avg;
+
+		return EXIT_SUCCESS;
+	}
+
+	stats->avg = strollpt_calc_mean(values, nr);
+
+	stats->dev = strollpt_calc_stdev(stats->avg, values, nr);
+
+	if (strollpt_probe_outliers(stats->avg,
+	                            2 * stats->dev,
+	                            values,
+	                            nr,
+	                            &low,
+	                            &high))
+		return EXIT_FAILURE;
+
+	stats->inliers = high + 1 - low;
+
+	stats->mean = strollpt_calc_mean(&values[low], stats->inliers);
+
+	return EXIT_SUCCESS;
+}
 
 struct timespec
 strollpt_tspec_sub(const struct timespec * __restrict a,
@@ -116,6 +260,7 @@ strollpt_step_data_iter(const struct strollpt_data * __restrict data,
 	if (fread(&elem, sizeof(elem), 1, data->file) == 1) {
 		switch (data->endian) {
 		case STROLLPT_NATIVE_ENDIAN:
+			*element = elem;
 			break;
 		case STROLLPT_LITTLE_ENDIAN:
 			*element = le32toh(elem);

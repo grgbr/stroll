@@ -63,7 +63,7 @@ stroll-utest-pkgconf := libcute
 checkbins                  += stroll-array-ptest
 stroll-array-ptest-objs    := ptest.o array_ptest.o
 stroll-array-ptest-cflags  := $(test-cflags)
-stroll-array-ptest-ldflags := $(ptest-ldflags)
+stroll-array-ptest-ldflags := $(ptest-ldflags) -lm
 
 install-check: _install-check
 

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <string.h>
+#include <math.h>
 
 struct strollpt_iface {
 	char  * name;
@@ -156,7 +157,8 @@ int main(int argc, char *argv[])
 	struct strollpt_data          data;
 	unsigned int *                elems;
 	int                           ret;
-	unsigned long long            nsecs;
+	unsigned long long *          nsecs;
+	struct strollpt_stats         stats;
 
 	while (true) {
 		int                        opt;
@@ -216,20 +218,51 @@ int main(int argc, char *argv[])
 	ret = EXIT_FAILURE;
 
 	if (algo->validate(elems, data.nr))
-		goto free;
+		goto free_elems;
 
 	if (strollpt_setup_sched_prio(prio))
-		goto free;
+		goto free_elems;
 
+	nsecs = malloc(loops * sizeof(*nsecs));
+	if (!nsecs)
+		goto free_elems;
 	for (l = 0; l < loops; l++) {
-		if (algo->sort(elems, data.nr, &nsecs))
-			goto free;
-		printf("nsec=%llu\n", nsecs);
+		if (algo->sort(elems, data.nr, &nsecs[l]))
+			goto free_nsecs;
 	}
+
+	if (strollpt_calc_stats(&stats, nsecs, loops))
+		goto free_nsecs;
+
+	printf("#Samples:    %u\n"
+	       "Order ratio: %hu\n"
+	       "Algorithm:   %s\n"
+	       "#Loops:      %u\n"
+	       "Per loop ns:\n"
+	       "    min:     %llu\n"
+	       "    max:     %llu\n"
+	       "    med:     %llu\n"
+	       "    avg:     %.2lf\n"
+	       "    dev:     %.2lf\n"
+	       "    inliers: %u/%u (%.2lf%%)\n"
+	       "    mean:    %.2lf\n",
+	       data.nr,
+	       data.ratio,
+	       algo->name,
+	       loops,
+	       stats.min,
+	       stats.max,
+	       stats.med,
+	       stats.avg,
+	       stats.dev,
+	       stats.inliers, loops, ((double)stats.inliers * 100.0) / (double)loops,
+	       stats.mean);
 
 	ret = EXIT_SUCCESS;
 
-free:
+free_nsecs:
+	free(nsecs);
+free_elems:
 	free(elems);
 
 	return ret;
