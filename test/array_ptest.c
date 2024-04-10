@@ -1,5 +1,5 @@
 #include "ptest.h"
-#include "stroll/cdefs.h"
+#include "stroll/array.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <getopt.h>
@@ -13,6 +13,72 @@ struct strollpt_iface {
 	              unsigned int,
 	              unsigned long long * __restrict);
 };
+
+typedef void
+        (strollpt_sort_fn)(void * __restrict     array,
+                           size_t                size,
+                           unsigned int          nr,
+                           stroll_array_cmp_fn * compare)
+	__stroll_nonull(1, 4);
+
+static int
+strollpt_array_sort_validate(const unsigned int * elements,
+                             unsigned int         nr,
+                             strollpt_sort_fn *   sort)
+{
+	unsigned int   n;
+	unsigned int * tmp;
+	int            ret = EXIT_FAILURE;
+
+	tmp = malloc(sizeof(*tmp) * nr);
+	if (!tmp)
+		return EXIT_FAILURE;
+
+	memcpy(tmp, elements, sizeof(*tmp) * nr);
+
+	sort(tmp, sizeof(unsigned int), nr, strollpt_compare_min);
+
+	for (n = 1; n < nr; n++) {
+		if (tmp[n - 1] > tmp[n]) {
+			strollpt_err("Bogus sorting scheme.\n");
+			goto free;
+		}
+	}
+
+	ret = EXIT_SUCCESS;
+
+free:
+	free(tmp);
+
+	return ret;
+}
+
+static int
+strollpt_array_sort(const unsigned int * __restrict elements,
+                    unsigned int                    nr,
+                    unsigned long long * __restrict nsecs,
+                    strollpt_sort_fn *              sort)
+{
+	struct timespec start, elapse;
+	unsigned int *  tmp;
+
+	tmp = malloc(sizeof(*tmp) * nr);
+	if (!tmp)
+		return EXIT_FAILURE;
+
+	memcpy(tmp, elements, sizeof(*tmp) * nr);
+
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
+	sort(tmp, sizeof(unsigned int), nr, strollpt_compare_min);
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
+
+	elapse = strollpt_tspec_sub(&elapse, &start);
+	*nsecs = strollpt_tspec2ns(&elapse);
+
+	free(tmp);
+
+	return EXIT_SUCCESS;
+}
 
 /******************************************************************************
  * Glibc's quick sorting
@@ -73,12 +139,148 @@ static int strollpt_qsort_sort(const unsigned int * __restrict elements,
 	return EXIT_SUCCESS;
 }
 
+/******************************************************************************
+ * Bubble sorting
+ ******************************************************************************/
+
+#if defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT)
+
+static int strollpt_bubble_validate(const unsigned int * elements,
+                                    unsigned int         nr)
+{
+	return strollpt_array_sort_validate(elements,
+	                                    nr,
+	                                    stroll_array_bubble_sort);
+}
+
+static int
+strollpt_bubble_sort(const unsigned int * __restrict elements,
+                     unsigned int                    nr,
+                     unsigned long long * __restrict nsecs)
+{
+	return strollpt_array_sort(elements,
+	                           nr,
+	                           nsecs,
+	                           stroll_array_bubble_sort);
+}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT) */
+
+/******************************************************************************
+ * Selection sorting
+ ******************************************************************************/
+
+#if defined(CONFIG_STROLL_ARRAY_SELECT_SORT)
+
+static int strollpt_select_validate(const unsigned int * elements,
+                                    unsigned int         nr)
+{
+	return strollpt_array_sort_validate(elements,
+	                                    nr,
+	                                    stroll_array_select_sort);
+}
+
+static int
+strollpt_select_sort(const unsigned int * __restrict elements,
+                     unsigned int                    nr,
+                     unsigned long long * __restrict nsecs)
+{
+	return strollpt_array_sort(elements,
+	                           nr,
+	                           nsecs,
+	                           stroll_array_select_sort);
+}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_SELECT_SORT) */
+
+/******************************************************************************
+ * Insertion sorting
+ ******************************************************************************/
+
+#if defined(CONFIG_STROLL_ARRAY_INSERT_SORT)
+
+static int strollpt_insert_validate(const unsigned int * elements,
+                                    unsigned int         nr)
+{
+	return strollpt_array_sort_validate(elements,
+	                                    nr,
+	                                    stroll_array_insert_sort);
+}
+
+static int
+strollpt_insert_sort(const unsigned int * __restrict elements,
+                     unsigned int                    nr,
+                     unsigned long long * __restrict nsecs)
+{
+	return strollpt_array_sort(elements,
+	                           nr,
+	                           nsecs,
+	                           stroll_array_insert_sort);
+}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_INSERT_SORT) */
+
+/******************************************************************************
+ * Quick sorting
+ ******************************************************************************/
+
+#if defined(CONFIG_STROLL_ARRAY_QUICK_SORT)
+
+static int strollpt_quick_validate(const unsigned int * elements,
+                                   unsigned int         nr)
+{
+	return strollpt_array_sort_validate(elements,
+	                                    nr,
+	                                    stroll_array_quick_sort);
+}
+
+static int
+strollpt_quick_sort(const unsigned int * __restrict elements,
+                    unsigned int                    nr,
+                    unsigned long long * __restrict nsecs)
+{
+	return strollpt_array_sort(elements,
+	                           nr,
+	                           nsecs,
+	                           stroll_array_quick_sort);
+}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */
+
 static const struct strollpt_iface strollpt_algos[] = {
 	{
 		.name     = "qsort",
 		.validate = strollpt_qsort_validate,
 		.sort     = strollpt_qsort_sort
-	}
+	},
+#if defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT)
+	{
+		.name     = "bubble",
+		.validate = strollpt_bubble_validate,
+		.sort     = strollpt_bubble_sort
+	},
+#endif
+#if defined(CONFIG_STROLL_ARRAY_SELECT_SORT)
+	{
+		.name     = "select",
+		.validate = strollpt_select_validate,
+		.sort     = strollpt_select_sort
+	},
+#endif
+#if defined(CONFIG_STROLL_ARRAY_INSERT_SORT)
+	{
+		.name     = "insert",
+		.validate = strollpt_insert_validate,
+		.sort     = strollpt_insert_sort
+	},
+#endif
+#if defined(CONFIG_STROLL_ARRAY_QUICK_SORT)
+	{
+		.name     = "quick",
+		.validate = strollpt_quick_validate,
+		.sort     = strollpt_quick_sort
+	},
+#endif
 };
 
 static const struct strollpt_iface *
