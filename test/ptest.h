@@ -44,9 +44,10 @@ struct strollpt_stats {
 	unsigned long long med;
 	unsigned int       count;
 	double             mean;
+	double             stdev;
 };
 
-extern int
+extern void
 strollpt_calc_stats(struct strollpt_stats * __restrict stats,
                     unsigned long long * __restrict    values,
                     unsigned int                       nr);

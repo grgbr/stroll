@@ -36,7 +36,7 @@
 
 #endif /* defined(CONFIG_STROLL_ASSERT_INTERN) */
 
-static __stroll_nonull(1, 2) __stroll_const
+static __stroll_nonull(1, 2)
 void
 stroll_array_swap(void * __restrict first,
                   void * __restrict second,

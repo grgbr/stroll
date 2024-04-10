@@ -376,7 +376,7 @@ stroll_array_quick_sort(void * __restrict     array,
                         size_t                size,
                         unsigned int          nr,
                         stroll_array_cmp_fn * compare)
-	__stroll_nonull(1, 2, 4);
+	__stroll_nonull(1, 4);
 
 #endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */
 
