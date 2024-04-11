@@ -972,6 +972,9 @@
 #define __ualign_mask(_value, _align) \
 	((typeof(_value))(_align) - 1)
 
+#define stroll_aligned(_value, _size) \
+	(!((_value) & __ualign_mask(_value, _size)))
+
 #define ualign_mask(_align) \
 	((_align) - 1)
 

@@ -151,7 +151,7 @@ stroll_array_bubble_sort(void * __restrict     array,
                          unsigned int          nr,
                          size_t                size,
                          stroll_array_cmp_fn * compare,
-                         void *                arg)
+                         void *                data)
 	__stroll_nonull(1, 4);
 
 #endif /* defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT) */
@@ -219,7 +219,7 @@ stroll_array_select_sort(void * __restrict     array,
                          unsigned int          nr,
                          size_t                size,
                          stroll_array_cmp_fn * compare,
-                         void *                arg)
+                         void *                data)
 	__stroll_nonull(1, 4);
 
 #endif /* defined(CONFIG_STROLL_ARRAY_SELECT_SORT) */
@@ -290,7 +290,7 @@ stroll_array_insert_sort(void * __restrict     array,
                          unsigned int          nr,
                          size_t                size,
                          stroll_array_cmp_fn * compare,
-                         void *                arg)
+                         void *                data)
 	__stroll_nonull(1, 4);
 
 /**
@@ -328,7 +328,7 @@ stroll_array_insert_presort(void * __restrict     array,
                             void * __restrict     unsort,
                             size_t                size,
                             stroll_array_cmp_fn * compare,
-                            void *                arg)
+                            void *                data)
 	__stroll_nonull(1, 2, 4);
 
 #endif /* defined(CONFIG_STROLL_ARRAY_INSERT_SORT) */
@@ -405,7 +405,7 @@ stroll_array_quick_sort(void * __restrict     array,
                         unsigned int          nr,
                         size_t                size,
                         stroll_array_cmp_fn * compare,
-                        void *                arg)
+                        void *                data)
 	__stroll_nonull(1, 4);
 
 #endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */

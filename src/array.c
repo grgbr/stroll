@@ -36,15 +36,42 @@
 
 #endif /* defined(CONFIG_STROLL_ASSERT_INTERN) */
 
+static inline bool
+stroll_array_aligned(const void * __restrict array, size_t size, size_t align)
+{
+	return (size == align) &&
+	       stroll_aligned((unsigned long)array, align);
+}
+
+#define STROLL_ARRAY_DEFINE_SWAP(_func, _type) \
+	static __stroll_nonull(1, 2) \
+	void \
+	_func(_type * __restrict first, _type * __restrict second) \
+	{ \
+		stroll_array_assert_intern(first); \
+		stroll_array_assert_intern(second); \
+		\
+		_type tmp; \
+		\
+		tmp = *first; \
+		*first = *second; \
+		*second = tmp; \
+	}
+
+
+STROLL_ARRAY_DEFINE_SWAP(stroll_array_swap32, uint32_t)
+
+STROLL_ARRAY_DEFINE_SWAP(stroll_array_swap64, uint64_t)
+
 static __stroll_nonull(1, 2)
 void
 stroll_array_swap(void * __restrict first,
                   void * __restrict second,
                   size_t            size)
 {
-	stroll_array_assert_api(first);
-	stroll_array_assert_api(second);
-	stroll_array_assert_api(size);
+	stroll_array_assert_intern(first);
+	stroll_array_assert_intern(second);
+	stroll_array_assert_intern(size);
 
 	char tmp[size];
 
@@ -96,17 +123,59 @@ stroll_array_bisect_search(const void *          key,
 
 #if defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT)
 
+#define STROLL_ARRAY_DEFINE_BUBBLE(_sort_func, _swap_func, _type) \
+	static __stroll_nonull(1, 3) \
+	void \
+	_sort_func(_type * __restrict    array, \
+	           unsigned int          nr, \
+	           stroll_array_cmp_fn * compare, \
+	           void *                data) \
+	{ \
+		stroll_array_assert_intern(array); \
+		stroll_array_assert_intern(nr > 1); \
+		stroll_array_assert_intern(compare); \
+		\
+		const _type * end = &array[nr - 1]; \
+		\
+		while (end > array) { \
+			_type *       elm = array; \
+			const _type * last = array; \
+			\
+			do { \
+				_type * neigh = &elm[1]; \
+				\
+				if (compare(elm, neigh, data) > 0) { \
+					_swap_func(elm, neigh); \
+					last = neigh; \
+				} \
+				\
+				elm = neigh; \
+			} while (elm < end); \
+			\
+			end = last; \
+		} \
+	}
+
+STROLL_ARRAY_DEFINE_BUBBLE(stroll_array_bubble_sort32,
+                           stroll_array_swap32,
+                           uint32_t)
+
+STROLL_ARRAY_DEFINE_BUBBLE(stroll_array_bubble_sort64,
+                           stroll_array_swap64,
+                           uint64_t)
+
+static __stroll_nonull(1, 4)
 void
-stroll_array_bubble_sort(void * __restrict     array,
-                         unsigned int          nr,
-                         size_t                size,
-                         stroll_array_cmp_fn * compare,
-                         void *                data)
+stroll_array_bubble_sort_mem(void * __restrict     array,
+                             unsigned int          nr,
+                             size_t                size,
+                             stroll_array_cmp_fn * compare,
+                             void *                data)
 {
-	stroll_array_assert_api(array);
-	stroll_array_assert_api(nr);
-	stroll_array_assert_api(size);
-	stroll_array_assert_api(compare);
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(nr > 1);
+	stroll_array_assert_intern(size);
+	stroll_array_assert_intern(compare);
 
 	const char * end = (const char *)array + ((nr - 1) * size);
 
@@ -129,12 +198,8 @@ stroll_array_bubble_sort(void * __restrict     array,
 	}
 }
 
-#endif /* defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT) */
-
-#if defined(CONFIG_STROLL_ARRAY_SELECT_SORT)
-
 void
-stroll_array_select_sort(void * __restrict     array,
+stroll_array_bubble_sort(void * __restrict     array,
                          unsigned int          nr,
                          size_t                size,
                          stroll_array_cmp_fn * compare,
@@ -144,6 +209,79 @@ stroll_array_select_sort(void * __restrict     array,
 	stroll_array_assert_api(nr);
 	stroll_array_assert_api(size);
 	stroll_array_assert_api(compare);
+
+	if (nr == 1)
+		return;
+
+	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
+		stroll_array_bubble_sort32((uint32_t *)array,
+		                           nr,
+		                           compare,
+		                           data);
+	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
+		stroll_array_bubble_sort64((uint64_t *)array,
+		                           nr,
+		                           compare,
+		                           data);
+	else
+		stroll_array_bubble_sort_mem(array, nr, size, compare, data);
+}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT) */
+
+#if defined(CONFIG_STROLL_ARRAY_SELECT_SORT)
+
+#define STROLL_ARRAY_DEFINE_SELECT(_sort_func, _swap_func, _type) \
+	static __stroll_nonull(1, 3) \
+	void \
+	_sort_func(_type * __restrict    array, \
+	           unsigned int          nr, \
+	           stroll_array_cmp_fn * compare, \
+	           void *                data) \
+	{ \
+		stroll_array_assert_intern(array); \
+		stroll_array_assert_intern(nr > 1); \
+		stroll_array_assert_intern(compare); \
+		\
+		_type *       unsort = array; \
+		const _type * end = &array[nr - 1]; \
+		\
+		while (unsort < end) { \
+			_type * elm = unsort; \
+			_type * min = unsort; \
+			\
+			do { \
+				elm++; \
+				if (compare(elm, min, data) < 0) \
+					min = elm; \
+			} while (elm < end); \
+			\
+			_swap_func(unsort, min); \
+			\
+			unsort++; \
+		} \
+	}
+
+STROLL_ARRAY_DEFINE_SELECT(stroll_array_select_sort32,
+                           stroll_array_swap32,
+                           uint32_t)
+
+STROLL_ARRAY_DEFINE_SELECT(stroll_array_select_sort64,
+                           stroll_array_swap64,
+                           uint64_t)
+
+static __stroll_nonull(1, 4)
+void
+stroll_array_select_sort_mem(void * __restrict     array,
+                             unsigned int          nr,
+                             size_t                size,
+                             stroll_array_cmp_fn * compare,
+                             void *                data)
+{
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(nr > 1);
+	stroll_array_assert_intern(size);
+	stroll_array_assert_intern(compare);
 
 	const char * end = (const char *)array + ((nr - 1) * size);
 	char *       unsort = array;
@@ -164,21 +302,86 @@ stroll_array_select_sort(void * __restrict     array,
 	}
 }
 
+void
+stroll_array_select_sort(void * __restrict     array,
+                         unsigned int          nr,
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                data)
+{
+	stroll_array_assert_api(array);
+	stroll_array_assert_api(nr);
+	stroll_array_assert_api(size);
+	stroll_array_assert_api(compare);
+
+	if (nr == 1)
+		return;
+
+	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
+		stroll_array_select_sort32((uint32_t *)array,
+		                           nr,
+		                           compare,
+		                           data);
+	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
+		stroll_array_select_sort64((uint64_t *)array,
+		                           nr,
+		                           compare,
+		                           data);
+	else
+		stroll_array_select_sort_mem(array, nr, size, compare, data);
+}
+
 #endif /* defined(CONFIG_STROLL_ARRAY_SELECT_SORT) */
 
 #if defined(CONFIG_STROLL_ARRAY_INSERT_SORT)
 
+#define STROLL_ARRAY_DEFINE_INSERT_PRESORT(_presort_func, _swap_func, _type) \
+	static __stroll_nonull(1, 2, 3) \
+	void \
+	_presort_func(_type * __restrict    array, \
+	              _type * __restrict    unsort, \
+	              stroll_array_cmp_fn * compare, \
+	              void *                data) \
+	{ \
+		stroll_array_assert_intern(array); \
+		stroll_array_assert_intern(unsort > array); \
+		stroll_array_assert_intern(compare); \
+		\
+		_type * elm = &unsort[-1]; \
+		\
+		if (compare(unsort, elm, data) < 0) { \
+			_type tmp = unsort[0]; \
+			\
+			do { \
+				elm[1] = elm[0]; \
+				elm--; \
+			} while ((elm >= array) && \
+			         (compare(&tmp, elm, data) < 0)); \
+			\
+			elm[1] = tmp; \
+		} \
+	}
+
+STROLL_ARRAY_DEFINE_INSERT_PRESORT(stroll_array_insert_presort32,
+                                   stroll_array_swap32,
+                                   uint32_t)
+
+STROLL_ARRAY_DEFINE_INSERT_PRESORT(stroll_array_insert_presort64,
+                                   stroll_array_swap64,
+                                   uint64_t)
+
+static __stroll_nonull(1, 2, 4)
 void
-stroll_array_insert_presort(void * __restrict     array,
-                            void * __restrict     unsort,
-                            size_t                size,
-                            stroll_array_cmp_fn * compare,
-                            void *                data)
+stroll_array_insert_presort_mem(void * __restrict     array,
+                                void * __restrict     unsort,
+                                size_t                size,
+                                stroll_array_cmp_fn * compare,
+                                void *                data)
 {
-	stroll_array_assert_api(array);
-	stroll_array_assert_api(unsort > array);
-	stroll_array_assert_api(size);
-	stroll_array_assert_api(compare);
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(unsort > array);
+	stroll_array_assert_intern(size);
+	stroll_array_assert_intern(compare);
 
 	char * elm = unsort - size;
 
@@ -197,23 +400,87 @@ stroll_array_insert_presort(void * __restrict     array,
 	}
 }
 
-static __stroll_nonull(1, 2, 4)
 void
-_stroll_array_insert_sort(char * __restrict     array,
-                          char * __restrict     last,
-                          size_t                size,
-                          stroll_array_cmp_fn * compare,
-                          void *                data)
+stroll_array_insert_presort(void * __restrict     array,
+                            void * __restrict     unsort,
+                            size_t                size,
+                            stroll_array_cmp_fn * compare,
+                            void *                data)
+{
+	stroll_array_assert_api(array);
+	stroll_array_assert_api(unsort > array);
+	stroll_array_assert_api(size);
+	stroll_array_assert_api(compare);
+
+	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
+		stroll_array_insert_presort32((uint32_t *)array,
+		                              (uint32_t *)unsort,
+		                              compare,
+		                              data);
+	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
+		stroll_array_insert_presort64((uint64_t *)array,
+		                              (uint64_t *)unsort,
+		                              compare,
+		                              data);
+	else
+		stroll_array_insert_presort_mem(array,
+		                                unsort,
+		                                size,
+		                                compare,
+		                                data);
+}
+
+#define STROLL_ARRAY_DEFINE_INSERT_SORT(_sort_func, _presort_func, _type) \
+	static __stroll_nonull(1, 3) \
+	void \
+	_sort_func(_type * __restrict    array, \
+	           unsigned int          nr, \
+	           stroll_array_cmp_fn * compare, \
+	           void *                data) \
+	{ \
+		stroll_array_assert_intern(array); \
+		stroll_array_assert_intern(nr > 1); \
+		stroll_array_assert_intern(compare); \
+		\
+		_type *       unsort = &array[1]; \
+		const _type * last = &array[nr - 1]; \
+		\
+		while (unsort <= last) { \
+			_presort_func(array, unsort, compare, data); \
+			unsort++; \
+		} \
+	}
+
+STROLL_ARRAY_DEFINE_INSERT_SORT(stroll_array_insert_sort32,
+                                stroll_array_insert_presort32,
+                                uint32_t)
+
+STROLL_ARRAY_DEFINE_INSERT_SORT(stroll_array_insert_sort64,
+                                stroll_array_insert_presort64,
+                                uint64_t)
+
+static __stroll_nonull(1, 4)
+void
+stroll_array_insert_sort_mem(void * __restrict     array,
+                             unsigned int          nr,
+                             size_t                size,
+                             stroll_array_cmp_fn * compare,
+                             void *                data)
 {
 	stroll_array_assert_intern(array);
-	stroll_array_assert_intern(last >= array);
+	stroll_array_assert_intern(nr > 1);
 	stroll_array_assert_intern(size);
 	stroll_array_assert_intern(compare);
 
-	char * unsort = array + size;
+	char *       unsort = array + size;
+	const char * last = (const char *)array + ((nr - 1) * size);
 
 	while (unsort <= last) {
-		stroll_array_insert_presort(array, unsort, size, compare, data);
+		stroll_array_insert_presort_mem(array,
+		                                unsort,
+		                                size,
+		                                compare,
+		                                data);
 		unsort += size;
 	}
 }
@@ -226,15 +493,26 @@ stroll_array_insert_sort(void * __restrict     array,
                          void *                data)
 {
 	stroll_array_assert_api(array);
-	stroll_array_assert_api(size);
 	stroll_array_assert_api(nr);
+	stroll_array_assert_api(size);
 	stroll_array_assert_api(compare);
 
-	_stroll_array_insert_sort(array,
-	                          (char *)array + ((nr - 1) * size),
-	                          size,
-	                          compare,
-	                          data);
+	if (nr == 1)
+		return;
+
+	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
+		stroll_array_insert_sort32((uint32_t *)array,
+		                           nr,
+		                           compare,
+		                           data);
+	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
+		stroll_array_insert_sort64((uint64_t *)array,
+		                           nr,
+		                           compare,
+		                           data);
+	else
+		stroll_array_insert_sort_mem(array, nr, size, compare, data);
+
 }
 
 #endif /* defined(CONFIG_STROLL_ARRAY_INSERT_SORT) */
