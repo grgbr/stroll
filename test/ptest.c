@@ -177,6 +177,39 @@ strollpt_tspec_sub(const struct timespec * __restrict a,
 }
 
 int
+strollpt_parse_data_size(const char * __restrict arg,
+                         size_t * __restrict     data_size)
+{
+	assert(arg);
+	assert(data_size);
+
+	char *        str;
+	unsigned long sz;
+	int           err = 0;
+
+	sz = strtoul(arg, &str, 0);
+	if (*str)
+		err = EINVAL;
+	else if (!sz || (sz > UINT_MAX))
+		err = ERANGE;
+	else if (sz % 4U)
+		err = EINVAL;
+
+	if (err) {
+		strollpt_err("invalid data element size '%s' specified: "
+		             "%s (%d).\n",
+		             arg,
+		             strerror(err),
+		             err);
+		return EXIT_FAILURE;
+	}
+
+	*data_size = (size_t)sz;
+
+	return EXIT_SUCCESS;
+}
+
+int
 strollpt_parse_loop_nr(const char * __restrict   arg,
                        unsigned int * __restrict loop_nr)
 {

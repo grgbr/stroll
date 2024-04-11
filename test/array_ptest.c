@@ -6,14 +6,6 @@
 #include <string.h>
 #include <math.h>
 
-struct strollpt_iface {
-	char  * name;
-	int  (* validate)(const unsigned int * __restrict, unsigned int);
-	int  (* sort)(const unsigned int * __restrict,
-	              unsigned int,
-	              unsigned long long * __restrict);
-};
-
 typedef void
         (strollpt_sort_fn)(void * __restrict     array,
                            unsigned int          nr,
@@ -22,25 +14,74 @@ typedef void
                            void *                data)
 	__stroll_nonull(1, 4);
 
+struct strollpt_iface {
+	const char  *      name;
+	strollpt_sort_fn * sort;
+};
+
+struct strollpt_elem {
+	unsigned int id;
+	const char   data[0];
+};
+
+static struct strollpt_elem *
+strollpt_array_create(const unsigned int * elements,
+                      unsigned int         nr,
+                      size_t               size)
+{
+	assert(elements);
+	assert(nr);
+	assert(size >= sizeof(elements[0]));
+	assert(!(size % sizeof(elements[0])));
+
+	struct strollpt_elem * elms;
+	struct strollpt_elem * ptr;
+	unsigned int           n;
+
+	elms = malloc(nr * size);
+	if (!elms)
+		return NULL;
+
+	for (n = 0, ptr = elms;
+	     n < nr;
+	     n++, ptr = (struct strollpt_elem *)((char *)ptr + size))
+		ptr->id = elements[n];
+
+	return elms;
+}
+
 static int
 strollpt_array_sort_validate(const unsigned int * elements,
                              unsigned int         nr,
+                             size_t               size,
                              strollpt_sort_fn *   sort)
 {
-	unsigned int   n;
-	unsigned int * tmp;
-	int            ret = EXIT_FAILURE;
+	assert(elements);
+	assert(nr);
+	assert(size >= sizeof(elements[0]));
+	assert(!(size % sizeof(elements[0])));
+	assert(sort);
 
-	tmp = malloc(sizeof(*tmp) * nr);
+	struct strollpt_elem * tmp;
+	unsigned int           n;
+	int                    ret = EXIT_FAILURE;
+
+	tmp = strollpt_array_create(elements, nr, size);
 	if (!tmp)
 		return EXIT_FAILURE;
 
-	memcpy(tmp, elements, sizeof(*tmp) * nr);
-
-	sort(tmp, nr, sizeof(unsigned int), strollpt_compare_min, NULL);
+	sort(tmp, nr, size, strollpt_compare_min, NULL);
 
 	for (n = 1; n < nr; n++) {
-		if (tmp[n - 1] > tmp[n]) {
+		const struct strollpt_elem * curr;
+		const struct strollpt_elem * prev;
+
+		prev = (const struct strollpt_elem *)
+		       (&((const char *)tmp)[(n - 1) * size]);
+		curr = (const struct strollpt_elem *)
+		       (&((const char *)tmp)[n * size]);
+
+		if (prev->id > curr->id) {
 			strollpt_err("Bogus sorting scheme.\n");
 			goto free;
 		}
@@ -57,20 +98,19 @@ free:
 static int
 strollpt_array_sort(const unsigned int * __restrict elements,
                     unsigned int                    nr,
+                    size_t                          size,
                     unsigned long long * __restrict nsecs,
                     strollpt_sort_fn *              sort)
 {
 	struct timespec start, elapse;
-	unsigned int *  tmp;
+	struct strollpt_elem * tmp;
 
-	tmp = malloc(sizeof(*tmp) * nr);
+	tmp = strollpt_array_create(elements, nr, size);
 	if (!tmp)
 		return EXIT_FAILURE;
 
-	memcpy(tmp, elements, sizeof(*tmp) * nr);
-
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
-	sort(tmp, nr, sizeof(unsigned int), strollpt_compare_min, NULL);
+	sort(tmp, nr, size, strollpt_compare_min, NULL);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
 
 	elapse = strollpt_tspec_sub(&elapse, &start);
@@ -81,205 +121,44 @@ strollpt_array_sort(const unsigned int * __restrict elements,
 	return EXIT_SUCCESS;
 }
 
-/******************************************************************************
- * Glibc's quick sorting
- ******************************************************************************/
-
-static int
-strollpt_qsort_validate(const unsigned int * elements, unsigned int nr)
+/* Glibc's quick sorting */
+static inline void
+strollpt_array_qsort(void * __restrict     array,
+                     unsigned int          nr,
+                     size_t                size,
+                     stroll_array_cmp_fn * compare,
+                     void *                data)
 {
-	unsigned int   n;
-	unsigned int * tmp;
-	int            ret = EXIT_FAILURE;
-
-	tmp = malloc(sizeof(*tmp) * nr);
-	if (!tmp)
-		return EXIT_FAILURE;
-
-	memcpy(tmp, elements, sizeof(*tmp) * nr);
-
-	qsort_r(tmp, nr, sizeof(unsigned int), strollpt_compare_min, NULL);
-
-	for (n = 1; n < nr; n++) {
-		if (tmp[n - 1] > tmp[n]) {
-			strollpt_err("Bogus sorting scheme.\n");
-			goto free;
-		}
-	}
-
-	ret = EXIT_SUCCESS;
-
-free:
-	free(tmp);
-
-	return ret;
+	qsort_r(array, (unsigned int)nr, size, compare, data);
 }
-
-static int strollpt_qsort_sort(const unsigned int * __restrict elements,
-                               unsigned int                    nr,
-                               unsigned long long * __restrict nsecs)
-{
-	struct timespec start, elapse;
-	unsigned int *  tmp;
-
-	tmp = malloc(sizeof(*tmp) * nr);
-	if (!tmp)
-		return EXIT_FAILURE;
-
-	memcpy(tmp, elements, sizeof(*tmp) * nr);
-
-	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
-	qsort_r(tmp, nr, sizeof(unsigned int), strollpt_compare_min, NULL);
-	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
-
-	elapse = strollpt_tspec_sub(&elapse, &start);
-	*nsecs = strollpt_tspec2ns(&elapse);
-
-	free(tmp);
-
-	return EXIT_SUCCESS;
-}
-
-/******************************************************************************
- * Bubble sorting
- ******************************************************************************/
-
-#if defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT)
-
-static int strollpt_bubble_validate(const unsigned int * elements,
-                                    unsigned int         nr)
-{
-	return strollpt_array_sort_validate(elements,
-	                                    nr,
-	                                    stroll_array_bubble_sort);
-}
-
-static int
-strollpt_bubble_sort(const unsigned int * __restrict elements,
-                     unsigned int                    nr,
-                     unsigned long long * __restrict nsecs)
-{
-	return strollpt_array_sort(elements,
-	                           nr,
-	                           nsecs,
-	                           stroll_array_bubble_sort);
-}
-
-#endif /* defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT) */
-
-/******************************************************************************
- * Selection sorting
- ******************************************************************************/
-
-#if defined(CONFIG_STROLL_ARRAY_SELECT_SORT)
-
-static int strollpt_select_validate(const unsigned int * elements,
-                                    unsigned int         nr)
-{
-	return strollpt_array_sort_validate(elements,
-	                                    nr,
-	                                    stroll_array_select_sort);
-}
-
-static int
-strollpt_select_sort(const unsigned int * __restrict elements,
-                     unsigned int                    nr,
-                     unsigned long long * __restrict nsecs)
-{
-	return strollpt_array_sort(elements,
-	                           nr,
-	                           nsecs,
-	                           stroll_array_select_sort);
-}
-
-#endif /* defined(CONFIG_STROLL_ARRAY_SELECT_SORT) */
-
-/******************************************************************************
- * Insertion sorting
- ******************************************************************************/
-
-#if defined(CONFIG_STROLL_ARRAY_INSERT_SORT)
-
-static int strollpt_insert_validate(const unsigned int * elements,
-                                    unsigned int         nr)
-{
-	return strollpt_array_sort_validate(elements,
-	                                    nr,
-	                                    stroll_array_insert_sort);
-}
-
-static int
-strollpt_insert_sort(const unsigned int * __restrict elements,
-                     unsigned int                    nr,
-                     unsigned long long * __restrict nsecs)
-{
-	return strollpt_array_sort(elements,
-	                           nr,
-	                           nsecs,
-	                           stroll_array_insert_sort);
-}
-
-#endif /* defined(CONFIG_STROLL_ARRAY_INSERT_SORT) */
-
-/******************************************************************************
- * Quick sorting
- ******************************************************************************/
-
-#if defined(CONFIG_STROLL_ARRAY_QUICK_SORT)
-
-static int strollpt_quick_validate(const unsigned int * elements,
-                                   unsigned int         nr)
-{
-	return strollpt_array_sort_validate(elements,
-	                                    nr,
-	                                    stroll_array_quick_sort);
-}
-
-static int
-strollpt_quick_sort(const unsigned int * __restrict elements,
-                    unsigned int                    nr,
-                    unsigned long long * __restrict nsecs)
-{
-	return strollpt_array_sort(elements,
-	                           nr,
-	                           nsecs,
-	                           stroll_array_quick_sort);
-}
-
-#endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */
 
 static const struct strollpt_iface strollpt_algos[] = {
 	{
 		.name     = "qsort",
-		.validate = strollpt_qsort_validate,
-		.sort     = strollpt_qsort_sort
+		.sort     = strollpt_array_qsort
 	},
 #if defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT)
 	{
 		.name     = "bubble",
-		.validate = strollpt_bubble_validate,
-		.sort     = strollpt_bubble_sort
+		.sort     = stroll_array_bubble_sort
 	},
 #endif
 #if defined(CONFIG_STROLL_ARRAY_SELECT_SORT)
 	{
 		.name     = "select",
-		.validate = strollpt_select_validate,
-		.sort     = strollpt_select_sort
+		.sort     = stroll_array_select_sort
 	},
 #endif
 #if defined(CONFIG_STROLL_ARRAY_INSERT_SORT)
 	{
 		.name     = "insert",
-		.validate = strollpt_insert_validate,
-		.sort     = strollpt_insert_sort
+		.sort     = stroll_array_insert_sort
 	},
 #endif
 #if defined(CONFIG_STROLL_ARRAY_QUICK_SORT)
 	{
 		.name     = "quick",
-		.validate = strollpt_quick_validate,
-		.sort     = strollpt_quick_sort
+		.sort     = stroll_array_quick_sort
 	},
 #endif
 };
@@ -345,7 +224,7 @@ static void
 strollpt_usage(FILE * __restrict stdio)
 {
 	fprintf(stdio,
-	        "Usage: %s [OPTIONS] FILE ALGORITHM LOOPS\n"
+	        "Usage: %s [OPTIONS] FILE ALGORITHM SIZE LOOPS\n"
 	        "where OPTIONS:\n"
 	        "    -p|--prio  PRIORITY\n"
 	        "    -h|--help\n",
@@ -355,6 +234,7 @@ strollpt_usage(FILE * __restrict stdio)
 int main(int argc, char *argv[])
 {
 	const struct strollpt_iface * algo;
+	size_t                        dsize;
 	unsigned int                  l, loops = 0;
 	int                           prio = 0;
 	struct strollpt_data          data;
@@ -401,7 +281,7 @@ int main(int argc, char *argv[])
 	 * line.
 	 */
 	argc -= optind;
-	if (argc != 3) {
+	if (argc != 4) {
 		strollpt_err("invalid number of arguments\n");
 		strollpt_usage(stderr);
 		return EXIT_FAILURE;
@@ -411,7 +291,10 @@ int main(int argc, char *argv[])
 	if (!algo)
 		return EXIT_FAILURE;
 
-	if (strollpt_parse_loop_nr(argv[optind + 2], &loops))
+	if (strollpt_parse_data_size(argv[optind + 2], &dsize))
+		return EXIT_FAILURE;
+
+	if (strollpt_parse_loop_nr(argv[optind + 3], &loops))
 		return EXIT_FAILURE;
 
 	elems = strollpt_load(&data, argv[optind]);
@@ -420,7 +303,7 @@ int main(int argc, char *argv[])
 
 	ret = EXIT_FAILURE;
 
-	if (algo->validate(elems, data.nr))
+	if (strollpt_array_sort_validate(elems, data.nr, dsize, algo->sort))
 		goto free_elems;
 
 	if (strollpt_setup_sched_prio(prio))
@@ -430,7 +313,11 @@ int main(int argc, char *argv[])
 	if (!nsecs)
 		goto free_elems;
 	for (l = 0; l < loops; l++) {
-		if (algo->sort(elems, data.nr, &nsecs[l]))
+		if (strollpt_array_sort(elems,
+		                        data.nr,
+		                        dsize,
+		                        &nsecs[l],
+		                        algo->sort))
 			goto free_nsecs;
 	}
 
@@ -438,6 +325,7 @@ int main(int argc, char *argv[])
 	printf("#Samples:    %u\n"
 	       "Order ratio: %hu\n"
 	       "Algorithm:   %s\n"
+	       "Data size:   %zu\n"
 	       "#Loops:      %u\n"
 	       "#Inliers:    %u (%.2lf%%)\n"
 	       "Mininum:     %llu nSec\n"
@@ -448,6 +336,7 @@ int main(int argc, char *argv[])
 	       data.nr,
 	       data.ratio,
 	       algo->name,
+	       dsize,
 	       loops,
 	       stats.count, ((double)stats.count * 100.0) / (double)loops,
 	       stats.min,

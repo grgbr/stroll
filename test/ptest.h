@@ -69,6 +69,10 @@ strollpt_tspec2ns(const struct timespec * __restrict tspec)
 }
 
 extern int
+strollpt_parse_data_size(const char * __restrict arg,
+                         size_t * __restrict     data_size);
+
+extern int
 strollpt_parse_loop_nr(const char * __restrict   arg,
                        unsigned int * __restrict loop_nr);
 
