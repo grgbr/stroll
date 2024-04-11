@@ -38,7 +38,8 @@ strollut_array_bisect_array[] = {
 
 static int
 strollut_array_bisect_cmp(const void * __restrict key,
-                          const void * __restrict entry)
+                          const void * __restrict entry,
+                          void *                  data __unused)
 {
 	return (int)((intptr_t)(key) -
 	             (intptr_t)
@@ -53,9 +54,10 @@ strollut_array_bisect_search(unsigned int                               id,
 	return (const struct strollut_array_bisect_entry *)
 	       stroll_array_bisect_search((const void *)((uintptr_t)id),
 	                                  array,
-	                                  sizeof(array[0]),
 	                                  nr,
-	                                  strollut_array_bisect_cmp);
+	                                  sizeof(array[0]),
+	                                  strollut_array_bisect_cmp,
+	                                  NULL);
 }
 
 static void
@@ -85,26 +87,30 @@ CUTE_TEST(strollut_array_bisect_assert)
 	cute_expect_assertion(
 		ent = stroll_array_bisect_search((const void *)id,
 		                                 NULL,
-		                                 sizeof(array[0]),
 		                                 stroll_array_nr(array),
-		                                 strollut_array_bisect_cmp));
+		                                 sizeof(array[0]),
+		                                 strollut_array_bisect_cmp,
+		                                 NULL));
 	cute_expect_assertion(
 		ent = stroll_array_bisect_search((const void *)id,
 		                                 array,
-		                                 sizeof(array[0]),
 		                                 0,
-		                                 strollut_array_bisect_cmp));
+		                                 sizeof(array[0]),
+		                                 strollut_array_bisect_cmp,
+		                                 NULL));
 	cute_expect_assertion(
 		ent = stroll_array_bisect_search((const void *)id,
 		                                 array,
-		                                 sizeof(array[0]),
 		                                 stroll_array_nr(array),
+		                                 sizeof(array[0]),
+		                                 NULL,
 		                                 NULL));
 	ent = stroll_array_bisect_search(NULL,
 	                                 array,
-	                                 sizeof(array[0]),
 	                                 stroll_array_nr(array),
-	                                 strollut_array_bisect_cmp);
+	                                 sizeof(array[0]),
+	                                 strollut_array_bisect_cmp,
+	                                 NULL);
 }
 #else
 CUTE_TEST(strollut_array_bisect_assert)
@@ -122,17 +128,19 @@ CUTE_TEST(strollut_array_bisect_integral)
 	/* Make sure zero is a valid value as key argument. */
 	ent = stroll_array_bisect_search((const void *)id,
 	                                 array,
-	                                 sizeof(array[0]),
 	                                 stroll_array_nr(array),
-	                                 strollut_array_bisect_cmp);
+	                                 sizeof(array[0]),
+	                                 strollut_array_bisect_cmp,
+	                                 NULL);
 	cute_check_ptr(ent, equal, &array[0]);
 
 	/* Make sure NULL keys don't raise assertions. */
 	ent = stroll_array_bisect_search(NULL,
 	                                 array,
-	                                 sizeof(array[0]),
 	                                 stroll_array_nr(array),
-	                                 strollut_array_bisect_cmp);
+	                                 sizeof(array[0]),
+	                                 strollut_array_bisect_cmp,
+	                                 NULL);
 }
 
 CUTE_TEST(strollut_array_bisect_one)
@@ -208,14 +216,17 @@ CUTE_SUITE_EXTERN(strollut_array_bisect_suite,
 	}
 
 static void (*strollut_array_sort)(void *                array,
-                                   size_t                size,
                                    unsigned int          nr,
-                                   stroll_array_cmp_fn * compare);
+                                   size_t                size,
+                                   stroll_array_cmp_fn * compare,
+                                   void *                data);
 
 static bool strollut_array_stable_sort;
 
 static int
-strollut_array_compare_min(const void * first, const void * second)
+strollut_array_compare_min(const void * first,
+                           const void * second,
+                           void *       data __unused)
 {
 	return *(const int *)first - *(const int *)second;
 }
@@ -226,9 +237,10 @@ strollut_array_check_sort(int * array, const int * expect, unsigned int nr)
 	unsigned int e;
 
 	strollut_array_sort((void *)array,
-	                    sizeof(array[0]),
 	                    nr,
-	                    strollut_array_compare_min);
+	                    sizeof(array[0]),
+	                    strollut_array_compare_min,
+	                    NULL);
 
 	for (e = 0; e < nr; e++)
 		cute_check_sint(array[e], equal, expect[e]);
@@ -331,7 +343,9 @@ CUTE_TEST(strollut_array_sort_unsorted_duplicates)
 }
 
 static int
-strollut_array_compare_elem_inorder(const void * first, const void * second)
+strollut_array_compare_elem_inorder(const void * first,
+                                    const void * second,
+                                    void *       data __unused)
 {
 	const struct strollut_array_elem * fst =
 		(const struct strollut_array_elem *)first;
@@ -342,7 +356,9 @@ strollut_array_compare_elem_inorder(const void * first, const void * second)
 }
 
 static int
-strollut_array_compare_elem_postorder(const void * first, const void * second)
+strollut_array_compare_elem_postorder(const void * first,
+                                      const void * second,
+                                      void *       data __unused)
 {
 	const struct strollut_array_elem * fst =
 		(const struct strollut_array_elem *)first;
@@ -365,9 +381,10 @@ strollut_array_check_stable(const struct strollut_array_elem * array,
 	memcpy(strollut_array_tosort, array, sizeof(strollut_array_tosort));
 
 	strollut_array_sort((void *)strollut_array_tosort,
-	                    sizeof(strollut_array_tosort[0]),
 	                    stroll_array_nr(strollut_array_tosort),
-	                    cmp);
+	                    sizeof(strollut_array_tosort[0]),
+	                    cmp,
+	                    NULL);
 
 	for (e = 0; e < stroll_array_nr(strollut_array_tosort); e++) {
 		cute_check_sint(strollut_array_tosort[e].key,
@@ -389,9 +406,10 @@ strollut_array_check_unstable(const struct strollut_array_elem * array,
 	memcpy(strollut_array_tosort, array, sizeof(strollut_array_tosort));
 
 	strollut_array_sort((void *)strollut_array_tosort,
-	                    sizeof(strollut_array_tosort[0]),
 	                    stroll_array_nr(strollut_array_tosort),
-	                    cmp);
+	                    sizeof(strollut_array_tosort[0]),
+	                    cmp,
+	                    NULL);
 
 	for (e = 0; e < stroll_array_nr(strollut_array_tosort); e++) {
 		cute_check_sint(strollut_array_tosort[e].key,

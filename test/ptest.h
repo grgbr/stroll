@@ -8,6 +8,7 @@
 #ifndef _STROLL_PTEST_H
 #define _STROLL_PTEST_H
 
+#include "stroll/cdefs.h"
 #include <stdio.h>
 #include <time.h>
 #include <errno.h>
@@ -19,7 +20,9 @@
                 ## __VA_ARGS__)
 
 static inline int
-strollpt_compare_min(const void * __restrict a, const void * __restrict b)
+strollpt_compare_min(const void * __restrict a,
+                     const void * __restrict b,
+                     void *                  data __unused)
 {
 	unsigned int _a = *(const unsigned int *)a;
 	unsigned int _b = *(const unsigned int *)b;
@@ -33,9 +36,11 @@ strollpt_compare_min(const void * __restrict a, const void * __restrict b)
 }
 
 static inline int
-strollpt_compare_max(const void * __restrict a, const void * __restrict b)
+strollpt_compare_max(const void * __restrict a,
+                     const void * __restrict b,
+                     void *                  data __unused)
 {
-	return 0 - strollpt_compare_min(a, b);
+	return 0 - strollpt_compare_min(a, b, NULL);
 }
 
 struct strollpt_stats {

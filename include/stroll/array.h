@@ -35,7 +35,8 @@
  * @see stroll_bisect_search()
  */
 typedef int stroll_array_cmp_fn(const void * __restrict,
-                                const void * __restrict)
+                                const void * __restrict,
+                                void *)
 	__stroll_nonull(1, 2) __warn_result;
 
 #if defined(CONFIG_STROLL_ARRAY_BISECT_SEARCH)
@@ -43,11 +44,12 @@ typedef int stroll_array_cmp_fn(const void * __restrict,
 /**
  * Search by key within a pre-sorted array.
  *
- * @param[in] key     Key to search for
- * @param[in] array   Array to seach into
- * @param[in] size    Size of a single @p array element
- * @param[in] nr      @p array number of elements
- * @param[in] compare @p array elements comparison function
+ * @param[in]    key     Key to search for
+ * @param[in]    array   Array to seach into
+ * @param[in]    nr      @p array number of elements
+ * @param[in]    size    Size of a single @p array element
+ * @param[in]    compare @p array elements comparison function
+ * @param[inout] data    optional arbitrary user data
  *
  * @return Matching array element when found, `NULL` otherwise.
  *
@@ -61,9 +63,11 @@ typedef int stroll_array_cmp_fn(const void * __restrict,
  * The contents of @p array *MUST BE* in ascending sorted order with respect to
  * the @p compare comparison function.
  *
- * The @p compare routine is expected to handle 2 arguments:
+ * The @p compare routine is expected to handle 3 arguments:
  * - *first* one points to the @p key argument given to stroll_bisect_search() ;
- * - *second* one points to an @p array element.
+ * - *second* one points to an @p array element ;
+ * - an optional *third* argument @p data that may point to arbitrary data for
+ *   comparison purposes.
  *
  * @p compare *MUST* return an integer less than, equal to, or greater than zero
  * if @p key is found, respectively, to be less than, to match, or be greater
@@ -74,9 +78,10 @@ typedef int stroll_array_cmp_fn(const void * __restrict,
 extern void *
 stroll_array_bisect_search(const void *          key,
                            const void *          array,
-                           size_t                size,
                            unsigned int          nr,
-                           stroll_array_cmp_fn * compare)
+                           size_t                size,
+                           stroll_array_cmp_fn * compare,
+                           void *                data)
 	__stroll_nonull(2, 5) __warn_result;
 
 #endif /* defined(CONFIG_STROLL_ARRAY_BISECT_SEARCH) */
@@ -87,18 +92,22 @@ stroll_array_bisect_search(const void *          key,
  * Sort an array according to the bubble sort algorithm.
  *
  * @param[inout] array   Array to sort
- * @param[in]    size    Size of a single @p array element
  * @param[in]    nr      @p array number of elements
+ * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
+ * @param[inout] data    optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
  * comparison function according to the @rstlnk{Bubble sort} algorithm.
  *
- * The @p compare routine is expected to handle 2 arguments, both pointing to
+ * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
  * @p compare *MUST* return an integer less than, equal to, or greater than zero
  * if first argument is found, respectively, to be less than, to match, or be
  * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
  *
  * @rsttable{Sorting properties}
  * +-------------------------+-----------------------------------------------+
@@ -139,9 +148,10 @@ stroll_array_bisect_search(const void *          key,
  */
 extern void
 stroll_array_bubble_sort(void * __restrict     array,
-                         size_t                size,
                          unsigned int          nr,
-                         stroll_array_cmp_fn * compare)
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                arg)
 	__stroll_nonull(1, 4);
 
 #endif /* defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT) */
@@ -152,18 +162,22 @@ stroll_array_bubble_sort(void * __restrict     array,
  * Sort an array according to the selection sort algorithm.
  *
  * @param[inout] array   Array to sort
- * @param[in]    size    Size of a single @p array element
  * @param[in]    nr      @p array number of elements
+ * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
+ * @param[inout] data    optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
  * comparison function according to the @rstlnk{Selection sort} algorithm.
  *
- * The @p compare routine is expected to handle 2 arguments, both pointing to
+ * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
  * @p compare *MUST* return an integer less than, equal to, or greater than zero
  * if first argument is found, respectively, to be less than, to match, or be
  * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
  *
  * @rsttable{Sorting properties}
  * +-------------------------+-----------------------------------------------+
@@ -202,9 +216,10 @@ stroll_array_bubble_sort(void * __restrict     array,
  */
 extern void
 stroll_array_select_sort(void * __restrict     array,
-                         size_t                size,
                          unsigned int          nr,
-                         stroll_array_cmp_fn * compare)
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                arg)
 	__stroll_nonull(1, 4);
 
 #endif /* defined(CONFIG_STROLL_ARRAY_SELECT_SORT) */
@@ -215,18 +230,22 @@ stroll_array_select_sort(void * __restrict     array,
  * Sort an array according to the insertion sort algorithm.
  *
  * @param[inout] array   Array to sort
- * @param[in]    size    Size of a single @p array element
  * @param[in]    nr      @p array number of elements
+ * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
+ * @param[inout] data    optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
  * comparison function according to the @rstlnk{Insertion sort} algorithm.
  *
- * The @p compare routine is expected to handle 2 arguments, both pointing to
+ * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
  * @p compare *MUST* return an integer less than, equal to, or greater than zero
  * if first argument is found, respectively, to be less than, to match, or be
  * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
  *
  * @rsttable{Sorting properties}
  * +-------------------------+-----------------------------------------------+
@@ -268,9 +287,10 @@ stroll_array_select_sort(void * __restrict     array,
  */
 extern void
 stroll_array_insert_sort(void * __restrict     array,
-                         size_t                size,
                          unsigned int          nr,
-                         stroll_array_cmp_fn * compare)
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                arg)
 	__stroll_nonull(1, 4);
 
 /**
@@ -280,17 +300,21 @@ stroll_array_insert_sort(void * __restrict     array,
  * @param[inout] unsort  First unsorted and last element of @p array
  * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
+ * @param[inout] data    optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
  * comparison function according to the @rstlnk{Insertion sort} algorithm.
  *
  * @p unsort *MUST* point to the first unsorted and last element of @p array.
  *
- * The @p compare routine is expected to handle 2 arguments, both pointing to
+ * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
  * @p compare *MUST* return an integer less than, equal to, or greater than zero
  * if first argument is found, respectively, to be less than, to match, or be
  * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
  *
  * Use stroll_array_insert_presort() when you know for sure that all elements
  * of @p array up to @p unsort (exclusive) are in sorted order.
@@ -303,7 +327,8 @@ extern void
 stroll_array_insert_presort(void * __restrict     array,
                             void * __restrict     unsort,
                             size_t                size,
-                            stroll_array_cmp_fn * compare)
+                            stroll_array_cmp_fn * compare,
+                            void *                arg)
 	__stroll_nonull(1, 2, 4);
 
 #endif /* defined(CONFIG_STROLL_ARRAY_INSERT_SORT) */
@@ -317,15 +342,19 @@ stroll_array_insert_presort(void * __restrict     array,
  * @param[in]    size    Size of a single @p array element
  * @param[in]    nr      @p array number of elements
  * @param[in]    compare @p array elements comparison function
+ * @param[inout] data    optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
  * comparison function according to the @rstlnk{Quick sort} algorithm.
  *
- * The @p compare routine is expected to handle 2 arguments, both pointing to
+ * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
  * @p compare *MUST* return an integer less than, equal to, or greater than zero
  * if first argument is found, respectively, to be less than, to match, or be
  * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
  *
  * Implementation includes the following usual optimizations:
  * - recursion converted to iterative process thanks to additional
@@ -373,9 +402,10 @@ stroll_array_insert_presort(void * __restrict     array,
  */
 extern void
 stroll_array_quick_sort(void * __restrict     array,
-                        size_t                size,
                         unsigned int          nr,
-                        stroll_array_cmp_fn * compare)
+                        size_t                size,
+                        stroll_array_cmp_fn * compare,
+                        void *                arg)
 	__stroll_nonull(1, 4);
 
 #endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */

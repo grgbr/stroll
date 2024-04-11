@@ -16,9 +16,10 @@ struct strollpt_iface {
 
 typedef void
         (strollpt_sort_fn)(void * __restrict     array,
-                           size_t                size,
                            unsigned int          nr,
-                           stroll_array_cmp_fn * compare)
+                           size_t                size,
+                           stroll_array_cmp_fn * compare,
+                           void *                data)
 	__stroll_nonull(1, 4);
 
 static int
@@ -36,7 +37,7 @@ strollpt_array_sort_validate(const unsigned int * elements,
 
 	memcpy(tmp, elements, sizeof(*tmp) * nr);
 
-	sort(tmp, sizeof(unsigned int), nr, strollpt_compare_min);
+	sort(tmp, nr, sizeof(unsigned int), strollpt_compare_min, NULL);
 
 	for (n = 1; n < nr; n++) {
 		if (tmp[n - 1] > tmp[n]) {
@@ -69,7 +70,7 @@ strollpt_array_sort(const unsigned int * __restrict elements,
 	memcpy(tmp, elements, sizeof(*tmp) * nr);
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
-	sort(tmp, sizeof(unsigned int), nr, strollpt_compare_min);
+	sort(tmp, nr, sizeof(unsigned int), strollpt_compare_min, NULL);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
 
 	elapse = strollpt_tspec_sub(&elapse, &start);
@@ -97,7 +98,7 @@ strollpt_qsort_validate(const unsigned int * elements, unsigned int nr)
 
 	memcpy(tmp, elements, sizeof(*tmp) * nr);
 
-	qsort(tmp, nr, sizeof(unsigned int), strollpt_compare_min);
+	qsort_r(tmp, nr, sizeof(unsigned int), strollpt_compare_min, NULL);
 
 	for (n = 1; n < nr; n++) {
 		if (tmp[n - 1] > tmp[n]) {
@@ -128,7 +129,7 @@ static int strollpt_qsort_sort(const unsigned int * __restrict elements,
 	memcpy(tmp, elements, sizeof(*tmp) * nr);
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
-	qsort(tmp, nr, sizeof(unsigned int), strollpt_compare_min);
+	qsort_r(tmp, nr, sizeof(unsigned int), strollpt_compare_min, NULL);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
 
 	elapse = strollpt_tspec_sub(&elapse, &start);

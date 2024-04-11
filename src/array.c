@@ -58,13 +58,14 @@ stroll_array_swap(void * __restrict first,
 void *
 stroll_array_bisect_search(const void *          key,
                            const void *          array,
-                           size_t                size,
                            unsigned int          nr,
-                           stroll_array_cmp_fn * compare)
+                           size_t                size,
+                           stroll_array_cmp_fn * compare,
+                           void *                data)
 {
 	stroll_array_assert_api(array);
-	stroll_array_assert_api(size);
 	stroll_array_assert_api(nr);
+	stroll_array_assert_api(size);
 	stroll_array_assert_api(compare);
 
 	size_t min = 0;
@@ -75,7 +76,7 @@ stroll_array_bisect_search(const void *          key,
 		const char * elm = (const char *)array + (mid * size);
 		int          cmp;
 
-		cmp = compare(key, elm);
+		cmp = compare(key, elm, data);
 		if (cmp < 0)
 			max = mid;
 		else if (cmp > 0)
@@ -97,13 +98,14 @@ stroll_array_bisect_search(const void *          key,
 
 void
 stroll_array_bubble_sort(void * __restrict     array,
-                         size_t                size,
                          unsigned int          nr,
-                         stroll_array_cmp_fn * compare)
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                data)
 {
 	stroll_array_assert_api(array);
-	stroll_array_assert_api(size);
 	stroll_array_assert_api(nr);
+	stroll_array_assert_api(size);
 	stroll_array_assert_api(compare);
 
 	const char * end = (const char *)array + ((nr - 1) * size);
@@ -115,7 +117,7 @@ stroll_array_bubble_sort(void * __restrict     array,
 		do {
 			char * neigh = &elm[size];
 
-			if (compare(elm, neigh) > 0) {
+			if (compare(elm, neigh, data) > 0) {
 				stroll_array_swap(elm, neigh, size);
 				last = neigh;
 			}
@@ -133,10 +135,16 @@ stroll_array_bubble_sort(void * __restrict     array,
 
 void
 stroll_array_select_sort(void * __restrict     array,
-                         size_t                size,
                          unsigned int          nr,
-                         stroll_array_cmp_fn * compare)
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                data)
 {
+	stroll_array_assert_api(array);
+	stroll_array_assert_api(nr);
+	stroll_array_assert_api(size);
+	stroll_array_assert_api(compare);
+
 	const char * end = (const char *)array + ((nr - 1) * size);
 	char *       unsort = array;
 
@@ -146,7 +154,7 @@ stroll_array_select_sort(void * __restrict     array,
 
 		do {
 			elm += size;
-			if (compare(elm, min) < 0)
+			if (compare(elm, min, data) < 0)
 				min = elm;
 		} while (elm < end);
 
@@ -164,7 +172,8 @@ void
 stroll_array_insert_presort(void * __restrict     array,
                             void * __restrict     unsort,
                             size_t                size,
-                            stroll_array_cmp_fn * compare)
+                            stroll_array_cmp_fn * compare,
+                            void *                data)
 {
 	stroll_array_assert_api(array);
 	stroll_array_assert_api(unsort > array);
@@ -173,7 +182,7 @@ stroll_array_insert_presort(void * __restrict     array,
 
 	char * elm = unsort - size;
 
-	if (compare(unsort, elm) < 0) {
+	if (compare(unsort, elm, data) < 0) {
 		char tmp[size];
 
 		memcpy(tmp, unsort, size);
@@ -181,7 +190,8 @@ stroll_array_insert_presort(void * __restrict     array,
 		do {
 			memcpy(elm + size, elm, size);
 			elm -= size;
-		} while ((elm >= (char *)array) && (compare(tmp, elm) < 0));
+		} while ((elm >= (char *)array) &&
+		         (compare(tmp, elm, data) < 0));
 
 		memcpy(elm + size, tmp, size);
 	}
@@ -192,7 +202,8 @@ void
 _stroll_array_insert_sort(char * __restrict     array,
                           char * __restrict     last,
                           size_t                size,
-                          stroll_array_cmp_fn * compare)
+                          stroll_array_cmp_fn * compare,
+                          void *                data)
 {
 	stroll_array_assert_intern(array);
 	stroll_array_assert_intern(last >= array);
@@ -202,16 +213,17 @@ _stroll_array_insert_sort(char * __restrict     array,
 	char * unsort = array + size;
 
 	while (unsort <= last) {
-		stroll_array_insert_presort(array, unsort, size, compare);
+		stroll_array_insert_presort(array, unsort, size, compare, data);
 		unsort += size;
 	}
 }
 
 void
 stroll_array_insert_sort(void * __restrict     array,
-                         size_t                size,
                          unsigned int          nr,
-                         stroll_array_cmp_fn * compare)
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                data)
 {
 	stroll_array_assert_api(array);
 	stroll_array_assert_api(size);
@@ -221,7 +233,8 @@ stroll_array_insert_sort(void * __restrict     array,
 	_stroll_array_insert_sort(array,
 	                          (char *)array + ((nr - 1) * size),
 	                          size,
-	                          compare);
+	                          compare,
+	                          data);
 }
 
 #endif /* defined(CONFIG_STROLL_ARRAY_INSERT_SORT) */
@@ -244,18 +257,19 @@ char *
 _stroll_array_quick_hoare_part(char *                begin,
                                char *                end,
                                size_t                size,
-                               stroll_array_cmp_fn * compare)
+                               stroll_array_cmp_fn * compare,
+                               void *                data)
 {
 	char   pivot[size];
 	char * mid = begin + (((size_t)(end - begin) / (2 * size)) * size);
 
-	if (compare(begin, mid) > 0)
+	if (compare(begin, mid, data) > 0)
 		stroll_array_swap(begin, mid, size);
 
-	if (compare(mid, end) > 0) {
+	if (compare(mid, end, data) > 0) {
 		stroll_array_swap(mid, end, size);
 
-		if (compare(begin, mid) > 0)
+		if (compare(begin, mid, data) > 0)
 			stroll_array_swap(begin, mid, size);
 	}
 
@@ -266,11 +280,11 @@ _stroll_array_quick_hoare_part(char *                begin,
 	while (true) {
 		do {
 			begin += size;
-		} while (compare(pivot, begin) > 0);
+		} while (compare(pivot, begin, data) > 0);
 
 		do {
 			end -= size;
-		} while (compare(end, pivot) > 0);
+		} while (compare(end, pivot, data) > 0);
 
 		if (begin >= end)
 			return end;
@@ -284,7 +298,8 @@ char *
 stroll_array_quick_hoare_part(char *                begin,
                               char *                end,
                               size_t                size,
-                              stroll_array_cmp_fn * compare)
+                              stroll_array_cmp_fn * compare,
+                              void *                data)
 {
 	stroll_array_assert_intern(begin);
 	stroll_array_assert_intern(end > begin);
@@ -293,7 +308,7 @@ stroll_array_quick_hoare_part(char *                begin,
 
 	char * pivot;
 
-	pivot = _stroll_array_quick_hoare_part(begin, end, size, compare);
+	pivot = _stroll_array_quick_hoare_part(begin, end, size, compare, data);
 
 	stroll_array_assert_intern(begin <= pivot);
 	stroll_array_assert_intern(pivot < end);
@@ -340,13 +355,14 @@ stroll_array_quick_switch_insert(const char * __restrict begin,
 
 void
 stroll_array_quick_sort(void * __restrict     array,
-                        size_t                size,
                         unsigned int          nr,
-                        stroll_array_cmp_fn * compare)
+                        size_t                size,
+                        stroll_array_cmp_fn * compare,
+                        void *                data)
 {
 	stroll_array_assert_api(array);
-	stroll_array_assert_api(size);
 	stroll_array_assert_api(nr);
+	stroll_array_assert_api(size);
 	stroll_array_assert_api(compare);
 
 	char *                 begin = array;
@@ -364,9 +380,10 @@ stroll_array_quick_sort(void * __restrict     array,
 		while (stroll_array_quick_switch_insert(begin, end, size)) {
 			if (!ptop--)
 				return stroll_array_insert_sort(array,
-				                                size,
 				                                nr,
-				                                compare);
+				                                size,
+				                                compare,
+				                                data);
 			begin = parts[ptop].begin;
 			end = parts[ptop].end;
 		}
@@ -374,7 +391,8 @@ stroll_array_quick_sort(void * __restrict     array,
 		pivot = stroll_array_quick_hoare_part(begin,
 		                                      end,
 		                                      size,
-		                                      compare);
+		                                      compare,
+		                                      data);
 		stroll_array_assert_intern(ptop < stroll_array_nr(parts));
 
 		high = pivot + size;
