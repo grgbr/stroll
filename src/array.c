@@ -846,3 +846,128 @@ stroll_array_quick_sort(void * __restrict     array,
 }
 
 #endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */
+
+#if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
+
+#include <stdlib.h>
+
+struct stroll_array_merge {
+	char *                aux;
+	size_t                size;
+	stroll_array_cmp_fn * compare;
+	void *                data;
+};
+
+static void
+stroll_array_merge_parts_mem(const struct stroll_array_merge * __restrict parms,
+                             char * __restrict                            begin,
+                             char * __restrict                            mid,
+                             char * __restrict                            end)
+{
+	stroll_array_assert_intern(parms);
+	stroll_array_assert_intern(parms->aux);
+	stroll_array_assert_intern(parms->size);
+	stroll_array_assert_intern(parms->compare);
+	stroll_array_assert_intern(begin);
+	stroll_array_assert_intern(mid > begin);
+	stroll_array_assert_intern(end > mid);
+
+	char *       aux = parms->aux;
+	size_t       sz = (size_t)(mid - begin);
+	const char * aend = &aux[sz];
+
+	memcpy(aux, begin, sz + parms->size);
+
+	while ((aux <= aend) && (mid <= end)) {
+		if (parms->compare(aux, mid, parms->data) <= 0) {
+			memcpy(begin, aux, parms->size);
+			aux += parms->size;
+		}
+		else {
+			memcpy(begin, mid, parms->size);
+			mid += parms->size;
+		}
+
+		begin += parms->size;
+	}
+
+	if (aux <= aend)
+		memcpy(begin, aux, (size_t)(aend - aux) + parms->size);
+}
+
+static void
+stroll_array_merge_topdwn_sort(
+	const struct stroll_array_merge * __restrict parms,
+	char * __restrict                            begin,
+	char * __restrict                            end)
+{
+	stroll_array_assert_intern(parms);
+	stroll_array_assert_intern(parms->aux);
+	stroll_array_assert_intern(parms->size);
+	stroll_array_assert_intern(parms->compare);
+	stroll_array_assert_intern(end >= begin);
+
+	if (end > begin) {
+		char * mid = begin +
+		             (((size_t)(end - begin) /
+		               (2 * parms->size)) * parms->size);
+
+		stroll_array_merge_topdwn_sort(parms, begin, mid);
+		stroll_array_merge_topdwn_sort(parms, mid + parms->size, end);
+
+		stroll_array_merge_parts_mem(parms, begin, mid, end);
+	}
+}
+
+static void
+stroll_array_merge_sort_mem(void * __restrict     array,
+                            unsigned int          nr,
+                            size_t                size,
+                            stroll_array_cmp_fn * compare,
+                            void *                data)
+{
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(nr > 1);
+	stroll_array_assert_intern(size);
+	stroll_array_assert_intern(compare);
+
+	char *                          begin = array;
+	char *                          end = &begin[(nr - 1) * size];
+	char *                          mid = &begin[(nr / 2) * size];
+	const struct stroll_array_merge parms = {
+		.aux     = malloc((((size_t)nr + 1) / 2) * size),
+		.size    = size,
+		.compare = compare,
+		.data    = data
+	};
+
+#warning FIXME: switch to alternate sort method if allocation failed ?!
+	stroll_array_assert_intern(parms.aux);
+
+	stroll_array_merge_topdwn_sort(&parms, begin, mid);
+	stroll_array_merge_topdwn_sort(&parms, mid + size, end);
+
+	stroll_array_merge_parts_mem(&parms, begin, mid, end);
+
+	free(parms.aux);
+}
+
+void
+stroll_array_merge_sort(void * __restrict     array,
+                        unsigned int          nr,
+                        size_t                size,
+                        stroll_array_cmp_fn * compare,
+                        void *                data)
+{
+	stroll_array_assert_api(array);
+	stroll_array_assert_api(nr);
+	stroll_array_assert_api(size);
+	stroll_array_assert_api(compare);
+
+	if (nr == 1)
+		return;
+
+	return stroll_array_merge_sort_mem(array, nr, size, compare, data);
+}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_MERGE_SORT) */

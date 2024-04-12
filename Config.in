@@ -177,6 +177,14 @@ config STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
 	  this threshold, quick sort will switch to insertion sort to minimize
 	  the number of element swap operations.
 
+config STROLL_ARRAY_MERGE_SORT
+	bool "Merge sort"
+	default y
+	help
+	  Build stroll library with support for an optimized hybrid version of
+	  the merge sort algorithm.
+	  See <stroll/array.h>.
+
 endif # STROLL_ARRAY
 
 # ex: ft=kconfig:

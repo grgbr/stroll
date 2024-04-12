@@ -463,9 +463,9 @@ CUTE_GROUP(strollut_array_sort_group) = {
 STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_bubble_setup,
                              stroll_array_bubble_sort,
                              true)
-#else   /* !defined(CONFIG_STROLL_ARRAY_BUBBLE) */
+#else   /* !defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT) */
 STROLLUT_ARRAY_UNSUP(strollut_array_bubble_setup)
-#endif  /* defined(CONFIG_STROLL_ARRAY_BUBBLE) */
+#endif  /* defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT) */
 
 CUTE_SUITE_STATIC(strollut_array_bubble_suite,
                   strollut_array_sort_group,
@@ -477,9 +477,9 @@ CUTE_SUITE_STATIC(strollut_array_bubble_suite,
 STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_select_setup,
                              stroll_array_select_sort,
                              false)
-#else   /* !defined(CONFIG_STROLL_ARRAY_SELECT) */
+#else   /* !defined(CONFIG_STROLL_ARRAY_SELECT_SORT) */
 STROLLUT_ARRAY_UNSUP(strollut_array_select_setup)
-#endif  /* defined(CONFIG_STROLL_ARRAY_SELECT) */
+#endif  /* defined(CONFIG_STROLL_ARRAY_SELECT_SORT) */
 
 CUTE_SUITE_STATIC(strollut_array_select_suite,
                   strollut_array_sort_group,
@@ -491,9 +491,9 @@ CUTE_SUITE_STATIC(strollut_array_select_suite,
 STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_insert_setup,
                              stroll_array_insert_sort,
                              true)
-#else   /* !defined(CONFIG_STROLL_ARRAY_INSERT) */
+#else   /* !defined(CONFIG_STROLL_ARRAY_INSERT_SORT) */
 STROLLUT_ARRAY_UNSUP(strollut_array_insert_setup)
-#endif  /* defined(CONFIG_STROLL_ARRAY_INSERT) */
+#endif  /* defined(CONFIG_STROLL_ARRAY_INSERT_SORT) */
 
 CUTE_SUITE_STATIC(strollut_array_insert_suite,
                   strollut_array_sort_group,
@@ -505,13 +505,27 @@ CUTE_SUITE_STATIC(strollut_array_insert_suite,
 STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_quick_setup,
                              stroll_array_quick_sort,
                              false)
-#else   /* !defined(CONFIG_STROLL_ARRAY_QUICK) */
+#else   /* !defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */
 STROLLUT_ARRAY_UNSUP(strollut_array_quick_setup)
-#endif  /* defined(CONFIG_STROLL_ARRAY_QUICK) */
+#endif  /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */
 
 CUTE_SUITE_STATIC(strollut_array_quick_suite,
                   strollut_array_sort_group,
                   strollut_array_quick_setup,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);
+
+#if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
+STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_merge_setup,
+                             stroll_array_merge_sort,
+                             false)
+#else   /* !defined(CONFIG_STROLL_ARRAY_MERGE_SORT) */
+STROLLUT_ARRAY_UNSUP(strollut_array_merge_setup)
+#endif  /* defined(CONFIG_STROLL_ARRAY_MERGE_SORT) */
+
+CUTE_SUITE_STATIC(strollut_array_merge_suite,
+                  strollut_array_sort_group,
+                  strollut_array_merge_setup,
                   CUTE_NULL_TEARDOWN,
                   CUTE_DFLT_TMOUT);
 
@@ -521,6 +535,7 @@ CUTE_GROUP(strollut_array_group) = {
 	CUTE_REF(strollut_array_select_suite),
 	CUTE_REF(strollut_array_insert_suite),
 	CUTE_REF(strollut_array_quick_suite),
+	CUTE_REF(strollut_array_merge_suite)
 };
 
 CUTE_SUITE_EXTERN(strollut_array_suite,

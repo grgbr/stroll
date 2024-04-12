@@ -410,4 +410,16 @@ stroll_array_quick_sort(void * __restrict     array,
 
 #endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */
 
+#if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
+
+extern void
+stroll_array_merge_sort(void * __restrict     array,
+                        unsigned int          nr,
+                        size_t                size,
+                        stroll_array_cmp_fn * compare,
+                        void *                data)
+	__stroll_nonull(1, 4);
+
+#endif /* defined(CONFIG_STROLL_ARRAY_MERGE_SORT) */
+
 #endif /* _STROLL_ARRAY_H */
