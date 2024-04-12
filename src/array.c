@@ -519,6 +519,59 @@ stroll_array_insert_sort(void * __restrict     array,
 
 #if defined(CONFIG_STROLL_ARRAY_QUICK_SORT_UTILS)
 
+#define STROLL_ARRAY_DEFINE_QUICK_HOARE_PART(_part_func, _swap_func, _type) \
+	static __stroll_nonull(1, 2, 3) \
+	_type * \
+	_part_func(_type *               begin, \
+	           _type *               end, \
+	           stroll_array_cmp_fn * compare, \
+	           void *                data) \
+	{ \
+		stroll_array_assert_intern(begin); \
+		stroll_array_assert_intern(end > begin); \
+		stroll_array_assert_intern(compare); \
+		\
+		_type   pivot; \
+		_type * mid = &begin[(end - begin) / 2]; \
+		\
+		if (compare(begin, mid, data) > 0) \
+			_swap_func(begin, mid); \
+		\
+		if (compare(mid, end, data) > 0) { \
+			_swap_func(mid, end); \
+			\
+			if (compare(begin, mid, data) > 0) \
+				_swap_func(begin, mid); \
+		} \
+		\
+		pivot = *mid; \
+		\
+		begin--; \
+		end++; \
+		while (true) { \
+			do { \
+				begin++; \
+			} while (compare(&pivot, begin, data) > 0); \
+			\
+			do { \
+				end--; \
+			} while (compare(end, &pivot, data) > 0); \
+			\
+			if (begin >= end) \
+				return end; \
+			\
+			_swap_func(begin, end); \
+		} \
+	}
+
+STROLL_ARRAY_DEFINE_QUICK_HOARE_PART(stroll_array_quick_hoare_part32,
+                                     stroll_array_swap32,
+                                     uint32_t)
+
+STROLL_ARRAY_DEFINE_QUICK_HOARE_PART(stroll_array_quick_hoare_part64,
+                                     stroll_array_swap64,
+                                     uint64_t)
+
 /*
  * TODO:
  *  - docs !! see https://stackoverflow.com/questions/6709055/quicksort-stack-size
@@ -532,12 +585,17 @@ stroll_array_insert_sort(void * __restrict     array,
  */
 static __stroll_nonull(1, 2, 4)
 char *
-_stroll_array_quick_hoare_part(char *                begin,
-                               char *                end,
-                               size_t                size,
-                               stroll_array_cmp_fn * compare,
-                               void *                data)
+stroll_array_quick_hoare_part_mem(char *                begin,
+                                  char *                end,
+                                  size_t                size,
+                                  stroll_array_cmp_fn * compare,
+                                  void *                data)
 {
+	stroll_array_assert_intern(begin);
+	stroll_array_assert_intern(end > begin);
+	stroll_array_assert_intern(size);
+	stroll_array_assert_intern(compare);
+
 	char   pivot[size];
 	char * mid = begin + (((size_t)(end - begin) / (2 * size)) * size);
 
@@ -571,29 +629,6 @@ _stroll_array_quick_hoare_part(char *                begin,
 	}
 }
 
-static __stroll_nonull(1, 2, 4)
-char *
-stroll_array_quick_hoare_part(char *                begin,
-                              char *                end,
-                              size_t                size,
-                              stroll_array_cmp_fn * compare,
-                              void *                data)
-{
-	stroll_array_assert_intern(begin);
-	stroll_array_assert_intern(end > begin);
-	stroll_array_assert_intern(size);
-	stroll_array_assert_intern(compare);
-
-	char * pivot;
-
-	pivot = _stroll_array_quick_hoare_part(begin, end, size, compare, data);
-
-	stroll_array_assert_intern(begin <= pivot);
-	stroll_array_assert_intern(pivot < end);
-
-	return pivot;
-}
-
 #endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT_UTILS) */
 
 #if defined(CONFIG_STROLL_ARRAY_QUICK_SORT)
@@ -617,11 +652,26 @@ stroll_array_stack_depth(unsigned int nr)
 		           2U));
 }
 
+#define STROLL_ARRAY_DEFINE_QUICK_THRES(_func, _type) \
+	static __stroll_nonull(1, 2) __stroll_const __stroll_nothrow \
+	bool \
+	_func(const _type * __restrict begin, const _type * __restrict end) \
+	{ \
+		stroll_array_assert_intern(begin); \
+		stroll_array_assert_intern(end >= begin); \
+		\
+		return (end - begin) <= (STROLL_QSORT_INSERT_THRESHOLD - 1); \
+	}
+
+STROLL_ARRAY_DEFINE_QUICK_THRES(stroll_array_quick_switch_insert32, uint32_t)
+
+STROLL_ARRAY_DEFINE_QUICK_THRES(stroll_array_quick_switch_insert64, uint64_t)
+
 static __stroll_nonull(1, 2) __stroll_const __stroll_nothrow
 bool
-stroll_array_quick_switch_insert(const char * __restrict begin,
-                                 const char * __restrict end,
-                                 size_t                  size)
+stroll_array_quick_switch_insert_mem(const char * __restrict begin,
+                                     const char * __restrict end,
+                                     size_t                  size)
 {
 	stroll_array_assert_intern(begin);
 	stroll_array_assert_intern(end >= begin);
@@ -631,17 +681,91 @@ stroll_array_quick_switch_insert(const char * __restrict begin,
 	        ((STROLL_QSORT_INSERT_THRESHOLD - 1) * size));
 }
 
+#define STROLL_ARRAY_DEFINE_QUICK_SORT(_sort_func, \
+                                       _part_func, \
+                                       _thres_func, \
+                                       _insert_sort, \
+                                       _type) \
+	static __stroll_nonull(1, 3) \
+	void \
+	_sort_func(_type * __restrict    array, \
+	           unsigned int          nr, \
+	           stroll_array_cmp_fn * compare, \
+	           void *                data) \
+	{ \
+		stroll_array_assert_intern(array); \
+		stroll_array_assert_intern(nr > 1); \
+		stroll_array_assert_intern(compare); \
+		\
+		_type *                begin = array; \
+		_type *                end = &begin[nr - 1]; \
+		unsigned int           ptop = 0; \
+		struct { \
+			_type * begin; \
+			_type * end; \
+		}                      parts[stroll_array_stack_depth(nr)]; \
+		\
+		while (true) { \
+			_type * pivot; \
+			_type * high; \
+			\
+			while (_thres_func(begin, end)) { \
+				if (!ptop--) \
+					return _insert_sort(array, \
+					                    nr, \
+					                    compare, \
+					                    data); \
+				begin = parts[ptop].begin; \
+				end = parts[ptop].end; \
+			} \
+			\
+			pivot = _part_func(begin, end, compare, data); \
+			\
+			stroll_array_assert_intern(begin <= pivot); \
+			stroll_array_assert_intern(pivot < end); \
+			stroll_array_assert_intern(ptop < \
+			                           stroll_array_nr(parts)); \
+			\
+			high = &pivot[1]; \
+			if ((high - begin) >= (end - pivot)) { \
+				parts[ptop].begin = begin; \
+				parts[ptop].end = pivot; \
+				begin = high; \
+			} \
+			else { \
+				parts[ptop].begin = high; \
+				parts[ptop].end = end; \
+				end = pivot; \
+			} \
+			\
+			ptop++; \
+		} \
+	}
+
+STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_quick_sort32,
+                               stroll_array_quick_hoare_part32,
+                               stroll_array_quick_switch_insert32,
+                               stroll_array_insert_sort32,
+                               uint32_t)
+
+STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_quick_sort64,
+                               stroll_array_quick_hoare_part64,
+                               stroll_array_quick_switch_insert64,
+                               stroll_array_insert_sort64,
+                               uint64_t)
+
+static __stroll_nonull(1, 4)
 void
-stroll_array_quick_sort(void * __restrict     array,
-                        unsigned int          nr,
-                        size_t                size,
-                        stroll_array_cmp_fn * compare,
-                        void *                data)
+stroll_array_quick_sort_mem(void * __restrict     array,
+                            unsigned int          nr,
+                            size_t                size,
+                            stroll_array_cmp_fn * compare,
+                            void *                data)
 {
-	stroll_array_assert_api(array);
-	stroll_array_assert_api(nr);
-	stroll_array_assert_api(size);
-	stroll_array_assert_api(compare);
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(nr > 1);
+	stroll_array_assert_intern(size);
+	stroll_array_assert_intern(compare);
 
 	char *                 begin = array;
 	char *                 end = &begin[(nr - 1) * size];
@@ -655,22 +779,25 @@ stroll_array_quick_sort(void * __restrict     array,
 		char * pivot;
 		char * high;
 
-		while (stroll_array_quick_switch_insert(begin, end, size)) {
+		while (stroll_array_quick_switch_insert_mem(begin, end, size)) {
 			if (!ptop--)
-				return stroll_array_insert_sort(array,
-				                                nr,
-				                                size,
-				                                compare,
-				                                data);
+				return stroll_array_insert_sort_mem(array,
+				                                    nr,
+				                                    size,
+				                                    compare,
+				                                    data);
 			begin = parts[ptop].begin;
 			end = parts[ptop].end;
 		}
 
-		pivot = stroll_array_quick_hoare_part(begin,
-		                                      end,
-		                                      size,
-		                                      compare,
-		                                      data);
+		pivot = stroll_array_quick_hoare_part_mem(begin,
+		                                          end,
+		                                          size,
+		                                          compare,
+		                                          data);
+
+		stroll_array_assert_intern(begin <= pivot);
+		stroll_array_assert_intern(pivot < end);
 		stroll_array_assert_intern(ptop < stroll_array_nr(parts));
 
 		high = pivot + size;
@@ -687,6 +814,35 @@ stroll_array_quick_sort(void * __restrict     array,
 
 		ptop++;
 	}
+}
+
+void
+stroll_array_quick_sort(void * __restrict     array,
+                        unsigned int          nr,
+                        size_t                size,
+                        stroll_array_cmp_fn * compare,
+                        void *                data)
+{
+	stroll_array_assert_api(array);
+	stroll_array_assert_api(nr);
+	stroll_array_assert_api(size);
+	stroll_array_assert_api(compare);
+
+	if (nr == 1)
+		return;
+
+	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
+		stroll_array_quick_sort32((uint32_t *)array,
+		                          nr,
+		                          compare,
+		                          data);
+	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
+		stroll_array_quick_sort64((uint64_t *)array,
+		                          nr,
+		                          compare,
+		                          data);
+	else
+		stroll_array_quick_sort_mem(array, nr, size, compare, data);
 }
 
 #endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */
