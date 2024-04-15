@@ -518,7 +518,7 @@ CUTE_SUITE_STATIC(strollut_array_quick_suite,
 #if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
 STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_merge_setup,
                              stroll_array_merge_sort,
-                             false)
+                             true)
 #else   /* !defined(CONFIG_STROLL_ARRAY_MERGE_SORT) */
 STROLLUT_ARRAY_UNSUP(strollut_array_merge_setup)
 #endif  /* defined(CONFIG_STROLL_ARRAY_MERGE_SORT) */
