@@ -948,6 +948,64 @@ stroll_array_merge_parts_mem(const struct stroll_array_merge * __restrict parms,
 }
 
 static void
+stroll_array_insert_presort_elem_mem(char * __restrict       array,
+                                     char * __restrict       end,
+                                     const char * __restrict elem,
+                                     size_t                  size,
+                                     stroll_array_cmp_fn *   compare,
+                                     void *                  data)
+{
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(end > array);
+	stroll_array_assert_intern(!((size_t)(end - array) % size));
+	stroll_array_assert_intern(elem);
+	stroll_array_assert_intern(size);
+	stroll_array_assert_intern(compare);
+
+	while (end != array) {
+		char * last = end - size;
+
+		if (compare(elem, last, data) >= 0)
+			break;
+
+		memcpy(end, last, size);
+		end = last;
+	}
+
+	memcpy(end, elem, size);
+}
+
+static void
+stroll_array_insert_oopsort_mem(char * __restrict       result,
+                                const char * __restrict array,
+                                const char * __restrict end,
+                                size_t                  size,
+                                stroll_array_cmp_fn *   compare,
+                                void *                  data)
+{
+	stroll_array_assert_intern(result);
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(end > array);
+	stroll_array_assert_intern(!((size_t)(end - array) % size));
+	stroll_array_assert_intern(size);
+	stroll_array_assert_intern(compare);
+
+	char * res_end;
+
+	memcpy(result, array, size);
+
+	for (res_end = result + size, array += size;
+	     array != end;
+	     res_end += size, array += size)
+		stroll_array_insert_presort_elem_mem(result,
+		                                     res_end,
+		                                     array,
+		                                     size,
+		                                     compare,
+		                                     data);
+}
+
+static void
 stroll_array_merge_topdwn_sort(
 	const struct stroll_array_merge * __restrict parms,
 	char *                                       result,
@@ -960,67 +1018,34 @@ stroll_array_merge_topdwn_sort(
 	stroll_array_assert_intern(end > array);
 
 	size_t sz = (size_t)(end - array);
+	size_t sz0;
 
-#if 1
-	if (sz > (8 * parms->size)) {
-		size_t sz0 = (sz / (2 * parms->size)) * parms->size;
-
-		stroll_array_merge_topdwn_sort(parms,
-		                               &result[sz0],
-		                               &array[sz0],
-		                               end);
-		stroll_array_merge_topdwn_sort(parms,
-		                               &array[sz - sz0],
-		                               array,
-		                               &array[sz0]);
-		stroll_array_merge_parts_mem(parms,
-		                             result,
-		                             &array[sz - sz0], end,
-		                             &result[sz0], &result[sz]);
-	}
-	else {
+	if (sz <= (8 * parms->size)) {
 		stroll_array_assert_intern(sz >= parms->size);
 
-		char * last = result;
-
-		memcpy(last, array, parms->size);
-		array += parms->size;
-
-		while (array < end) {
-			char * elm = last;
-
-			while ((elm >= result) &&
-			       (parms->compare(array, elm, parms->data) < 0)) {
-				memcpy(elm + parms->size, elm, parms->size);
-				elm -= parms->size;
-			}
-
-			memcpy(elm + parms->size, array, parms->size);
-			array += parms->size;
-
-			last += parms->size;
-		}
+		stroll_array_insert_oopsort_mem(result,
+		                                array,
+		                                end,
+		                                parms->size,
+		                                parms->compare,
+		                                parms->data);
+		return;
 	}
-#else
-	if (sz > parms->size) {
-		size_t sz0 = (sz / (2 * parms->size)) * parms->size;
 
-		stroll_array_merge_topdwn_sort(parms,
-		                               &result[sz0],
-		                               &array[sz0],
-		                               end);
-		stroll_array_merge_topdwn_sort(parms,
-		                               &array[sz - sz0],
-		                               array,
-		                               &array[sz0]);
-		stroll_array_merge_parts_mem(parms,
-		                             result,
-		                             &array[sz - sz0], end,
-		                             &result[sz0], &result[sz]);
-	}
-	else
-		memcpy(result, array, parms->size);
-#endif
+	sz0 = (sz / (2 * parms->size)) * parms->size;
+
+	stroll_array_merge_topdwn_sort(parms,
+	                               &result[sz0],
+	                               &array[sz0],
+	                               end);
+	stroll_array_merge_topdwn_sort(parms,
+	                               &array[sz - sz0],
+	                               array,
+	                               &array[sz0]);
+	stroll_array_merge_parts_mem(parms,
+	                             result,
+	                             &array[sz - sz0], end,
+	                             &result[sz0], &result[sz]);
 }
 
 static void
