@@ -167,7 +167,7 @@ config STROLL_ARRAY_QUICK_SORT
 	  See <stroll/array.h>.
 
 config STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
-	int "Quicksort intertion threshold"
+	int "Quick sort insertion threshold"
 	depends on STROLL_ARRAY_QUICK_SORT
 	range 2 128
 	default 16
@@ -184,6 +184,17 @@ config STROLL_ARRAY_MERGE_SORT
 	  Build stroll library with support for an optimized hybrid version of
 	  the merge sort algorithm.
 	  See <stroll/array.h>.
+
+config STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD
+	int "Merge sort insertion threshold"
+	depends on STROLL_ARRAY_MERGE_SORT
+	range 1 128
+	default 8
+	help
+	  Threshold that configures the switch of merge sort to insertion sort.
+	  For each partition, when the number of elements left to sort is below
+	  this threshold, merge sort will switch to insertion sort to minimize
+	  the number of element swap operations.
 
 endif # STROLL_ARRAY
 

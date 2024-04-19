@@ -878,7 +878,22 @@ stroll_array_merge_parts_mem(const struct stroll_array_merge * __restrict parms,
 	size_t                sz = parms->size;
 	void *                data = parms->data;
 
-#if 1
+#if 0
+	if (cmp(end0 - sz, part1, data) <= 0) {
+		sz = (size_t)(end0 - part0);
+		memcpy(result, part0, sz);
+		memcpy(&result[sz], part1, (size_t)(end1 - part1));
+		return;
+	}
+	else if (cmp(end1 - sz, part0, data) <= 0) {
+		sz = (size_t)(end1 - part1);
+		memcpy(result, part1, sz);
+		memcpy(&result[sz], part0, (size_t)(end0 - part0));
+		return;
+	}
+	else {
+#endif
+#if 0
 	while (true) {
 		const char * run = part0;
 		size_t       rsz;
@@ -944,6 +959,10 @@ stroll_array_merge_parts_mem(const struct stroll_array_merge * __restrict parms,
 
 		memcpy(result, part1, (size_t)(end1 - part1));
 	}
+
+#if 0
+	}
+#endif
 #endif
 }
 
@@ -1005,6 +1024,9 @@ stroll_array_insert_oopsort_mem(char * __restrict       result,
 		                                     data);
 }
 
+#define STROLL_MSORT_INSERT_THRESHOLD \
+	STROLL_CONCAT(CONFIG_STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD, U)
+
 static void
 stroll_array_merge_topdwn_sort(
 	const struct stroll_array_merge * __restrict parms,
@@ -1015,14 +1037,14 @@ stroll_array_merge_topdwn_sort(
 	stroll_array_assert_intern(parms);
 	stroll_array_assert_intern(parms->size);
 	stroll_array_assert_intern(parms->compare);
+	stroll_array_assert_intern(result);
 	stroll_array_assert_intern(end > array);
 
 	size_t sz = (size_t)(end - array);
 	size_t sz0;
 
-	if (sz <= (8 * parms->size)) {
+	if (sz <= (STROLL_MSORT_INSERT_THRESHOLD * parms->size)) {
 		stroll_array_assert_intern(sz >= parms->size);
-
 		stroll_array_insert_oopsort_mem(result,
 		                                array,
 		                                end,
