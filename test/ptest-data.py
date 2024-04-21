@@ -118,7 +118,7 @@ def show_data_runs(runs: list[int],
               "    avg run:  0\n"
               "    med run:  0\n"
               "    max run:  0\n"
-              "    run bins: {}".format(order_sum),
+              "    run bins: {{}}".format(count - 1),
               file = stdio)
 
 

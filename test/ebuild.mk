@@ -65,18 +65,29 @@ stroll-array-ptest-objs    := ptest.o array_ptest.o
 stroll-array-ptest-cflags  := $(test-cflags)
 stroll-array-ptest-ldflags := $(ptest-ldflags) -lm
 
-install-check: _install-check
+build-check: $(BUILDDIR)/stroll-array-ptest-run.sh
 
-.PHONY: _install-check
-_install-check:
-	$(call install_recipe, -m755, \
-	                       ptest-data.py, \
-	                       $(DESTDIR)$(BINDIR)/stroll-ptest-data)
+$(BUILDDIR)/stroll-array-ptest-run.sh: $(SRCDIR)/array-ptest-run.sh \
+                                       | $(BUILDDIR)/
+	sed 's;@@BINDIR@@;$(BINDIR);g' $(<) > $(@)
+
+clean-check: _clean-check
+
+.PHONY: _clean-check
+_clean-check:
+	$(call rm_recipe,$(BUILDDIR)/stroll-array-ptest-run.sh)
+
+install-check install-strip-check: $(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh
+
+.PHONY: $(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh
+$(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh: \
+	$(BUILDDIR)/stroll-array-ptest-run.sh
+	$(call install_recipe,--mode=755,$(<),$(@))
 
 uninstall-check: _uninstall-check
 
 .PHONY: _uninstall-check
 _uninstall-check:
-	$(call rm_recipe,$(DESTDIR)$(BINDIR)/stroll-ptest-data)
+	$(call rm_recipe,$(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh)
 
 # ex: filetype=make :
