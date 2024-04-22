@@ -4,14 +4,54 @@ ECHOE="/bin/echo -e"
 
 log()
 {
-	$ECHOE "$*" >&2
+	if [ $quiet -eq 0 ]; then
+		$ECHOE "$*" >&2
+	fi
 }
+export -f log
 
 error()
 {
 	$ECHOE "$arg0: $*" >&2
 }
 export -f error
+
+ptest_parse_nr()
+{
+	local arg="$1"
+	local val=$(echo "$arg" | sed -n "s/[0-9]*//gp")
+
+	if [ -n "$val" ]; then
+		error "invalid number of samples '$arg':" \
+		      "integer expected.\n"
+		return 1
+	fi
+	if [ $((arg)) -lt 8 ]; then
+		error "invalid number of samples '$arg':" \
+		      "integer >= 8 expected.\n"
+		return 1
+	fi
+
+	echo $arg
+}
+
+ptest_parse_orders()
+{
+	local arg="$1"
+	local val=$(echo "$arg" | sed -n "s/[0-9]*//gp")
+
+	if [ -n "$val" ]; then
+		error "invalid ordering ratio '$arg': integer expected.\n"
+		return 1
+	fi
+	if [ $((arg)) -gt 100 ]; then
+		error "invalid ordering ratio '$arg':" \
+		      "integer <= 100 expected.\n"
+		return 1
+	fi
+
+	echo $arg
+}
 
 ptest_data_path()
 {
@@ -38,7 +78,7 @@ ptest_gen_data()
 		return 1
 	fi
 
-	echo "$path" >&2
+	log "$path"
 }
 export -f ptest_gen_data
 
@@ -51,6 +91,9 @@ Stroll performance test data generator.
 With:
     OUTPUT_DIRECTORY  pathname to directory where to store generated data
 Where OPTIONS:
+    -q | --quiet       operate silently
+    -n | --number      number of samples
+    -r | --order-ratio ordering ratio
     -h | --help        this help message
 _EOF
 }
@@ -58,15 +101,35 @@ _EOF
 arg0="$(basename $0)"
 export arg0
 
-cmdln=$(getopt --options h --longoptions help --name "$arg0" -- "$@")
+cmdln=$(getopt --options hn:qr: \
+               --longoptions number:,order-ratio:,quiet,help \
+               --name "$arg0" -- "$@")
 if [ $? -gt 0 ]; then
 	usage
 	exit 1
 fi
 
+req_nr=
+req_ord=
+quiet=0
 eval set -- "$cmdln"
 while true; do
 	case "$1" in
+	-n|--number)
+		if ! req_nr=$(ptest_parse_nr "$2"); then
+			usage
+			exit 1
+		fi
+		shift 2;;
+	-q|--quiet)
+		quiet=1
+		shift;;
+	-r|--order-ratio)
+		if ! req_ord=$(ptest_parse_orders "$2"); then
+			usage
+			exit 1
+		fi
+		shift 2;;
 	-h|--help)
 		usage
 		exit 0;;
@@ -99,6 +162,23 @@ if [ ! -r "$ptest_data_script" ]; then
 	exit 1
 fi
 
+nr="8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288 1048576"
+if [ -n "$req_nr" ]; then
+	nr=$req_nr
+fi
+
+orders="0 5 10 25 45 50 55 75 90 95 100"
+if [ -n "$req_ord" ]; then
+	orders=$req_ord
+fi
+
+renice --priority +19 --pid $!
+
+if [ -n "$req_nr" ] && [ -n "$req_ord" ]; then
+	ptest_gen_data $ptest_data_base $nr $orders
+	exit $?
+fi
+
 if cpu=$(lscpu --online --parse=CPU | tail -1); then
 	cpu=$((cpu + 1))
 	log "Generating data in parallel over $cpu CPUs..."
@@ -107,12 +187,9 @@ else
 	log "Generating data..."
 fi
 
-nr=8
-while [ $nr -le $((1024 * 1024)) ]; do
-	for order in 0 5 10 25 45 50 55 75 90 95 100; do
-		echo $ptest_data_base $nr $order
+for n in $nr; do
+	for o in $orders; do
+		echo $ptest_data_base $n $o
 	done
-	nr=$((2*nr))
 done | \
-nice --adjustment=19 \
-     xargs -P $cpu -L 1 bash -c 'ptest_gen_data "$@"' --
+xargs -P $cpu -L 1 bash -c 'ptest_gen_data "$@"' --

@@ -65,29 +65,76 @@ stroll-array-ptest-objs    := ptest.o array_ptest.o
 stroll-array-ptest-cflags  := $(test-cflags)
 stroll-array-ptest-ldflags := $(ptest-ldflags) -lm
 
-build-check: $(BUILDDIR)/stroll-array-ptest-run.sh
+ifeq ($(CONFIG_STROLL_PTEST),y)
+
+ptest-data-nr     := 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 \
+                     65536 131072 262144 524288 1048576
+ptest-data-orders := 0 5 10 25 45 50 55 75 90 95 100
+ptest-data-files  := $(foreach n, \
+                               $(ptest-data-nr), \
+                               $(foreach o, \
+                                         $(ptest-data-orders), \
+                                         stroll_ptest_$(n)_$(o).dat))
+
+build-check: $(BUILDDIR)/stroll-array-ptest-run.sh \
+             $(addprefix $(BUILDDIR)/data/,$(ptest-data-files))
 
 $(BUILDDIR)/stroll-array-ptest-run.sh: $(SRCDIR)/array-ptest-run.sh \
                                        | $(BUILDDIR)/
-	sed 's;@@BINDIR@@;$(BINDIR);g' $(<) > $(@)
+	sed -e 's;@@BINDIR@@;$(BINDIR);g' \
+	    -e 's;@@DATADIR@@;$(DATADIR);g' \
+	    $(<) > $(@)
+
+ptest_data_base  := $(BUILDDIR)/data/stroll_ptest_
+
+define ptest_data_nr
+$(word 1,$(subst _,$(space),$(patsubst $(ptest_data_base)%.dat,%,$(1))))
+endef
+
+define ptest_data_order
+$(word 2,$(subst _,$(space),$(patsubst $(ptest_data_base)%.dat,%,$(1))))
+endef
+
+$(addprefix $(BUILDDIR)/data/,$(ptest-data-files)): $(SRCDIR)/ptest-data.sh \
+                                                    $(SRCDIR)/ptest-data.py \
+                                                    | $(BUILDDIR)/data
+	@echo "  DATAGEN $(@)"
+	$(Q)bash $(SRCDIR)/ptest-data.sh \
+		--quiet \
+		--number $(call ptest_data_nr,$(@)) \
+		--order-ratio $(call ptest_data_order,$(@)) \
+		$(dir $(@))
+
+$(BUILDDIR)/data:
+	$(Q)mkdir -p $(@)
 
 clean-check: _clean-check
 
 .PHONY: _clean-check
 _clean-check:
 	$(call rm_recipe,$(BUILDDIR)/stroll-array-ptest-run.sh)
+	$(call rmr_recipe,$(BUILDDIR)/data)
 
-install-check install-strip-check: $(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh
+install-check install-strip-check: \
+	$(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh \
+	$(addprefix $(DESTDIR)$(DATADIR)/stroll/,$(ptest-data-files))
 
 .PHONY: $(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh
 $(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh: \
 	$(BUILDDIR)/stroll-array-ptest-run.sh
 	$(call install_recipe,--mode=755,$(<),$(@))
 
+$(addprefix $(DESTDIR)$(DATADIR)/stroll/,$(ptest-data-files)): \
+	$(addprefix $(BUILDDIR)/data/,$(ptest-data-files))
+	$(call install_recipe,-m644,$(<),$(@))
+
 uninstall-check: _uninstall-check
 
 .PHONY: _uninstall-check
 _uninstall-check:
 	$(call rm_recipe,$(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh)
+	$(call rmr_recipe,$(DESTDIR)$(DATADIR)/stroll)
+
+endif # ($(CONFIG_STROLL_PTEST),y)
 
 # ex: filetype=make :

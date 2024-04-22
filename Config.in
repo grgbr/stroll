@@ -48,6 +48,12 @@ config STROLL_VALGRIND
 	  Build stroll library unit test suite with Valgrind support enabled.
 	  For debugging purposes only: do not use in production.
 
+config STROLL_PTEST
+	bool "Performance tests"
+	default n
+	help
+	  Build stroll library performance test suite.
+
 config STROLL_BOPS
 	bool "Bit operations"
 	default y

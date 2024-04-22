@@ -1,6 +1,7 @@
 #!/bin/sh -e
 
 ARRAY_PTEST_BIN="${BINDIR:-@@BINDIR@@}/stroll-array-ptest"
+ARRAY_PTEST_DATA="${DATADIR:-@@DATADIR@@}/stroll"
 
 ECHOE="/bin/echo -e"
 
@@ -44,6 +45,7 @@ array_ptest_parse_nr()
 array_ptest_parse_orders()
 {
 	local args="$1"
+	local a
 
 	if ! args=$($ECHOE -n "$args" | tr -s ',' ' ' | sort -u -n); then
 		return 1
@@ -93,28 +95,16 @@ array_ptest_parse_sizes()
 
 array_ptest_probe_nr()
 {
-	local expr="s@${ptest_data_base}_\([0-9]\+\)_.*@\1@p"
-	local path
-	local tmp
+	local expr="s@${ptest_data_base}_\([0-9]\+\)_[0-9]\+\.dat@\1\n@gp"
 
-	for path in $ptest_data_base*; do
-		tmp="$(echo $path | sed --silent $expr)\n$tmp"
-	done
-
-	$ECHOE -n "$tmp" | sort -u -n | tr '\n' ' '
+	echo -n $@ | sed --silent $expr | sort -b -u -n | xargs
 }
 
 array_ptest_probe_orders()
 {
-	local expr="s@${ptest_data_base}_[0-9]\+_\([0-9]\+\).*@\1@p"
-	local path
-	local tmp
+	local expr="s@${ptest_data_base}_[0-9]\+_\([0-9]\+\)\.dat@\1\n@gp"
 
-	for path in $ptest_data_base*; do
-		tmp="$(echo $path | sed --silent $expr)\n$tmp"
-	done
-
-	$ECHOE -n "$tmp" | sort -u -n | tr '\n' ' '
+	echo -n $@ | sed --silent $expr | sort -b -u -n | xargs
 }
 
 stroll_array_ptest_data_path()
@@ -179,16 +169,15 @@ fi
 
 show=0
 req_nr=
+req_ord=
+req_sz=
 output="/dev/stdout"
+ptest_data_base="$ARRAY_PTEST_DATA/stroll_ptest"
 eval set -- "$cmdln"
 while true; do
 	case "$1" in
 	-d|--datadir)
 		ptest_data_base="$2/stroll_ptest"
-		if [ ! -d "$2" ] || [ ! -x "$2" ]; then
-			error "invalid test data directory '$2'."
-			exit 1
-		fi
 		shift 2;;
 	-l|--list)
 		show=1; shift;;
@@ -226,10 +215,23 @@ while true; do
 	esac
 done
 
-nr=$(array_ptest_probe_nr)
-orders=$(array_ptest_probe_orders)
+if [ ! -d $(dirname "$ptest_data_base") ] || \
+   [ ! -x $(dirname "$ptest_data_base") ]; then
+	error "invalid test data directory '$(dirname $ptest_data_base)'."
+	exit 1
+fi
+
+array_ptest_data_files="${ptest_data_base}_*"
+nr=$(array_ptest_probe_nr $array_ptest_data_files)
+orders=$(array_ptest_probe_orders $array_ptest_data_files)
 sizes="4 8 16 32 64 128 256"
 algos="bubble select insert quick merge"
+
+if [ -z "$nr" ] || [ -z "$orders" ]; then
+	error "no data file found under test data directory" \
+	      "'$(dirname $ptest_data_base)'."
+	exit 1
+fi
 
 if [ $show -eq 1 ]; then
 	echo "#Samples:     $nr"
