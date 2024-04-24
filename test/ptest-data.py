@@ -11,17 +11,22 @@ import sys
 import os
 import argparse as argp
 import random as rnd
-from math import sqrt
+import math
 import statistics as stats
 import struct
 import io
+import matplotlib
+matplotlib.use('GTK3Agg')
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+import numpy as np
 
 SAMPLES_MIN = 8
 
 def generate(samples_nr: int, order_ratio: int) -> list[int]:
     assert samples_nr >= SAMPLES_MIN
     assert order_ratio >= 0 and order_ratio <= 100
-    
+
     if order_ratio < 50:
         order_ratio = 100 - order_ratio
         data = list(reversed(range(samples_nr)))
@@ -30,12 +35,12 @@ def generate(samples_nr: int, order_ratio: int) -> list[int]:
 
     if (order_ratio == 100):
         return data
-        
-    coef = -sqrt((200 * order_ratio) - 10000) + 100
+
+    coef = -math.sqrt((200 * order_ratio) - 10000) + 100
     indices = rnd.sample(data, max(int(samples_nr * coef / 100), 2))
     for i, j in zip(indices,indices[1:]):
         data[i], data[j] = data[j], data[i]
-    
+
     return data
 
 
@@ -51,7 +56,7 @@ def eval_order(desc: dict[str,
     assert desc['order_ratio'] >= 0 and desc['order_ratio'] <= 100
     assert desc['samples_nr'] >= SAMPLES_MIN
     assert len(desc['data']) == desc['samples_nr']
-    
+
     in_runs = []
     in_runs_index = -1
     rev_runs = []
@@ -84,11 +89,11 @@ def show_data_runs(runs: list[int],
                    stdio: io.TextIOWrapper) -> None:
     assert count >= SAMPLES_MIN
     assert len(title) > 0
-    
+
     order_sum = sum(runs)
-    
+
     print("{}:".format(title), file = stdio)
-    
+
     if order_sum > 0:
         order_bins = dict()
         for r in runs:
@@ -97,7 +102,7 @@ def show_data_runs(runs: list[int],
             else:
                 order_bins[r] = 1
         order_bins = dict(sorted(order_bins.items()))
-        
+
         print("    ratio:    {}/{} ({:.2f}%)\n"
               "    min run:  {}\n"
               "    avg run:  {:.1f}\n"
@@ -137,9 +142,9 @@ def show_data(desc: dict[str,
     assert len(desc['data']) == desc['samples_nr']
     assert len(desc['in_runs']) >= 0
     assert len(desc['rev_runs']) >= 0
-    
+
     cnt = desc['samples_nr']
-    
+
     print("Command line: '{}'\n"
           "Endianness:   {}\n"
           "#Samples:     {}".format(desc['cmd'], desc['endian'], cnt),
@@ -150,7 +155,7 @@ def show_data(desc: dict[str,
 
 def struct_endian(endian: str) -> chr:
     assert endian in [ 'native', 'little', 'big' ]
-    
+
     if endian == 'native':
         return '='
     elif endian == 'little':
@@ -163,7 +168,7 @@ def pack_str(string: str, endian: chr) -> bytes:
     length = len(string)
     assert length > 0 and length <= 0xffff
     assert endian in [ '=', '<', '>' ]
-    
+
     return struct.pack("{}H{}s".format(endian, length),
                        length,
                        bytes(string, encoding='ascii'))
@@ -176,14 +181,14 @@ def pack_char(char: chr) -> bytes:
 def pack_ushrt(ushrt: int, endian: chr) -> bytes:
     assert ushrt >= 0 and ushrt <= 0xffff
     assert endian in [ '=', '<', '>' ]
-    
+
     return struct.pack("{}H".format(endian), ushrt)
 
 
 def pack_uint(uint: int, endian: chr) -> bytes:
     assert uint >= 0 and uint <= 0xffffffff
     assert endian in [ '=', '<', '>' ]
-    
+
     return struct.pack("{}I".format(endian), uint)
 
 
@@ -199,69 +204,69 @@ def pack_data(desc: dict[str,
     assert desc['order_ratio'] >= 0 and desc['order_ratio'] <= 100
     assert desc['samples_nr'] >= SAMPLES_MIN
     assert len(desc['data']) == desc['samples_nr']
-    
+
     pack = bytes()
     e = struct_endian(desc['endian'])
-    
+
     pack += pack_char(desc['endian'][0])
     pack += pack_ushrt(desc['order_ratio'], e)
     pack += pack_uint(len(desc['data']), e)
     pack += pack_str(desc['cmd'], e)
     for d in desc['data']:
         pack += pack_uint(d, e)
-    
+
     return pack
 
 
 def unpack_char(data: bytes, off: int) -> tuple[chr, int]:
     assert off >= 0
-    
+
     length = struct.calcsize('c')
     if length > (len(data) - off):
         raise Exception('Cannot unpack character: missing input data')
-    
+
     char = struct.unpack_from('c', data, off)[0].decode(encoding = 'ascii')
-    
+
     return char, length
 
 
 def unpack_ushrt(data: bytes, off: int, endian: chr) -> tuple[int, int]:
     assert off >= 0
     assert endian in [ '=', '<', '>' ]
-    
+
     fmt = "{}H".format(endian)
     length = struct.calcsize(fmt)
     if length > (len(data) - off):
         raise Exception('Cannot unpack unsigned short: missing input data')
-    
+
     return struct.unpack_from(fmt, data, off)[0], length
 
 
 def unpack_uint(data: bytes, off: int, endian: chr) -> tuple[int, int]:
     assert off >= 0
     assert endian in [ '=', '<', '>' ]
-    
+
     fmt = "{}I".format(endian)
     length = struct.calcsize(fmt)
     if length > (len(data) - off):
         raise Exception('Cannot unpack unsigned integer: missing input data')
-    
+
     return struct.unpack_from(fmt, data, off)[0], length
 
 
 def unpack_str(data: bytes, off: int, endian: chr) -> tuple[str, int]:
     assert off >= 0
     assert endian in [ '=', '<', '>' ]
-    
+
     length, consumed = unpack_ushrt(data, off, endian)
     if length <= 0:
         raise Exception('Cannot unpack string: unexpected length')
-    
+
     fmt = "{}s".format(length)
     length = struct.calcsize(fmt) + consumed
     if length > (len(data) - off):
         raise Exception('Cannot unpack string: missing input data')
-    
+
     string = struct.unpack_from(fmt, data, off + consumed)[0]
     return string.decode(encoding = 'ascii'), length
 
@@ -276,10 +281,10 @@ def unpack_data(desc: dict[str,
                 data: bytes) -> None:
     if len(data) < 12:
         raise Exception("Invalid input data length")
-    
+
     off = 0
     consumed = 0
-    
+
     endian, consumed = unpack_char(data, off)
     if endian == 'n':
         desc['endian'] = 'native'
@@ -304,16 +309,16 @@ def unpack_data(desc: dict[str,
     if desc['samples_nr'] < SAMPLES_MIN:
         raise Exception("Unexpected input data number of samples "
                         "'{}'".format(desc['samples_nr']))
-    
+
     off += consumed
     desc['cmd'], consumed = unpack_str(data, off, endian)
-    
+
     if (off +
         consumed +
         struct.calcsize("{}{}I".format(endian, desc['samples_nr']))) != \
        len(data):
         raise Exception('Cannot unpack samples: invalid input data size')
-    
+
     desc['data'] = [None] * desc['samples_nr']
     s = 0
     while s < desc['samples_nr']:
@@ -342,12 +347,77 @@ def check_order_ratio(value):
     return val
 
 
+def plot_data(desc: dict[str,
+                         int,
+                         int,
+                         str,
+                         list[int],
+                         list[int],
+                         list[int]]) -> None:
+    assert len(desc['cmd']) > 0
+    assert desc['endian'] in [ 'native', 'little', 'big' ]
+    assert desc['order_ratio'] >= 0 and desc['order_ratio'] <= 100
+    assert desc['samples_nr'] >= SAMPLES_MIN
+    assert len(desc['data']) == desc['samples_nr']
+    assert len(desc['in_runs']) >= 0
+    assert len(desc['rev_runs']) >= 0
+
+    scat_axe = plt.subplot2grid((2, 2), (0, 0), rowspan = 2)
+    scat_axe.set_title('Sample value dispersion')
+    scat_axe.set_xlabel('#Samples')
+    scat_axe.set_ylabel('Value')
+    scat_axe.scatter(range(desc['samples_nr']), desc['data'], s = .5)
+
+    bmin = min(desc['in_runs'] + desc['rev_runs'])
+    bmax = max(desc['in_runs'] + desc['rev_runs'])
+    bstep =  int((bmax - bmin) / 10)
+    in_hist, bins = np.histogram(desc['in_runs'],
+                                 range(bmin, bmax + bstep, bstep))
+    rev_hist, _ = np.histogram(desc['rev_runs'], bins)
+
+    in_axe = plt.subplot2grid((2, 2), (0, 1))
+    in_axe.set_title('Ordering run length distribution')
+    in_axe.set_xlabel('Run length')
+    in_axe.set_ylabel('#Run')
+    in_axe.set_xticks(bins)
+    in_axe.yaxis.set_major_locator(ticker.MaxNLocator(10))
+    in_axe.yaxis.set_minor_locator(ticker.MaxNLocator(50))
+    in_axe.grid(linestyle = '--', alpha = 0.4)
+    in_axe.bar(bins[:-1],
+               in_hist,
+               label = 'increasing',
+               width = bstep * 0.9,
+               facecolor = 'lightsteelblue',
+               edgecolor = 'steelblue')
+    in_axe.legend()
+
+    rev_axe =  plt.subplot2grid((2, 2), (1, 1), sharex = in_axe)
+    rev_axe.set_ylabel('#Run')
+    rev_axe.set_xticks(bins)
+    rev_axe.xaxis.tick_top()
+    rev_axe.yaxis.set_major_locator(ticker.MaxNLocator(10))
+    rev_axe.yaxis.set_minor_locator(ticker.MaxNLocator(50))
+    rev_axe.invert_yaxis()
+    rev_axe.grid(linestyle = '--', alpha = 0.4)
+    rev_axe.bar(bins[:-1],
+                rev_hist,
+                label = 'decreasing',
+                width = bstep * 0.9,
+                facecolor = 'plum',
+                edgecolor = 'orchid')
+    rev_axe.legend()
+
+    plt.suptitle('#Samples {} - Order ratio {}%'.format(desc['samples_nr'],
+                                                        desc['order_ratio']))
+    plt.show()
+
+
 def main():
     parser = argp.ArgumentParser(description = 'Stroll performance data set '
                                                'tool')
-    
+
     subparser = parser.add_subparsers(dest = 'cmd')
-    
+
     show_parser = subparser.add_parser('show',
                                        help = 'Display integer data set'
                                               ' properties')
@@ -358,7 +428,18 @@ def main():
                              metavar = 'INPUT_PATH',
                              help = "Pathname to file where samples are stored "
                                     "(defaults to '-', i.e., stdin)")
-    
+
+    plot_parser = subparser.add_parser('plot',
+                                       help = 'Plot integer data set'
+                                              ' properties')
+    plot_parser.add_argument('input',
+                             type = str,
+                             nargs = '?',
+                             default = '-',
+                             metavar = 'INPUT_PATH',
+                             help = "Pathname to file where samples are stored "
+                                    "(defaults to '-', i.e., stdin)")
+
     gen_parser = subparser.add_parser('generate',
                                       help = 'Generate integer data set')
     gen_parser.add_argument('-e', '--endian',
@@ -388,12 +469,12 @@ def main():
                                    '(0 <= ORDER_RATIO <= 100)')
 
     args = parser.parse_args()
-    
+
     try:
         desc = {}
         if args.cmd == 'generate':
             rnd.seed(0, version = 2)
-            
+
             desc['cmd'] = os.path.basename(sys.argv[0]) + \
                           ' ' + \
                           ' '.join(sys.argv[1:])
@@ -410,23 +491,32 @@ def main():
             else:
                 with open(args.output, 'wb') as f:
                     f.write(pack_data(desc))
-            stdio = sys.stderr
-        else: # args.cmd == 'show'
+            eval_order(desc)
+            show_data(desc, sys.stderr)
+        elif args.cmd == 'show':
             if args.input == '-':
                 with os.fdopen(sys.stdin.fileno(), 'rb', closefd=False) as f:
                     unpack_data(desc, f.read())
             else:
                 with open(args.input, 'rb') as f:
                     unpack_data(desc, f.read())
-            stdio = sys.stdout
-                    
-        eval_order(desc)
-        show_data(desc, stdio)
+            eval_order(desc)
+            show_data(desc, sys.stdout)
+        elif args.cmd == 'plot':
+            if args.input == '-':
+                with os.fdopen(sys.stdin.fileno(), 'rb', closefd=False) as f:
+                    unpack_data(desc, f.read())
+            else:
+                with open(args.input, 'rb') as f:
+                    unpack_data(desc, f.read())
+            eval_order(desc)
+            plot_data(desc)
     except KeyboardInterrupt:
         print("{}: Interrupted!".format(os.path.basename(sys.argv[0])),
               file=sys.stderr)
         sys.exit(1)
     except Exception as e:
+        raise e
         print("{}: {}.".format(os.path.basename(sys.argv[0]), e),
               file=sys.stderr)
         sys.exit(1)

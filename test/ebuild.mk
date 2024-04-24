@@ -69,7 +69,7 @@ ifeq ($(CONFIG_STROLL_PTEST),y)
 
 ptest-data-nr     := 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 \
                      65536 131072 262144 524288 1048576
-ptest-data-orders := 0 5 10 25 45 50 55 75 90 95 100
+ptest-data-orders := 0 5 25 45 50 55 75 95 100
 ptest-data-files  := $(foreach n, \
                                $(ptest-data-nr), \
                                $(foreach o, \
@@ -99,7 +99,7 @@ $(addprefix $(BUILDDIR)/data/,$(ptest-data-files)): $(SRCDIR)/ptest-data.sh \
                                                     $(SRCDIR)/ptest-data.py \
                                                     | $(BUILDDIR)/data
 	@echo "  DATAGEN $(@)"
-	$(Q)bash $(SRCDIR)/ptest-data.sh \
+	$(Q)$${BASH:-bash} $(SRCDIR)/ptest-data.sh \
 		--quiet \
 		--number $(call ptest_data_nr,$(@)) \
 		--order-ratio $(call ptest_data_order,$(@)) \

@@ -69,11 +69,14 @@ ptest_gen_data()
 	local nr=$2
 	local order=$3
 	local path=$(ptest_data_path "$base" $nr $order)
+	local out
 
-	if ! python3 $ptest_data_script generate \
-	                                --output "$path" \
-	                                $nr \
-	                                $order >/dev/null 2>&1; then
+	if ! out=$(${PYTHON3:-python3} \
+	           $ptest_data_script generate --output "$path" \
+	                                       $nr \
+	                                       $order 2>&1); then
+
+		$ECHOE "$out" >&2
 		error "failed to generate $path."
 		return 1
 	fi
@@ -167,7 +170,7 @@ if [ -n "$req_nr" ]; then
 	nr=$req_nr
 fi
 
-orders="0 5 10 25 45 50 55 75 90 95 100"
+orders="0 5 25 45 50 55 75 95 100"
 if [ -n "$req_ord" ]; then
 	orders=$req_ord
 fi
