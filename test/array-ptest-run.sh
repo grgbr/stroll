@@ -133,14 +133,14 @@ stroll_array_ptest_run()
 	local path="$2"
 	local size=$3
 
-	$ARRAY_PTEST_BIN "$path" "$algo" $size 1000 | \
+	$ARRAY_PTEST_BIN "$path" "$algo" $size 100 | \
 	awk -F': *' "$ptest_parse_awk"
 }
 
 usage()
 {
 	cat >&2 <<_EOF
-Usage: $arg0 [OPTIONS] ALGORITHM...
+Usage: $arg0 [OPTIONS] [ALGORITHM...]
 Run Stroll performance tests.
 
 With:
@@ -225,7 +225,8 @@ array_ptest_data_files="${ptest_data_base}_*"
 nr=$(array_ptest_probe_nr $array_ptest_data_files)
 orders=$(array_ptest_probe_orders $array_ptest_data_files)
 sizes="4 8 16 32 64 128 256"
-algos="bubble select insert quick merge"
+simple_algos="bubble select insert"
+algos="$simple_algos quick merge"
 
 if [ -z "$nr" ] || [ -z "$orders" ]; then
 	error "no data file found under test data directory" \
@@ -241,19 +242,15 @@ if [ $show -eq 1 ]; then
 	exit 0
 fi
 
-if [ $# -lt 1 ]; then
-	error "missing algorithm(s).\n"
-	usage
-	exit 1
+if [ $# -gt 1 ]; then
+	for a in $*; do
+		if ! echo "$algos" | grep -w -q $a; then
+			error "unknown algorithm '$a'."
+			exit 1
+		fi
+	done
+	algos="$*"
 fi
-
-for a in $*; do
-	if ! echo "$algos" | grep -w -q $a; then
-		error "unknown algorithm '$a'."
-		exit 1
-	fi
-done
-algos="$*"
 
 if [ -n "$req_nr" ]; then
 	for n in $req_nr; do
@@ -296,7 +293,19 @@ echo >>$output
 echo "Algorithm  #Samples Order(%) Size(B)   Mean(ns)" >>$output
 
 for a in $algos; do
+	# When not explicitly required, restrict number of test data samples to
+	# 8192 since these may take quite a long time to complete (up to several
+	# tenth of minutes...).
+	maxnr=$nr
+	if [ -z "$req_nr" ]; then
+		if echo "$simple_algos" | grep -qw "$a"; then
+			maxnr=8192
+		fi
+	fi
 	for n in $nr; do
+		if [ $n -gt $maxnr ]; then
+			continue
+		fi
 		for o in $orders; do
 			for s in $sizes; do
 				path=$(stroll_array_ptest_data_path \
