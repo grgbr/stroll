@@ -124,8 +124,9 @@ $(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh: \
 	$(BUILDDIR)/stroll-array-ptest-run.sh
 	$(call install_recipe,--mode=755,$(<),$(@))
 
+.PHONY: $(addprefix $(DESTDIR)$(DATADIR)/stroll/,$(ptest-data-files))
 $(addprefix $(DESTDIR)$(DATADIR)/stroll/,$(ptest-data-files)): \
-	$(addprefix $(BUILDDIR)/data/,$(ptest-data-files))
+	$(DESTDIR)$(DATADIR)/stroll/%: $(BUILDDIR)/data/%
 	$(call install_recipe,-m644,$(<),$(@))
 
 uninstall-check: _uninstall-check

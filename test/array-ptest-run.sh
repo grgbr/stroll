@@ -242,7 +242,7 @@ if [ $show -eq 1 ]; then
 	exit 0
 fi
 
-if [ $# -gt 1 ]; then
+if [ $# -ge 1 ]; then
 	for a in $*; do
 		if ! echo "$algos" | grep -w -q $a; then
 			error "unknown algorithm '$a'."
@@ -296,7 +296,7 @@ for a in $algos; do
 	# When not explicitly required, restrict number of test data samples to
 	# 8192 since these may take quite a long time to complete (up to several
 	# tenth of minutes...).
-	maxnr=$nr
+	maxnr=$(echo $nr | awk '{print $NF}')
 	if [ -z "$req_nr" ]; then
 		if echo "$simple_algos" | grep -qw "$a"; then
 			maxnr=8192

@@ -565,16 +565,18 @@ When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_INSERT_SORT` build
 configuration option enabled, the Stroll_ library provides support for
 `Insertion`_ sort algorithm thanks to :c:func:`stroll_array_insert_sort`.
 
-The alternate :c:func:`stroll_array_insert_presort` function may be used when
-adding elements to an input array that is known (for sure) to be already
-sorted. This allows to optimize situations where sorting a *continuous stream of
-input elements*.
+2 alternate functions may be used to add elements to an input array that is
+known (for sure) to be already sorted. This allows to optimize situations where
+sorting a *continuous stream of input elements*. These are:
+* :c:func:`stroll_array_insert_inpsort_elem` for in-place online sorting,
+* and :c:func:`stroll_array_insert_oopsort_elem`, for out-of-place online
+  sorting.
 
 .. note::
 
    * simple implementation ;
    * limited number of items swaps ;
-   * very efficient on small and presorted data sets ;
+   * very efficient on small and pre-sorted data sets ;
    * poor efficiency over large data sets ;
    * refer to `Sorting arrays`_ for more informations related to algorithm
      selection.
@@ -609,7 +611,7 @@ configuration option enabled, the Stroll_ library provides support for
 .. note::
 
    * high number of items swaps ;
-   * decent efficiency with presorted data sets ;
+   * decent efficiency with pre-sorted data sets ;
    * poor to extremely low efficiency even over small data sets.
 
 .. warning::
@@ -1076,15 +1078,20 @@ stroll_array_bubble_sort
 
 .. doxygenfunction:: stroll_array_bubble_sort
 
+stroll_array_insert_inpsort_elem
+********************************
+
+.. doxygenfunction:: stroll_array_insert_inpsort_elem
+
+stroll_array_insert_oopsort_elem
+********************************
+
+.. doxygenfunction:: stroll_array_insert_oopsort_elem
+
 stroll_array_insert_sort
 ************************
 
 .. doxygenfunction:: stroll_array_insert_sort
-
-stroll_array_insert_presort
-***************************
-
-.. doxygenfunction:: stroll_array_insert_presort
 
 stroll_array_quick_sort
 ***********************

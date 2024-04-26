@@ -185,6 +185,7 @@ config STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
 
 config STROLL_ARRAY_MERGE_SORT
 	bool "Merge sort"
+	select STROLL_ARRAY_INSERT
 	default y
 	help
 	  Build stroll library with support for an optimized hybrid version of
@@ -201,6 +202,28 @@ config STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD
 	  For each partition, when the number of elements left to sort is below
 	  this threshold, merge sort will switch to insertion sort to minimize
 	  the number of element swap operations.
+
+config STROLL_ARRAY_MERGE_SORT_FULL_RUNS
+	bool "Merge sort full runs optimization"
+	depends on STROLL_ARRAY_MERGE_SORT
+	default y
+	help
+	  This optimization gives merge sort the ability to detect fully ordered
+	  partitions in order to skip the usual partitions / sub-arrays merging
+	  process at the expense of 2 additional array element comparisons.
+	  This may improve performances for partially / fully ordered data sets.
+
+config STROLL_ARRAY_MERGE_SORT_RUNS_BYBLOCK
+	bool "Merge sort runs by block optimization"
+	depends on STROLL_ARRAY_MERGE_SORT
+	default y
+	help
+	  This optimization gives merge sort the ability to try to merge
+	  partitions / sub-arrays by blocks of consecutive ordered elements as
+	  opposed to the traditional single element based merging process.
+	  This allows to replace multiple primary element copy operations
+	  by one single copy of a block of ordered primary elements.
+	  This may improve performances for partially / fully ordered data sets.
 
 endif # STROLL_ARRAY
 

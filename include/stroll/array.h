@@ -143,8 +143,11 @@ stroll_array_bisect_search(const void *          key,
  * - poor to extremely low efficiency even over small data sets.
  *
  * @warning
- * Implemented for reference only: **DO NOT USE IT**. Refer to
- * @rstlnk{Sorting arrays} for more informations related to algorithm selection.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   `nr <= 1`, result is undefined. An assertion otherwise.
+ * - Implemented for reference only: **DO NOT USE IT**. Refer to
+ *   @rstlnk{Sorting arrays} for more informations related to algorithm
+ *   selection.
  */
 extern void
 stroll_array_bubble_sort(void * __restrict     array,
@@ -211,8 +214,10 @@ stroll_array_bubble_sort(void * __restrict     array,
  * - poor to extremely low efficiency even over small data sets.
  *
  * @warning
- * Implemented for reference only: **DO NOT USE IT**. Refer to
- * @rstlnk{Sorting arrays} for more informations related to algorithm selection.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   `nr <= 1`, result is undefined. An assertion otherwise.
+ * - Implemented for reference only: **DO NOT USE IT**. Refer to
+ *   @rstlnk{Sorting arrays} for more informations related to algorithm selection.
  */
 extern void
 stroll_array_select_sort(void * __restrict     array,
@@ -283,7 +288,7 @@ stroll_array_select_sort(void * __restrict     array,
  * - refer to @rstlnk{Sorting arrays} for more informations related to algorithm
  *   selection.
  *
- * @see stroll_array_insert_presort()
+ * @see stroll_array_insert_inpsort_elem()
  */
 extern void
 stroll_array_insert_sort(void * __restrict     array,
@@ -294,18 +299,25 @@ stroll_array_insert_sort(void * __restrict     array,
 	__stroll_nonull(1, 4);
 
 /**
- * Sort an array according to the insertion sort algorithm.
+ * Append an element into a pre-sorted array according to the insertion sort
+ * algorithm.
  *
  * @param[inout] array   Array to sort
- * @param[inout] unsort  First unsorted and last element of @p array
+ * @param[inout] elem    Last element of @p array
  * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
  * @param[inout] data    optional arbitrary user data
  *
- * Sort @p array containing @p nr elements of size @p size using the @p compare
- * comparison function according to the @rstlnk{Insertion sort} algorithm.
+ * Sort @p array, given:
+ * - @p array, an existing *pre-sorted* array ;
+ * - and @p elem, an array element located right at the end of @p array in
+ *   unsorted order.
  *
- * @p unsort *MUST* point to the first unsorted and last element of @p array.
+ * @p array should contain elements of size @p size, *pre-sorted* with respect
+ * to the @p compare comparison function. Sorting is performed according to the
+ * @rstlnk{Insertion sort} algorithm.
+ *
+ * @p elem *MUST* point to the first unsorted and last element of @p array.
  *
  * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
@@ -316,20 +328,89 @@ stroll_array_insert_sort(void * __restrict     array,
  * The @p compare routine is given @p data as an optional *third* argument
  * as-is. It may point to arbitrary user data for comparison purposes.
  *
- * Use stroll_array_insert_presort() when you know for sure that all elements
- * of @p array up to @p unsort (exclusive) are in sorted order.
+ * Use stroll_array_insert_inpsort_elem() when you know for sure that all
+ * elements of @p array up to @p elem (exclusive) are in sorted order.
  * This allows to optimize situations where sorting a *continuous stream of
- * input elements*.
+ * input elements* in-place is required.
  *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p array is empty, i.e., `(char *)elem < ((char *)array + size)`, result is
+ *   undefined. An assertion otherwise.
+ *
+ * @see stroll_array_insert_oopsort_elem()
  * @see stroll_array_insert_sort()
  */
 extern void
-stroll_array_insert_presort(void * __restrict     array,
-                            void * __restrict     unsort,
-                            size_t                size,
-                            stroll_array_cmp_fn * compare,
-                            void *                data)
+stroll_array_insert_inpsort_elem(void * __restrict     array,
+                                 void * __restrict     elem,
+                                 size_t                size,
+                                 stroll_array_cmp_fn * compare,
+                                 void *                data)
 	__stroll_nonull(1, 2, 4);
+
+/**
+ * Append an element into a pre-sorted array according to the insertion sort
+ * algorithm.
+ *
+ * @param[inout] array   Array to sort
+ * @param[inout] end     Pointer to first unused location of @p array
+ * @param[inout] elem    Element to insert into @p array
+ * @param[in]    size    Size of a single @p array element
+ * @param[in]    compare @p array elements comparison function
+ * @param[inout] data    optional arbitrary user data
+ *
+ * Sort @p array, given:
+ * - @p array, an existing *pre-sorted* array ;
+ * - and @p elem, an array element located out of @p array.
+ *
+ * @p array should contain elements of size @p size, *pre-sorted* with respect
+ * to the @p compare comparison function. Sorting is performed according to the
+ * @rstlnk{Insertion sort} algorithm.
+ *
+ * @p end *MUST* point to the end of @p array, i.e. to the first unused element
+ * location of @p array.
+ * Once stroll_array_insert_oopsort_elem() completes, @p array contains one
+ * more element and @p end points to an existing one.
+ *
+ * @p elem *MUST* point to an element to insert into @p array and located out of
+ * the memory region holding @p array, i.e., with an address `< @p array` and
+ * `>= @p end + @p size`.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p array elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * Use stroll_array_insert_oopsort_elem() when you know for sure that all
+ * elements of @p array up to @p end (exclusive) are in sorted order.
+ * This allows to optimize situations where sorting a *continuous stream of
+ * input elements* out-of-place is required.
+ *
+ * @warning
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p array is empty, i.e., `(char *)end < ((char *)array + size)`, result is
+ *   undefined. An assertion otherwise.
+ * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ *   @p elem belongs to @p array, i.e.,
+ *   `(elem >= array) && ((char *)elem < ((char *)end + size))`, result is
+ *   undefined. An assertion otherwise.
+ *
+ * @see stroll_array_insert_inpsort_elem()
+ * @see stroll_array_insert_sort()
+ */
+extern void
+stroll_array_insert_oopsort_elem(void * __restrict       array,
+                                 void * __restrict       end,
+                                 const void * __restrict elem,
+                                 size_t                  size,
+                                 stroll_array_cmp_fn *   compare,
+                                 void *                  data)
+	__stroll_nonull(1, 2, 3, 5);
 
 #endif /* defined(CONFIG_STROLL_ARRAY_INSERT_SORT) */
 
@@ -399,6 +480,10 @@ stroll_array_insert_presort(void * __restrict     array,
  *   (prefer 3-way Quicksort instead).
  * - refer to @rstlnk{Sorting arrays} for more informations related to algorithm
  *   selection.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ * `nr <= 1`, result is undefined. An assertion otherwise.
  */
 extern void
 stroll_array_quick_sort(void * __restrict     array,
