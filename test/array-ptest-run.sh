@@ -133,7 +133,7 @@ stroll_array_ptest_run()
 	local path="$2"
 	local size=$3
 
-	$ARRAY_PTEST_BIN "$path" "$algo" $size 100 | \
+	$ARRAY_PTEST_BIN "$path" "$algo" $size 1000 | \
 	awk -F': *' "$ptest_parse_awk"
 }
 
@@ -226,7 +226,7 @@ nr=$(array_ptest_probe_nr $array_ptest_data_files)
 orders=$(array_ptest_probe_orders $array_ptest_data_files)
 sizes="4 8 16 32 64 128 256"
 simple_algos="bubble select insert"
-algos="$simple_algos quick merge"
+algos="$simple_algos qsort quick merge"
 
 if [ -z "$nr" ] || [ -z "$orders" ]; then
 	error "no data file found under test data directory" \
@@ -299,7 +299,7 @@ for a in $algos; do
 	maxnr=$(echo $nr | awk '{print $NF}')
 	if [ -z "$req_nr" ]; then
 		if echo "$simple_algos" | grep -qw "$a"; then
-			maxnr=8192
+			maxnr=4096
 		fi
 	fi
 	for n in $nr; do

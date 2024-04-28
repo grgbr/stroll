@@ -497,7 +497,7 @@ stroll_array_quick_sort(void * __restrict     array,
 
 #if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
 
-extern void
+extern int
 stroll_array_merge_sort(void * __restrict     array,
                         unsigned int          nr,
                         size_t                size,

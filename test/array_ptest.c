@@ -132,6 +132,24 @@ strollpt_array_qsort(void * __restrict     array,
 	qsort_r(array, (unsigned int)nr, size, compare, data);
 }
 
+#if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
+
+static void
+strollpt_array_merge_sort(void * __restrict     array,
+                          unsigned int          nr,
+                          size_t                size,
+                          stroll_array_cmp_fn * compare,
+                          void *                data)
+{
+	int err;
+
+	err = stroll_array_merge_sort(array, nr, size, compare, data);
+	if (err)
+		exit(1);
+}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_MERGE_SORT) */
+
 static const struct strollpt_iface strollpt_algos[] = {
 	{
 		.name     = "qsort",
@@ -164,7 +182,7 @@ static const struct strollpt_iface strollpt_algos[] = {
 #if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
 	{
 		.name     = "merge",
-		.sort     = stroll_array_merge_sort
+		.sort     = strollpt_array_merge_sort
 	},
 #endif
 };

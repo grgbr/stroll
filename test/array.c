@@ -516,8 +516,22 @@ CUTE_SUITE_STATIC(strollut_array_quick_suite,
                   CUTE_DFLT_TMOUT);
 
 #if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
+
+static void
+strollut_array_merge_sort(void * __restrict     array,
+                          unsigned int          nr,
+                          size_t                size,
+                          stroll_array_cmp_fn * compare,
+                          void *                data)
+{
+	int err;
+
+	err = stroll_array_merge_sort(array, nr, size, compare, data);
+	cute_check_sint(err, equal, 0);
+}
+
 STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_merge_setup,
-                             stroll_array_merge_sort,
+                             strollut_array_merge_sort,
                              true)
 #else   /* !defined(CONFIG_STROLL_ARRAY_MERGE_SORT) */
 STROLLUT_ARRAY_UNSUP(strollut_array_merge_setup)
