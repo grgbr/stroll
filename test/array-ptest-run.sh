@@ -68,6 +68,25 @@ array_ptest_parse_orders()
 	echo $args
 }
 
+array_ptest_parse_prio()
+{
+	local arg="$1"
+	local val
+
+	val=$(echo "$arg" | sed -n "s/[0-9]*//gp")
+	if [ -n "$val" ]; then
+		error "invalid scheduling priority '$arg': integer expected.\n"
+		return 1
+	fi
+	if [ $((arg)) -lt 1 ] || [ $((arg)) -gt 99 ]; then
+		error "invalid scheduling priority '$arg':" \
+		      "1 <= integer <= 99 expected.\n"
+		return 1
+	fi
+
+	echo $arg
+}
+
 array_ptest_parse_sizes()
 {
 	local args="$1"
@@ -132,8 +151,13 @@ stroll_array_ptest_run()
 	local algo="$1"
 	local path="$2"
 	local size=$3
+	local prio=""
 
-	$ARRAY_PTEST_BIN "$path" "$algo" $size 1000 | \
+	if [ $4 -gt 0 ]; then
+		prio="--prio $4"
+	fi
+
+	$ARRAY_PTEST_BIN $prio "$path" "$algo" $size 10000 | \
 	awk -F': *' "$ptest_parse_awk"
 }
 
@@ -158,8 +182,8 @@ _EOF
 
 arg0="$(basename $0)"
 
-cmdln=$(getopt --options d:ln:o:r:s:h \
-               --longoptions datadir:,list,number:,output:,order-ratio:,size:,help \
+cmdln=$(getopt --options d:ln:o:p:r:s:h \
+               --longoptions datadir:,list,number:,output:,prio:,order-ratio:,size:,help \
                --name "$arg0" \
                -- "$@")
 if [ $? -gt 0 ]; then
@@ -168,6 +192,7 @@ if [ $? -gt 0 ]; then
 fi
 
 show=0
+prio=0
 req_nr=
 req_ord=
 req_sz=
@@ -190,6 +215,12 @@ while true; do
 	-o|--output)
 		if [ "$2" != "-" ]; then
 			output="$2"
+		fi
+		shift 2;;
+	-p|--prio)
+		if ! prio=$(array_ptest_parse_prio "$2"); then
+			usage
+			exit 1
 		fi
 		shift 2;;
 	-r|--order-ratio)
@@ -226,7 +257,7 @@ nr=$(array_ptest_probe_nr $array_ptest_data_files)
 orders=$(array_ptest_probe_orders $array_ptest_data_files)
 sizes="4 8 16 32 64 128 256"
 simple_algos="bubble select insert"
-algos="$simple_algos qsort quick merge"
+algos="qsort quick merge $simple_algos"
 
 if [ -z "$nr" ] || [ -z "$orders" ]; then
 	error "no data file found under test data directory" \
@@ -312,7 +343,7 @@ for a in $algos; do
 				       "$ptest_data_base" \
 				       $n \
 				       $o)
-				stroll_array_ptest_run "$a" "$path" $s >>$output
+				stroll_array_ptest_run "$a" "$path" $s $prio >>$output
 			done
 		done
 	done

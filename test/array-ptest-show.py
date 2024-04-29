@@ -45,6 +45,7 @@ def array_ptest_plot(results,
     res = results[(results['order'] == order) & \
                   (results['size'] == size) & \
                   (results['algo'] == algo)]
+    res = np.sort(res, order = 'nr')
     axe.plot(res['nr'],
              res['nsec'] / 1000,
              label = label,
@@ -79,12 +80,7 @@ def array_ptest_plot_byalgo(results,
                     direction = 'in')
      
     for o in orders:
-        array_ptest_plot(results,
-                         algo,
-                         o,
-                         16,
-                         axe,
-                         '{}% ordering'.format(o))
+        array_ptest_plot(results, algo, o, 16, axe, '{}% ordering'.format(o))
 
     axe.grid(linestyle = '--', alpha = 0.4)
     axe.legend(loc = 'upper left')
@@ -124,42 +120,46 @@ def array_ptest_plot_byorder(results,
     axe.legend(loc = 'upper left')
 
 
+def array_ptest_plot_algos(results) -> None:
+    algos = np.unique(results['algo'])
+    cols = 2
+    rows = int((len(algos) + cols - 1) / cols)
+    fig, axes = plt.subplots(nrows = rows,
+                             ncols = cols,
+                             sharex = True,
+                             sharey = True)
+    indx = 0
+    for r in range(0, rows):
+        for c in range(0, cols):
+            if indx >= len(algos):
+                break
+            showx = r == (rows - 1)
+            showy = c == 0
+            ax = axes[r, c] if axes.ndim == 2 else axes[c]
+            array_ptest_plot_byalgo(results, algos[indx], ax, showx, showy)
+            indx += 1
+
+
+def array_ptest_plot_orders(results) -> None:
+    orders = np.unique(results['order'])
+    cols = 3
+    rows = int((len(orders) + cols - 1) / cols)
+    fig, axes = plt.subplots(nrows = rows,
+                             ncols = cols,
+                             sharex = True,
+                             sharey = True)
+    indx = 0
+    for r in range(0, rows):
+        for c in range(0, cols):
+            if indx >= len(orders):
+                break
+            showx = r == (rows - 1)
+            showy = c == 0
+            ax = axes[r, c] if axes.ndim == 2 else axes[c]
+            array_ptest_plot_byorder(results, orders[indx], ax, showx, showy)
+            indx += 1
+
 results = array_ptest_load(sys.argv[1])
-
-algos = np.unique(results['algo'])
-cols = 2
-rows = int((len(algos) + cols - 1) / cols)
-fig, axes = plt.subplots(nrows = rows,
-                         ncols = cols,
-                         sharex = True,
-                         sharey = True)
-indx = 0
-for r in range(0, rows):
-    for c in range(0, cols):
-        if indx >= len(algos):
-            break
-        showx = r == (rows - 1)
-        showy = c == 0
-        ax = axes[r, c] if axes.ndim == 2 else axes[c]
-        array_ptest_plot_byalgo(results, algos[indx], ax, showx, showy)
-        indx += 1
-
-#orders = np.unique(results['order'])
-#cols = 3
-#rows = int((len(orders) + cols - 1) / cols)
-#fig, axes = plt.subplots(nrows = rows,
-#                         ncols = cols,
-#                         sharex = True,
-#                         sharey = True)
-#indx = 0
-#for r in range(0, rows):
-#    for c in range(0, cols):
-#        if indx >= len(orders):
-#            break
-#        showx = r == (rows - 1)
-#        showy = c == 0
-#        ax = axes[r, c] if axes.ndim == 2 else axes[c]
-#        array_ptest_plot_byorder(results, orders[indx], ax, showx, showy)
-#        indx += 1
-
+array_ptest_plot_algos(results)
+array_ptest_plot_orders(results)
 plt.show()
