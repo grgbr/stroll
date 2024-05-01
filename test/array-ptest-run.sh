@@ -323,7 +323,7 @@ echo "Algorithms:   $algos" >>$output
 echo >>$output
 echo "Algorithm  #Samples Order(%) Size(B)   Mean(ns)" >>$output
 
-set -o pipefail
+#set -o pipefail
 for a in $algos; do
 	# When not explicitly required, restrict number of test data samples to
 	# 8192 since these may take quite a long time to complete (up to several

@@ -416,7 +416,9 @@ def main():
     parser = argp.ArgumentParser(description = 'Stroll performance data set '
                                                'tool')
 
-    subparser = parser.add_subparsers(dest = 'cmd')
+    subparser = parser.add_subparsers(dest = 'cmd',
+                                      metavar = 'COMMAND',
+                                      required = True)
 
     show_parser = subparser.add_parser('show',
                                        help = 'Display integer data set'
@@ -516,7 +518,6 @@ def main():
               file=sys.stderr)
         sys.exit(1)
     except Exception as e:
-        raise e
         print("{}: {}.".format(os.path.basename(sys.argv[0]), e),
               file=sys.stderr)
         sys.exit(1)
