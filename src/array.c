@@ -679,6 +679,26 @@ STROLL_ARRAY_DEFINE_QUICK_HOARE_PART(stroll_array_quick_hoare_part64,
                                      stroll_array_swap64,
                                      uint64_t)
 
+/*
+ * Select pivot for the [array:last] array according to the median-of-three
+ * partitioning strategy.
+ *
+ * Basically, pick the first, middle, and last elements of [array:last]
+ * array and swap them according to sorted order so that:
+ * - first index points to the smallest element,
+ * - middle index points to the median element,
+ * - and last index points to the largest element.
+ *
+ * Finally choose the median element as quicksort pivot and return it to caller.
+ *
+ * This gives a better estimate of the optimal pivot, i.e. the true median
+ * element and prevent from pathological cases where array is mostly
+ * (reverse-)sorted.
+ *
+ * Middle index is computed as following: mid = (begin + end) / 2.
+ * However, to prevent from addition overflow, compute it as following:
+ *     mid = begin + ((end - begin) / 2)
+ */
 static __stroll_nonull(1, 2, 3, 4)
 void
 stroll_array_quick_med_mem(
@@ -704,15 +724,40 @@ stroll_array_quick_med_mem(
 }
 
 /*
- * TODO:
- *  - docs !! see https://stackoverflow.com/questions/6709055/quicksort-stack-size
- *  https://stackoverflow.com/questions/1582356/fastest-way-of-finding-the-middle-value-of-a-triple
- *  https://stackoverflow.com/questions/7559608/median-of-three-values-strategy
+ * Partition [array:last] array into 2 consecutive and non empty sub-arrays
+ * according to Hoare's partitioning scheme so that no element of the first
+ * sub-range is greater than any element of the second sub-range.
  *
- * Pivot is choosen according to the median-of-three strategy, e.g.:
- *     mid = (begin + end) / 2.
- * However, to prevent from addition overflow, compute it as following:
- *     mid = begin + ((end - begin) / 2)
+ * The process explained below, is excerpted from:
+ * https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
+ *
+ * 2 pointers starting at both ends of the array being partitioned are moved
+ * toward each other until an "inversion" is detected.
+ * An "inversion" is detected when a pair of elements meets the following
+ * condition:
+ * - bottom pointer points to an element which value is greater than the pivot
+ *   value, AND,
+ * - top pointer points to an element which value is smaller than the pivot
+ *   value.
+ *
+ * At this point, if bottom pointer is still smaller than top pointer, meaning
+ * that respective pointed to elements are in the wrong order relative to each
+ * other, elements are swapped (exchanged) and the search for the an "inversion"
+ * is repeated.
+ *
+ * When eventually the pointers cross, i.e. the bottom one is higher than the
+ * top one, no swap is performed and the partioning process has completed with
+ * the point of division between the crossed pointers: any entries that might be
+ * strictly between the crossed pointers are equal to the pivot and can be
+ * excluded from both sub-ranges formed.
+ *
+ * With this formulation it is possible that one sub-range turns out to be the
+ * whole original range, which would prevent the quicksort from advancing
+ * (end-less loop). Hoare therefore stipulates that at the end, the sub-range
+ * containing the pivot element (which still is at its original position) can be
+ * decreased in size by excluding that pivot, after (if necessary) exchanging it
+ * with the sub-range element closest to the separation; thus, termination of
+ * quicksort is ensured.
  */
 static __stroll_nonull(1, 2, 3)
 char *
@@ -721,23 +766,58 @@ stroll_array_quick_hoare_part_mem(
 	char *                                       array,
 	char *                                       last)
 {
+	stroll_array_assert_intern(parms);
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(last > array);
+
 	size_t sz = parms->size;
 	char   pivot[sz];
 
+	/*
+	 * Select a patitioning pivot for [array:last] ]according to the
+	 * median-of-three strategy.
+	 * Upon return from stroll_array_quick_med_mem(), pivot value has been
+	 * stored into `pivot' variable.
+	 */
 	stroll_array_quick_med_mem(parms, array, last, pivot);
 
 	while (true) {
+		/*
+		 * Increase `array' (bottom) pointer as long as the element
+		 * pointed to by `array' is strictly smaller than pivot value.
+		 * There is no need to check for original [array:last]
+		 * out-of-bounds access since it is known for sure that pivot
+		 * value is stored into original array.
+		 */
 		do {
 			array += sz;
 		} while (parms->compare(pivot, array, parms->data) > 0);
 
+		/*
+		 * Decrease `last' (top) pointer as long as the element
+		 * pointed to by `last' is strictly greater than pivot value.
+		 * There is no need to check for original [array:last]
+		 * out-of-bounds access since it is known for sure that pivot
+		 * value is stored into original array.
+		 */
 		do {
 			last -= sz;
 		} while (parms->compare(last, pivot, parms->data) > 0);
 
 		if (array >= last)
+			/*
+			 * `array' (bottom) pointer and `last' (top) pointer
+			 * have crossed, meaning that the partitioning is over.
+			 * Return pointer to the newly found partition pivot,
+			 * which should be included by the caller into one of
+			 * the sub-arrays.
+			 */
 			return last;
 
+		/*
+		 * Swap `array' and `last' elements to reorder them relative to
+		 * each other.
+		 */
 		stroll_array_swap(array, last, sz);
 	}
 }
@@ -820,6 +900,23 @@ STROLL_ARRAY_QUICK_SORT(stroll_array_quick_sort64,
                         stroll_array_insert_sort64,
                         uint64_t)
 
+/*
+ * A recursive implementation of quicksort with recursive tail call elimination
+ * and O(log n) stack space requirement optimizations.
+ *
+ * As stated into https://en.wikipedia.org/wiki/Quicksort:
+ * --
+ *  Quicksort works by selecting a 'pivot' element from the array and
+ *  partitioning the other elements into two sub-arrays, according to whether
+ *  they are less than or greater than the pivot.
+ *  [...]
+ *  The sub-arrays are then sorted recursively. This can be done in-place,
+ *  requiring small additional amounts of memory to perform the sorting. --
+ *
+ * For more infos about usual quicksort optimations, see:
+ * https://www.geeksforgeeks.org/tail-call-elimination/
+ * https://www.geeksforgeeks.org/quicksort-tail-call-optimization-reducing-worst-case-space-log-n/
+ */
 static __stroll_nonull(1, 2, 3)
 void
 stroll_array_quick_sort_recmem(
@@ -833,12 +930,45 @@ stroll_array_quick_sort_recmem(
 	stroll_array_assert_intern(last >= array);
 	stroll_array_assert_intern(!((size_t)(last - array) % parms->size));
 
+	/*
+	 * Transform the quicksort standard double recursive call to this
+	 * `while (...) { ... }' based construct to restrict to a single
+	 * recursive call. This allows GCC optimizer to perform recursive tail
+	 * call elimination.
+	 *
+	 * Also note that we return to caller when [array:last] contains less
+	 * than STROLL_QSORT_INSERT_THRESHOLD elements so that it may switch to
+	 * a simple non-recursive algorithm for final sorting pass.
+	 */
 	while (&array[parms->thres] < last) {
 		size_t sz = parms->size;
 		char * pivot;
 
+		/*
+		 * Partition [array:last] into 2 sub-arrays according to the
+		 * Hoare's partitioning scheme:
+		 * - bottom / lower sub-array [array:pivot],
+		 * - top / upper sub-array [pivot+size:last]
+		 *
+		 * Including pivot within one of the sub-arrays ensures that
+		 * sub-arrays are always non empty since [array:last] contains
+		 * at least STROLL_QSORT_INSERT_THRESHOLD elements (note the
+		 * while condition above).
+		 *
+		 * This is absolutly necessary to prevent quicksort from
+		 * entering an endless loop where one sub-array turns out to be
+		 * the  whole original [array:last] range.
+		 */
 		pivot = stroll_array_quick_hoare_part_mem(parms, array, last);
 
+		/*
+		 * Always recurse into the smaller sub-array first to limit
+		 * the required auxiliary stack space to O(log n) in the worst
+		 * case. This may happen when the original [array:last] array
+		 * is always sub-divided into :
+		 * - one sub-array containing one single element,
+		 * - a second sub-array containing all other elements.
+		 */
 		if ((pivot - array) < (last - pivot)) {
 			stroll_array_quick_sort_recmem(parms, array, pivot);
 			array = &pivot[sz];
