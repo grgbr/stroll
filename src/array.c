@@ -758,6 +758,16 @@ stroll_array_quick_med_mem(
  * decreased in size by excluding that pivot, after (if necessary) exchanging it
  * with the sub-range element closest to the separation; thus, termination of
  * quicksort is ensured.
+ *
+ * Hoare's scheme is more efficient than Lomuto's partition scheme because it
+ * does 3 times fewer swaps on average.
+ * The implementation here ensures that even in cases where all values are
+ * equal, balanced partitions are created although inccuring many swap
+ * operations in practice.
+ * Hoare's partitioning may also degrade to O(n^2) for already sorted output
+ * when the pivot is chosen as the first or the last element. To overcome these
+ * pathological cases, pivot is chosen according to the median-of-three
+ * strategy.
  */
 static __stroll_nonull(1, 2, 3)
 char *
@@ -774,7 +784,7 @@ stroll_array_quick_hoare_part_mem(
 	char   pivot[sz];
 
 	/*
-	 * Select a patitioning pivot for [array:last] ]according to the
+	 * Select a patitioning pivot for [array:last] according to the
 	 * median-of-three strategy.
 	 * Upon return from stroll_array_quick_med_mem(), pivot value has been
 	 * stored into `pivot' variable.
@@ -902,7 +912,7 @@ STROLL_ARRAY_QUICK_SORT(stroll_array_quick_sort64,
 
 /*
  * A recursive implementation of quicksort with recursive tail call elimination
- * and O(log n) stack space requirement optimizations.
+ * and O(log(n)) stack space requirement optimizations.
  *
  * As stated into https://en.wikipedia.org/wiki/Quicksort:
  * --
@@ -913,10 +923,19 @@ STROLL_ARRAY_QUICK_SORT(stroll_array_quick_sort64,
  *  The sub-arrays are then sorted recursively. This can be done in-place,
  *  requiring small additional amounts of memory to perform the sorting. --
  *
+ * In addition, recursion is stopped early when the number of elements of
+ * current partition is no more the STROLL_QSORT_INSERT_THRESHOLD. This leaves
+ * the array k-sorted (where k equals STROLL_QSORT_INSERT_THRESHOLD), meaning
+ * that each element is at most k positions away from its final sorted
+ * position.
+ * Caller must run a final sorting pass using a simple algorithm such as
+ * insertion sort upon return from stroll_array_quick_sort_recmem().
+ *
  * For more infos about usual quicksort optimations, see:
  * https://www.geeksforgeeks.org/tail-call-elimination/
  * https://www.geeksforgeeks.org/quicksort-tail-call-optimization-reducing-worst-case-space-log-n/
  */
+
 static __stroll_nonull(1, 2, 3)
 void
 stroll_array_quick_sort_recmem(
@@ -936,7 +955,7 @@ stroll_array_quick_sort_recmem(
 	 * recursive call. This allows GCC optimizer to perform recursive tail
 	 * call elimination.
 	 *
-	 * Also note that we return to caller when [array:last] contains less
+	 * Also note that we return to caller when [array:last] contains no more
 	 * than STROLL_QSORT_INSERT_THRESHOLD elements so that it may switch to
 	 * a simple non-recursive algorithm for final sorting pass.
 	 */
@@ -963,7 +982,7 @@ stroll_array_quick_sort_recmem(
 
 		/*
 		 * Always recurse into the smaller sub-array first to limit
-		 * the required auxiliary stack space to O(log n) in the worst
+		 * the required auxiliary stack space to O(log(n)) in the worst
 		 * case. This may happen when the original [array:last] array
 		 * is always sub-divided into :
 		 * - one sub-array containing one single element,
@@ -1000,8 +1019,24 @@ stroll_array_quick_sort_mem(char * __restrict     array,
 		.thres    = STROLL_QSORT_INSERT_THRESHOLD * size
 	};
 
+	/*
+	 * Sort according to recursive quicksort algorithm as long as the number
+	 * of elements of current partition is larger than
+	 * STROLL_QSORT_INSERT_THRESHOLD.
+	 */
 	stroll_array_quick_sort_recmem(&parms, array, &array[(nr - 1) * size]);
 
+	/*
+	 * Now that array is k-sorted (where k equals
+	 * STROLL_QSORT_INSERT_THRESHOLD), switch to insertion sort for the
+	 * final pass. Here, insertion sort takes O(kn) time to finish the sort.
+	 * Compared to the "many small sorts" alternative (where the switch to
+	 * insertion sort is performed during the recursion), this version may
+	 * execute fewer instructions, but it may make use of data caches in a
+	 * suboptimal way.
+	 * In practice, switching to insertion sort as a final sorting pass
+	 * seems to give better result however.
+	 */
 	stroll_array_insert_sort_mem(array, nr, size, compare, data);
 }
 

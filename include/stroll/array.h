@@ -438,13 +438,13 @@ stroll_array_insert_oopsort_elem(void * __restrict       array,
  * as-is. It may point to arbitrary user data for comparison purposes.
  *
  * Implementation includes the following usual optimizations:
- * - recursion converted to iterative process thanks to additional
- *   @rstmath{O(log(n))} stack space,
- * - *partition* according to the Hoare_ scheme,
- * - choose *pivot* according to the median-of-three_ strategy,
- * - when the number of partition elements is less than
- *   #CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD, switch to
- *   @rstlnk{Insertion sort}.
+ * - recursion auxiliary stack space limited to O(log(n)),
+ * - *partition* according to Hoare_ scheme,
+ * - choose *pivot* according to the median-of-three_ strategy to prevent from
+ *   already (reverse-)sorted input related pathological cases,
+ * - switch to @rstlnk{Insertion sort} when the number of partition elements is
+ *   less than #CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD to limit
+ *   recursion depth.
  *
  * @rsttable{Sorting properties}
  * +-------------------------+-----------------------------------------------+
@@ -454,7 +454,7 @@ stroll_array_insert_oopsort_elem(void * __restrict       array,
  * +-------------------------+-----------------------------------------------+
  * | |stable|                | no                                            |
  * +-------------------------+-----------------------------------------------+
- * | |Recursive|             | no                                            |
+ * | |Recursive|             | yes                                           |
  * +-------------------------+-----------------------------------------------+
  * | |In-place|              | yes                                           |
  * +-------------------------+-----------------------------------------------+
