@@ -41,9 +41,12 @@ strollut_array_bisect_cmp(const void * __restrict key,
                           const void * __restrict entry,
                           void *                  data __unused)
 {
-	return (int)((intptr_t)(key) -
-	             (intptr_t)
-	             ((const struct strollut_array_bisect_entry *)entry)->id);
+	intptr_t k = (intptr_t)key;
+	intptr_t e = (intptr_t)
+	             ((const struct strollut_array_bisect_entry *)entry)->id;
+
+	/* Prevent from integer overflow. */
+	return (k > e) - (k < e);
 }
 
 static const struct strollut_array_bisect_entry *
@@ -228,25 +231,33 @@ strollut_array_compare_min(const void * first,
                            const void * second,
                            void *       data __unused)
 {
-	return *(const int *)first - *(const int *)second;
+	int f = *(const int *)first;
+	int s = *(const int *)second;
+
+	/* Prevent from integer overflow. */
+	return (f > s) - (f < s);
 }
 
 static void
-strollut_array_check_sort(int * array, const int * expect, unsigned int nr)
+strollut_array_check_sort(void *       array,
+                          const void * expect,
+                          size_t       size,
+                          unsigned int nr)
 {
-	unsigned int e;
+	const char * val = array;
+	const char * exp = expect;
+	const char * end = &val[nr * size];
 
-	strollut_array_sort((void *)array,
-	                    nr,
-	                    sizeof(array[0]),
-	                    strollut_array_compare_min,
-	                    NULL);
+	strollut_array_sort(array, nr, size, strollut_array_compare_min, NULL);
 
-	for (e = 0; e < nr; e++)
-		cute_check_sint(array[e], equal, expect[e]);
+	while (val < end) {
+		cute_check_sint(*(const int *)val, equal, *(const int *)exp);
+		val += size;
+		exp += size;
+	}
 }
 
-CUTE_TEST(strollut_array_sort_single)
+CUTE_TEST(strollut_array_sort_single32)
 {
 	int array[] = {
 		0
@@ -255,10 +266,43 @@ CUTE_TEST(strollut_array_sort_single)
 		0
 	};
 
-	strollut_array_check_sort(array, expect, stroll_array_nr(expect));
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
 }
 
-CUTE_TEST(strollut_array_sort_inorder2)
+CUTE_TEST(strollut_array_sort_single64)
+{
+	union { int value; char data[8]; } array[] = {
+		[0] = { .value = 0 }
+	};
+	const union { int value; char data[8]; } expect[] = {
+		[0] = { .value = 0 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_single64b)
+{
+	union { int value; char data[64]; } array[] = {
+		[0] = { .value = 0 }
+	};
+	const union { int value; char data[64]; } expect[] = {
+		[0] = { .value = 0 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_inorder_double32)
 {
 	int array[] = {
 		0, 1
@@ -267,10 +311,47 @@ CUTE_TEST(strollut_array_sort_inorder2)
 		0, 1
 	};
 
-	strollut_array_check_sort(array, expect, stroll_array_nr(expect));
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
 }
 
-CUTE_TEST(strollut_array_sort_postorder2)
+CUTE_TEST(strollut_array_sort_inorder_double64)
+{
+	union { int value; char data[8]; } array[] = {
+		[0] = { .value = 0 },
+		[1] = { .value = 1 }
+	};
+	const union { int value; char data[8]; } expect[] = {
+		[0] = { .value = 0 },
+		[1] = { .value = 1 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_inorder_double64b)
+{
+	union { int value; char data[64]; } array[] = {
+		[0] = { .value = 0 },
+		[1] = { .value = 1 }
+	};
+	const union { int value; char data[64]; } expect[] = {
+		[0] = { .value = 0 },
+		[1] = { .value = 1 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_postorder_double32)
 {
 	int array[] = {
 		1, 0
@@ -279,10 +360,47 @@ CUTE_TEST(strollut_array_sort_postorder2)
 		0, 1
 	};
 
-	strollut_array_check_sort(array, expect, stroll_array_nr(expect));
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
 }
 
-CUTE_TEST(strollut_array_sort_duplicates)
+CUTE_TEST(strollut_array_sort_postorder_double64)
+{
+	union { int value; char data[8]; } array[] = {
+		[0] = { .value = 1 },
+		[1] = { .value = 0 }
+	};
+	const union { int value; char data[8]; } expect[] = {
+		[0] = { .value = 0 },
+		[1] = { .value = 1 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_postorder_double64b)
+{
+	union { int value; char data[64]; } array[] = {
+		[0] = { .value = 1 },
+		[1] = { .value = 0 }
+	};
+	const union { int value; char data[64]; } expect[] = {
+		[0] = { .value = 0 },
+		[1] = { .value = 1 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_duplicates32)
 {
 	int array[] = {
 		1, 1
@@ -291,10 +409,47 @@ CUTE_TEST(strollut_array_sort_duplicates)
 		1, 1
 	};
 
-	strollut_array_check_sort(array, expect, stroll_array_nr(expect));
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
 }
 
-CUTE_TEST(strollut_array_sort_presorted)
+CUTE_TEST(strollut_array_sort_duplicates64)
+{
+	union { int value; char data[8]; } array[] = {
+		[0] = { .value = 1 },
+		[1] = { .value = 1 }
+	};
+	const union { int value; char data[8]; } expect[] = {
+		[0] = { .value = 1 },
+		[1] = { .value = 1 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_duplicates64b)
+{
+	union { int value; char data[64]; } array[] = {
+		[0] = { .value = 1 },
+		[1] = { .value = 1 }
+	};
+	const union { int value; char data[64]; } expect[] = {
+		[0] = { .value = 1 },
+		[1] = { .value = 1 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_presorted32)
 {
 	int array[] = {
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
@@ -303,10 +458,95 @@ CUTE_TEST(strollut_array_sort_presorted)
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
 	};
 
-	strollut_array_check_sort(array, expect, stroll_array_nr(expect));
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
 }
 
-CUTE_TEST(strollut_array_sort_reverse_sorted)
+CUTE_TEST(strollut_array_sort_presorted64)
+{
+	union { int value; char data[8]; } array[] = {
+		[0]  = { .value = 0 },
+		[1]  = { .value = 1 },
+		[2]  = { .value = 2 },
+		[3]  = { .value = 3 },
+		[4]  = { .value = 4 },
+		[5]  = { .value = 5 },
+		[6]  = { .value = 6 },
+		[7]  = { .value = 7 },
+		[8]  = { .value = 8 },
+		[9]  = { .value = 9 },
+		[10] = { .value = 10 },
+		[11] = { .value = 11 },
+		[12] = { .value = 12 },
+		[13] = { .value = 13 }
+	};
+	const union { int value; char data[8]; } expect[] = {
+		[0]  = { .value = 0 },
+		[1]  = { .value = 1 },
+		[2]  = { .value = 2 },
+		[3]  = { .value = 3 },
+		[4]  = { .value = 4 },
+		[5]  = { .value = 5 },
+		[6]  = { .value = 6 },
+		[7]  = { .value = 7 },
+		[8]  = { .value = 8 },
+		[9]  = { .value = 9 },
+		[10] = { .value = 10 },
+		[11] = { .value = 11 },
+		[12] = { .value = 12 },
+		[13] = { .value = 13 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_presorted64b)
+{
+	union { int value; char data[64]; } array[] = {
+		[0]  = { .value = 0 },
+		[1]  = { .value = 1 },
+		[2]  = { .value = 2 },
+		[3]  = { .value = 3 },
+		[4]  = { .value = 4 },
+		[5]  = { .value = 5 },
+		[6]  = { .value = 6 },
+		[7]  = { .value = 7 },
+		[8]  = { .value = 8 },
+		[9]  = { .value = 9 },
+		[10] = { .value = 10 },
+		[11] = { .value = 11 },
+		[12] = { .value = 12 },
+		[13] = { .value = 13 }
+	};
+	const union { int value; char data[64]; } expect[] = {
+		[0]  = { .value = 0 },
+		[1]  = { .value = 1 },
+		[2]  = { .value = 2 },
+		[3]  = { .value = 3 },
+		[4]  = { .value = 4 },
+		[5]  = { .value = 5 },
+		[6]  = { .value = 6 },
+		[7]  = { .value = 7 },
+		[8]  = { .value = 8 },
+		[9]  = { .value = 9 },
+		[10] = { .value = 10 },
+		[11] = { .value = 11 },
+		[12] = { .value = 12 },
+		[13] = { .value = 13 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_reverse_sorted32)
 {
 	int array[] = {
 		13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
@@ -315,10 +555,95 @@ CUTE_TEST(strollut_array_sort_reverse_sorted)
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
 	};
 
-	strollut_array_check_sort(array, expect, stroll_array_nr(expect));
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
 }
 
-CUTE_TEST(strollut_array_sort_unsorted)
+CUTE_TEST(strollut_array_sort_reverse_sorted64)
+{
+	union { int value; char data[8]; } array[] = {
+		[0]  = { .value = 13 },
+		[1]  = { .value = 12 },
+		[2]  = { .value = 11 },
+		[3]  = { .value = 10 },
+		[4]  = { .value = 9 },
+		[5]  = { .value = 8 },
+		[6]  = { .value = 7 },
+		[7]  = { .value = 6 },
+		[8]  = { .value = 5 },
+		[9]  = { .value = 4 },
+		[10] = { .value = 3 },
+		[11] = { .value = 2 },
+		[12] = { .value = 1 },
+		[13] = { .value = 0 }
+	};
+	const union { int value; char data[8]; } expect[] = {
+		[0]  = { .value = 0 },
+		[1]  = { .value = 1 },
+		[2]  = { .value = 2 },
+		[3]  = { .value = 3 },
+		[4]  = { .value = 4 },
+		[5]  = { .value = 5 },
+		[6]  = { .value = 6 },
+		[7]  = { .value = 7 },
+		[8]  = { .value = 8 },
+		[9]  = { .value = 9 },
+		[10] = { .value = 10 },
+		[11] = { .value = 11 },
+		[12] = { .value = 12 },
+		[13] = { .value = 13 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_reverse_sorted64b)
+{
+	union { int value; char data[64]; } array[] = {
+		[0]  = { .value = 13 },
+		[1]  = { .value = 12 },
+		[2]  = { .value = 11 },
+		[3]  = { .value = 10 },
+		[4]  = { .value = 9 },
+		[5]  = { .value = 8 },
+		[6]  = { .value = 7 },
+		[7]  = { .value = 6 },
+		[8]  = { .value = 5 },
+		[9]  = { .value = 4 },
+		[10] = { .value = 3 },
+		[11] = { .value = 2 },
+		[12] = { .value = 1 },
+		[13] = { .value = 0 }
+	};
+	const union { int value; char data[64]; } expect[] = {
+		[0]  = { .value = 0 },
+		[1]  = { .value = 1 },
+		[2]  = { .value = 2 },
+		[3]  = { .value = 3 },
+		[4]  = { .value = 4 },
+		[5]  = { .value = 5 },
+		[6]  = { .value = 6 },
+		[7]  = { .value = 7 },
+		[8]  = { .value = 8 },
+		[9]  = { .value = 9 },
+		[10] = { .value = 10 },
+		[11] = { .value = 11 },
+		[12] = { .value = 12 },
+		[13] = { .value = 13 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_unsorted32)
 {
 	int array[] = {
 		2, 12, 13, 0, 1, 3, 10, 9, 8, 11, 4, 6, 5, 7
@@ -327,10 +652,95 @@ CUTE_TEST(strollut_array_sort_unsorted)
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
 	};
 
-	strollut_array_check_sort(array, expect, stroll_array_nr(expect));
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
 }
 
-CUTE_TEST(strollut_array_sort_unsorted_duplicates)
+CUTE_TEST(strollut_array_sort_unsorted64)
+{
+	union { int value; char data[8]; } array[] = {
+		[0]  = { .value = 2 },
+		[1]  = { .value = 12 },
+		[2]  = { .value = 13 },
+		[3]  = { .value = 0 },
+		[4]  = { .value = 1 },
+		[5]  = { .value = 3 },
+		[6]  = { .value = 10 },
+		[7]  = { .value = 9 },
+		[8]  = { .value = 8 },
+		[9]  = { .value = 11 },
+		[10] = { .value = 4 },
+		[11] = { .value = 6 },
+		[12] = { .value = 5 },
+		[13] = { .value = 7 }
+	};
+	const union { int value; char data[8]; } expect[] = {
+		[0]  = { .value = 0 },
+		[1]  = { .value = 1 },
+		[2]  = { .value = 2 },
+		[3]  = { .value = 3 },
+		[4]  = { .value = 4 },
+		[5]  = { .value = 5 },
+		[6]  = { .value = 6 },
+		[7]  = { .value = 7 },
+		[8]  = { .value = 8 },
+		[9]  = { .value = 9 },
+		[10] = { .value = 10 },
+		[11] = { .value = 11 },
+		[12] = { .value = 12 },
+		[13] = { .value = 13 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_unsorted64b)
+{
+	union { int value; char data[64]; } array[] = {
+		[0]  = { .value = 2 },
+		[1]  = { .value = 12 },
+		[2]  = { .value = 13 },
+		[3]  = { .value = 0 },
+		[4]  = { .value = 1 },
+		[5]  = { .value = 3 },
+		[6]  = { .value = 10 },
+		[7]  = { .value = 9 },
+		[8]  = { .value = 8 },
+		[9]  = { .value = 11 },
+		[10] = { .value = 4 },
+		[11] = { .value = 6 },
+		[12] = { .value = 5 },
+		[13] = { .value = 7 }
+	};
+	const union { int value; char data[64]; } expect[] = {
+		[0]  = { .value = 0 },
+		[1]  = { .value = 1 },
+		[2]  = { .value = 2 },
+		[3]  = { .value = 3 },
+		[4]  = { .value = 4 },
+		[5]  = { .value = 5 },
+		[6]  = { .value = 6 },
+		[7]  = { .value = 7 },
+		[8]  = { .value = 8 },
+		[9]  = { .value = 9 },
+		[10] = { .value = 10 },
+		[11] = { .value = 11 },
+		[12] = { .value = 12 },
+		[13] = { .value = 13 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_unsorted_duplicates32)
 {
 	int array[] = {
 		2, 12, 12, 0, 1, 3, 10, 9, 3, 11, 4, 6, 5, 2
@@ -339,7 +749,92 @@ CUTE_TEST(strollut_array_sort_unsorted_duplicates)
 		0, 1, 2, 2, 3, 3, 4, 5, 6, 9, 10, 11, 12, 12
 	};
 
-	strollut_array_check_sort(array, expect, stroll_array_nr(expect));
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_unsorted_duplicates64)
+{
+	union { int value; char data[8]; } array[] = {
+		[0]  = { .value = 2 },
+		[1]  = { .value = 12 },
+		[2]  = { .value = 12 },
+		[3]  = { .value = 0 },
+		[4]  = { .value = 1 },
+		[5]  = { .value = 3 },
+		[6]  = { .value = 10 },
+		[7]  = { .value = 9 },
+		[8]  = { .value = 3 },
+		[9]  = { .value = 11 },
+		[10] = { .value = 4 },
+		[11] = { .value = 6 },
+		[12] = { .value = 5 },
+		[13] = { .value = 2 }
+	};
+	const union { int value; char data[8]; } expect[] = {
+		[0]  = { .value = 0 },
+		[1]  = { .value = 1 },
+		[2]  = { .value = 2 },
+		[3]  = { .value = 2 },
+		[4]  = { .value = 3 },
+		[5]  = { .value = 3 },
+		[6]  = { .value = 4 },
+		[7]  = { .value = 5 },
+		[8]  = { .value = 6 },
+		[9]  = { .value = 9 },
+		[10] = { .value = 10 },
+		[11] = { .value = 11 },
+		[12] = { .value = 12 },
+		[13] = { .value = 12 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
+}
+
+CUTE_TEST(strollut_array_sort_unsorted_duplicates64b)
+{
+	union { int value; char data[64]; } array[] = {
+		[0]  = { .value = 2 },
+		[1]  = { .value = 12 },
+		[2]  = { .value = 12 },
+		[3]  = { .value = 0 },
+		[4]  = { .value = 1 },
+		[5]  = { .value = 3 },
+		[6]  = { .value = 10 },
+		[7]  = { .value = 9 },
+		[8]  = { .value = 3 },
+		[9]  = { .value = 11 },
+		[10] = { .value = 4 },
+		[11] = { .value = 6 },
+		[12] = { .value = 5 },
+		[13] = { .value = 2 }
+	};
+	const union { int value; char data[64]; } expect[] = {
+		[0]  = { .value = 0 },
+		[1]  = { .value = 1 },
+		[2]  = { .value = 2 },
+		[3]  = { .value = 2 },
+		[4]  = { .value = 3 },
+		[5]  = { .value = 3 },
+		[6]  = { .value = 4 },
+		[7]  = { .value = 5 },
+		[8]  = { .value = 6 },
+		[9]  = { .value = 9 },
+		[10] = { .value = 10 },
+		[11] = { .value = 11 },
+		[12] = { .value = 12 },
+		[13] = { .value = 12 }
+	};
+
+	strollut_array_check_sort(array,
+	                          expect,
+	                          sizeof(array[0]),
+	                          stroll_array_nr(expect));
 }
 
 static int
@@ -447,14 +942,38 @@ CUTE_TEST(strollut_array_sort_postorder)
 }
 
 CUTE_GROUP(strollut_array_sort_group) = {
-	CUTE_REF(strollut_array_sort_single),
-	CUTE_REF(strollut_array_sort_inorder2),
-	CUTE_REF(strollut_array_sort_postorder2),
-	CUTE_REF(strollut_array_sort_duplicates),
-	CUTE_REF(strollut_array_sort_presorted),
-	CUTE_REF(strollut_array_sort_reverse_sorted),
-	CUTE_REF(strollut_array_sort_unsorted),
-	CUTE_REF(strollut_array_sort_unsorted_duplicates),
+	CUTE_REF(strollut_array_sort_single32),
+	CUTE_REF(strollut_array_sort_single64),
+	CUTE_REF(strollut_array_sort_single64b),
+
+	CUTE_REF(strollut_array_sort_inorder_double32),
+	CUTE_REF(strollut_array_sort_inorder_double64),
+	CUTE_REF(strollut_array_sort_inorder_double64b),
+
+	CUTE_REF(strollut_array_sort_postorder_double32),
+	CUTE_REF(strollut_array_sort_postorder_double64),
+	CUTE_REF(strollut_array_sort_postorder_double64b),
+
+	CUTE_REF(strollut_array_sort_duplicates32),
+	CUTE_REF(strollut_array_sort_duplicates64),
+	CUTE_REF(strollut_array_sort_duplicates64b),
+
+	CUTE_REF(strollut_array_sort_presorted32),
+	CUTE_REF(strollut_array_sort_presorted64),
+	CUTE_REF(strollut_array_sort_presorted64b),
+
+	CUTE_REF(strollut_array_sort_reverse_sorted32),
+	CUTE_REF(strollut_array_sort_reverse_sorted64),
+	CUTE_REF(strollut_array_sort_reverse_sorted64b),
+
+	CUTE_REF(strollut_array_sort_unsorted32),
+	CUTE_REF(strollut_array_sort_unsorted64),
+	CUTE_REF(strollut_array_sort_unsorted64b),
+
+	CUTE_REF(strollut_array_sort_unsorted_duplicates32),
+	CUTE_REF(strollut_array_sort_unsorted_duplicates64),
+	CUTE_REF(strollut_array_sort_unsorted_duplicates64b),
+
 	CUTE_REF(strollut_array_sort_inorder),
 	CUTE_REF(strollut_array_sort_postorder)
 };
