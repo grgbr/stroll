@@ -838,38 +838,38 @@ CUTE_TEST(strollut_array_sort_unsorted_duplicates64b)
 }
 
 static int
-strollut_array_compare_elem_inorder(const void * first,
-                                    const void * second,
-                                    void *       data __unused)
+strollut_array_compare_num_inorder(const void * first,
+                                   const void * second,
+                                   void *       data __unused)
 {
-	const struct strollut_array_elem * fst =
-		(const struct strollut_array_elem *)first;
-	const struct strollut_array_elem * snd =
-		(const struct strollut_array_elem *)second;
+	const struct strollut_array_num * fst =
+		(const struct strollut_array_num *)first;
+	const struct strollut_array_num * snd =
+		(const struct strollut_array_num *)second;
 
-	return fst->key - snd->key;
+	return (fst->key > snd->key) - (fst->key < snd->key);
 }
 
 static int
-strollut_array_compare_elem_postorder(const void * first,
-                                      const void * second,
-                                      void *       data __unused)
+strollut_array_compare_num_postorder(const void * first,
+                                     const void * second,
+                                     void *       data __unused)
 {
-	const struct strollut_array_elem * fst =
-		(const struct strollut_array_elem *)first;
-	const struct strollut_array_elem * snd =
-		(const struct strollut_array_elem *)second;
+	const struct strollut_array_num * fst =
+		(const struct strollut_array_num *)first;
+	const struct strollut_array_num * snd =
+		(const struct strollut_array_num *)second;
 
-	return snd->key - fst->key;
+	return (snd->key > fst->key) - (snd->key < fst->key);
 }
 
-static struct strollut_array_elem
-strollut_array_tosort[STROLLUT_ARRAY_NR];
+static struct strollut_array_num
+strollut_array_tosort[STROLLUT_ARRAY_NUM_NR];
 
 static void
-strollut_array_check_stable(const struct strollut_array_elem * array,
-                            const struct strollut_array_elem * expect,
-                            stroll_array_cmp_fn *              cmp)
+strollut_array_check_stable(const struct strollut_array_num * array,
+                            const struct strollut_array_num * expect,
+                            stroll_array_cmp_fn *             cmp)
 {
 	unsigned int e;
 
@@ -892,9 +892,9 @@ strollut_array_check_stable(const struct strollut_array_elem * array,
 }
 
 static void
-strollut_array_check_unstable(const struct strollut_array_elem * array,
-                              const struct strollut_array_elem * expect,
-                              stroll_array_cmp_fn *              cmp)
+strollut_array_check_unstable(const struct strollut_array_num * array,
+                              const struct strollut_array_num * expect,
+                              stroll_array_cmp_fn *             cmp)
 {
 	unsigned int e;
 
@@ -917,28 +917,134 @@ CUTE_TEST(strollut_array_sort_inorder)
 {
 	if (strollut_array_stable_sort)
 		strollut_array_check_stable(
-			strollut_array_input,
-			strollut_array_inorder,
-			strollut_array_compare_elem_inorder);
+			strollut_array_num_input,
+			strollut_array_num_inorder,
+			strollut_array_compare_num_inorder);
 	else
 		strollut_array_check_unstable(
-			strollut_array_input,
-			strollut_array_inorder,
-			strollut_array_compare_elem_inorder);
+			strollut_array_num_input,
+			strollut_array_num_inorder,
+			strollut_array_compare_num_inorder);
 }
 
 CUTE_TEST(strollut_array_sort_postorder)
 {
 	if (strollut_array_stable_sort)
 		strollut_array_check_stable(
-			strollut_array_input,
-			strollut_array_postorder,
-			strollut_array_compare_elem_postorder);
+			strollut_array_num_input,
+			strollut_array_num_postorder,
+			strollut_array_compare_num_postorder);
 	else
 		strollut_array_check_unstable(
-			strollut_array_input,
-			strollut_array_postorder,
-			strollut_array_compare_elem_postorder);
+			strollut_array_num_input,
+			strollut_array_num_postorder,
+			strollut_array_compare_num_postorder);
+}
+
+static struct strollut_array_str
+strollut_array_str_tosort[STROLLUT_ARRAY_STR_NR];
+
+static int
+strollut_array_compare_str_inorder(const void * first,
+                                   const void * second,
+                                   void *       data __unused)
+{
+	const struct strollut_array_str * fst =
+		(const struct strollut_array_str *)first;
+	const struct strollut_array_str * snd =
+		(const struct strollut_array_str *)second;
+
+	return strcmp(fst->word, snd->word);
+}
+
+static int
+strollut_array_compare_str_postorder(const void * first,
+                                     const void * second,
+                                     void *       data __unused)
+{
+	const struct strollut_array_str * fst =
+		(const struct strollut_array_str *)first;
+	const struct strollut_array_str * snd =
+		(const struct strollut_array_str *)second;
+
+	return strcmp(snd->word, fst->word);
+}
+
+static void
+strollut_array_check_str_stable(const struct strollut_array_str * array,
+                                const struct strollut_array_str * expect,
+                                stroll_array_cmp_fn *             cmp)
+{
+	unsigned int e;
+
+	memcpy(strollut_array_str_tosort,
+	       array,
+	       sizeof(strollut_array_str_tosort));
+
+	strollut_array_sort((void *)strollut_array_str_tosort,
+	                    stroll_array_nr(strollut_array_str_tosort),
+	                    sizeof(strollut_array_str_tosort[0]),
+	                    cmp,
+	                    NULL);
+
+	for (e = 0; e < stroll_array_nr(strollut_array_str_tosort); e++) {
+		cute_check_str(strollut_array_str_tosort[e].word,
+		               equal,
+		               expect[e].word);
+		cute_check_ptr(strollut_array_str_tosort[e].ptr,
+		               equal,
+		               expect[e].ptr);
+	}
+}
+
+static void
+strollut_array_check_str_unstable(const struct strollut_array_str * array,
+                                  const struct strollut_array_str * expect,
+                                  stroll_array_cmp_fn *             cmp)
+{
+	unsigned int e;
+
+	memcpy(strollut_array_str_tosort, array, sizeof(strollut_array_str_tosort));
+
+	strollut_array_sort((void *)strollut_array_str_tosort,
+	                    stroll_array_nr(strollut_array_str_tosort),
+	                    sizeof(strollut_array_str_tosort[0]),
+	                    cmp,
+	                    NULL);
+
+	for (e = 0; e < stroll_array_nr(strollut_array_str_tosort); e++) {
+		cute_check_str(strollut_array_str_tosort[e].word,
+		               equal,
+		               expect[e].word);
+	}
+}
+
+CUTE_TEST(strollut_array_sort_str_inorder)
+{
+	if (strollut_array_stable_sort)
+		strollut_array_check_str_stable(
+			strollut_array_str_input,
+			strollut_array_str_inorder,
+			strollut_array_compare_str_inorder);
+	else
+		strollut_array_check_str_unstable(
+			strollut_array_str_input,
+			strollut_array_str_inorder,
+			strollut_array_compare_str_inorder);
+}
+
+CUTE_TEST(strollut_array_sort_str_postorder)
+{
+	if (strollut_array_stable_sort)
+		strollut_array_check_str_stable(
+			strollut_array_str_input,
+			strollut_array_str_postorder,
+			strollut_array_compare_str_postorder);
+	else
+		strollut_array_check_str_unstable(
+			strollut_array_str_input,
+			strollut_array_str_postorder,
+			strollut_array_compare_str_postorder);
 }
 
 CUTE_GROUP(strollut_array_sort_group) = {
@@ -975,7 +1081,10 @@ CUTE_GROUP(strollut_array_sort_group) = {
 	CUTE_REF(strollut_array_sort_unsorted_duplicates64b),
 
 	CUTE_REF(strollut_array_sort_inorder),
-	CUTE_REF(strollut_array_sort_postorder)
+	CUTE_REF(strollut_array_sort_postorder),
+
+	CUTE_REF(strollut_array_sort_str_inorder),
+	CUTE_REF(strollut_array_sort_str_postorder)
 };
 
 #if defined(CONFIG_STROLL_ARRAY_BUBBLE_SORT)
