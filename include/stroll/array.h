@@ -109,38 +109,9 @@ stroll_array_bisect_search(const void *          key,
  * The @p compare routine is given @p data as an optional *third* argument
  * as-is. It may point to arbitrary user data for comparison purposes.
  *
- * @rsttable{Sorting properties}
- * +-------------------------+-----------------------------------------------+
- * | |adaptive|              | yes                                           |
- * +-------------------------+-----------------------------------------------+
- * | |online|                | no                                            |
- * +-------------------------+-----------------------------------------------+
- * | |stable|                | yes                                           |
- * +-------------------------+-----------------------------------------------+
- * | |Recursive|             | no                                            |
- * +-------------------------+-----------------------------------------------+
- * | |In-place|              | yes                                           |
- * +-------------------------+-----------------------------------------------+
- * | **Allocation**          | none                                          |
- * +--------------+----------+-----------------------------------------------+
- * |              | worst    | :math:`O(1)`                                  |
- * | **space**    +----------+-----------------------------------------------+
- * | |complexity| | average  | :math:`O(1)`                                  |
- * |              +----------+-----------------------------------------------+
- * |              | best     | :math:`O(1)`                                  |
- * +--------------+----------+-----------------------------------------------+
- * |              | worst    | :math:`O(n^2)`                                |
- * | **time**     +----------+-----------------------------------------------+
- * | |complexity| | average  | :math:`O(n^2)`                                |
- * |              +----------+-----------------------------------------------+
- * |              | best     | :math:`O(n)`                                  |
- * +--------------+----------+-----------------------------------------------+
- * @endrsttable
- *
  * @note
- * - high number of items swaps ;
- * - decent efficiency with presorted data sets ;
- * - poor to extremely low efficiency even over small data sets.
+ * Refer to @rstlnk{Sorting arrays} for more informations related to algorithm
+ * selection.
  *
  * @warning
  * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
@@ -182,36 +153,9 @@ stroll_array_bubble_sort(void * __restrict     array,
  * The @p compare routine is given @p data as an optional *third* argument
  * as-is. It may point to arbitrary user data for comparison purposes.
  *
- * @rsttable{Sorting properties}
- * +-------------------------+-----------------------------------------------+
- * | |adaptive|              | no                                            |
- * +-------------------------+-----------------------------------------------+
- * | |online|                | no                                            |
- * +-------------------------+-----------------------------------------------+
- * | |stable|                | no                                            |
- * +-------------------------+-----------------------------------------------+
- * | |Recursive|             | no                                            |
- * +-------------------------+-----------------------------------------------+
- * | |In-place|              | yes                                           |
- * +-------------------------+-----------------------------------------------+
- * | **Allocation**          | none                                          |
- * +--------------+----------+-----------------------------------------------+
- * |              | worst    | :math:`O(1)`                                  |
- * | **space**    +----------+-----------------------------------------------+
- * | |complexity| | average  | :math:`O(1)`                                  |
- * |              +----------+-----------------------------------------------+
- * |              | best     | :math:`O(1)`                                  |
- * +--------------+----------+-----------------------------------------------+
- * |              | worst    | :math:`O(n^2)`                                |
- * | **time**     +----------+-----------------------------------------------+
- * | |complexity| | average  | :math:`O(n^2)`                                |
- * |              +----------+-----------------------------------------------+
- * |              | best     | :math:`O(n^2)                                 |
- * +--------------+----------+-----------------------------------------------+
- * @endrsttable
- *
  * @note
- * - poor to extremely low efficiency even over small data sets.
+ * Refer to @rstlnk{Sorting arrays} for more informations related to algorithm
+ * selection.
  *
  * @warning
  * - When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
@@ -252,41 +196,9 @@ stroll_array_select_sort(void * __restrict     array,
  * The @p compare routine is given @p data as an optional *third* argument
  * as-is. It may point to arbitrary user data for comparison purposes.
  *
- * @rsttable{Sorting properties}
- * +-------------------------+-----------------------------------------------+
- * | |adaptive|              | yes                                           |
- * +-------------------------+-----------------------------------------------+
- * | |online|                | yes                                           |
- * +-------------------------+-----------------------------------------------+
- * | |stable|                | yes                                           |
- * +-------------------------+-----------------------------------------------+
- * | |Recursive|             | no                                            |
- * +-------------------------+-----------------------------------------------+
- * | |In-place|              | yes                                           |
- * +-------------------------+-----------------------------------------------+
- * | **Allocation**          | none                                          |
- * +--------------+----------+-----------------------------------------------+
- * |              | worst    | :math:`O(1)`                                  |
- * | **space**    +----------+-----------------------------------------------+
- * | |complexity| | average  | :math:`O(1)`                                  |
- * |              +----------+-----------------------------------------------+
- * |              | best     | :math:`O(1)`                                  |
- * +--------------+----------+-----------------------------------------------+
- * |              | worst    | :math:`O(n^2)`                                |
- * | **time**     +----------+-----------------------------------------------+
- * | |complexity| | average  | :math:`O(n^2)`                                |
- * |              +----------+-----------------------------------------------+
- * |              | best     | :math:`O(n)`                                  |
- * +--------------+----------+-----------------------------------------------+
- * @endrsttable
- *
  * @note
- * - simple implementation ;
- * - limited number of items swaps ;
- * - very efficient on small and presorted data sets ;
- * - poor efficiency over large data sets ;
- * - refer to @rstlnk{Sorting arrays} for more informations related to algorithm
- *   selection.
+ * Refer to @rstlnk{Sorting arrays} for more informations related to algorithm
+ * selection.
  *
  * @see stroll_array_insert_inpsort_elem()
  */
@@ -437,49 +349,9 @@ stroll_array_insert_oopsort_elem(void * __restrict       array,
  * The @p compare routine is given @p data as an optional *third* argument
  * as-is. It may point to arbitrary user data for comparison purposes.
  *
- * Implementation includes the following usual optimizations:
- * - recursion auxiliary stack space limited to O(log(n)),
- * - *partition* according to Hoare_ scheme,
- * - choose *pivot* according to the median-of-three_ strategy to prevent from
- *   already (reverse-)sorted input related pathological cases,
- * - switch to @rstlnk{Insertion sort} when the number of partition elements is
- *   less than #CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD to limit
- *   recursion depth.
- *
- * @rsttable{Sorting properties}
- * +-------------------------+-----------------------------------------------+
- * | |adaptive|              | no                                            |
- * +-------------------------+-----------------------------------------------+
- * | |online|                | no                                            |
- * +-------------------------+-----------------------------------------------+
- * | |stable|                | no                                            |
- * +-------------------------+-----------------------------------------------+
- * | |Recursive|             | yes                                           |
- * +-------------------------+-----------------------------------------------+
- * | |In-place|              | yes                                           |
- * +-------------------------+-----------------------------------------------+
- * | **Allocation**          | on stack                                      |
- * +--------------+----------+-----------------------------------------------+
- * |              | worst    | :math:`O(log(n))`                             |
- * | **space**    +----------+-----------------------------------------------+
- * | |complexity| | average  | :math:`O(log(n))`                             |
- * |              +----------+-----------------------------------------------+
- * |              | best     | :math:`O(log(n))`                             |
- * +--------------+----------+-----------------------------------------------+
- * |              | worst    | :math:`O(n^2)`                                |
- * | **time**     +----------+-----------------------------------------------+
- * | |complexity| | average  | :math:`O(n log(n))`                           |
- * |              +----------+-----------------------------------------------+
- * |              | best     | :math:`O(n log(n))`                           |
- * +--------------+----------+-----------------------------------------------+
- * @endrsttable
- *
  * @note
- * - efficient, general-purpose sorting algorithm ;
- * - exhibits poor performance for inputs containing many duplicate elements
- *   (prefer 3-way Quicksort instead).
- * - refer to @rstlnk{Sorting arrays} for more informations related to algorithm
- *   selection.
+ * Refer to @rstlnk{Sorting arrays} for more informations related to algorithm
+ * selection.
  *
  * @warning
  * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
@@ -497,6 +369,39 @@ stroll_array_quick_sort(void * __restrict     array,
 
 #if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
 
+/**
+ * Sort an array according to the merge sort algorithm.
+ *
+ * @param[inout] array   Array to sort
+ * @param[in]    size    Size of a single @p array element
+ * @param[in]    nr      @p array number of elements
+ * @param[in]    compare @p array elements comparison function
+ * @param[inout] data    optional arbitrary user data
+ *
+ * @return `0` when successful, an errno-like return code otherwise.
+ * @retval 0       Success
+ * @retval -ENOMEM Memory allocation failure
+ *
+ * Sort @p array containing @p nr elements of size @p size using the @p compare
+ * comparison function according to the @rstlnk{Merge sort} algorithm.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p array elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting arrays} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ * `nr <= 1`, result is undefined. An assertion otherwise.
+ */
 extern int
 stroll_array_merge_sort(void * __restrict     array,
                         unsigned int          nr,

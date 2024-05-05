@@ -764,7 +764,7 @@ stroll_array_quick_med_mem(
  * The implementation here ensures that even in cases where all values are
  * equal, balanced partitions are created although inccuring many swap
  * operations in practice.
- * Hoare's partitioning may also degrade to O(n^2) for already sorted output
+ * Hoare's partitioning may also degrade to O(n^2) for already sorted input
  * when the pivot is chosen as the first or the last element. To overcome these
  * pathological cases, pivot is chosen according to the median-of-three
  * strategy.

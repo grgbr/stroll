@@ -46,6 +46,9 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_ARRAY_BISECT_SEARCH`
 * :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT`
 * :c:macro:`CONFIG_STROLL_ARRAY_INSERT_SORT`
+* :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_FULL_RUNS`
+* :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_RUNS_BYBLOCK`
+* :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD`
 * :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT`
 * :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD`
 * :c:macro:`CONFIG_STROLL_ARRAY_SELECT_SORT`
@@ -491,36 +494,89 @@ to your applicative requirements.
 
 .. table:: Sorting algorithm properties
 
-    +------------------------+------------------------------------------------------------------------+
-    |                        | Algorithms                                                             |
-    | Properties             +---------------------+----------------+----------------+----------------+
-    |                        | `Quick              | `Insertion     | `Selection     | `Bubble        |
-    |                        | sort`_              | sort`_         | sort`_         | sort`_         |
-    +========================+=====================+================+================+================+
-    | |adaptive|             | no                  | yes            | no             | yes            |
-    +------------------------+---------------------+----------------+----------------+----------------+
-    | |online|               | no                  | yes            | no             | no             |
-    +------------------------+---------------------+----------------+----------------+----------------+
-    | |stable|               | no                  | yes            | no             | yes            |
-    +------------------------+---------------------+----------------+----------------+----------------+
-    | |recursive|            | no                  | no             | no             | no             |
-    +------------------------+---------------------+----------------+----------------+----------------+
-    | |in-place|             | yes                 | yes            | yes            | yes            |
-    +------------------------+---------------------+----------------+----------------+----------------+
-    | **allocation**         | on stack            | none           | none           | none           |
-    +--------------+---------+---------------------+----------------+----------------+----------------+
-    |              | worst   | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    |              +---------+---------------------+----------------+----------------+----------------+
-    | **space**    | average | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    | |complexity| +---------+---------------------+----------------+----------------+----------------+
-    |              | best    | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    +--------------+---------+---------------------+----------------+----------------+----------------+
-    |              | worst   | :math:`O(n^2)`      | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
-    |              +---------+---------------------+----------------+----------------+----------------+
-    | **time**     | average | :math:`O(n log(n))` | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
-    | |complexity| +---------+---------------------+----------------+----------------+----------------+
-    |              | best    | :math:`O(n log(n))` | :math:`O(n)`   | :math:`O(n^2)` | :math:`O(n)`   |
-    +--------------+---------+---------------------+----------------+----------------+----------------+
+    +------------------------+-------------------------------------------------------------------------------------------------+
+    |                        | Algorithms                                                                                      |
+    | Properties             +------------------------+---------------------+----------------+----------------+----------------+
+    |                        | `Merge                 | `Quick              | `Insertion     | `Selection     | `Bubble        |
+    |                        | sort`_                 | sort`_              | sort`_         | sort`_         | sort`_         |
+    +========================+========================+=====================+================+================+================+
+    | |adaptive|             | no                     | no                  | yes            | no             | yes            |
+    +------------------------+------------------------+---------------------+----------------+----------------+----------------+
+    | |online|               | no                     | no                  | yes            | no             | no             |
+    +------------------------+------------------------+---------------------+----------------+----------------+----------------+
+    | |stable|               | yes                    | no                  | yes            | no             | yes            |
+    +------------------------+------------------------+---------------------+----------------+----------------+----------------+
+    | |recursive|            | yes                    | yes                 | no             | no             | no             |
+    +------------------------+------------------------+---------------------+----------------+----------------+----------------+
+    | |in-place|             | no                     | yes                 | yes            | yes            | yes            |
+    +------------------------+------------------------+---------------------+----------------+----------------+----------------+
+    | **allocation**         | on stack & heap        | on stack            | none           | none           | none           |
+    +--------------+---------+------------------------+---------------------+----------------+----------------+----------------+
+    |              | worst   | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    |              +---------+------------------------+---------------------+----------------+----------------+----------------+
+    | **space**    | average | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    | |complexity| +---------+------------------------+---------------------+----------------+----------------+----------------+
+    |              | best    | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    +--------------+---------+------------------------+---------------------+----------------+----------------+----------------+
+    |              | worst   | :math:`O(n log(n))`    | :math:`O(n^2)`      | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
+    |              +---------+------------------------+---------------------+----------------+----------------+----------------+
+    | **time**     | average | :math:`O(n log(n))`    | :math:`O(n log(n))` | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
+    | |complexity| +---------+------------------------+---------------------+----------------+----------------+----------------+
+    |              | best    | :math:`O(n log(n))`    | :math:`O(n log(n))` | :math:`O(n)`   | :math:`O(n^2)` | :math:`O(n)`   |
+    +--------------+---------+------------------------+---------------------+----------------+----------------+----------------+
+
+.. index:: merge, merge sort
+
+Merge sort
+**********
+
+When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`Merge sort`_ algorithm thanks to :c:func:`stroll_array_merge_sort`.
+
+Algorithm is implemented according to a top-down recursive implementation that
+shows better runtime performances than its iterative bottom-up counterpart. It
+includes the following usual optimizations:
+
+* :math:`O(\frac{n}{2})` auxiliary space requirement ;
+* limit number of copy operations during merging ;
+* partially bypass merging operation when input is already in (reverse-)order
+  (see :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_FULL_RUNS` and 
+  :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_RUNS_BYBLOCK`) ;
+* switch to `Insertion sort`_ when the number of partition elements is less than
+  :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD` to limit recursion
+  depth.
+
+You may customize `merge sort`_ switch to `insertion sort`_ at Stroll_ building
+time thanks to the :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD`
+build configuration macro.
+For each partition, when the number of elements left to sort is below this
+threshold, `merge sort`_ will switch to `insertion sort`_ to minimize the number
+of element swap operations and recursion depth.
+
+The :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_FULL_RUNS` build configuration
+macro may be enabled to give merge sort the ability to detect fully ordered
+partitions in order to skip the usual partitions / sub-arrays merging process at
+the expense of 2 additional array element comparisons. This may improve
+performances for partially / fully ordered data sets.
+
+The :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_RUNS_BYBLOCK` build configuration
+macro may be enabled to give merge sort the ability to try to merge partitions /
+sub-arrays by blocks of consecutive ordered elements as opposed to the
+traditional single element based merging process. This allows to replace
+multiple primary element copy operations by one single copy of a block of
+ordered primary elements. This may improve performances for partially / fully
+ordered data sets.
+
+.. note::
+
+   * efficient, general-purpose sorting algorithm ;
+   * is |stable| but not |in-place| ;
+   * most of the time, exhibits slightly better performances than `quick sort`_,
+     especially for (reverse-)ordered inputs and/or larger data sets ;
+   * at the expense of additional memory requirements ;
+   * refer to `Sorting arrays`_ for more informations related to algorithm
+     selection.
 
 .. index:: sort, quick sort
 
@@ -531,28 +587,33 @@ When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT` build
 configuration option enabled, the Stroll_ library provides support for
 `Quick`_ sort algorithm thanks to :c:func:`stroll_array_quick_sort`.
 
-Current implementation includes the following usual optimizations:
+Algorithm is implemented according to a recursive implementation that includes
+the following usual optimizations:
 
-* recursion converted to iterative process thanks to additional
-  :math:`O(log(n))` stack space,
-* *partition* elements according to the Hoare_ scheme,
-* choose *pivot* according to the median-of-three_ strategy,
+* recursion auxiliary stack space limited to :math:`O(log(n))` thanks to
+  recursive tail call elimination ;
+* *partition* elements according to the Hoare_ scheme ;
+* choose *pivot* according to the median-of-three_ strategy to prevent from
+  :math:`O(n^2)` degradation for already sorted inputs ;
 * when the number of partition elements is less than
-  :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD`, switch to
-  `insertion sort`_.
+  :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD`, stop recursion and
+  run a final `insertion sort`_ pass.
 
 You may customize `quick sort`_ switch to `insertion sort`_ at Stroll_ building
 time thanks to the :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD`
 build configuration macro.
 For each partition, when the number of elements left to sort is below this
 threshold, `quick sort`_ will switch to `insertion sort`_ to minimize the number
-of element swap operations.
+of element swap operations and recursion depth.
 
 .. note::
 
    * efficient, general-purpose sorting algorithm ;
+   * not |stable| but |in-place| ;
    * exhibits poor performance for inputs containing many duplicate elements
      (prefer 3-way Quicksort instead) ;
+   * most of the time, exhibits slightly worse performances than `merge sort`_,
+     especially for (reverse-)ordered inputs and/or larger data sets ;
    * refer to `Sorting arrays`_ for more informations related to algorithm
      selection.
 
@@ -646,6 +707,21 @@ CONFIG_STROLL_ARRAY_INSERT_SORT
 *******************************
 
 .. doxygendefine:: CONFIG_STROLL_ARRAY_INSERT_SORT
+
+CONFIG_STROLL_ARRAY_MERGE_SORT_FULL_RUNS
+****************************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_MERGE_SORT_FULL_RUNS
+
+CONFIG_STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD
+***********************************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD
+
+CONFIG_STROLL_ARRAY_MERGE_SORT_RUNS_BYBLOCK
+*******************************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_MERGE_SORT_RUNS_BYBLOCK
 
 CONFIG_STROLL_ARRAY_QUICK_SORT
 ******************************
@@ -1092,6 +1168,11 @@ stroll_array_insert_sort
 ************************
 
 .. doxygenfunction:: stroll_array_insert_sort
+
+stroll_array_merge_sort
+***********************
+
+.. doxygenfunction:: stroll_array_merge_sort
 
 stroll_array_quick_sort
 ***********************
