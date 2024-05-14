@@ -22,6 +22,9 @@ Glossary
       Sorting algorithms known to be *online* can sort input elements as they
       receive them, i.e. on-the-fly. See `Sorting algorithms`_.
 
+   out-of-place
+      Sorting algorithms that are not |in-place|.
+
    recursive
       Sorting algorithms logic may be *recursive* or *non-recursive*.
       See `Sorting algorithms`_.

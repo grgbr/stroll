@@ -1143,6 +1143,20 @@ CUTE_SUITE_STATIC(strollut_array_quick_suite,
                   CUTE_NULL_TEARDOWN,
                   CUTE_DFLT_TMOUT);
 
+#if defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT)
+STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_3wquick_setup,
+                             stroll_array_3wquick_sort,
+                             false)
+#else   /* !defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT) */
+STROLLUT_ARRAY_UNSUP(strollut_array_3wquick_setup)
+#endif  /* defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT) */
+
+CUTE_SUITE_STATIC(strollut_array_3wquick_suite,
+                  strollut_array_sort_group,
+                  strollut_array_3wquick_setup,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);
+
 #if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
 
 static void
@@ -1177,6 +1191,7 @@ CUTE_GROUP(strollut_array_group) = {
 	CUTE_REF(strollut_array_select_suite),
 	CUTE_REF(strollut_array_insert_suite),
 	CUTE_REF(strollut_array_quick_suite),
+	CUTE_REF(strollut_array_3wquick_suite),
 	CUTE_REF(strollut_array_merge_suite)
 };
 

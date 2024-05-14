@@ -641,6 +641,10 @@ struct stroll_array_quick {
 	           _type *                                      array, \
 	           _type *                                      last) \
 	{ \
+		stroll_array_assert_intern(parms); \
+		stroll_array_assert_intern(array); \
+		stroll_array_assert_intern(last > array); \
+		\
 		_type pivot = _med_func(parms, array, last); \
 		\
 		while (true) { \
@@ -661,6 +665,33 @@ struct stroll_array_quick {
 			\
 			_swap_func(array, last); \
 		} \
+	}
+
+#define STROLL_ARRAY_DEFINE_QUICK_SORT(_sort_func, \
+                                       _recsort_func, \
+                                       _insert_func, \
+                                       _thres, \
+                                       _type) \
+	static __stroll_nonull(1, 3) \
+	void \
+	_sort_func(_type * __restrict    array, \
+	           unsigned int          nr, \
+	           stroll_array_cmp_fn * compare, \
+	           void *                data) \
+	{ \
+		stroll_array_assert_intern(array); \
+		stroll_array_assert_intern(nr > 1); \
+		stroll_array_assert_intern(compare); \
+		\
+		const struct stroll_array_quick parms = { \
+			.compare  = compare, \
+			.data     = data, \
+			.thres    = _thres \
+		}; \
+		\
+		_recsort_func(&parms, array, &array[(nr - 1)]); \
+		\
+		_insert_func(array, nr, compare, data); \
 	}
 
 STROLL_ARRAY_DEFINE_QUICK_MED(stroll_array_quick_med32,
@@ -868,47 +899,23 @@ stroll_array_quick_hoare_part_mem(
 		} \
 	}
 
-#define STROLL_ARRAY_QUICK_SORT(_sort_func, \
-                                _recsort_func, \
-                                _insert_func, \
-                                _type) \
-	static __stroll_nonull(1, 3) \
-	void \
-	_sort_func(_type * __restrict    array, \
-	           unsigned int          nr, \
-	           stroll_array_cmp_fn * compare, \
-	           void *                data) \
-	{ \
-		stroll_array_assert_intern(array); \
-		stroll_array_assert_intern(nr > 1); \
-		stroll_array_assert_intern(compare); \
-		\
-		const struct stroll_array_quick parms = { \
-			.compare  = compare, \
-			.data     = data, \
-			.thres    = STROLL_QSORT_INSERT_THRESHOLD \
-		}; \
-		\
-		_recsort_func(&parms, array, &array[(nr - 1)]); \
-		\
-		_insert_func(array, nr, compare, data); \
-	}
-
 STROLL_ARRAY_QUICK_RECSORT(stroll_array_quick_sort_rec32,
                            stroll_array_quick_hoare_part32,
                            uint32_t)
-STROLL_ARRAY_QUICK_SORT(stroll_array_quick_sort32,
-                        stroll_array_quick_sort_rec32,
-                        stroll_array_insert_sort32,
-                        uint32_t)
+STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_quick_sort32,
+                               stroll_array_quick_sort_rec32,
+                               stroll_array_insert_sort32,
+                               STROLL_QSORT_INSERT_THRESHOLD,
+                               uint32_t)
 
 STROLL_ARRAY_QUICK_RECSORT(stroll_array_quick_sort_rec64,
                            stroll_array_quick_hoare_part64,
                            uint64_t)
-STROLL_ARRAY_QUICK_SORT(stroll_array_quick_sort64,
-                        stroll_array_quick_sort_rec64,
-                        stroll_array_insert_sort64,
-                        uint64_t)
+STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_quick_sort64,
+                               stroll_array_quick_sort_rec64,
+                               stroll_array_insert_sort64,
+                               STROLL_QSORT_INSERT_THRESHOLD,
+                               uint64_t)
 
 /*
  * A recursive implementation of quicksort with recursive tail call elimination
@@ -1064,6 +1071,285 @@ stroll_array_quick_sort(void * __restrict     array,
 }
 
 #endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */
+
+#if defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT)
+
+#if CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD < 2
+#error Invalid 3-way quicksort insertion threshold !
+#endif /* CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD < 2 */
+
+#define STROLL_3WQSORT_INSERT_THRESHOLD \
+	STROLL_CONCAT(CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD, U)
+
+#define STROLL_ARRAY_3WQUICK_PART(_part_func, _med_func, _swap_func, _type) \
+	static __stroll_nonull(1, 2, 3) \
+	void \
+	_part_func(const struct stroll_array_quick * __restrict parms, \
+	           _type ** __restrict                          low, \
+	           _type ** __restrict                          high) \
+	{ \
+		stroll_array_assert_intern(parms); \
+		stroll_array_assert_intern(low); \
+		stroll_array_assert_intern(*low); \
+		stroll_array_assert_intern(high); \
+		stroll_array_assert_intern(*high > *low); \
+		\
+		_type * l = *low; \
+		_type * h = *high; \
+		_type   pivot = _med_func(parms, l, h); \
+		_type * e = l; \
+		\
+		while (parms->compare(l, &pivot, parms->data) < 0) \
+			l++; \
+		\
+		while (parms->compare(h, &pivot, parms->data) > 0) \
+			h--; \
+		\
+		e = l; \
+		while (e <= h) { \
+			int cmp = parms->compare(e, &pivot, parms->data); \
+			\
+			if (cmp < 0) \
+				_swap_func(l++, e++); \
+			else if (cmp > 0) \
+				_swap_func(h--, e); \
+			else \
+				e++; \
+		} \
+		\
+		*low = l - 1; \
+		*high = h + 1; \
+	}
+
+#define STROLL_ARRAY_3WQUICK_RECSORT(_recsort_func, _part_func, _type) \
+	static __stroll_nonull(1, 2, 3) \
+	void \
+	_recsort_func(const struct stroll_array_quick * __restrict parms, \
+	              _type *                                      array, \
+	              _type *                                      last) \
+	{ \
+		stroll_array_quick_assert(parms); \
+		stroll_array_assert_intern(array); \
+		stroll_array_assert_intern(last); \
+		\
+		while (&array[parms->thres] < last) { \
+			_type * low = array; \
+			_type * high = last; \
+			\
+			_part_func(parms, &low, &high); \
+			\
+			if ((low - array) < (last - high)) { \
+				_recsort_func(parms, array, low); \
+				array = high; \
+			} \
+			else { \
+				_recsort_func(parms, high, last); \
+				last = low; \
+			} \
+		} \
+	}
+
+STROLL_ARRAY_3WQUICK_PART(stroll_array_3wquick_part32,
+                          stroll_array_quick_med32,
+                          stroll_array_swap32,
+                          uint32_t)
+STROLL_ARRAY_3WQUICK_RECSORT(stroll_array_3wquick_sort_rec32,
+                             stroll_array_3wquick_part32,
+                             uint32_t)
+STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_3wquick_sort32,
+                               stroll_array_3wquick_sort_rec32,
+                               stroll_array_insert_sort32,
+                               STROLL_3WQSORT_INSERT_THRESHOLD,
+                               uint32_t)
+
+STROLL_ARRAY_3WQUICK_PART(stroll_array_3wquick_part64,
+                          stroll_array_quick_med64,
+                          stroll_array_swap64,
+                          uint64_t)
+STROLL_ARRAY_3WQUICK_RECSORT(stroll_array_3wquick_sort_rec64,
+                             stroll_array_3wquick_part64,
+                             uint64_t)
+STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_3wquick_sort64,
+                               stroll_array_3wquick_sort_rec64,
+                               stroll_array_insert_sort64,
+                               STROLL_3WQSORT_INSERT_THRESHOLD,
+                               uint64_t)
+
+/*
+ * Partition [low:high] array into 3 consecutive sub-arrays according to
+ * Dijkstra 3-way partitioning scheme so that:
+ * - first sub-range contains elements strictly smaller than pivot,
+ * - second sub-range contains elements equal to pivot,
+ * - third sub-range contains elements strictly greater than pivot.
+ *
+ * The process is based on the "Dutch National Flag" problem and is explained
+ * here:
+ * https://algs4.cs.princeton.edu/lectures/demo/23DemoPartitioning.pdf
+ *
+ * Dijkstra's 3-way partitioning enhances quicksort performances for inputs
+ * where there are many duplicate values. However, as it exhibits poor locality
+ * of references and performs more swaps than necessary, the standard Hoare's
+ * partitioning scheme should be preferred for inputs showing small to moderate
+ * number of duplicates.
+ *
+ * The Bentley-McIlroy 3-way partitioning might be an alternative to mitigate
+ * Dijkstra's 3-way partitioning scheme performance decrease for inputs with
+ * small number of duplicates. It is described here:
+ * https://sedgewick.io/wp-content/uploads/2022/03/2002QuicksortIsOptimal.pdf
+ */
+static __stroll_nonull(1, 2, 3)
+void
+stroll_array_3wquick_part_mem(
+	const struct stroll_array_quick * __restrict parms,
+	char ** __restrict                           low,
+	char ** __restrict                           high)
+{
+	stroll_array_assert_intern(parms);
+	stroll_array_assert_intern(low);
+	stroll_array_assert_intern(*low);
+	stroll_array_assert_intern(high);
+	stroll_array_assert_intern(*high > *low);
+
+	char * l = *low;
+	char * h = *high;
+	size_t sz = parms->size;
+	char   pivot[sz];
+	char * e = l;
+
+	stroll_array_quick_med_mem(parms, l, h, pivot);
+
+	/* Locate the middle sub-array boundaries. */
+	while (parms->compare(l, pivot, parms->data) < 0)
+		l += sz;
+	while (parms->compare(h, pivot, parms->data) > 0)
+		h -= sz;
+
+	e = l;
+	while (e <= h) {
+		int cmp = parms->compare(e, pivot, parms->data);
+
+		if (cmp < 0) {
+			/* Swap element smaller than pivot to left sub-array. */
+			stroll_array_swap(l, e, sz);
+			l += sz;
+			e += sz;
+		}
+		else if (cmp > 0) {
+			/*
+			 * Swap element greater than pivot to right sub-array.
+			 */
+			stroll_array_swap(h, e, sz);
+			h -= sz;
+		}
+		else
+			/*
+			 * Leave element equal to pivot as-is, i.e., in the
+			 * middle sub-array.
+			 */
+			e += sz;
+	}
+
+	*low = l - sz;
+	*high = h + sz;
+}
+
+static __stroll_nonull(1, 2, 3)
+void
+stroll_array_3wquick_sort_recmem(
+	const struct stroll_array_quick * __restrict parms,
+	char *                                       array,
+	char *                                       last)
+{
+	stroll_array_quick_assert(parms);
+	stroll_array_assert_intern(parms->size);
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(last);
+	stroll_array_assert_intern(!((size_t)(last - array) % parms->size));
+
+	while (&array[parms->thres] < last) {
+		char * low = array;
+		char * high = last;
+
+		stroll_array_3wquick_part_mem(parms, &low, &high);
+
+		if ((low - array) < (last - high)) {
+			stroll_array_3wquick_sort_recmem(parms, array, low);
+			array = high;
+		}
+		else {
+			stroll_array_3wquick_sort_recmem(parms, high, last);
+			last = low;
+		}
+	}
+}
+
+static __stroll_nonull(1, 4)
+void
+stroll_array_3wquick_sort_mem(char * __restrict     array,
+                              unsigned int          nr,
+                              size_t                size,
+                              stroll_array_cmp_fn * compare,
+                              void *                data)
+{
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(nr > 1);
+	stroll_array_assert_intern(size);
+	stroll_array_assert_intern(compare);
+
+	const struct stroll_array_quick parms = {
+		.size     = size,
+		.compare  = compare,
+		.data     = data,
+		.thres    = STROLL_QSORT_INSERT_THRESHOLD * size
+	};
+
+	/*
+	 * Sort according to recursive 3-way partition quicksort algorithm as
+	 * long as the number of elements of current partition is larger than
+	 * STROLL_QSORT_INSERT_THRESHOLD.
+	 */
+	stroll_array_3wquick_sort_recmem(&parms,
+	                                 array,
+	                                 &array[(nr - 1) * size]);
+
+	/*
+	 * Now that array is k-sorted (where k equals
+	 * STROLL_QSORT_INSERT_THRESHOLD), switch to insertion sort for the
+	 * final pass. Here, insertion sort takes O(kn) time to finish the sort.
+	 * Compared to the "many small sorts" alternative (where the switch to
+	 * insertion sort is performed during the recursion), this version may
+	 * execute fewer instructions, but it may make use of data caches in a
+	 * suboptimal way.
+	 * In practice, switching to insertion sort as a final sorting pass
+	 * seems to give better result however.
+	 */
+	stroll_array_insert_sort_mem(array, nr, size, compare, data);
+}
+
+void
+stroll_array_3wquick_sort(void * __restrict     array,
+                          unsigned int          nr,
+                          size_t                size,
+                          stroll_array_cmp_fn * compare,
+                          void *                data)
+{
+	stroll_array_assert_api(array);
+	stroll_array_assert_api(nr);
+	stroll_array_assert_api(size);
+	stroll_array_assert_api(compare);
+
+	if (nr == 1)
+		return;
+
+	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
+		stroll_array_3wquick_sort32(array, nr, compare, data);
+	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
+		stroll_array_3wquick_sort64(array, nr, compare, data);
+	else
+		stroll_array_3wquick_sort_mem(array, nr, size, compare, data);
+}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT) */
 
 #if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
 

@@ -179,6 +179,12 @@ static const struct strollpt_iface strollpt_algos[] = {
 		.sort     = stroll_array_quick_sort
 	},
 #endif
+#if defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT)
+	{
+		.name     = "3wquick",
+		.sort     = stroll_array_3wquick_sort
+	},
+#endif
 #if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
 	{
 		.name     = "merge",

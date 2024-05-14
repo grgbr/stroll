@@ -10,12 +10,16 @@
 .. _insertion:          https://en.wikipedia.org/wiki/Insertion_sort
 .. _selection:          https://en.wikipedia.org/wiki/Selection_sort
 .. _quick:              https://en.wikipedia.org/wiki/Quicksort
+.. _3-way quick:        https://algs4.cs.princeton.edu/lectures/demo/23DemoPartitioning.pdf
 .. _hoare:              https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
+.. _dijkstra:           https://algs4.cs.princeton.edu/lectures/demo/23DemoPartitioning.pdf
+.. _bentley-mcilroy:    https://sedgewick.io/wp-content/uploads/2022/03/2002QuicksortIsOptimal.pdf
 .. _median-of-three:    https://en.wikipedia.org/wiki/Quicksort#Choice_of_pivot
    
 .. |adaptive|           replace:: :term:`adaptive`
 .. |stable|             replace:: :term:`stable`
 .. |in-place|           replace:: :term:`in-place`
+.. |out-of-place|       replace:: :term:`out-of-place`
 .. |online|             replace:: :term:`online`
 .. |recursive|          replace:: :term:`recursive`
 .. |complexity|         replace:: :term:`complexity`

@@ -367,6 +367,47 @@ stroll_array_quick_sort(void * __restrict     array,
 
 #endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT) */
 
+#if defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT)
+
+/**
+ * Sort an array according to the 3-way partition quick sort algorithm.
+ *
+ * @param[inout] array   Array to sort
+ * @param[in]    size    Size of a single @p array element
+ * @param[in]    nr      @p array number of elements
+ * @param[in]    compare @p array elements comparison function
+ * @param[inout] data    optional arbitrary user data
+ *
+ * Sort @p array containing @p nr elements of size @p size using the @p compare
+ * comparison function according to the @rstlnk{Quick sort} algorithm.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p array elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting arrays} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * When compiled with the #CONFIG_STROLL_ASSERT_API build option disabled and
+ * `nr <= 1`, result is undefined. An assertion otherwise.
+ */
+extern void
+stroll_array_3wquick_sort(void * __restrict     array,
+                          unsigned int          nr,
+                          size_t                size,
+                          stroll_array_cmp_fn * compare,
+                          void *                data)
+	__stroll_nonull(1, 4);
+
+#endif /* defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT) */
+
 #if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
 
 /**

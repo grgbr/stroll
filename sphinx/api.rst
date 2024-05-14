@@ -43,6 +43,8 @@ At :ref:`Build configuration time <workflow-configure-phase>`, multiple build
 options are available to customize final Stroll_ build. From client code, you
 may eventually refer to the corresponding C macros listed below:
 
+* :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT`
+* :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD`
 * :c:macro:`CONFIG_STROLL_ARRAY_BISECT_SEARCH`
 * :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT`
 * :c:macro:`CONFIG_STROLL_ARRAY_INSERT_SORT`
@@ -494,36 +496,37 @@ to your applicative requirements.
 
 .. table:: Sorting algorithm properties
 
-    +------------------------+-------------------------------------------------------------------------------------------------+
-    |                        | Algorithms                                                                                      |
-    | Properties             +------------------------+---------------------+----------------+----------------+----------------+
-    |                        | `Merge                 | `Quick              | `Insertion     | `Selection     | `Bubble        |
-    |                        | sort`_                 | sort`_              | sort`_         | sort`_         | sort`_         |
-    +========================+========================+=====================+================+================+================+
-    | |adaptive|             | no                     | no                  | yes            | no             | yes            |
-    +------------------------+------------------------+---------------------+----------------+----------------+----------------+
-    | |online|               | no                     | no                  | yes            | no             | no             |
-    +------------------------+------------------------+---------------------+----------------+----------------+----------------+
-    | |stable|               | yes                    | no                  | yes            | no             | yes            |
-    +------------------------+------------------------+---------------------+----------------+----------------+----------------+
-    | |recursive|            | yes                    | yes                 | no             | no             | no             |
-    +------------------------+------------------------+---------------------+----------------+----------------+----------------+
-    | |in-place|             | no                     | yes                 | yes            | yes            | yes            |
-    +------------------------+------------------------+---------------------+----------------+----------------+----------------+
-    | **allocation**         | on stack & heap        | on stack            | none           | none           | none           |
-    +--------------+---------+------------------------+---------------------+----------------+----------------+----------------+
-    |              | worst   | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    |              +---------+------------------------+---------------------+----------------+----------------+----------------+
-    | **space**    | average | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    | |complexity| +---------+------------------------+---------------------+----------------+----------------+----------------+
-    |              | best    | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    +--------------+---------+------------------------+---------------------+----------------+----------------+----------------+
-    |              | worst   | :math:`O(n log(n))`    | :math:`O(n^2)`      | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
-    |              +---------+------------------------+---------------------+----------------+----------------+----------------+
-    | **time**     | average | :math:`O(n log(n))`    | :math:`O(n log(n))` | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
-    | |complexity| +---------+------------------------+---------------------+----------------+----------------+----------------+
-    |              | best    | :math:`O(n log(n))`    | :math:`O(n log(n))` | :math:`O(n)`   | :math:`O(n^2)` | :math:`O(n)`   |
-    +--------------+---------+------------------------+---------------------+----------------+----------------+----------------+
+    +------------------------+-----------------------------------------------------------------------------------------------------------------------+
+    |                        | Algorithms                                                                                                            |
+    | Properties             +------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    |                        | `Merge                 | `Quick              | `3-way quick        | `Insertion     | `Selection     | `Bubble        |
+    |                        | sort`_                 | sort`_              | sort`_              | sort`_         | sort`_         | sort`_         |
+    +========================+========================+=====================+=====================+================+================+================+
+    | |adaptive|             | no                     | duplicate /         | no                  | yes            | no             | yes            |
+    |                        |                        | in-order inputs     |                     |                |                |                |
+    +------------------------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    | |online|               | no                     | no                  | no                  | yes            | no             | no             |
+    +------------------------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    | |stable|               | yes                    | no                  | no                  | yes            | no             | yes            |
+    +------------------------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    | |recursive|            | yes                    | yes                 | yes                 | no             | no             | no             |
+    +------------------------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    | |in-place|             | no                     | yes                 | yes                 | yes            | yes            | yes            |
+    +------------------------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    | **allocation**         | on stack & heap        | on stack            | on stack            | none           | none           | none           |
+    +--------------+---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    |              | worst   | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    |              +---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    | **space**    | average | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    | |complexity| +---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    |              | best    | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
+    +--------------+---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    |              | worst   | :math:`O(n log(n))`    | :math:`O(n^2)`      | :math:`O(n^2)`      | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
+    |              +---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    | **time**     | average | :math:`O(n log(n))`    | :math:`O(n log(n))` | :math:`O(n log(n))` | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
+    | |complexity| +---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    |              | best    | :math:`O(n log(n))`    | :math:`O(n log(n))` | :math:`O(n log(n))` | :math:`O(n)`   | :math:`O(n^2)` | :math:`O(n)`   |
+    +--------------+---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
 
 .. index:: merge, merge sort
 
@@ -611,9 +614,51 @@ of element swap operations and recursion depth.
    * efficient, general-purpose sorting algorithm ;
    * not |stable| but |in-place| ;
    * exhibits poor performance for inputs containing many duplicate elements
-     (prefer 3-way Quicksort instead) ;
+     (prefer `3-way quick sort`_ instead) ;
    * most of the time, exhibits slightly worse performances than `merge sort`_,
      especially for (reverse-)ordered inputs and/or larger data sets ;
+   * refer to `Sorting arrays`_ for more informations related to algorithm
+     selection.
+
+.. index:: sort, 3-way quick sort, quick sort
+
+3-way quick sort
+****************
+
+When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`3-way quick`_ sort algorithm thanks to :c:func:`stroll_array_3wquick_sort`.
+
+Algorithm is implemented according to a recursive implementation that includes
+the following usual optimizations:
+
+* recursion auxiliary stack space limited to :math:`O(log(n))` thanks to
+  recursive tail call elimination ;
+* choose *pivot* according to the median-of-three_ strategy to prevent from
+  :math:`O(n^2)` degradation for already sorted inputs ;
+* when the number of partition elements is less than
+  :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD`, stop recursion
+  and run a final `insertion sort`_ pass.
+
+Elements are partitioned according to `Dijkstra`_'s scheme which exhibits
+slightly better performances than `Bentley-McIlroy`_'s scheme for inputs
+containing **many** duplicates.
+
+You may customize `3-way quick sort`_ switch to `insertion sort`_ at Stroll_
+building time thanks to the
+:c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD` build configuration
+macro.
+For each partition, when the number of elements left to sort is below this
+threshold, `3-way quick sort`_ will switch to `insertion sort`_ to minimize the
+number of element swap operations and recursion depth.
+
+.. note::
+
+   * general-purpose sorting algorithm efficient for inputs containing **many**
+     duplicates;
+   * not |stable| but |in-place| ;
+   * exhibits worse performance than standard `Quick sort`_ for inputs
+     containing small to moderate number of duplicates ;
    * refer to `Sorting arrays`_ for more informations related to algorithm
      selection.
 
@@ -629,8 +674,9 @@ configuration option enabled, the Stroll_ library provides support for
 2 alternate functions may be used to add elements to an input array that is
 known (for sure) to be already sorted. This allows to optimize situations where
 sorting a *continuous stream of input elements*. These are:
-* :c:func:`stroll_array_insert_inpsort_elem` for in-place online sorting,
-* and :c:func:`stroll_array_insert_oopsort_elem`, for out-of-place online
+
+* :c:func:`stroll_array_insert_inpsort_elem` for |in-place| |online| sorting,
+* and :c:func:`stroll_array_insert_oopsort_elem`, for |out-of-place| |online|
   sorting.
 
 .. note::
@@ -692,6 +738,16 @@ CONFIG_STROLL_ASSERT
 ********************
 
 .. doxygendefine:: CONFIG_STROLL_ASSERT
+
+CONFIG_STROLL_ARRAY_3WQUICK_SORT
+********************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_3WQUICK_SORT
+
+CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD
+*************************************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD
 
 CONFIG_STROLL_ARRAY_BISECT_SEARCH
 *********************************
@@ -1143,6 +1199,11 @@ stroll_lvstr
 
 Functions
 ---------
+
+stroll_array_3wquick_sort
+*************************
+
+.. doxygenfunction:: stroll_array_3wquick_sort
 
 stroll_array_bisect_search
 **************************

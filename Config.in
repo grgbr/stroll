@@ -165,7 +165,6 @@ config STROLL_ARRAY_QUICK_SORT
 	bool "Quick sort"
 	select STROLL_ARRAY_QUICK_SORT_UTILS
 	select STROLL_ARRAY_INSERT
-	select STROLL_POW2
 	default y
 	help
 	  Build stroll library with support for an optimized hybrid version of
@@ -179,6 +178,29 @@ config STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
 	default 8
 	help
 	  Threshold that configures the switch of quick sort to insertion sort.
+	  For each partition, when the number of elements left to sort is below
+	  this threshold, quick sort will switch to insertion sort to minimize
+	  the number of element swap operations.
+
+config STROLL_ARRAY_3WQUICK_SORT
+	bool "3-way quick sort"
+	select STROLL_ARRAY_QUICK_SORT_UTILS
+	select STROLL_ARRAY_INSERT
+	default y
+	help
+	  Build stroll library with support for an optimized hybrid version of
+	  the 3-way partition quick sort algorithm optimized for inputs
+	  containing many duplicate elements.
+	  See <stroll/array.h>.
+
+config STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD
+	int "3-way quick sort insertion threshold"
+	depends on STROLL_ARRAY_3WQUICK_SORT
+	range 2 128
+	default 8
+	help
+	  Threshold that configures the switch of 3-way quick sort to insertion
+	  sort.
 	  For each partition, when the number of elements left to sort is below
 	  this threshold, quick sort will switch to insertion sort to minimize
 	  the number of element swap operations.

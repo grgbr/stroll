@@ -68,7 +68,7 @@ stroll-array-ptest-ldflags := $(ptest-ldflags) -lm
 ifeq ($(CONFIG_STROLL_PTEST),y)
 
 ptest-data-nr     := 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 \
-                     65536 131072 262144 524288 1048576
+                     65536 131072
 ptest-data-orders := 0 5 25 45 50 55 75 95 100
 ptest-data-files  := $(foreach n, \
                                $(ptest-data-nr), \
