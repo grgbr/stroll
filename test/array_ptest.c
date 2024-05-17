@@ -352,19 +352,21 @@ int main(int argc, char *argv[])
 	}
 
 	strollpt_calc_stats(&stats, nsecs, loops);
-	printf("#Samples:    %u\n"
-	       "Order ratio: %hu\n"
-	       "Algorithm:   %s\n"
-	       "Data size:   %zu\n"
-	       "#Loops:      %u\n"
-	       "#Inliers:    %u (%.2lf%%)\n"
-	       "Mininum:     %llu nSec\n"
-	       "Maximum:     %llu nSec\n"
-	       "Deviation:   %llu nSec\n"
-	       "Median:      %llu nSec\n"
-	       "Mean:        %llu nSec\n",
+	printf("#Samples:       %u\n"
+	       "Order ratio:    %hu\n"
+	       "Distinct ratio: %hu\n"
+	       "Algorithm:      %s\n"
+	       "Data size:      %zu\n"
+	       "#Loops:         %u\n"
+	       "#Inliers:       %u (%.2lf%%)\n"
+	       "Mininum:        %llu nSec\n"
+	       "Maximum:        %llu nSec\n"
+	       "Deviation:      %llu nSec\n"
+	       "Median:         %llu nSec\n"
+	       "Mean:           %llu nSec\n",
 	       data.nr,
-	       data.ratio,
+	       data.order,
+	       data.singles,
 	       algo->name,
 	       dsize,
 	       loops,

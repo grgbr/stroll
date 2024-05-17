@@ -23,21 +23,30 @@ import numpy as np
 
 SAMPLES_MIN = 8
 
-def generate(samples_nr: int, order_ratio: int) -> list[int]:
+def generate(samples_nr: int, order_ratio: int, single_ratio: int) -> list[int]:
     assert samples_nr >= SAMPLES_MIN
     assert order_ratio >= 0 and order_ratio <= 100
+    assert single_ratio >= 0 and single_ratio <= 100
+
+    single_ratio = single_ratio
+    if single_ratio == 0:
+        return [0] * samples_nr
+    else:
+        snr = round(samples_nr * single_ratio / 100)
+        data = list(range(snr)) + rnd.choices(range(snr), k = samples_nr - snr)
 
     if order_ratio < 50:
         order_ratio = 100 - order_ratio
-        data = list(reversed(range(samples_nr)))
+        data = list(reversed(data))
     else:
-        data = list(range(samples_nr))
+        data = sorted(data)
 
     if (order_ratio == 100):
         return data
 
     coef = -math.sqrt((200 * order_ratio) - 10000) + 100
-    indices = rnd.sample(data, max(int(samples_nr * coef / 100), 2))
+    indices = rnd.sample(range(0, samples_nr),
+                         max(int(samples_nr * coef / 100), 2))
     for i, j in zip(indices,indices[1:]):
         data[i], data[j] = data[j], data[i]
 
@@ -47,6 +56,7 @@ def generate(samples_nr: int, order_ratio: int) -> list[int]:
 def eval_order(desc: dict[str,
                           int,
                           int,
+                          int,
                           str,
                           list[int],
                           list[int],
@@ -54,6 +64,7 @@ def eval_order(desc: dict[str,
     assert len(desc['cmd']) > 0
     assert desc['endian'] in [ 'native', 'little', 'big' ]
     assert desc['order_ratio'] >= 0 and desc['order_ratio'] <= 100
+    assert desc['single_ratio'] >= 0 and desc['single_ratio'] <= 100
     assert desc['samples_nr'] >= SAMPLES_MIN
     assert len(desc['data']) == desc['samples_nr']
 
@@ -81,6 +92,8 @@ def eval_order(desc: dict[str,
 
     desc['in_runs'] = in_runs
     desc['rev_runs'] = rev_runs
+
+    desc['single_nr'] = len(set(desc['data']))
 
 
 def show_data_runs(runs: list[int],
@@ -130,6 +143,7 @@ def show_data_runs(runs: list[int],
 def show_data(desc: dict[str,
                          int,
                          int,
+                         int,
                          str,
                          list[int],
                          list[int],
@@ -138,16 +152,24 @@ def show_data(desc: dict[str,
     assert len(desc['cmd']) > 0
     assert desc['endian'] in [ 'native', 'little', 'big' ]
     assert desc['order_ratio'] >= 0 and desc['order_ratio'] <= 100
+    assert desc['single_ratio'] >= 0 and desc['single_ratio'] <= 100
     assert desc['samples_nr'] >= SAMPLES_MIN
     assert len(desc['data']) == desc['samples_nr']
     assert len(desc['in_runs']) >= 0
     assert len(desc['rev_runs']) >= 0
+    assert desc['single_nr'] >= 0 and desc['single_nr'] <= desc['samples_nr']
 
-    cnt = desc['samples_nr']
+    cnt = len(desc['data'])
 
     print("Command line: '{}'\n"
           "Endianness:   {}\n"
-          "#Samples:     {}".format(desc['cmd'], desc['endian'], cnt),
+          "#Samples:     {}\n"
+          "#Distinct:    {}/{} ({:.2f}%)".format(desc['cmd'],
+                                                 desc['endian'],
+                                                 cnt,
+                                                 desc['single_nr'],
+                                                 cnt,
+                                                 desc['single_nr'] * 100 / cnt),
           file = stdio)
     show_data_runs(desc['in_runs'], cnt, 'In order', stdio)
     show_data_runs(desc['rev_runs'], cnt, 'Reverse order', stdio)
@@ -195,6 +217,7 @@ def pack_uint(uint: int, endian: chr) -> bytes:
 def pack_data(desc: dict[str,
                          int,
                          int,
+                         int,
                          str,
                          list[int],
                          list[int],
@@ -202,6 +225,7 @@ def pack_data(desc: dict[str,
     assert len(desc['cmd']) > 0
     assert desc['endian'] in [ 'native', 'little', 'big' ]
     assert desc['order_ratio'] >= 0 and desc['order_ratio'] <= 100
+    assert desc['single_ratio'] >= 0 and desc['single_ratio'] <= 100
     assert desc['samples_nr'] >= SAMPLES_MIN
     assert len(desc['data']) == desc['samples_nr']
 
@@ -210,6 +234,7 @@ def pack_data(desc: dict[str,
 
     pack += pack_char(desc['endian'][0])
     pack += pack_ushrt(desc['order_ratio'], e)
+    pack += pack_ushrt(desc['single_ratio'], e)
     pack += pack_uint(len(desc['data']), e)
     pack += pack_str(desc['cmd'], e)
     for d in desc['data']:
@@ -274,6 +299,7 @@ def unpack_str(data: bytes, off: int, endian: chr) -> tuple[str, int]:
 def unpack_data(desc: dict[str,
                            int,
                            int,
+                           int,
                            str,
                            list[int],
                            list[int],
@@ -303,6 +329,12 @@ def unpack_data(desc: dict[str,
     if desc['order_ratio'] < 0 or desc['order_ratio'] > 100:
         raise Exception("Unexpected input data ordering ratio "
                         "'{}'".format(desc['order_ratio']))
+
+    off += consumed
+    desc['single_ratio'], consumed = unpack_ushrt(data, off, endian)
+    if desc['single_ratio'] < 0 or desc['single_ratio'] > 100:
+        raise Exception("Unexpected input data duplicate ratio "
+                        "'{}'".format(desc['single_ratio']))
 
     off += consumed
     desc['samples_nr'], consumed = unpack_uint(data, off, endian)
@@ -337,7 +369,7 @@ def check_samples_nr(value):
     return val
 
 
-def check_order_ratio(value):
+def check_ratio(value):
     try:
         val = int(value)
         if val < 0 or val > 100:
@@ -350,6 +382,7 @@ def check_order_ratio(value):
 def plot_data(desc: dict[str,
                          int,
                          int,
+                         int,
                          str,
                          list[int],
                          list[int],
@@ -357,6 +390,7 @@ def plot_data(desc: dict[str,
     assert len(desc['cmd']) > 0
     assert desc['endian'] in [ 'native', 'little', 'big' ]
     assert desc['order_ratio'] >= 0 and desc['order_ratio'] <= 100
+    assert desc['single_ratio'] >= 0 and desc['single_ratio'] <= 100
     assert desc['samples_nr'] >= SAMPLES_MIN
     assert len(desc['data']) == desc['samples_nr']
     assert len(desc['in_runs']) >= 0
@@ -407,8 +441,10 @@ def plot_data(desc: dict[str,
                 edgecolor = 'orchid')
     rev_axe.legend()
 
-    plt.suptitle('#Samples {} - Order ratio {}%'.format(desc['samples_nr'],
-                                                        desc['order_ratio']))
+    ttl = '#Samples {} - Order ratio {}% - Duplicate ratio {}%'
+    plt.suptitle(ttl.format(desc['samples_nr'],
+                            desc['order_ratio'],
+                            desc['single_ratio']))
     plt.show()
 
 
@@ -464,11 +500,17 @@ def main():
                             help = 'Number of samples to generate '
                                    '(SAMPLES_NR >= {})'.format(SAMPLES_MIN))
     gen_parser.add_argument('order_ratio',
-                            type = check_order_ratio,
+                            type = check_ratio,
                             default = None,
                             metavar = 'ORDER_RATIO',
                             help = 'Samples ordering ratio '
                                    '(0 <= ORDER_RATIO <= 100)')
+    gen_parser.add_argument('single_ratio',
+                            type = check_ratio,
+                            default = None,
+                            metavar = 'SINGLE_RATIO',
+                            help = 'Distinct sample values ratio '
+                                   '(0 <= SINGLE_RATIO <= 100)')
 
     args = parser.parse_args()
 
@@ -482,8 +524,11 @@ def main():
                           ' '.join(sys.argv[1:])
             desc['samples_nr'] = args.samples_nr
             desc['order_ratio'] = args.order_ratio
+            desc['single_ratio'] = args.single_ratio
             desc['endian'] = args.endian
-            data = generate(args.samples_nr, args.order_ratio)
+            data = generate(args.samples_nr,
+                            args.order_ratio,
+                            args.single_ratio)
             desc['data'] = data
 
             if args.output == '-':
@@ -518,6 +563,7 @@ def main():
               file=sys.stderr)
         sys.exit(1)
     except Exception as e:
+        raise e
         print("{}: {}.".format(os.path.basename(sys.argv[0]), e),
               file=sys.stderr)
         sys.exit(1)

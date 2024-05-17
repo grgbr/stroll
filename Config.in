@@ -205,6 +205,39 @@ config STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD
 	  this threshold, quick sort will switch to insertion sort to minimize
 	  the number of element swap operations.
 
+choice
+	prompt "3-way quick sort partitioning strategy"
+	depends on STROLL_ARRAY_3WQUICK_SORT
+	default STROLL_ARRAY_3WQUICK_SORT_BENTLEY_MCILROY
+	help
+	  Select the default partitioning strategy used for 3-way quick
+	  sort algorithm.
+
+config STROLL_ARRAY_3WQUICK_SORT_DIJKSTRA
+	bool "Dijkstra"
+	depends on STROLL_ARRAY_3WQUICK_SORT
+	help
+	  Dijkstra's 3-way partitioning logic based upon the
+	  "Dutch National Flag" problem. It enhances quick sort performances for
+	  inputs where there are small number of distinct values. However, as
+	  it exhibits poor locality of references and performs more swaps than
+	  necessary, it is not suitable for inputs containing moderate to large
+	  number of distinct key values.
+	  Prefer Bentley-McIlroy's scheme instead.
+
+config STROLL_ARRAY_3WQUICK_SORT_BENTLEY_MCILROY
+	bool "Bentley-McIlroy"
+	depends on STROLL_ARRAY_3WQUICK_SORT
+	help
+	  Bentley-McIlroy's 3-way partitioning logic, also known as
+	  "fast partitioning", is an improvement over Dijkstra's scheme
+	  since it limits the extra overhead required to process keys equal to
+	  pivot.
+	  It is a suitable alternative to the standard 2-way partitioning logic
+	  when inputs contain a small number of distinct key values.
+
+endchoice
+
 config STROLL_ARRAY_MERGE_SORT
 	bool "Merge sort"
 	select STROLL_ARRAY_INSERT

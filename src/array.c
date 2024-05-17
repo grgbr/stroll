@@ -1081,6 +1081,8 @@ stroll_array_quick_sort(void * __restrict     array,
 #define STROLL_3WQSORT_INSERT_THRESHOLD \
 	STROLL_CONCAT(CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD, U)
 
+#if defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT_DIJKSTRA)
+
 #define STROLL_ARRAY_3WQUICK_PART(_part_func, _med_func, _swap_func, _type) \
 	static __stroll_nonull(1, 2, 3) \
 	void \
@@ -1094,32 +1096,105 @@ stroll_array_quick_sort(void * __restrict     array,
 		stroll_array_assert_intern(high); \
 		stroll_array_assert_intern(*high > *low); \
 		\
-		_type * l = *low; \
-		_type * h = *high; \
-		_type   pivot = _med_func(parms, l, h); \
-		_type * e = l; \
+		_type * bot = *low; \
+		_type * top = *high; \
+		_type   pivot = _med_func(parms, bot, top); \
+		_type * elm = bot; \
 		\
-		while (parms->compare(l, &pivot, parms->data) < 0) \
-			l++; \
+		while (parms->compare(bot, &pivot, parms->data) < 0) \
+			bot++; \
 		\
-		while (parms->compare(h, &pivot, parms->data) > 0) \
-			h--; \
+		while (parms->compare(top, &pivot, parms->data) > 0) \
+			top--; \
 		\
-		e = l; \
-		while (e <= h) { \
-			int cmp = parms->compare(e, &pivot, parms->data); \
+		elm = bot; \
+		while (elm <= top) { \
+			int cmp = parms->compare(elm, &pivot, parms->data); \
 			\
 			if (cmp < 0) \
-				_swap_func(l++, e++); \
+				_swap_func(bot++, elm++); \
 			else if (cmp > 0) \
-				_swap_func(h--, e); \
+				_swap_func(top--, elm); \
 			else \
-				e++; \
+				elm++; \
 		} \
 		\
-		*low = l - 1; \
-		*high = h + 1; \
+		*low = bot - 1; \
+		*high = top + 1; \
 	}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT_DIJKSTRA) */
+
+#if defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT_BENTLEY_MCILROY)
+
+#define STROLL_ARRAY_3WQUICK_PART(_part_func, _med_func, _swap_func, _type) \
+	static __stroll_nonull(1, 2, 3) \
+	void \
+	_part_func(const struct stroll_array_quick * __restrict parms, \
+	           _type ** __restrict                          low, \
+	           _type ** __restrict                          high) \
+	{ \
+		stroll_array_assert_intern(parms); \
+		stroll_array_assert_intern(low); \
+		stroll_array_assert_intern(*low); \
+		stroll_array_assert_intern(high); \
+		stroll_array_assert_intern(*high > *low); \
+		\
+		_type * leq = *low; \
+		_type * bot = leq - 1; \
+		_type * heq = *high; \
+		_type * top = heq - 1; \
+		_type   pivot = _med_func(parms, leq, heq); \
+		long    lnr; \
+		long    hnr; \
+		_type * elm; \
+		\
+		while (true) { \
+			do { \
+				bot++; \
+			} while (parms->compare(bot, \
+			                        &pivot, \
+			                        parms->data) < 0); \
+			\
+			do { \
+				top--; \
+			} while (parms->compare(top, \
+			                        &pivot, \
+			                        parms->data) > 0); \
+			\
+			if (bot >= top) \
+				break; \
+			\
+			_swap_func(bot, top); \
+			\
+			if (!parms->compare(bot, &pivot, parms->data)) \
+				_swap_func(bot, leq++); \
+			if (!parms->compare(top, &pivot, parms->data)) \
+				_swap_func(top, heq--); \
+		} \
+		\
+		lnr = bot - leq; \
+		hnr = heq - top; \
+		\
+		if ((leq - *low) < lnr) \
+			leq = *low + lnr; \
+		elm = *low; \
+		while (leq < bot) \
+			_swap_func(elm++, leq++); \
+		\
+		if (hnr < (*high - heq)) \
+			heq = *high + 1 - hnr; \
+		else \
+			heq++; \
+		elm = top + 1; \
+		while (heq <= *high) \
+			_swap_func(elm++, heq++); \
+		\
+		*low += lnr - 1; \
+		*high -= hnr - 1; \
+	}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT_BENTLEY_MCILROY) */
 
 #define STROLL_ARRAY_3WQUICK_RECSORT(_recsort_func, _part_func, _type) \
 	static __stroll_nonull(1, 2, 3) \
@@ -1175,6 +1250,8 @@ STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_3wquick_sort64,
                                STROLL_3WQSORT_INSERT_THRESHOLD,
                                uint64_t)
 
+#if defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT_DIJKSTRA)
+
 /*
  * Partition [low:high] array into 3 consecutive sub-arrays according to
  * Dijkstra 3-way partitioning scheme so that:
@@ -1192,10 +1269,9 @@ STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_3wquick_sort64,
  * partitioning scheme should be preferred for inputs showing small to moderate
  * number of duplicates.
  *
- * The Bentley-McIlroy 3-way partitioning might be an alternative to mitigate
+ * The Bentley-McIlroy 3-way partitioning alternative helps in mitigating
  * Dijkstra's 3-way partitioning scheme performance decrease for inputs with
- * small number of duplicates. It is described here:
- * https://sedgewick.io/wp-content/uploads/2022/03/2002QuicksortIsOptimal.pdf
+ * moderate to large number of distinct key values.
  */
 static __stroll_nonull(1, 2, 3)
 void
@@ -1210,48 +1286,221 @@ stroll_array_3wquick_part_mem(
 	stroll_array_assert_intern(high);
 	stroll_array_assert_intern(*high > *low);
 
-	char * l = *low;
-	char * h = *high;
+	char * bot = *low;
+	char * top = *high;
 	size_t sz = parms->size;
 	char   pivot[sz];
-	char * e = l;
+	char * elm = bot;
 
-	stroll_array_quick_med_mem(parms, l, h, pivot);
+	stroll_array_quick_med_mem(parms, bot, top, pivot);
 
 	/* Locate the middle sub-array boundaries. */
-	while (parms->compare(l, pivot, parms->data) < 0)
-		l += sz;
-	while (parms->compare(h, pivot, parms->data) > 0)
-		h -= sz;
+	while (parms->compare(bot, pivot, parms->data) < 0)
+		bot += sz;
+	while (parms->compare(top, pivot, parms->data) > 0)
+		top -= sz;
 
-	e = l;
-	while (e <= h) {
-		int cmp = parms->compare(e, pivot, parms->data);
+	elm = bot;
+	while (elm <= top) {
+		int cmp = parms->compare(elm, pivot, parms->data);
 
 		if (cmp < 0) {
 			/* Swap element smaller than pivot to left sub-array. */
-			stroll_array_swap(l, e, sz);
-			l += sz;
-			e += sz;
+			stroll_array_swap(bot, elm, sz);
+			bot += sz;
+			elm += sz;
 		}
 		else if (cmp > 0) {
 			/*
 			 * Swap element greater than pivot to right sub-array.
 			 */
-			stroll_array_swap(h, e, sz);
-			h -= sz;
+			stroll_array_swap(top, elm, sz);
+			top -= sz;
 		}
 		else
 			/*
 			 * Leave element equal to pivot as-is, i.e., in the
 			 * middle sub-array.
 			 */
-			e += sz;
+			elm += sz;
 	}
 
-	*low = l - sz;
-	*high = h + sz;
+	*low = bot - sz;
+	*high = top + sz;
 }
+
+#endif /* defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT_DIJKSTRA) */
+
+#if defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT_BENTLEY_MCILROY)
+
+/*
+ * Partition [low:high] array into 3 consecutive sub-arrays according to
+ * Bentley-McIlroy 3-way partitioning scheme so that:
+ * - first (lower) sub-range contains elements strictly smaller than pivot,
+ * - second (middle) sub-range contains elements equal to pivot,
+ * - third (upper) sub-range contains elements strictly greater than pivot.
+ *
+ * The algorithm, also known as "fat partitioning", is a 2 phases process.
+ *
+ * First phase sub-divides the whole [low:high] array into 4 sub-arrays so that:
+ * - keys equal to pivot are swapped to both lower / left and upper / right ends
+ *   of the original [low:high] array ;
+ * - keys smaller than pivot are swapped into the lower portion of the middle
+ *   sub-array,
+ * - while keys larger than pivot are swapped into the upper portion of the
+ *   middle sub-array,
+ * such as what is shown below:
+ *
+ *     *low        leq       bot                  top       heq        *high
+ *       |          |         |                    |         |           |
+ *       v          v         v                    v         v           v
+ *      +-----------------------------------------------------------------+
+ *      | == pivot | < pivot |         ??           | > pivot |  == pivot |
+ *      +-----------------------------------------------------------------+
+ *
+ * Phase 2 relocates elements equal to pivot into their final location by
+ * swapping them into the middle sub-array so that, at the end of operation, the
+ * whole original array looks like:
+ *
+ *               *low                                        *high
+ *                 |                                           |
+ *                 v                                           v
+ *      +-----------------------------------------------------------------+
+ *      |  < pivot  |               == pivot                  |  > pivot  |
+ *      +-----------------------------------------------------------------+
+ *
+ * The process is explained here:
+ * https://sedgewick.io/wp-content/uploads/2022/03/2002QuicksortIsOptimal.pdf
+ * and detailed step by step here:
+ * https://algs4.cs.princeton.edu/lectures/demo/23DemoPartitioning.pdf
+ *
+ * Bentley-McIlroy 3-way partitioning is an improvement over Dijkstra's scheme
+ * since it limits the extra overhead required to process keys equal to pivot
+ * with respect to the standard quicksort partitioning logic.
+ *
+ * It is a suitable alternative to the standard 2-way partitioning logic when
+ * inputs contain a small number of distinct key values.
+ */
+static __stroll_nonull(1, 2, 3)
+void
+stroll_array_3wquick_part_mem(
+	const struct stroll_array_quick * __restrict parms,
+	char ** __restrict                           low,
+	char ** __restrict                           high)
+{
+	stroll_array_assert_intern(parms);
+	stroll_array_assert_intern(low);
+	stroll_array_assert_intern(*low);
+	stroll_array_assert_intern(high);
+	stroll_array_assert_intern(*high > *low);
+
+	size_t sz = parms->size;
+	char * leq = *low;       /* lower sub-array of values equal to pivot */
+	char * bot = leq - sz;   /* sub-array of values smaller than pivot */
+	char * heq = *high;      /* upper sub-array of values equal to pivot */
+	char * top = heq - sz;   /* sub-array of values larger than pivot */
+	char   pivot[sz];        /* pivot value */
+	size_t lsz;              /* size of final sub-array holding values
+	                          * smaller than pivot. */
+	size_t hsz;              /* size of final sub-array holding values
+	                          * larger than pivot. */
+	char * elm;
+
+	/* Select pivot value according to median-of-three strategy. */
+	stroll_array_quick_med_mem(parms, leq, heq, pivot);
+
+	while (true) {
+		/*
+		 * From lower sub-array, iterating upward, find first element
+		 * greater than or equal to pivot.
+		 */
+		do {
+			bot += sz;
+		} while (parms->compare(bot, pivot, parms->data) < 0);
+		/*
+		 * From upper sub-array, iterating downward, find first element
+		 * greater than or equal to pivot.
+		 */
+		do {
+			top -= sz;
+		} while (parms->compare(top, pivot, parms->data) > 0);
+
+		if (bot >= top)
+			/*
+			 * Pointer to ends of both lower and upper sub-arrays
+			 * have crossed, meaning that all elements have been
+			 * swapped to their proper temporary location:
+			 * proceed to second phase to relocate values equal to
+			 * pivot into their final location, i.e., the middle
+			 * sub-array.
+			 */
+			break;
+
+		stroll_array_swap(bot, top, sz);
+
+		/* Swap key equal to pivot to lower / left array end. */
+		if (!parms->compare(bot, pivot, parms->data)) {
+			stroll_array_swap(bot, leq, sz);
+			leq += sz;
+		}
+		/* Swap key equal to pivot to upper / right array end. */
+		if (!parms->compare(top, pivot, parms->data)) {
+			stroll_array_swap(top, heq, sz);
+			heq -= sz;
+		}
+	}
+
+	/*
+	 * Relocate values equal to pivot into their final location, i.e., the
+	 * middle sub-array.
+	 */
+
+	lsz = (size_t)(bot - leq);
+	hsz = (size_t)(heq - top);
+
+	/*
+	 * Swap elements smaller than pivot value to the final lower sub-array,
+	 * relocating elements equal to pivot value into the middle sub-array at
+	 * the same time.
+	 */
+	if ((size_t)(leq - *low) < lsz)
+		leq = *low + lsz;
+	elm = *low;
+	while (leq < bot) {
+		stroll_array_swap(elm, leq, sz);
+		elm += sz;
+		leq += sz;
+	}
+
+	/*
+	 * Swap elements larger than pivot value to the final upper sub-array,
+	 * relocating elements equal to pivot value into the middle sub-array at
+	 * the same time.
+	 */
+	if (hsz < (size_t)(*high - heq))
+		heq = *high + sz - hsz;
+	else
+		heq += sz;
+	elm = top + sz;
+	while (heq <= *high) {
+		stroll_array_swap(elm, heq, sz);
+		elm += sz;
+		heq += sz;
+	}
+
+	/*
+	 * Return pointer to last element of sub-array holding values smaller
+	 * than pivot.
+	 */
+	*low += lsz - sz;
+	/*
+	 * Return pointer to first element of sub-array holding values larger
+	 * than pivot.
+	 */
+	*high -= hsz - sz;
+}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT_BENTLEY_MCILROY) */
 
 static __stroll_nonull(1, 2, 3)
 void

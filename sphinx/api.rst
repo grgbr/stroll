@@ -44,6 +44,8 @@ options are available to customize final Stroll_ build. From client code, you
 may eventually refer to the corresponding C macros listed below:
 
 * :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT`
+* :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_BENTLEY_MCILROY`
+* :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_DIJKSTRA`
 * :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD`
 * :c:macro:`CONFIG_STROLL_ARRAY_BISECT_SEARCH`
 * :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT`
@@ -613,8 +615,8 @@ of element swap operations and recursion depth.
 
    * efficient, general-purpose sorting algorithm ;
    * not |stable| but |in-place| ;
-   * exhibits poor performance for inputs containing many duplicate elements
-     (prefer `3-way quick sort`_ instead) ;
+   * exhibits poor performance for inputs containing small number of distinct
+     keys (prefer `3-way quick sort`_ instead) ;
    * most of the time, exhibits slightly worse performances than `merge sort`_,
      especially for (reverse-)ordered inputs and/or larger data sets ;
    * refer to `Sorting arrays`_ for more informations related to algorithm
@@ -640,9 +642,16 @@ the following usual optimizations:
   :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD`, stop recursion
   and run a final `insertion sort`_ pass.
 
-Elements are partitioned according to `Dijkstra`_'s scheme which exhibits
-slightly better performances than `Bentley-McIlroy`_'s scheme for inputs
-containing **many** duplicates.
+Elements are partitioned into 3 sub-arrays according to one of the following
+scheme that can be configured at building time:
+
+* `Dijkstra`_ 3-way partitioning (thanks to the
+  :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_DIJKSTRA` macro) ;
+* or `Bentley-McIlroy`_ 3-way partitioning (thanks to the
+  :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_BENTLEY_MCILROY` macro).
+
+`Dijkstra`_'s scheme is implemented for *reference only*. Use
+`Bentley-McIlroy`_'s scheme instead unless you really know what you are doing.
 
 You may customize `3-way quick sort`_ switch to `insertion sort`_ at Stroll_
 building time thanks to the
@@ -658,7 +667,7 @@ number of element swap operations and recursion depth.
      duplicates;
    * not |stable| but |in-place| ;
    * exhibits worse performance than standard `Quick sort`_ for inputs
-     containing small to moderate number of duplicates ;
+     containing moderate to high number of distinct key values ;
    * refer to `Sorting arrays`_ for more informations related to algorithm
      selection.
 
@@ -743,6 +752,16 @@ CONFIG_STROLL_ARRAY_3WQUICK_SORT
 ********************************
 
 .. doxygendefine:: CONFIG_STROLL_ARRAY_3WQUICK_SORT
+
+CONFIG_STROLL_ARRAY_3WQUICK_SORT_BENTLEY_MCILROY
+************************************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_3WQUICK_SORT_BENTLEY_MCILROY
+
+CONFIG_STROLL_ARRAY_3WQUICK_SORT_DIJKSTRA
+*****************************************
+
+.. doxygendefine:: CONFIG_STROLL_ARRAY_3WQUICK_SORT_DIJKSTRA
 
 CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD
 *************************************************

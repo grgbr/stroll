@@ -91,7 +91,8 @@ enum strollpt_endian {
 struct strollpt_data {
 	FILE *               file;
 	enum strollpt_endian endian;
-	unsigned short       ratio;
+	unsigned short       order;
+	unsigned short       singles;
 	unsigned int         nr;
 	long                 start;
 	char *               cmd;

@@ -349,7 +349,7 @@ strollpt_open_data(struct strollpt_data * __restrict data,
 	assert(data);
 	assert(pathname);
 
-	char           buff[9];
+	char           buff[11];
 	unsigned short len;
 	long           nr;
 
@@ -384,27 +384,36 @@ strollpt_open_data(struct strollpt_data * __restrict data,
 		goto close;
 	}
 
-	memcpy(&data->ratio, &buff[1], sizeof(data->ratio));
-	memcpy(&data->nr, &buff[3], sizeof(data->nr));
-	memcpy(&len, &buff[7], sizeof(len));
+	memcpy(&data->order, &buff[1], sizeof(data->order));
+	memcpy(&data->singles, &buff[3], sizeof(data->singles));
+	memcpy(&data->nr, &buff[5], sizeof(data->nr));
+	memcpy(&len, &buff[9], sizeof(len));
 
 	switch (data->endian) {
 	case STROLLPT_NATIVE_ENDIAN:
 		break;
 	case STROLLPT_LITTLE_ENDIAN:
-		data->ratio = le16toh(data->ratio);
+		data->order = le16toh(data->order);
+		data->singles = le16toh(data->singles);
 		data->nr = le32toh(data->nr);
 		len = le16toh(len);
 		break;
 	case STROLLPT_BIG_ENDIAN:
-		data->ratio = be16toh(data->ratio);
+		data->order = be16toh(data->order);
+		data->singles = be16toh(data->singles);
 		data->nr = be32toh(data->nr);
 		len = be16toh(len);
 	}
 
-	if (data->ratio > 100) {
+	if (data->order > 100) {
 		strollpt_err("invalid data ordering ratio '%hu'.\n",
-		             data->ratio);
+		             data->order);
+		goto close;
+	}
+
+	if (data->singles > 100) {
+		strollpt_err("invalid data distinct value ratio '%hu'.\n",
+		             data->order);
 		goto close;
 	}
 
