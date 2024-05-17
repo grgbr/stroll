@@ -1143,7 +1143,7 @@ stroll_array_quick_sort(void * __restrict     array,
 		_type * leq = *low; \
 		_type * bot = leq - 1; \
 		_type * heq = *high; \
-		_type * top = heq - 1; \
+		_type * top = heq + 1; \
 		_type   pivot = _med_func(parms, leq, heq); \
 		long    lnr; \
 		long    hnr; \
@@ -1398,7 +1398,7 @@ stroll_array_3wquick_part_mem(
 	char * leq = *low;       /* lower sub-array of values equal to pivot */
 	char * bot = leq - sz;   /* sub-array of values smaller than pivot */
 	char * heq = *high;      /* upper sub-array of values equal to pivot */
-	char * top = heq - sz;   /* sub-array of values larger than pivot */
+	char * top = heq + sz;   /* sub-array of values larger than pivot */
 	char   pivot[sz];        /* pivot value */
 	size_t lsz;              /* size of final sub-array holding values
 	                          * smaller than pivot. */

@@ -333,7 +333,7 @@ def unpack_data(desc: dict[str,
     off += consumed
     desc['single_ratio'], consumed = unpack_ushrt(data, off, endian)
     if desc['single_ratio'] < 0 or desc['single_ratio'] > 100:
-        raise Exception("Unexpected input data duplicate ratio "
+        raise Exception("Unexpected input data distinct value ratio "
                         "'{}'".format(desc['single_ratio']))
 
     off += consumed
@@ -441,7 +441,7 @@ def plot_data(desc: dict[str,
                 edgecolor = 'orchid')
     rev_axe.legend()
 
-    ttl = '#Samples {} - Order ratio {}% - Duplicate ratio {}%'
+    ttl = '#Samples {} - Order ratio {}% - Distinct value ratio {}%'
     plt.suptitle(ttl.format(desc['samples_nr'],
                             desc['order_ratio'],
                             desc['single_ratio']))
