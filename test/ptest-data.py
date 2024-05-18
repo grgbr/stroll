@@ -19,6 +19,7 @@ import matplotlib
 matplotlib.use('GTK3Agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import matplotlib.colors as colors
 import numpy as np
 
 SAMPLES_MIN = 8
@@ -28,11 +29,10 @@ def generate(samples_nr: int, order_ratio: int, single_ratio: int) -> list[int]:
     assert order_ratio >= 0 and order_ratio <= 100
     assert single_ratio >= 0 and single_ratio <= 100
 
-    single_ratio = single_ratio
-    if single_ratio == 0:
+    snr = round(samples_nr * single_ratio / 100)
+    if snr == 0:
         return [0] * samples_nr
     else:
-        snr = round(samples_nr * single_ratio / 100)
         data = list(range(snr)) + rnd.choices(range(snr), k = samples_nr - snr)
 
     if order_ratio < 50:
@@ -72,6 +72,8 @@ def eval_order(desc: dict[str,
     in_runs_index = -1
     rev_runs = []
     rev_runs_index = -1
+    dup_runs = []
+    dup_runs_index = -1
     for d in range(1, len(desc['data'])):
         if desc['data'][d] >= desc['data'][d - 1]:
             if in_runs_index < 0:
@@ -85,21 +87,71 @@ def eval_order(desc: dict[str,
                 in_runs_index = -1
             if rev_runs_index < 0:
                 rev_runs_index = d
+        if desc['data'][d] == desc['data'][d - 1]:
+            if dup_runs_index < 0:
+                dup_runs_index = d
+        else:
+            if dup_runs_index >= 0:
+                dup_runs.append(d - dup_runs_index)
+                dup_runs_index = -1
     if in_runs_index >= 0:
         in_runs.append(d + 1 - in_runs_index)
     if rev_runs_index >= 0:
         rev_runs.append(d + 1 - rev_runs_index)
+    if dup_runs_index >= 0:
+        dup_runs.append(d + 1 - dup_runs_index)
 
     desc['in_runs'] = in_runs
     desc['rev_runs'] = rev_runs
 
     desc['single_nr'] = len(set(desc['data']))
+    desc['dup_runs'] = dup_runs
 
 
-def show_data_runs(runs: list[int],
-                   count: int,
-                   title: str,
-                   stdio: io.TextIOWrapper) -> None:
+def show_dup_runs(runs: list[int], count: int, stdio: io.TextIOWrapper) -> None:
+    assert count >= SAMPLES_MIN
+
+    dup_sum = sum(runs)
+
+    print("Duplicates:")
+
+    if dup_sum > 0:
+        dup_bins = dict()
+        for r in runs:
+            if r in dup_bins.keys():
+                dup_bins[r] += 1
+            else:
+                dup_bins[r] = 1
+        dup_bins = dict(sorted(dup_bins.items()))
+
+        print("    ratio:    {}/{} ({:.2f}%)\n"
+              "    min run:  {}\n"
+              "    avg run:  {:.1f}\n"
+              "    med run:  {}\n"
+              "    max run:  {}\n"
+              "    run bins: {}".format(dup_sum,
+                                        count,
+                                        dup_sum * 100 / count,
+                                        min(runs),
+                                        dup_sum / len(runs),
+                                        stats.median(runs),
+                                        max(runs),
+                                        dup_bins),
+              file = stdio)
+    else:
+        print("    ratio:    0/{} (0%)\n"
+              "    min run:  0\n"
+              "    avg run:  0\n"
+              "    med run:  0\n"
+              "    max run:  0\n"
+              "    run bins: {{}}".format(count),
+              file = stdio)
+
+
+def show_order_runs(runs: list[int],
+                    count: int,
+                    title: str,
+                    stdio: io.TextIOWrapper) -> None:
     assert count >= SAMPLES_MIN
     assert len(title) > 0
 
@@ -155,6 +207,7 @@ def show_data(desc: dict[str,
     assert desc['single_ratio'] >= 0 and desc['single_ratio'] <= 100
     assert desc['samples_nr'] >= SAMPLES_MIN
     assert len(desc['data']) == desc['samples_nr']
+    assert len(desc['dup_runs']) >= 0
     assert len(desc['in_runs']) >= 0
     assert len(desc['rev_runs']) >= 0
     assert desc['single_nr'] >= 0 and desc['single_nr'] <= desc['samples_nr']
@@ -171,8 +224,10 @@ def show_data(desc: dict[str,
                                                  cnt,
                                                  desc['single_nr'] * 100 / cnt),
           file = stdio)
-    show_data_runs(desc['in_runs'], cnt, 'In order', stdio)
-    show_data_runs(desc['rev_runs'], cnt, 'Reverse order', stdio)
+
+    show_dup_runs(desc['dup_runs'], cnt, stdio)
+    show_order_runs(desc['in_runs'], cnt, 'In order', stdio)
+    show_order_runs(desc['rev_runs'], cnt, 'Reverse order', stdio)
 
 
 def struct_endian(endian: str) -> chr:
@@ -393,18 +448,38 @@ def plot_data(desc: dict[str,
     assert desc['single_ratio'] >= 0 and desc['single_ratio'] <= 100
     assert desc['samples_nr'] >= SAMPLES_MIN
     assert len(desc['data']) == desc['samples_nr']
+    assert len(desc['dup_runs']) >= 0
     assert len(desc['in_runs']) >= 0
     assert len(desc['rev_runs']) >= 0
 
-    scat_axe = plt.subplot2grid((2, 2), (0, 0), rowspan = 2)
+    scat_axe = plt.subplot2grid((2, 2), (0, 0))
     scat_axe.set_title('Sample value dispersion')
     scat_axe.set_xlabel('#Samples')
     scat_axe.set_ylabel('Value')
     scat_axe.scatter(range(desc['samples_nr']), desc['data'], s = .5)
 
+    bmin = min(desc['dup_runs'])
+    bmax = max(desc['dup_runs'])
+    bstep =  max(int((bmax - bmin) / 10), 1)
+    dup_hist, bins = np.histogram(desc['dup_runs'],
+                                  range(bmin, bmax + bstep, bstep))
+    dup_axe = plt.subplot2grid((2, 2), (1, 0))
+    dup_axe.set_title('Duplicate run length distribution')
+    dup_axe.set_xlabel('Run length')
+    dup_axe.set_ylabel('#Run')
+    dup_axe.set_xticks(bins)
+    dup_axe.yaxis.set_major_locator(ticker.MaxNLocator(10))
+    dup_axe.yaxis.set_minor_locator(ticker.MaxNLocator(50))
+    dup_axe.grid(linestyle = '--', alpha = 0.4)
+    dup_axe.bar(bins[:-1],
+                dup_hist,
+                width = bstep * 0.9,
+                facecolor = colors.to_rgba('yellowgreen', alpha = 0.7),
+                edgecolor = 'olivedrab')
+
     bmin = min(desc['in_runs'] + desc['rev_runs'])
     bmax = max(desc['in_runs'] + desc['rev_runs'])
-    bstep =  int((bmax - bmin) / 10)
+    bstep =  max(int((bmax - bmin) / 10), 1)
     in_hist, bins = np.histogram(desc['in_runs'],
                                  range(bmin, bmax + bstep, bstep))
     rev_hist, _ = np.histogram(desc['rev_runs'], bins)
