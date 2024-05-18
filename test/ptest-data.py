@@ -458,11 +458,15 @@ def plot_data(desc: dict[str,
     scat_axe.set_ylabel('Value')
     scat_axe.scatter(range(desc['samples_nr']), desc['data'], s = .5)
 
-    bmin = min(desc['dup_runs'])
-    bmax = max(desc['dup_runs'])
-    bstep =  max(int((bmax - bmin) / 10), 1)
-    dup_hist, bins = np.histogram(desc['dup_runs'],
-                                  range(bmin, bmax + bstep, bstep))
+    if len(desc['dup_runs']) > 0:
+        bmin = min(desc['dup_runs'])
+        bmax = max(desc['dup_runs'])
+        bstep =  max(int((bmax - bmin) / 10), 1)
+        dup_hist, bins = np.histogram(desc['dup_runs'],
+                                      range(bmin, bmax + (2 * bstep), bstep))
+    else:
+        bstep = 1
+        dup_hist, bins = np.histogram([], [])
     dup_axe = plt.subplot2grid((2, 2), (1, 0))
     dup_axe.set_title('Duplicate run length distribution')
     dup_axe.set_xlabel('Run length')
@@ -481,7 +485,7 @@ def plot_data(desc: dict[str,
     bmax = max(desc['in_runs'] + desc['rev_runs'])
     bstep =  max(int((bmax - bmin) / 10), 1)
     in_hist, bins = np.histogram(desc['in_runs'],
-                                 range(bmin, bmax + bstep, bstep))
+                                 range(bmin, bmax + (2 * bstep), bstep))
     rev_hist, _ = np.histogram(desc['rev_runs'], bins)
 
     in_axe = plt.subplot2grid((2, 2), (0, 1))
