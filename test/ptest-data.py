@@ -29,6 +29,10 @@ def generate(samples_nr: int, order_ratio: int, single_ratio: int) -> list[int]:
     assert order_ratio >= 0 and order_ratio <= 100
     assert single_ratio >= 0 and single_ratio <= 100
 
+    if (single_ratio < 100 and order_ratio < 50) or \
+       (single_ratio == 0 and order_ratio != 100):
+        raise Exception("Inconsistent distinct value and ordering ratios")
+
     snr = round(samples_nr * single_ratio / 100)
     if snr == 0:
         return [0] * samples_nr
@@ -108,9 +112,11 @@ def eval_order(desc: dict[str,
     desc['dup_runs'] = dup_runs
 
 
-def show_dup_runs(runs: list[int], count: int, stdio: io.TextIOWrapper) -> None:
+def show_dup_runs(desc, count: int, stdio: io.TextIOWrapper) -> None:
     assert count >= SAMPLES_MIN
 
+    runs = desc['dup_runs']
+    dups_nr = count - desc['single_nr']
     dup_sum = sum(runs)
 
     print("Duplicates:")
@@ -129,12 +135,12 @@ def show_dup_runs(runs: list[int], count: int, stdio: io.TextIOWrapper) -> None:
               "    avg run:  {:.1f}\n"
               "    med run:  {}\n"
               "    max run:  {}\n"
-              "    run bins: {}".format(dup_sum,
+              "    run bins: {}".format(dups_nr,
                                         count,
-                                        dup_sum * 100 / count,
+                                        dups_nr * 100 / count,
                                         min(runs),
                                         dup_sum / len(runs),
-                                        stats.median(runs),
+                                        round(stats.median(runs)),
                                         max(runs),
                                         dup_bins),
               file = stdio)
@@ -225,7 +231,7 @@ def show_data(desc: dict[str,
                                                  desc['single_nr'] * 100 / cnt),
           file = stdio)
 
-    show_dup_runs(desc['dup_runs'], cnt, stdio)
+    show_dup_runs(desc, cnt, stdio)
     show_order_runs(desc['in_runs'], cnt, 'In order', stdio)
     show_order_runs(desc['rev_runs'], cnt, 'Reverse order', stdio)
 
@@ -642,7 +648,6 @@ def main():
               file=sys.stderr)
         sys.exit(1)
     except Exception as e:
-        raise e
         print("{}: {}.".format(os.path.basename(sys.argv[0]), e),
               file=sys.stderr)
         sys.exit(1)

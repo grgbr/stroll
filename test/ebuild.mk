@@ -67,17 +67,35 @@ stroll-array-ptest-ldflags := $(ptest-ldflags) -lm
 
 ifeq ($(CONFIG_STROLL_PTEST),y)
 
-ptest-data-nr     := 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 \
-                     65536 131072
-ptest-data-orders := 0 5 25 45 50 55 75 95 100
-ptest-data-files  := $(foreach n, \
-                               $(ptest-data-nr), \
-                               $(foreach o, \
-                                         $(ptest-data-orders), \
-                                         stroll_ptest_$(n)_$(o).dat))
+define ptest_data_files_cmds
+for n in $(1); do
+	for s in $(2); do
+		for o in $(3); do
+			if [ $$s -lt 100 ] && [ $$o -lt 50 ]; then
+				continue;
+			fi;
+			if [ $$s -eq 0 ] && [ $$o -ne 100 ]; then
+				continue;
+			fi;
+			echo stroll_ptest_n$${n}_s$${s}_o$${o}.dat;
+		done;
+	done;
+done
+endef
+
+ptest-data-nr      := 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 \
+                      65536 131072
+ptest-data-orders  := 0 5 25 45 50 55 75 95 100
+ptest-data-singles := 1 3 5 7 10 15 20 40 60 90 100
+ptest-data-files   := $(strip $(shell $(call ptest_data_files_cmds, \
+                                             $(ptest-data-nr), \
+                                             $(ptest-data-singles), \
+                                             $(ptest-data-orders))))
+
+ptest_data_builddir := $(BUILDDIR)/data
 
 build-check: $(BUILDDIR)/stroll-array-ptest-run.sh \
-             $(addprefix $(BUILDDIR)/data/,$(ptest-data-files))
+             $(addprefix $(ptest_data_builddir)/,$(ptest-data-files))
 
 $(BUILDDIR)/stroll-array-ptest-run.sh: $(SRCDIR)/array-ptest-run.sh \
                                        | $(BUILDDIR)/
@@ -85,25 +103,34 @@ $(BUILDDIR)/stroll-array-ptest-run.sh: $(SRCDIR)/array-ptest-run.sh \
 	    -e 's;@@DATADIR@@;$(DATADIR);g' \
 	    $(<) > $(@)
 
-ptest_data_base  := $(BUILDDIR)/data/stroll_ptest_
+ptest_data_base := $(ptest_data_builddir)/stroll_ptest_
 
-define ptest_data_nr
-$(word 1,$(subst _,$(space),$(patsubst $(ptest_data_base)%.dat,%,$(1))))
+define _ptest_data_path_probe
+$(subst $(2),,$(word $(1),$(subst _,$(space),$(patsubst $(ptest_data_base)%.dat,%,$(3)))))
 endef
 
-define ptest_data_order
-$(word 2,$(subst _,$(space),$(patsubst $(ptest_data_base)%.dat,%,$(1))))
+define _ptest_data_nr
+$(call _ptest_data_path_probe,1,n,$(1))
+endef
+
+define _ptest_data_single
+$(call _ptest_data_path_probe,2,s,$(1))
+endef
+
+define _ptest_data_order
+$(call _ptest_data_path_probe,3,o,$(1))
 endef
 
 $(addprefix $(BUILDDIR)/data/,$(ptest-data-files)): $(SRCDIR)/ptest-data.sh \
                                                     $(SRCDIR)/ptest-data.py \
                                                     | $(BUILDDIR)/data
 	@echo "  DATAGEN $(@)"
-	$(Q)$${BASH:-bash} $(SRCDIR)/ptest-data.sh \
-		--quiet \
-		--number $(call ptest_data_nr,$(@)) \
-		--order-ratio $(call ptest_data_order,$(@)) \
-		$(dir $(@))
+	$(Q)$(PYTHON) $(SRCDIR)/ptest-data.py generate \
+	                                      -o $(@) \
+	                                      $(call _ptest_data_nr,$(@)) \
+	                                      $(call _ptest_data_order,$(@)) \
+	                                      $(call _ptest_data_single,$(@)) \
+	                                      >/dev/null 2>&1
 
 $(BUILDDIR)/data:
 	$(Q)mkdir -p $(@)
