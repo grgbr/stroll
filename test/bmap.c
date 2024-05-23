@@ -21,8 +21,8 @@ static void * strollut_bmap_xpct;
 static void
 strollut_bmap_teardown(void)
 {
-	free(strollut_bmap_xpct);
 	cute_check_ptr(strollut_bmap_xpct, unequal, NULL);
+	free(strollut_bmap_xpct);
 	strollut_bmap_xpct = NULL;
 }
 
