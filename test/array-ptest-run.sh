@@ -5,11 +5,6 @@ ARRAY_PTEST_DATA="${DATADIR:-@@DATADIR@@}/stroll"
 
 ECHOE="/bin/echo -e"
 
-log()
-{
-	$ECHOE "$*" >&2
-}
-
 error()
 {
 	$ECHOE "$arg0: $*" >&2
@@ -258,6 +253,10 @@ while true; do
 	-p|--prio)
 		if ! prio=$(array_ptest_parse_prio "$2"); then
 			usage
+			exit 1
+		fi
+		if ! chrt -f $prio /bin/true; then
+			error "cannot setup scheduling policy."
 			exit 1
 		fi
 		shift 2;;
