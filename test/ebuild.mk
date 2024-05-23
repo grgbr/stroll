@@ -121,8 +121,7 @@ define _ptest_data_order
 $(call _ptest_data_path_probe,3,o,$(1))
 endef
 
-$(addprefix $(BUILDDIR)/data/,$(ptest-data-files)): $(SRCDIR)/ptest-data.sh \
-                                                    $(SRCDIR)/ptest-data.py \
+$(addprefix $(BUILDDIR)/data/,$(ptest-data-files)): $(SRCDIR)/ptest-data.py \
                                                     | $(BUILDDIR)/data
 	@echo "  DATAGEN $(@)"
 	$(Q)$(PYTHON) $(SRCDIR)/ptest-data.py generate \
@@ -130,7 +129,7 @@ $(addprefix $(BUILDDIR)/data/,$(ptest-data-files)): $(SRCDIR)/ptest-data.sh \
 	                                      $(call _ptest_data_nr,$(@)) \
 	                                      $(call _ptest_data_order,$(@)) \
 	                                      $(call _ptest_data_single,$(@)) \
-	                                      >/dev/null 2>&1
+	                                      $(if $(Q),>/dev/null 2>&1)
 
 $(BUILDDIR)/data:
 	$(Q)mkdir -p $(@)
