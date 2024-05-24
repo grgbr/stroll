@@ -29,7 +29,7 @@ def array_ptest_xform_data(csvfile: io.TextIOWrapper) -> list[str]:
                        csvfile.readlines()[7:])))
 
 
-def array_ptest_load(path: str) -> np.ndarray:
+def array_ptest_load(path: str) -> np.array:
     dt = np.dtype([('algo', object),
                    ('nr', int),
                    ('single', int),
@@ -39,6 +39,86 @@ def array_ptest_load(path: str) -> np.ndarray:
     with open(path, newline='') as csvfile:
         reader = csv.DictReader(array_ptest_xform_data(csvfile), delimiter=' ')
         return np.array([tuple(row.values()) for row in reader], dtype = dt)
+
+
+def array_ptest_select(results,
+                       algos: np.array,
+                       orders: np.array,
+                       sizes: np.array,
+                       nrs: np.array) -> np.array:
+    return results[np.in1d(results['algo'], algos) &
+                   np.in1d(results['order'], orders) &
+                   np.in1d(results['size'], sizes) &
+                   np.in1d(results['nr'], nrs)]
+
+
+def array_ptest_print_1darray(array: np.ndarray, name: str, desc: str) -> None:
+    print((name + desc + ', '.join(['{}'] * len(array))).format(*array))
+
+
+def array_ptest_list(results,
+                     algos: np.array,
+                     singles: np.array,
+                     orders: np.array,
+                     sizes: np.array,
+                     nrs: np.array) -> None:
+    print('FIELD  DESCRIPTION           VALUES')
+    array_ptest_print_1darray(algos,   'algo   ', 'algorithms      ')
+    array_ptest_print_1darray(nrs,     'nr     ', '#Samples        ')
+    array_ptest_print_1darray(singles, 'single ', 'Distinct ratios ')
+    array_ptest_print_1darray(orders,  'order  ', 'Ordering ratios ')
+    array_ptest_print_1darray(sizes,   'size   ', 'Sample sizes    ')
+
+
+ARRAY_PTEST_PROPS = {
+    'algo': {
+        'label':  '  ALGORITHM       ',
+        'format': '  {:16s}',
+        'get':    (lambda r: r['algo'])
+    },
+    'nr': {
+        'label':  '    #SAMPLES',
+        'format': '  {:10d}',
+        'get':    (lambda r: r['nr'])
+    },
+    'single': {
+        'label':  ' DISTINCT(%)',
+        'format': '         {:3d}',
+        'get':    (lambda r: r['single'])
+    },
+    'order': {
+        'label':  '  ORDER(%)',
+        'format': '       {:3d}',
+        'get':    (lambda r: r['order'])
+    },
+    'size': {
+        'label':  '  SIZE(B)',
+        'format': '     {:4d}',
+        'get':    (lambda r: r['size'])
+    },
+    'nsec': {
+        'label':  '     TIME(us)',
+        'format': '  {:11.3f}',
+        'get':    (lambda r: r['nsec'] / 1000)
+    }
+}
+
+
+def array_ptest_print(results,
+                      groupby: list[str],
+                      algos: np.array,
+                      singles: np.array,
+                      orders: np.array,
+                      sizes: np.array,
+                      nrs: np.array) -> None:
+    flds = groupby + [f for f in ARRAY_PTEST_PROPS.keys() if f not in groupby]
+    fmt = ''.join([ARRAY_PTEST_PROPS[f]['format'] for f in flds])
+
+    print(''.join([ARRAY_PTEST_PROPS[f]['label'] for f in flds])[2:])
+
+    res = array_ptest_select(results, algos, orders, sizes, nrs)
+    for r in np.sort(res, order = flds):
+        print(fmt[2:].format(*[ARRAY_PTEST_PROPS[f]['get'](r) for f in flds]))
 
 
 def array_ptest_setup_lin(axe: matplotlib.axes.Axes,
@@ -153,8 +233,7 @@ def array_ptest_check_single_nr(nrs: np.array) -> None:
         raise Exception('one single number of samples expected')
 
 
-def array_ptest_plot_title(axe: matplotlib.axes.Axes,
-                                  title: str) -> None:
+def array_ptest_plot_title(axe: matplotlib.axes.Axes, title: str) -> None:
         axe.get_figure().suptitle(title, fontweight = 'bold')
 
 
@@ -186,8 +265,8 @@ def array_ptest_plot_algos_funcof_singles(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              a,
-                             'Distinct ratio',
-                             'single' if showx else None,
+                             'Distinct ratio' if showx else None,
+                             'single',
                              showy,
                              res[res['algo'] == a])
 
@@ -220,8 +299,8 @@ def array_ptest_plot_algos_funcof_orders(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              a,
-                             'Order ratio',
-                             'order' if showx else None,
+                             'Order ratio' if showx else None,
+                             'order',
                              showy,
                              res[res['algo'] == a])
 
@@ -254,8 +333,8 @@ def array_ptest_plot_algos_funcof_sizes(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              a,
-                             'Sample size',
-                             'size' if showx else None,
+                             'Sample size' if showx else None,
+                             'size',
                              showy,
                              res[res['algo'] == a])
 
@@ -289,8 +368,8 @@ def array_ptest_plot_algos_funcof_nrs(axe: matplotlib.axes.Axes,
                              title,
                              a,
                              2,
-                             '#Samples',
-                             'nr' if showx else None,
+                             '#Samples' if showx else None,
+                             'nr',
                              showy,
                              res[res['algo'] == a])
 
@@ -311,7 +390,7 @@ def array_ptest_plot_singles_funcof_orders(axe: matplotlib.axes.Axes,
 
     if title is None:
         array_ptest_plot_title(axe,
-                               'Distinct value ratios as a function of '
+                               'Distinct ratios as a function of '
                                'order ratio')
         title = 'Algorithm: {} - ' \
                 '#Samples: {} - ' \
@@ -323,8 +402,8 @@ def array_ptest_plot_singles_funcof_orders(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              '{}%'.format(s),
-                             'Order ratio',
-                             'order' if showx else None,
+                             'Order ratio' if showx else None,
+                             'order',
                              showy,
                              res[res['single'] == s])
 
@@ -345,7 +424,7 @@ def array_ptest_plot_singles_funcof_sizes(axe: matplotlib.axes.Axes,
 
     if title is None:
         array_ptest_plot_title(axe,
-                               'Distinct value ratios as a function of '
+                               'Distinct ratios as a function of '
                                'Data sample size')
         title = 'Algorithm: {} - ' \
                 '#Samples: {} - ' \
@@ -357,8 +436,8 @@ def array_ptest_plot_singles_funcof_sizes(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              '{}%'.format(s),
-                             'Sample size',
-                             'size' if showx else None,
+                             'Sample size' if showx else None,
+                             'size',
                              showy,
                              res[res['single'] == s])
 
@@ -379,7 +458,7 @@ def array_ptest_plot_singles_funcof_nrs(axe: matplotlib.axes.Axes,
 
     if title is None:
         array_ptest_plot_title(axe,
-                               'Distinct value ratios as a function of '
+                               'Distinct ratios as a function of '
                                'number of data samples')
         title = 'Algorithm: {} - ' \
                 'Order: {}% - ' \
@@ -392,8 +471,8 @@ def array_ptest_plot_singles_funcof_nrs(axe: matplotlib.axes.Axes,
                              title,
                              '{}%'.format(s),
                              2,
-                             '#Samples',
-                             'nr' if showx else None,
+                             '#Samples' if showx else None,
+                             'nr',
                              showy,
                              res[res['single'] == s])
 
@@ -426,8 +505,8 @@ def array_ptest_plot_orders_funcof_singles(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              '{}%'.format(o),
-                             'Distinct ratio',
-                             'single' if showx else None,
+                             'Distinct ratio' if showx else None,
+                             'single',
                              showy,
                              res[res['order'] == o])
 
@@ -460,8 +539,8 @@ def array_ptest_plot_orders_funcof_sizes(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              '{}%'.format(o),
-                             'Sample size',
-                             'size' if showx else None,
+                             'Sample size' if showx else None,
+                             'size',
                              showy,
                              res[res['order'] == o])
 
@@ -495,8 +574,8 @@ def array_ptest_plot_orders_funcof_nrs(axe: matplotlib.axes.Axes,
                              title,
                              '{}%'.format(o),
                              2,
-                             '#Samples',
-                             'nr' if showx else None,
+                             '#Samples' if showx else None,
+                             'nr',
                              showy,
                              res[res['order'] == o])
 
@@ -530,8 +609,8 @@ def array_ptest_plot_sizes_funcof_orders(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              '{} Bytes'.format(s),
-                             'Order ratio',
-                             'order' if showx else None,
+                             'Order ratio' if showx else None,
+                             'order',
                              showy,
                              res[res['size'] == s])
 
@@ -563,8 +642,8 @@ def array_ptest_plot_sizes_funcof_singles(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              '{} Bytes'.format(s),
-                             'Distinct ratio',
-                             'single' if showx else None,
+                             'Distinct ratio' if showx else None,
+                             'single',
                              showy,
                              res[res['size'] == s])
 
@@ -598,8 +677,8 @@ def array_ptest_plot_sizes_funcof_nrs(axe: matplotlib.axes.Axes,
                              title,
                              '{} Bytes'.format(s),
                              2,
-                             '#Samples',
-                             'nr' if showx else None,
+                             '#Samples' if showx else None,
+                             'nr',
                              showy,
                              res[res['size'] == s])
 
@@ -631,8 +710,8 @@ def array_ptest_plot_nrs_funcof_orders(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              n,
-                             'Order ratio',
-                             'order' if showx else None,
+                             'Order ratio' if showx else None,
+                             'order',
                              showy,
                              res[res['nr'] == n])
 
@@ -666,8 +745,8 @@ def array_ptest_plot_nrs_funcof_singles(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              n,
-                             'Distinct ratio',
-                             'single' if showx else None,
+                             'Distinct ratio' if showx else None,
+                             'single',
                              showy,
                              res[res['nr'] == n])
 
@@ -701,357 +780,10 @@ def array_ptest_plot_nrs_funcof_sizes(axe: matplotlib.axes.Axes,
         array_ptest_plot_lin(axe,
                              title,
                              n,
-                             'Sample size',
-                             'size' if showx else None,
+                             'Sample size' if showx else None,
+                             'size',
                              showy,
                              res[res['nr'] == n])
-
-
-def array_ptest_plot(results,
-                     algo: str,
-                     order: int,
-                     size: int,
-                     axe: matplotlib.axes.Axes,
-                     label: str) -> None:
-    res = results[(results['order'] == order) & \
-                  (results['size'] == size) & \
-                  (results['algo'] == algo) & \
-                  (results['single'] == 100)]
-    res = np.sort(res, order = 'nr')
-    axe.plot(res['nr'],
-             res['nsec'] / 1000,
-             label = label,
-             marker = 'o')
-
-
-def array_ptest_setup_plot(title: str,
-                           axe: matplotlib.axes.Axes,
-                           showx: bool,
-                           showy: bool) -> None:
-    axe.set_title(title)
-    if showx:
-        axe.set_xlabel('#Samples')
-    axe.set_xscale('log', base = 2)
-    if showy:
-        axe.set_ylabel('Time [uSec]')
-    axe.set_yscale('log')
-    axe.yaxis.set_major_locator(ticker.LogLocator())
-    axe.yaxis.set_minor_locator(ticker.LogLocator(subs = 'auto'))
-    axe.tick_params(which = 'both',
-                    bottom = True,
-                    labelbottom = showx,
-                    top = True,
-                    labeltop = False,
-                    left = True,
-                    labelleft = showy,
-                    right = True,
-                    labelright = False,
-                    direction = 'in')
-
-
-def array_ptest_plot_sizes(results,
-                           algo: str,
-                           order: int,
-                           sizes: list[int],
-                           title: str,
-                           axe: matplotlib.axes.Axes,
-                           showx: bool,
-                           showy: bool) -> None:
-
-    array_ptest_setup_plot(title, axe, showx, showy)
-    for s in sizes:
-        array_ptest_plot(results, algo, order, s, axe, "{} Bytes".format(s))
-    array_ptest_finish_plot(axe)
-
-
-def array_ptest_group_plots(title: str,
-                            groups: list[str]) -> Iterator[tuple[int,
-                                                                 matplotlib.axes.Axes,
-                                                                 bool,
-                                                                 bool]]:
-    rows = round(math.sqrt(len(groups)))
-    cols = math.ceil(len(groups) / rows)
-    fig, axes = plt.subplots(nrows = rows,
-                             ncols = cols,
-                             sharex = True,
-                             sharey = True,
-                             constrained_layout = True)
-    fig.suptitle(title)
-
-    if (rows + cols) > 2:
-        indx = 0
-        for r in range(0, rows):
-            for c in range(0, cols):
-                if indx >= len(groups):
-                    break
-                ax = axes[r, c] if axes.ndim == 2 else axes[c]
-                showx = r == (rows - 1)
-                showy = c == 0
-                yield (indx, ax, showx, showy)
-                indx += 1
-    else:
-                yield (0, axes, True, True)
-
-
-def array_ptest_plot_algo_byorder(results,
-                                  algos: list[str],
-                                  orders: list[int],
-                                  sizes: list[int]) -> None:
-    for a in algos:
-        for indx, \
-            axe, \
-            showx, \
-            showy in array_ptest_group_plots("{} algorithm".format(a), orders):
-                array_ptest_plot_sizes(results,
-                                       a,
-                                       orders[indx],
-                                       sizes,
-                                       "{}% order".format(orders[indx]),
-                                       axe,
-                                       showx,
-                                       showy)
-
-
-def array_ptest_plot_order_byalgo(results,
-                                  algos: list[str],
-                                  orders: list[int],
-                                  sizes: list[int]) -> None:
-    for o in orders:
-        for indx, \
-            axe, \
-            showx, \
-            showy in array_ptest_group_plots("{}% order".format(o), algos):
-                array_ptest_plot_sizes(results,
-                                       algos[indx],
-                                       o,
-                                       sizes,
-                                       algos[indx],
-                                       axe,
-                                       showx,
-                                       showy)
-
-
-def array_ptest_plot_algos(results,
-                           order: int,
-                           size: int,
-                           algos: list[str],
-                           title: str,
-                           axe: matplotlib.axes.Axes,
-                           showx: bool,
-                           showy: bool) -> None:
-    array_ptest_setup_plot(title, axe, showx, showy)
-    for a in algos:
-        array_ptest_plot(results, a, order, size, axe, a)
-    array_ptest_finish_plot(axe)
-
-
-def array_ptest_plot_order_bysize(results,
-                                  algos: list[str],
-                                  orders: list[int],
-                                  sizes: list[int]) -> None:
-    for o in orders:
-        for indx, \
-            axe, \
-            showx, \
-            showy in array_ptest_group_plots("{}% order".format(o), sizes):
-                array_ptest_plot_algos(results,
-                                       o,
-                                       sizes[indx],
-                                       algos,
-                                       "{} Bytes".format(sizes[indx]),
-                                       axe,
-                                       showx,
-                                       showy)
-
-
-def array_ptest_plot_size_byorder(results,
-                                  algos: list[str],
-                                  orders: list[int],
-                                  sizes: list[int]) -> None:
-    for s in sizes:
-        for indx, \
-            axe, \
-            showx, \
-            showy in array_ptest_group_plots("{} Bytes".format(s), orders):
-                array_ptest_plot_algos(results,
-                                       orders[indx],
-                                       s,
-                                       algos,
-                                       "{}% order".format(orders[indx]),
-                                       axe,
-                                       showx,
-                                       showy)
-
-
-def array_ptest_plot_orders(results,
-                            algo: str,
-                            size: int,
-                            orders: list[int],
-                            title: str,
-                            axe: matplotlib.axes.Axes,
-                            showx: bool,
-                            showy: bool) -> None:
-
-    array_ptest_setup_plot(title, axe, showx, showy)
-    for o in orders:
-        array_ptest_plot(results, algo, o, size, axe, "{}% order".format(o))
-    array_ptest_finish_plot(axe)
-
-
-def array_ptest_plot_algo_bysize(results,
-                                 algos: list[str],
-                                 orders: list[int],
-                                 sizes: list[int]) -> None:
-    for a in algos:
-        for indx, \
-            axe, \
-            showx, \
-            showy in array_ptest_group_plots("{} algorithm".format(a), sizes):
-                array_ptest_plot_orders(results,
-                                        a,
-                                        sizes[indx],
-                                        orders,
-                                        "{} Bytes".format(sizes[indx]),
-                                        axe,
-                                        showx,
-                                        showy)
-
-
-def array_ptest_plot_size_byalgo(results,
-                                 algos: list[str],
-                                 orders: list[int],
-                                 sizes: list[int]) -> None:
-    for s in sizes:
-        for indx, \
-            axe, \
-            showx, \
-            showy in array_ptest_group_plots("{} Bytes".format(s), algos):
-                array_ptest_plot_orders(results,
-                                        algos[indx],
-                                        s,
-                                        orders,
-                                        algos[indx],
-                                        axe,
-                                        showx,
-                                        showy)
-
-
-def array_ptest_select(results,
-                       algos: np.array,
-                       orders: np.array,
-                       sizes: np.array,
-                       nrs: np.array) -> np.array:
-    return results[np.in1d(results['algo'], algos) &
-                   np.in1d(results['order'], orders) &
-                   np.in1d(results['size'], sizes) &
-                   np.in1d(results['nr'], nrs)]
-
-
-def array_ptest_print_1darray(array: np.ndarray, name: str, desc: str) -> None:
-    print((name + desc + ', '.join(['{}'] * len(array))).format(*array))
-
-
-def array_ptest_list(results,
-                     algos: np.array,
-                     singles: np.array,
-                     orders: np.array,
-                     sizes: np.array,
-                     nrs: np.array) -> None:
-    print('FIELD  DESCRIPTION           VALUES')
-    array_ptest_print_1darray(algos,   'algo   ', 'algorithms            ')
-    array_ptest_print_1darray(nrs,     'nr     ', '#Samples              ')
-    array_ptest_print_1darray(singles, 'single ', 'Distinct value ratios ')
-    array_ptest_print_1darray(orders,  'order  ', 'Ordering ratios       ')
-    array_ptest_print_1darray(sizes,   'size   ', 'Sample sizes          ')
-
-
-ARRAY_PTEST_PROPS = {
-    'algo': {
-        'label':  '  ALGORITHM       ',
-        'format': '  {:16s}',
-        'get':    (lambda r: r['algo'])
-    },
-    'nr': {
-        'label':  '    #SAMPLES',
-        'format': '  {:10d}',
-        'get':    (lambda r: r['nr'])
-    },
-    'single': {
-        'label':  ' DISTINCT(%)',
-        'format': '         {:3d}',
-        'get':    (lambda r: r['single'])
-    },
-    'order': {
-        'label':  '  ORDER(%)',
-        'format': '       {:3d}',
-        'get':    (lambda r: r['order'])
-    },
-    'size': {
-        'label':  '  SIZE(B)',
-        'format': '     {:4d}',
-        'get':    (lambda r: r['size'])
-    },
-    'nsec': {
-        'label':  '     TIME(us)',
-        'format': '  {:11.3f}',
-        'get':    (lambda r: r['nsec'] / 1000)
-    }
-}
-
-
-def array_ptest_print(results,
-                      groupby: list[str],
-                      algos: np.array,
-                      singles: np.array,
-                      orders: np.array,
-                      sizes: np.array,
-                      nrs: np.array) -> None:
-    flds = groupby + [f for f in ARRAY_PTEST_PROPS.keys() if f not in groupby]
-    fmt = ''.join([ARRAY_PTEST_PROPS[f]['format'] for f in flds])
-
-    print(''.join([ARRAY_PTEST_PROPS[f]['label'] for f in flds])[2:])
-
-    res = array_ptest_select(results, algos, orders, sizes, nrs)
-    for r in np.sort(res, order = flds):
-        print(fmt[2:].format(*[ARRAY_PTEST_PROPS[f]['get'](r) for f in flds]))
-
-
-ARRAY_PTEST_GROUP_PLOTTERS = {
-        'algo':  {
-            'order': array_ptest_plot_algo_byorder,
-            'size':  array_ptest_plot_algo_bysize
-        },
-        'order': {
-            'algo':  array_ptest_plot_order_byalgo,
-            'size':  array_ptest_plot_order_bysize
-        },
-        'size': {
-            'algo':  array_ptest_plot_size_byorder,
-            'order': array_ptest_plot_size_byalgo
-        },
-}
-
-
-def array_ptest_show_group_plots(results,
-                                 groupby: list[str],
-                                 algos: np.array,
-                                 orders: np.array,
-                                 sizes: np.array,
-                                 nrs: np.array) -> None:
-    plotter = ARRAY_PTEST_GROUP_PLOTTERS
-    for fld in groupby:
-        if not isinstance(plotter, dict):
-            raise Exception("'{}': unexpected extra groupby clause"
-                            " field".format(','.join(groupby)))
-        assert fld in plotter
-        plotter = plotter[fld]
-
-    if isinstance(plotter, dict):
-        raise Exception("'{}': groupby clause field "
-                        "missing".format(','.join(groupby)))
-
-    plotter(results, algos, orders, sizes)
-    plt.show()
 
 
 ARRAY_PTEST_SINGLE_PLOTTERS = {
@@ -1084,18 +816,21 @@ ARRAY_PTEST_SINGLE_PLOTTERS = {
 }
 
 
-def array_ptest_show_single_plot(results,
-                                 showby: list[str],
-                                 algos: np.array,
-                                 singles: np.array,
-                                 orders: np.array,
-                                 sizes: np.array,
-                                 nrs: np.array) -> None:
+def array_ptest_single_plotter(funcof: list[str]) -> [[matplotlib.axes.Axes,
+                                                       str or None,
+                                                       bool,
+                                                       bool,
+                                                       np.array,
+                                                       np.array,
+                                                       np.array,
+                                                       np.array,
+                                                       np.array,
+                                                       np.array], None]:
     plotter = ARRAY_PTEST_SINGLE_PLOTTERS
-    for fld in showby:
+    for fld in funcof:
         if not isinstance(plotter, dict):
             raise Exception("'{}': unexpected extra plotter name"
-                            " field".format(','.join(showby)))
+                            " field".format(','.join(funcof)))
         assert fld in plotter
         plotter = plotter[fld]
 
@@ -1103,8 +838,242 @@ def array_ptest_show_single_plot(results,
         raise Exception("'{}': plotter name field "
                         "missing".format(','.join(groupby)))
 
+    return plotter
+
+
+def array_ptest_show_single_plot(results,
+                                 funcof: list[str],
+                                 algos: np.array,
+                                 singles: np.array,
+                                 orders: np.array,
+                                 sizes: np.array,
+                                 nrs: np.array) -> None:
+    plotter = array_ptest_single_plotter(funcof)
+
     fig, axe = plt.subplots(nrows = 1, ncols = 1, constrained_layout = True)
     plotter(axe, None, True, True, results, algos, singles, orders, sizes, nrs)
+    plt.show()
+
+
+def array_ptest_group_plots(title: str,
+                            groups: list[str]) -> Iterator[tuple[int,
+                                                                 matplotlib.axes.Axes,
+                                                                 bool,
+                                                                 bool]]:
+    rows = round(math.sqrt(len(groups)))
+    cols = math.ceil(len(groups) / rows)
+    fig, axes = plt.subplots(nrows = rows,
+                             ncols = cols,
+                             sharex = True,
+                             sharey = True,
+                             constrained_layout = True)
+    fig.suptitle(title, fontweight = 'bold')
+
+    if (rows + cols) > 2:
+        indx = 0
+        for r in range(0, rows):
+            for c in range(0, cols):
+                if indx >= len(groups):
+                    break
+                ax = axes[r, c] if axes.ndim == 2 else axes[c]
+                showx = r == (rows - 1)
+                showy = c == 0
+                yield (indx, ax, showx, showy)
+                indx += 1
+    else:
+                yield (0, axes, True, True)
+
+
+def array_ptest_plot_algo_group(results: np.array,
+                                title: str,
+                                plotter,
+                                algos: np.array,
+                                singles: np.array,
+                                orders: np.array,
+                                sizes: np.array,
+                                nrs: np.array) -> None:
+    for indx, axe, showx, showy in array_ptest_group_plots(title, algos):
+            plotter(axe,
+                    "Algorithm: {}".format(algos[indx]),
+                    showx,
+                    showy,
+                    results,
+                    algos[algos == algos[indx]],
+                    singles,
+                    orders,
+                    sizes,
+                    nrs)
+
+
+def array_ptest_plot_distinct_group(results: np.array,
+                                    title: str,
+                                    plotter,
+                                    algos: np.array,
+                                    singles: np.array,
+                                    orders: np.array,
+                                    sizes: np.array,
+                                    nrs: np.array) -> None:
+    for indx, axe, showx, showy in array_ptest_group_plots(title, singles):
+            plotter(axe,
+                    "Distinct: {}%".format(singles[indx]),
+                    showx,
+                    showy,
+                    results,
+                    algos,
+                    singles[singles == singles[indx]],
+                    orders,
+                    sizes,
+                    nrs)
+
+
+def array_ptest_plot_order_group(results: np.array,
+                                 title: str,
+                                 plotter,
+                                 algos: np.array,
+                                 singles: np.array,
+                                 orders: np.array,
+                                 sizes: np.array,
+                                 nrs: np.array) -> None:
+    for indx, axe, showx, showy in array_ptest_group_plots(title, orders):
+            plotter(axe,
+                    "Order: {}%".format(orders[indx]),
+                    showx,
+                    showy,
+                    results,
+                    algos,
+                    singles,
+                    orders[orders == orders[indx]],
+                    sizes,
+                    nrs)
+
+
+def array_ptest_plot_size_group(results: np.array,
+                                title: str,
+                                plotter,
+                                algos: np.array,
+                                singles: np.array,
+                                orders: np.array,
+                                sizes: np.array,
+                                nrs: np.array) -> None:
+    for indx, axe, showx, showy in array_ptest_group_plots(title, sizes):
+            plotter(axe,
+                    "Size: {} Bytes".format(sizes[indx]),
+                    showx,
+                    showy,
+                    results,
+                    algos,
+                    singles,
+                    orders,
+                    sizes[sizes == sizes[indx]],
+                    nrs)
+
+
+def array_ptest_plot_nr_group(results: np.array,
+                              title: str,
+                              plotter,
+                              algos: np.array,
+                              singles: np.array,
+                              orders: np.array,
+                              sizes: np.array,
+                              nrs: np.array) -> None:
+    for indx, axe, showx, showy in array_ptest_group_plots(title, nrs):
+            plotter(axe,
+                    "#Samples: {}".format(nrs[indx]),
+                    showx,
+                    showy,
+                    results,
+                    algos,
+                    singles,
+                    orders,
+                    sizes,
+                    nrs[nrs == nrs[indx]])
+
+
+ARRAY_PTEST_GROUP_PLOTTERS = {
+        'algo':   array_ptest_plot_algo_group,
+        'single': array_ptest_plot_distinct_group,
+        'order':  array_ptest_plot_order_group,
+        'size':   array_ptest_plot_size_group,
+        'nr':     array_ptest_plot_nr_group
+}
+
+def array_ptest_plots_title(group_field: str | None,
+                            funcof_fields: list[str],
+                            algos: np.array,
+                            singles: np.array,
+                            orders: np.array,
+                            sizes: np.array,
+                            nrs: np.array) -> str:
+    if (group_field is not None) and (group_field in funcof_fields):
+        raise Exception("'{}': "
+                        "unexpected duplicate plot group field".format(group))
+
+    sup = []
+    for f in funcof_fields:
+        if f == 'algo':
+            sup.append('Algorithms')
+        elif f == 'nr':
+            sup.append('#Samples')
+        elif f == 'single':
+            sup.append('Distinct ratios')
+        elif f == 'order':
+            sup.append('Order ratios')
+        elif f == 'size':
+            sup.append('Sample sizes')
+    sup = ' as a function of '.join(sup)
+
+    sub = []
+    flds = [ 'algo', 'nr', 'single', 'order', 'size' ]
+    if group_field is not None:
+        flds.remove(group_field)
+    for f in funcof_fields:
+        flds.remove(f)
+    for f in flds:
+        if f == 'algo':
+            array_ptest_check_single_algo(algos)
+            sub.append('Algorithm: {}'.format(algos[0]))
+        elif f == 'nr':
+            array_ptest_check_single_nr(nrs)
+            sub.append('#Samples: {}'.format(nrs[0]))
+        elif f == 'single':
+            array_ptest_check_single_distinct(singles)
+            sub.append('Distinct: {}%'.format(singles[0]))
+        elif f == 'order':
+            array_ptest_check_single_order(orders)
+            sub.append('Order: {}%'.format(orders[0]))
+        elif f == 'size':
+            array_ptest_check_single_order(sizes)
+            sub.append('Size: {} Bytes'.format(sizes[0]))
+    sub = ' - '.join(sub)
+
+    return sup + '\n' + sub
+
+
+def array_ptest_show_plots_group(results,
+                                 group: str,
+                                 funcof: list[str],
+                                 algos: np.array,
+                                 singles: np.array,
+                                 orders: np.array,
+                                 sizes: np.array,
+                                 nrs: np.array) -> None:
+    group_plotter = ARRAY_PTEST_GROUP_PLOTTERS[group]
+    funcof_plotter = array_ptest_single_plotter(funcof)
+    title = array_ptest_plots_title(group,
+                                    funcof,
+                                    algos,
+                                    singles,
+                                    orders,
+                                    sizes,
+                                    nrs)
+    group_plotter(results,
+                  title,
+                  funcof_plotter,
+                  algos,
+                  singles,
+                  orders,
+                  sizes,
+                  nrs)
     plt.show()
 
 
@@ -1131,7 +1100,10 @@ def array_ptest_parse_print_groupby(arg: str) -> list[str]:
 
 
 def array_ptest_parse_plot_groupby(arg: str) -> list[str]:
-    return array_ptest_parse_clause(arg, 'groupby', ARRAY_PTEST_GROUP_PLOTTERS)
+    if arg not in ARRAY_PTEST_GROUP_PLOTTERS.keys():
+        raise argp.ArgumentError(None,
+                                 "'" + f + "': unexpected plot group field.")
+    return arg
 
 
 def array_ptest_parse_plot_funcof(arg: str) -> list[str]:
@@ -1207,18 +1179,6 @@ def main():
                               help = 'Comma separated list of result fields to '
                                      'group results by')
 
-    plot_group_parser = cmd_parser.add_parser('plot-group',
-                                              parents = [opt_parser],
-                                              help = 'Plot test results '
-                                                     'by group')
-    plot_group_parser.add_argument('-g', '--groupby',
-                                   dest = 'groupby',
-                                   type = array_ptest_parse_plot_groupby,
-                                   default = 'size,algo',
-                                   metavar = 'RESULT_FIELDS',
-                                   help = 'Comma separated list of result '
-                                          'fields to plot results by')
-
     plot_parser = cmd_parser.add_parser('plot',
                                         parents = [opt_parser],
                                         help = 'Plot test results')
@@ -1230,6 +1190,13 @@ def main():
                              help = 'Comma separated list of 2 result fields '
                                     'where the 1st is plotted as a function of '
                                     'the 2nd')
+    plot_parser.add_argument('-g', '--groupby',
+                             dest = 'groupby',
+                             type = array_ptest_parse_plot_groupby,
+                             default = None,
+                             metavar = 'RESULT_FIELDS',
+                             help = 'Comma separated list of result '
+                                    'fields to plot results by')
 
 
     args = main_parser.parse_args()
@@ -1264,21 +1231,24 @@ def main():
                               orders,
                               sizes,
                               nrs)
-        elif args.cmd == 'plot-groups':
-            array_ptest_show_group_plots(results,
-                                         args.groupby,
-                                         algos,
-                                         orders,
-                                         sizes,
-                                         nrs)
         elif args.cmd == 'plot':
-            array_ptest_show_single_plot(results,
-                                         args.funcof,
-                                         algos,
-                                         singles,
-                                         orders,
-                                         sizes,
-                                         nrs)
+            if args.groupby is not None:
+                array_ptest_show_plots_group(results,
+                                             args.groupby,
+                                             args.funcof,
+                                             algos,
+                                             singles,
+                                             orders,
+                                             sizes,
+                                             nrs)
+            else:
+                array_ptest_show_single_plot(results,
+                                             args.funcof,
+                                             algos,
+                                             singles,
+                                             orders,
+                                             sizes,
+                                             nrs)
     except KeyboardInterrupt:
         print("{}: Interrupted!".format(os.path.basename(sys.argv[0])),
               file=sys.stderr)
