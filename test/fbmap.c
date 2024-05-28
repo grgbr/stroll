@@ -359,6 +359,7 @@ CUTE_TEST(strollut_fbmap_hweight_65)
 	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_65), equal, 12U);
 }
 
+#if __WORDSIZE == 64
 CUTE_TEST(strollut_fbmap_hweight_129)
 {
 	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_null_129),
@@ -366,6 +367,9 @@ CUTE_TEST(strollut_fbmap_hweight_129)
 	                0);
 	cute_check_uint(stroll_fbmap_hweight(&strollut_fbmap_129), equal, 23U);
 }
+#else  /* __WORDSIZE != 64 */
+STROLLUT_FBMAP_NO64BITS(strollut_fbmap_hweight_129)
+#endif /* __WORDSIZE == 64 */
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_fbmap_test_all_assert)
