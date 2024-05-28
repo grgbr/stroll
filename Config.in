@@ -175,7 +175,7 @@ config STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
 	int "Quick sort insertion threshold"
 	depends on STROLL_ARRAY_QUICK_SORT
 	range 2 128
-	default 8
+	default 16
 	help
 	  Threshold that configures the switch of quick sort to insertion sort.
 	  For each partition, when the number of elements left to sort is below

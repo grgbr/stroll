@@ -885,7 +885,7 @@ stroll_array_quick_hoare_part_mem(
 		stroll_array_assert_intern(array); \
 		stroll_array_assert_intern(last >= array); \
 		\
-		while (&array[parms->thres] < last) { \
+		while (&array[parms->thres] <= last) { \
 			_type * pivot = _part_func(parms, array, last); \
 			\
 			if ((pivot - array) < (last - pivot)) { \
@@ -966,7 +966,7 @@ stroll_array_quick_sort_recmem(
 	 * than STROLL_QSORT_INSERT_THRESHOLD elements so that it may switch to
 	 * a simple non-recursive algorithm for final sorting pass.
 	 */
-	while (&array[parms->thres] < last) {
+	while (&array[parms->thres] <= last) {
 		size_t sz = parms->size;
 		char * pivot;
 
@@ -1207,7 +1207,7 @@ stroll_array_quick_sort(void * __restrict     array,
 		stroll_array_assert_intern(array); \
 		stroll_array_assert_intern(last); \
 		\
-		while (&array[parms->thres] < last) { \
+		while (&array[parms->thres] <= last) { \
 			_type * low = array; \
 			_type * high = last; \
 			\
@@ -1515,7 +1515,7 @@ stroll_array_3wquick_sort_recmem(
 	stroll_array_assert_intern(last);
 	stroll_array_assert_intern(!((size_t)(last - array) % parms->size));
 
-	while (&array[parms->thres] < last) {
+	while (&array[parms->thres] <= last) {
 		char * low = array;
 		char * high = last;
 
@@ -1549,7 +1549,7 @@ stroll_array_3wquick_sort_mem(char * __restrict     array,
 		.size     = size,
 		.compare  = compare,
 		.data     = data,
-		.thres    = STROLL_QSORT_INSERT_THRESHOLD * size
+		.thres    = STROLL_3WQSORT_INSERT_THRESHOLD * size
 	};
 
 	/*
@@ -1599,206 +1599,6 @@ stroll_array_3wquick_sort(void * __restrict     array,
 }
 
 #endif /* defined(CONFIG_STROLL_ARRAY_3WQUICK_SORT) */
-
-#if defined(CONFIG_STROLL_ARRAY_RADIX_QUICK_SORT)
-
-typedef int stroll_array_getbyte_fn(const void * __restrict,
-                                    unsigned int,
-                                    void *)
-	__stroll_nonull(1) __warn_result;
-
-struct stroll_array_radix_quick {
-	size_t                    size;
-	stroll_array_getbyte_fn * getbyte;
-	stroll_array_cmp_fn *     compare;
-	void *                    data;
-	size_t                    thres;
-};
-
-static __stroll_nonull(1, 2, 4)
-int
-stroll_array_radix_quick_cmp_bytes(
-	const struct stroll_array_radix_quick * __restrict parms,
-	const void * __restrict                            first,
-	const void * __restrict                            second,
-	unsigned int                                       index)
-{
-	int fst = parms->getbyte(first, index, parms->data);
-	int snd = parms->getbyte(second, index, parms->data);
-
-	stroll_array_assert_api(fst >= -1);
-	stroll_array_assert_api(fst <= (UINT8_MAX));
-	stroll_array_assert_api(snd >= -1);
-	stroll_array_assert_api(snd <= (UINT8_MAX));
-
-	return fst - snd;
-}
-
-static __stroll_nonull(1, 2, 3, 4)
-int
-stroll_array_radix_quick_med_mem(
-	const struct stroll_array_quick * __restrict parms,
-	char *                                       array,
-	char *                                       last,
-	unsigned int                                 index)
-{
-	size_t sz = parms->size;
-	char * mid = &array[((size_t)(last - array) / (2 * sz)) * sz];
-
-	if (stroll_array_radix_quick_cmp_bytes(array, mid, index) > 0)
-		stroll_array_swap(array, mid, sz);
-
-	if (stroll_array_radix_quick_cmp_bytes(mid, last, index) > 0)
-		stroll_array_swap(mid, last, sz);
-
-		if (stroll_array_radix_quick_cmp_bytes(array, mid, index) > 0)
-			stroll_array_swap(array, mid, sz);
-	}
-
-	return parms->getbyte(mid, index, parms->data);
-}
-
-static __stroll_nonull(1, 2, 3)
-int
-stroll_array_radix_quick_part_mem(
-	const struct stroll_array_quick * __restrict parms,
-	char ** __restrict                           low,
-	char ** __restrict                           high,
-	unsigned int                                 index)
-{
-	stroll_array_assert_intern(parms);
-	stroll_array_assert_intern(low);
-	stroll_array_assert_intern(*low);
-	stroll_array_assert_intern(high);
-	stroll_array_assert_intern(*high > *low);
-
-	char * bot = *low;
-	char * top = *high;
-	int    pivot;
-	size_t sz = parms->size;
-	char * elm;
-
-	pivot = stroll_array_radix_quick_med_mem(parms, bot, top, index);
-
-	/* Locate the middle sub-array boundaries. */
-	while ((parms->getbyte(bot, index, parms->data) - pivot) < 0)
-		bot += sz;
-	while ((parms->getbyte(top, index, parms->data) - pivot) > 0)
-		top -= sz;
-
-	elm = bot;
-	while (elm <= top) {
-		int cmp =  parms->getbyte(elm, index, parms->data) - pivot;
-
-		if (cmp < 0) {
-			/* Swap element smaller than pivot to left sub-array. */
-			stroll_array_swap(bot, elm, sz);
-			bot += sz;
-			elm += sz;
-		}
-		else if (cmp > 0) {
-			/*
-			 * Swap element greater than pivot to right sub-array.
-			 */
-			stroll_array_swap(top, elm, sz);
-			top -= sz;
-		}
-		else
-			/*
-			 * Leave element equal to pivot as-is, i.e., in the
-			 * middle sub-array.
-			 */
-			elm += sz;
-	}
-
-	*low = bot;
-	*high = top;
-
-	return pivot;
-}
-
-static __stroll_nonull(1, 2, 3)
-void
-stroll_array_radix_quick_sort_recmem(
-	const struct stroll_array_radix_quick * __restrict parms,
-	char *                                             array,
-	char *                                             last,
-	unsigned int                                       index)
-{
-	stroll_array_quick_assert(parms);
-	stroll_array_assert_intern(parms->size);
-	stroll_array_assert_intern(array);
-	stroll_array_assert_intern(last);
-	stroll_array_assert_intern(!((size_t)(last - array) % parms->size));
-
-	if (&array[parms->thres] >= last) {
-		char * low = array;
-		char * high = last;
-		int    pivot;
-
-		pivot = stroll_array_radix_quick_part_mem(parms,
-		                                          &low,
-		                                          &high,
-		                                          index);
-
-		stroll_array_radix_quick_sort_recmem(parms,
-		                                     array,
-		                                     low - sz,
-		                                     index);
-		if (pivot >= 0)
-			stroll_array_radix_quick_sort_recmem(parms,
-			                                     low,
-			                                     high,
-			                                     index + 1);
-		stroll_array_radix_quick_sort_recmem(parms,
-		                                     high + sz,
-		                                     last,
-		                                     index);
-	}
-}
-
-static __stroll_nonull(1, 4, 5)
-void
-stroll_array_radix_quick_sort_mem(char * __restrict         array,
-                                  unsigned int              nr,
-                                  size_t                    size,
-                                  stroll_array_getbyte_fn * getbyte,
-                                  stroll_array_cmp_fn *     compare,
-                                  void *                    data)
-{
-	stroll_array_assert_intern(array);
-	stroll_array_assert_intern(nr > 1);
-	stroll_array_assert_intern(size);
-	stroll_array_assert_intern(get_byte);
-
-	const struct stroll_array_radix_quick parms = {
-		.size      = size,
-		.getbyte   = getbyte,
-		.compare   = compare,
-		.data      = data,
-		.thres     = STROLL_RADIX_QSORT_INSERT_THRESHOLD * size
-	};
-
-	stroll_array_radix_quick_sort_recmem(&parms,
-	                                     array,
-	                                     &array[(nr - 1) * size],
-	                                     0);
-
-	/*
-	 * Now that array is k-sorted (where k equals
-	 * STROLL_RADIX_QSORT_INSERT_THRESHOLD), switch to insertion sort for
-	 * the final pass. Here, insertion sort takes O(kn) time to finish the
-	 * sort.  Compared to the "many small sorts" alternative (where the
-	 * switch to insertion sort is performed during the recursion), this
-	 * version may execute fewer instructions, but it may make use of data
-	 * caches in a suboptimal way.
-	 * In practice, switching to insertion sort as a final sorting pass
-	 * seems to give better result however.
-	 */
-	stroll_array_insert_sort_mem(array, nr, size, compare, data);
-}
-
-#endif /* defined(CONFIG_STROLL_ARRAY_RADIX_QUICK_SORT) */
 
 #if defined(CONFIG_STROLL_ARRAY_MERGE_SORT)
 

@@ -27,12 +27,7 @@ strollpt_compare_min(const void * __restrict a,
 	unsigned int _a = *(const unsigned int *)a;
 	unsigned int _b = *(const unsigned int *)b;
 
-	if (_a < _b)
-		return -1;
-	else if (_a > _b)
-		return 1;
-	else
-		return 0;
+	return (_a > _b) - (_a < _b);
 }
 
 static inline int
