@@ -1351,9 +1351,9 @@ stroll_array_3wquick_part_mem(
  *   middle sub-array,
  * such as what is shown below:
  *
- *     *low        leq       bot                  top       heq        *high
- *       |          |         |                    |         |           |
- *       v          v         v                    v         v           v
+ *     *low        leq       bot                  top       heq        *high
+ *       |          |         |                    |         |           |
+ *       v          v         v                    v         v           v
  *      +-----------------------------------------------------------------+
  *      | == pivot | < pivot |         ??           | > pivot |  == pivot |
  *      +-----------------------------------------------------------------+
@@ -1363,7 +1363,7 @@ stroll_array_3wquick_part_mem(
  * whole original array looks like:
  *
  *               *low                                        *high
- *                 |                                           |
+ *                 |                                           |
  *                 v                                           v
  *      +-----------------------------------------------------------------+
  *      |  < pivot  |               == pivot                  |  > pivot  |
@@ -2130,6 +2130,36 @@ stroll_array_merge_sort(void * __restrict     array,
 
 #if defined(CONFIG_STROLL_ARRAY_HEAP_SORT)
 
+struct stroll_fheap {
+	unsigned int          nr;
+	size_t                size;
+	void *                elems;
+	stroll_array_cmp_fn * compare;
+	void *                data;
+};
+
+#define STROLL_FHEAP_INIT(_array, _nr, _size, _compare, _data) \
+	{ \
+		.nr      = _nr, \
+		.size    = _size, \
+		.elems   = _array, \
+		.compare = _compare, \
+		.data    = data \
+	}
+
+#define stroll_fheap_assert_intern(_heap) \
+	stroll_array_assert_intern((_heap)->nr); \
+	stroll_array_assert_intern((_heap)->size); \
+	stroll_array_assert_intern((_heap)->elems); \
+	stroll_array_assert_intern((_heap)->compare)
+
+static inline
+unsigned int
+stroll_heap_parent_index(unsigned int index)
+{
+	return (index - 1) / 2;
+}
+
 static inline
 unsigned int
 stroll_heap_left_child_index(unsigned int index)
@@ -2143,6 +2173,8 @@ stroll_heap_right_child_index(unsigned int index)
 {
 	return (2 * index) + 2;
 }
+
+#if 0
 
 static
 void
@@ -2172,39 +2204,92 @@ stroll_array_siftdwn_mem(unsigned int          index,
 	stroll_array_siftdwn_mem(idx, array, nr, size, compare, data);
 }
 
-static void
-stroll_array_heapify_mem(char * __restrict     array,
-                         unsigned int          nr,
-                         size_t                size,
-                         stroll_array_cmp_fn * compare,
-                         void *                data)
-{
-	unsigned int cnt;
+#else
 
-	cnt = nr / 2;
+static inline __stroll_nonull(1)
+void
+stroll_array_siftdwn_mem(const struct stroll_fheap * __restrict heap,
+                         unsigned int                           index,
+                         unsigned int                           nr)
+{
+	stroll_fheap_assert_intern(heap);
+	stroll_array_assert_intern(heap->nr > 1);
+	stroll_array_assert_intern(index < nr);
+	stroll_array_assert_intern(nr <= heap->nr);
+
+	unsigned int          left = stroll_heap_left_child_index(index);
+	unsigned int          right = stroll_heap_right_child_index(index);
+	char *                array = (char *)heap->elems;
+	size_t                sz = heap->size;
+	stroll_array_cmp_fn * compare = heap->compare;
+	void *                data = heap->data;
+	unsigned int          leaf = index;
+	char *                elem;
+
+	while (right < nr) {
+		if (compare(&array[left * sz], &array[right * sz], data) >= 0)
+			leaf = left;
+		else
+			leaf = right;
+
+		left = stroll_heap_left_child_index(leaf);
+		right = stroll_heap_right_child_index(leaf);
+	}
+	if (left < nr)
+		leaf = left;
+
+	elem = &array[index * sz];
+	while (compare(elem, &array[leaf * sz], data) > 0)
+		leaf = stroll_heap_parent_index(leaf);
+
+	while (leaf > index) {
+		stroll_array_swap(elem, &array[leaf * sz], sz);
+		leaf = stroll_heap_parent_index(leaf);
+	}
+}
+
+#endif
+
+static inline __stroll_nonull(1)
+void
+stroll_array_heapify_mem(const struct stroll_fheap * __restrict heap)
+{
+	stroll_fheap_assert_intern(heap);
+	stroll_array_assert_intern(heap->nr > 1);
+
+	unsigned int cnt = heap->nr / 2;
+
 	do {
-		cnt--;
-		stroll_array_siftdwn_mem(cnt, array, nr, size, compare, data);
+		stroll_array_siftdwn_mem(heap, --cnt, heap->nr);
 	} while (cnt);
 }
 
-static void
+static inline __stroll_nonull(1, 4)
+void
 stroll_array_heap_sort_mem(void * __restrict     array,
                            unsigned int          nr,
                            size_t                size,
                            stroll_array_cmp_fn * compare,
                            void *                data)
 {
-	unsigned int cnt;
+	stroll_array_assert_intern(array);
+	stroll_array_assert_intern(nr > 1);
+	stroll_array_assert_intern(size);
+	stroll_array_assert_intern(compare);
 
-	stroll_array_heapify_mem(array, nr, size, compare, data);
+	const struct stroll_fheap heap = STROLL_FHEAP_INIT(array,
+	                                                   nr,
+	                                                   size,
+	                                                   compare,
+	                                                   data);
 
-	cnt = nr;
+	stroll_array_heapify_mem(&heap);
+
 	do {
-		cnt--;
-		stroll_array_swap(array, &((char *)array)[cnt * size], size);
-		stroll_array_siftdwn_mem(0, array, cnt, size, compare, data);
-	} while (cnt);
+		nr--;
+		stroll_array_swap(array, &((char *)array)[nr * size], size);
+		stroll_array_siftdwn_mem(&heap, 0, nr);
+	} while (nr > 1);
 }
 
 void
