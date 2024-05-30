@@ -1185,6 +1185,21 @@ CUTE_SUITE_STATIC(strollut_array_merge_suite,
                   CUTE_NULL_TEARDOWN,
                   CUTE_DFLT_TMOUT);
 
+#if defined(CONFIG_STROLL_ARRAY_HEAP_SORT)
+
+STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_heap_setup,
+                             stroll_array_heap_sort,
+                             false)
+#else   /* !defined(CONFIG_STROLL_ARRAY_HEAP_SORT) */
+STROLLUT_ARRAY_UNSUP(strollut_array_heap_setup)
+#endif  /* defined(CONFIG_STROLL_ARRAY_HEAP_SORT) */
+
+CUTE_SUITE_STATIC(strollut_array_heap_suite,
+                  strollut_array_sort_group,
+                  strollut_array_heap_setup,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);
+
 CUTE_GROUP(strollut_array_group) = {
 	CUTE_REF(strollut_array_bisect_suite),
 	CUTE_REF(strollut_array_bubble_suite),
@@ -1192,7 +1207,8 @@ CUTE_GROUP(strollut_array_group) = {
 	CUTE_REF(strollut_array_insert_suite),
 	CUTE_REF(strollut_array_quick_suite),
 	CUTE_REF(strollut_array_3wquick_suite),
-	CUTE_REF(strollut_array_merge_suite)
+	CUTE_REF(strollut_array_merge_suite),
+	CUTE_REF(strollut_array_heap_suite)
 };
 
 CUTE_SUITE_EXTERN(strollut_array_suite,

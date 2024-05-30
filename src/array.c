@@ -2127,3 +2127,102 @@ stroll_array_merge_sort(void * __restrict     array,
 }
 
 #endif /* defined(CONFIG_STROLL_ARRAY_MERGE_SORT) */
+
+#if defined(CONFIG_STROLL_ARRAY_HEAP_SORT)
+
+static inline
+unsigned int
+stroll_heap_left_child_index(unsigned int index)
+{
+	return (2 * index) + 1;
+}
+
+static inline
+unsigned int
+stroll_heap_right_child_index(unsigned int index)
+{
+	return (2 * index) + 2;
+}
+
+static
+void
+stroll_array_siftdwn_mem(unsigned int          index,
+                         char * __restrict     array,
+                         unsigned int          nr,
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                data)
+{
+	unsigned int idx = index;
+	unsigned int lidx = stroll_heap_left_child_index(index);
+	unsigned int ridx = stroll_heap_right_child_index(index);
+
+	if ((lidx < nr) &&
+	    compare(&array[lidx * size], &array[idx * size], data) > 0)
+		idx = lidx;
+
+	if ((ridx < nr) &&
+	    compare(&array[ridx * size], &array[idx * size], data) > 0)
+		idx = ridx;
+
+	if (idx == index)
+		return;
+
+	stroll_array_swap(&array[idx * size], &array[index * size], size);
+	stroll_array_siftdwn_mem(idx, array, nr, size, compare, data);
+}
+
+static void
+stroll_array_heapify_mem(char * __restrict     array,
+                         unsigned int          nr,
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                data)
+{
+	unsigned int cnt;
+
+	cnt = nr / 2;
+	do {
+		cnt--;
+		stroll_array_siftdwn_mem(cnt, array, nr, size, compare, data);
+	} while (cnt);
+}
+
+static void
+stroll_array_heap_sort_mem(void * __restrict     array,
+                           unsigned int          nr,
+                           size_t                size,
+                           stroll_array_cmp_fn * compare,
+                           void *                data)
+{
+	unsigned int cnt;
+
+	stroll_array_heapify_mem(array, nr, size, compare, data);
+
+	cnt = nr;
+	do {
+		cnt--;
+		stroll_array_swap(array, &((char *)array)[cnt * size], size);
+		stroll_array_siftdwn_mem(0, array, cnt, size, compare, data);
+	} while (cnt);
+}
+
+void
+stroll_array_heap_sort(void * __restrict     array,
+                       unsigned int          nr,
+                       size_t                size,
+                       stroll_array_cmp_fn * compare,
+                       void *                data)
+{
+	stroll_array_assert_api(array);
+	stroll_array_assert_api(nr);
+	stroll_array_assert_api(size);
+	stroll_array_assert_api(compare);
+
+	if (nr == 1)
+		return;
+
+	return stroll_array_heap_sort_mem(array, nr, size, compare, data);
+}
+
+#endif /* defined(CONFIG_STROLL_ARRAY_HEAP_SORT) */

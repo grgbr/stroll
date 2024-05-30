@@ -191,6 +191,12 @@ static const struct strollpt_iface strollpt_algos[] = {
 		.sort     = strollpt_array_merge_sort
 	},
 #endif
+#if defined(CONFIG_STROLL_ARRAY_HEAP_SORT)
+	{
+		.name     = "heap",
+		.sort     = stroll_array_heap_sort
+	},
+#endif
 };
 
 static const struct strollpt_iface *

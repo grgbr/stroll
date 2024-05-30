@@ -280,6 +280,12 @@ config STROLL_ARRAY_MERGE_SORT_RUNS_BYBLOCK
 	  by one single copy of a block of ordered primary elements.
 	  This may improve performances for partially / fully ordered data sets.
 
+config STROLL_ARRAY_HEAP_SORT
+	bool "Heap sort"
+	default y
+	help
+	  Document me!
+
 endif # STROLL_ARRAY
 
 # ex: ft=kconfig:

@@ -301,7 +301,7 @@ orders=$(array_ptest_probe_orders $array_ptest_data_files)
 singles=$(array_ptest_probe_singles $array_ptest_data_files)
 sizes="4 8 16 32 64 128 256"
 simple_algos="bubble select insert"
-algos="qsort quick 3wquick merge $simple_algos"
+algos="qsort quick 3wquick merge heap $simple_algos"
 
 if [ -z "$nr" ] || [ -z "$singles" ] || [ -z "$orders" ]; then
 	error "no data file found under test data directory" \
