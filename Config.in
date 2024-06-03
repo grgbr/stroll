@@ -116,6 +116,21 @@ config STROLL_LVSTR
 	  the life-cycle of C strings.
 	  See <stroll/lvstr.h>.
 
+menuconfig STROLL_HEAP
+	bool "Heaps"
+	select STROLL_PROVIDES_LIBS
+	default y
+
+if STROLL_HEAP
+
+config STROLL_FHEAP
+	bool "Binary heap"
+	default STROLL_HEAP
+	help
+	  Document me!
+
+endif # STROLL_HEAP
+
 menuconfig STROLL_ARRAY
 	bool "Array based algorithms"
 	select STROLL_PROVIDES_LIBS
@@ -287,20 +302,5 @@ config STROLL_ARRAY_HEAP_SORT
 	  Document me!
 
 endif # STROLL_ARRAY
-
-menuconfig STROLL_HEAP
-	bool "Heaps"
-	select STROLL_PROVIDES_LIBS
-	default y
-
-if STROLL_HEAP
-
-config STROLL_FHEAP
-	bool "Binary heap"
-	default y
-	help
-	  Document me!
-
-endif # STROLL_HEAP
 
 # ex: ft=kconfig:

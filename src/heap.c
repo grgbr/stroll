@@ -107,14 +107,69 @@ stroll_array_siftdwn_mem(unsigned int          index,
 #else
 
 static inline __stroll_nonull(2, 3, 6)
+unsigned int
+stroll_fheap_find_max_mem(unsigned int          index,
+                          char * __restrict     elem,
+                          char * __restrict     array,
+                          unsigned int          nr,
+                          size_t                size,
+                          stroll_array_cmp_fn * compare,
+                          void *                data)
+{
+	unsigned int left = stroll_fheap_left_child_index(index);
+	unsigned int right = stroll_fheap_right_child_index(index);
+
+	while (right < nr) {
+		if (compare(&array[left * size],
+		            &array[right * size],
+		            data) >= 0)
+			index = left;
+		else
+			index = right;
+
+		left = stroll_fheap_left_child_index(index);
+		right = stroll_fheap_right_child_index(index);
+	}
+	if (left < nr)
+		index = left;
+
+	while (compare(elem, &array[index * size], data) > 0) {
+		stroll_fheap_assert_intern(index);
+
+		index = stroll_fheap_parent_index(index);
+	}
+
+	return index;
+}
+
+static inline __stroll_nonull(3)
 void
-stroll_fheap_siftdwn_mem(unsigned int          root,
-                         char * __restrict     root_elem,
-                         char * __restrict     array,
-                         unsigned int          nr,
-                         size_t                size,
-                         stroll_array_cmp_fn * compare,
-                         void *                data)
+stroll_fheap_siftup_mem(unsigned int      root,
+                        unsigned int      node,
+                        char * __restrict array,
+                        size_t            size)
+{
+	unsigned int depth;
+
+	depth = stroll_fheap_index_depth(node) - stroll_fheap_index_depth(root);
+	while (depth--) {
+		root = stroll_fheap_elder_index(node, depth);
+
+		memcpy(&array[stroll_fheap_parent_index(root) * size],
+		       &array[root * size],
+		       size);
+	}
+}
+
+static inline __stroll_nonull(2, 3, 6)
+void
+stroll_fheap_botup_maxify_mem(unsigned int          root,
+                              char * __restrict     root_elem,
+                              char * __restrict     array,
+                              unsigned int          nr,
+                              size_t                size,
+                              stroll_array_cmp_fn * compare,
+                              void *                data)
 {
 	stroll_fheap_assert_intern(array);
 	stroll_fheap_assert_intern(root < nr);
@@ -123,76 +178,22 @@ stroll_fheap_siftdwn_mem(unsigned int          root,
 	stroll_fheap_assert_intern(size);
 	stroll_fheap_assert_intern(compare);
 
-	unsigned int left = stroll_fheap_left_child_index(root);
-	unsigned int right = stroll_fheap_right_child_index(root);
-	unsigned int leaf = root;
+	unsigned int leaf;
 
-	while (right < nr) {
-		if (compare(&array[left * size],
-		            &array[right * size],
-		            data) >= 0)
-			leaf = left;
-		else
-			leaf = right;
+	leaf = stroll_fheap_find_max_mem(root,
+	                                 root_elem,
+	                                 array,
+	                                 nr,
+	                                 size,
+	                                 compare,
+	                                 data);
 
-		left = stroll_fheap_left_child_index(leaf);
-		right = stroll_fheap_right_child_index(leaf);
-	}
-	if (left < nr)
-		leaf = left;
-
-	while (compare(root_elem, &array[leaf * size], data) > 0)
-		leaf = stroll_fheap_parent_index(leaf);
-
-	if (leaf > root) {
-		unsigned int depth;
-
-		depth = stroll_fheap_index_depth(leaf) -
-		        stroll_fheap_index_depth(root);
-		do {
-			root = stroll_fheap_elder_index(leaf, --depth);
-
-			memcpy(&array[stroll_fheap_parent_index(root) * size],
-			       &array[root * size],
-			       size);
-		} while (depth);
-	}
+	stroll_fheap_siftup_mem(root, leaf, array, size);
 
 	memcpy(&array[leaf * size], root_elem, size);
 }
 
 #endif
-
-static __stroll_nonull(1, 4)
-void
-stroll_fheap_build_mem(char * __restrict     array,
-                       unsigned int          nr,
-                       size_t                size,
-                       stroll_array_cmp_fn * compare,
-                       void *                data)
-{
-	stroll_fheap_assert_intern(array);
-	stroll_fheap_assert_intern(nr > 1);
-	stroll_fheap_assert_intern(size);
-	stroll_fheap_assert_intern(compare);
-
-	unsigned int idx = nr / 2;
-
-	do {
-		char tmp[size];
-
-		idx--;
-		memcpy(tmp, &array[idx * size], size);
-
-		stroll_fheap_siftdwn_mem(idx,
-		                         tmp,
-		                         array,
-		                         nr,
-		                         size,
-		                         compare,
-		                         data);
-	} while (idx);
-}
 
 #if defined(CONFIG_STROLL_ARRAY_HEAP_SORT)
 
@@ -209,22 +210,36 @@ stroll_fheap_sort_mem(char * __restrict     array,
 	stroll_fheap_assert_intern(size);
 	stroll_fheap_assert_intern(compare);
 
-	stroll_fheap_build_mem(array, nr, size, compare, data);
+	unsigned int idx;
+	char         tmp[size];
 
+        idx = nr / 2;
 	do {
-		char tmp[size];
+		idx--;
+		memcpy(tmp, &array[idx * size], size);
 
-		nr--;
-		memcpy(tmp, &array[nr * size], size);
-		memcpy(&array[nr * size], array, size);
-		stroll_fheap_siftdwn_mem(0,
-		                         tmp,
-		                         array,
-		                         nr,
-		                         size,
-		                         compare,
-		                         data);
-	} while (nr > 1);
+		stroll_fheap_botup_maxify_mem(idx,
+		                              tmp,
+		                              array,
+		                              nr,
+		                              size,
+		                              compare,
+		                              data);
+	} while (idx);
+
+	idx = nr;
+	do {
+		idx--;
+		memcpy(tmp, &array[idx * size], size);
+		memcpy(&array[idx * size], array, size);
+		stroll_fheap_botup_maxify_mem(0,
+		                              tmp,
+		                              array,
+		                              idx,
+		                              size,
+		                              compare,
+		                              data);
+	} while (idx > 1);
 }
 
 void
@@ -250,53 +265,6 @@ stroll_array_heap_sort(void * __restrict     array,
 #if defined(CONFIG_STROLL_FHEAP)
 
 #include "stroll/heap.h"
-
-static __stroll_nonull(1, 2, 5)
-void
-stroll_fheap_extract_mem(char * __restrict     elem,
-                         char * __restrict     array,
-                         unsigned int          nr,
-                         size_t                size,
-                         stroll_array_cmp_fn * compare,
-                         void *                data)
-{
-	stroll_fheap_assert_intern(elem);
-	stroll_fheap_assert_intern(array);
-	stroll_fheap_assert_intern(nr);
-	stroll_fheap_assert_intern(size);
-	stroll_fheap_assert_intern(compare);
-
-	memcpy(elem, array, size);
-
-	if (nr == 1)
-		return;
-
-	nr--;
-	stroll_fheap_siftdwn_mem(0,
-	                         &array[nr * size],
-	                         array,
-	                         nr,
-	                         size,
-	                         compare,
-	                         data);
-}
-
-void
-stroll_fheap_extract(void * __restrict     elem,
-                     void * __restrict     array,
-                     unsigned int          nr,
-                     size_t                size,
-                     stroll_array_cmp_fn * compare,
-                     void *                data)
-{
-	stroll_fheap_assert_api(elem);
-	stroll_fheap_assert_api(array);
-	stroll_fheap_assert_api(nr);
-	stroll_fheap_assert_api(size);
-	stroll_fheap_assert_api(compare);
-
-	stroll_fheap_extract_mem(elem, array, nr, size, compare, data);
-}
 
 static __stroll_nonull(1, 2, 5)
 void
@@ -344,6 +312,169 @@ stroll_fheap_insert(void * __restrict     elem,
 	stroll_fheap_assert_api(compare);
 
 	stroll_fheap_insert_mem(elem, array, nr, size, compare, data);
+}
+
+static inline __stroll_nonull(2, 3, 6)
+unsigned int
+stroll_fheap_find_min_mem(unsigned int          index,
+                          char * __restrict     elem,
+                          char * __restrict     array,
+                          unsigned int          nr,
+                          size_t                size,
+                          stroll_array_cmp_fn * compare,
+                          void *                data)
+{
+	unsigned int left = stroll_fheap_left_child_index(index);
+	unsigned int right = stroll_fheap_right_child_index(index);
+
+	while (right < nr) {
+		if (compare(&array[left * size],
+		            &array[right * size],
+		            data) <= 0)
+			index = left;
+		else
+			index = right;
+
+		left = stroll_fheap_left_child_index(index);
+		right = stroll_fheap_right_child_index(index);
+	}
+	if (left < nr)
+		index = left;
+
+	while (compare(elem, &array[index * size], data) < 0) {
+		stroll_fheap_assert_api(index);
+
+		index = stroll_fheap_parent_index(index);
+	}
+
+	return index;
+}
+
+static inline __stroll_nonull(2, 3, 6)
+void
+stroll_fheap_botup_minify_mem(unsigned int          root,
+                              char * __restrict     root_elem,
+                              char * __restrict     array,
+                              unsigned int          nr,
+                              size_t                size,
+                              stroll_array_cmp_fn * compare,
+                              void *                data)
+{
+	stroll_fheap_assert_intern(array);
+	stroll_fheap_assert_intern(root < nr);
+	stroll_fheap_assert_intern(root_elem);
+	stroll_fheap_assert_intern(nr >= 1);
+	stroll_fheap_assert_intern(size);
+	stroll_fheap_assert_intern(compare);
+
+	unsigned int leaf;
+
+	leaf = stroll_fheap_find_min_mem(root,
+	                                 root_elem,
+	                                 array,
+	                                 nr,
+	                                 size,
+	                                 compare,
+	                                 data);
+
+	stroll_fheap_siftup_mem(root, leaf, array, size);
+
+	memcpy(&array[leaf * size], root_elem, size);
+}
+
+static __stroll_nonull(1, 2, 5)
+void
+stroll_fheap_extract_mem(char * __restrict     elem,
+                         char * __restrict     array,
+                         unsigned int          nr,
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                data)
+{
+	stroll_fheap_assert_intern(elem);
+	stroll_fheap_assert_intern(array);
+	stroll_fheap_assert_intern(nr);
+	stroll_fheap_assert_intern(size);
+	stroll_fheap_assert_intern(compare);
+
+	memcpy(elem, array, size);
+
+	if (nr == 1)
+		return;
+
+	nr--;
+	stroll_fheap_botup_minify_mem(0,
+	                              &array[nr * size],
+	                              array,
+	                              nr,
+	                              size,
+	                              compare,
+	                              data);
+}
+
+void
+stroll_fheap_extract(void * __restrict     elem,
+                     void * __restrict     array,
+                     unsigned int          nr,
+                     size_t                size,
+                     stroll_array_cmp_fn * compare,
+                     void *                data)
+{
+	stroll_fheap_assert_api(elem);
+	stroll_fheap_assert_api(array);
+	stroll_fheap_assert_api(nr);
+	stroll_fheap_assert_api(size);
+	stroll_fheap_assert_api(compare);
+
+	stroll_fheap_extract_mem(elem, array, nr, size, compare, data);
+}
+
+static __stroll_nonull(1, 4)
+void
+stroll_fheap_build_mem(char * __restrict       array,
+                       unsigned int            nr,
+                       size_t                  size,
+                       stroll_array_cmp_fn *   compare,
+                       void *                  data)
+{
+	stroll_fheap_assert_intern(array);
+	stroll_fheap_assert_intern(nr > 1);
+	stroll_fheap_assert_intern(size);
+	stroll_fheap_assert_intern(compare);
+
+	unsigned int idx = nr / 2;
+	char         tmp[size];
+
+	do {
+		idx--;
+		memcpy(tmp, &array[idx * size], size);
+
+		stroll_fheap_botup_minify_mem(idx,
+		                              tmp,
+		                              array,
+		                              nr,
+		                              size,
+		                              compare,
+		                              data);
+	} while (idx);
+}
+
+void
+stroll_fheap_build(void * __restrict       array,
+                   unsigned int            nr,
+                   size_t                  size,
+                   stroll_array_cmp_fn *   compare,
+                   void *                  data)
+{
+	stroll_fheap_assert_intern(array);
+	stroll_fheap_assert_intern(nr);
+	stroll_fheap_assert_intern(size);
+	stroll_fheap_assert_intern(compare);
+
+	if (nr == 1)
+		return;
+
+	stroll_fheap_build_mem(array, nr, size, compare, data);
 }
 
 #endif /* defined(CONFIG_STROLL_FHEAP) */

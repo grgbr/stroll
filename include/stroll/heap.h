@@ -24,6 +24,15 @@
 #if defined(CONFIG_STROLL_FHEAP)
 
 extern void
+stroll_fheap_insert(void * __restrict     elem,
+                    void * __restrict     array,
+                    unsigned int          nr,
+                    size_t                size,
+                    stroll_array_cmp_fn * compare,
+                    void *                data)
+	__stroll_nonull(1, 2, 5);
+
+extern void
 stroll_fheap_extract(void * __restrict     elem,
                      void * __restrict     array,
                      unsigned int          nr,
@@ -33,13 +42,12 @@ stroll_fheap_extract(void * __restrict     elem,
 	__stroll_nonull(1, 2, 5);
 
 extern void
-stroll_fheap_insert(void * __restrict     elem,
-                    void * __restrict     array,
-                    unsigned int          nr,
-                    size_t                size,
-                    stroll_array_cmp_fn * compare,
-                    void *                data)
-	__stroll_nonull(1, 2, 5);
+stroll_fheap_build(void * __restrict       array,
+                   unsigned int            nr,
+                   size_t                  size,
+                   stroll_array_cmp_fn *   compare,
+                   void *                  data)
+	__stroll_nonull(1, 4);
 
 #endif /* defined(CONFIG_STROLL_FHEAP) */
 

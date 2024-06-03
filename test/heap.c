@@ -48,59 +48,59 @@ static const struct strollut_heap_elem strollut_heap_array1[] = {
 };
 
 static const struct strollut_heap_elem strollut_heap_array2[] = {
-	{ 1, "1one" },
-	{ 0, "0zero" }
+	{ 0, "0zero" },
+	{ 1, "1one" }
 };
 
 static const struct strollut_heap_elem strollut_heap_array3[] = {
-	{ 2, "2two" },
-	{ 0, "0zero" },
-	{ 1, "1one" }
-};
-
-static const struct strollut_heap_elem strollut_heap_array4[] = {
-	
-	{ 2, "2two" },
-	{ 0, "0zero" },
-	{ 1, "1one" }
-};
-
-static const struct strollut_heap_elem strollut_heap_array5[] = {
-	{ 4, "4four" },
-	{ 3, "3three" },
-	{ 2, "2two" },
-	{ 0, "0zero" },
-	{ 1, "1one" }
-};
-
-static const struct strollut_heap_elem strollut_heap_array6[] = {
-	{ 5, "5five" },
-	{ 4, "4four" },
-	{ 3, "3three" },
 	{ 0, "0zero" },
 	{ 1, "1one" },
 	{ 2, "2two" }
 };
 
-static const struct strollut_heap_elem strollut_heap_array7[] = {
-	{ 6, "6six" },
-	{ 4, "4four" },
-	{ 5, "5five" },
+static const struct strollut_heap_elem strollut_heap_array4[] = {
 	{ 0, "0zero" },
 	{ 1, "1one" },
 	{ 2, "2two" },
 	{ 3, "3three" }
 };
 
-static const struct strollut_heap_elem strollut_heap_array8[] = {
-	{ 7, "7seven" },
-	{ 5, "5five" },
-	{ 6, "6six" },
-	{ 3, "3three" },
-	{ 4, "4four" },
+static const struct strollut_heap_elem strollut_heap_array5[] = {
 	{ 0, "0zero" },
 	{ 1, "1one" },
-	{ 2, "2two" }
+	{ 2, "2two" },
+	{ 3, "3three" },
+	{ 4, "4four" }
+};
+
+static const struct strollut_heap_elem strollut_heap_array6[] = {
+	{ 0, "0zero" },
+	{ 1, "1one" },
+	{ 2, "2two" },
+	{ 3, "3three" },
+	{ 4, "4four" },
+	{ 5, "5five" }
+};
+
+static const struct strollut_heap_elem strollut_heap_array7[] = {
+	{ 0, "0zero" },
+	{ 1, "1one" },
+	{ 2, "2two" },
+	{ 3, "3three" },
+	{ 4, "4four" },
+	{ 5, "5five" },
+	{ 6, "6six" }
+};
+
+static const struct strollut_heap_elem strollut_heap_array8[] = {
+	{ 0, "0zero" },
+	{ 1, "1one" },
+	{ 2, "2two" },
+	{ 3, "3three" },
+	{ 4, "4four" },
+	{ 5, "5five" },
+	{ 6, "6six" },
+	{ 7, "7seven" }
 };
 
 static void
@@ -181,9 +181,134 @@ CUTE_TEST(strollut_fheap_extract3)
 	                            strollut_qsort_compare_num_min);
 }
 
+CUTE_TEST(strollut_fheap_extract4)
+{
+	strollut_heap_check_extract(strollut_heap_array4,
+	                            stroll_array_nr(strollut_heap_array4),
+	                            strollut_heap_compare_num_min,
+	                            strollut_qsort_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_extract5)
+{
+	strollut_heap_check_extract(strollut_heap_array5,
+	                            stroll_array_nr(strollut_heap_array5),
+	                            strollut_heap_compare_num_min,
+	                            strollut_qsort_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_extract6)
+{
+	strollut_heap_check_extract(strollut_heap_array6,
+	                            stroll_array_nr(strollut_heap_array6),
+	                            strollut_heap_compare_num_min,
+	                            strollut_qsort_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_extract7)
+{
+	strollut_heap_check_extract(strollut_heap_array7,
+	                            stroll_array_nr(strollut_heap_array7),
+	                            strollut_heap_compare_num_min,
+	                            strollut_qsort_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_extract8)
+{
+	strollut_heap_check_extract(strollut_heap_array8,
+	                            stroll_array_nr(strollut_heap_array8),
+	                            strollut_heap_compare_num_min,
+	                            strollut_qsort_compare_num_min);
+}
+
+static void
+strollut_heap_check_build(const struct strollut_heap_elem * array,
+                          unsigned int                      nr,
+                          stroll_array_cmp_fn *             heap_cmp)
+{
+	struct strollut_heap_elem heap[nr];
+
+	memcpy(heap, array, sizeof(heap));
+	stroll_fheap_build(heap, nr, sizeof(heap[0]), heap_cmp, NULL);
+
+	strollut_heap_check_recurs(0, heap, nr, heap_cmp);
+}
+
+CUTE_TEST(strollut_fheap_build1)
+{
+	strollut_heap_check_build(strollut_heap_array1,
+	                          stroll_array_nr(strollut_heap_array1),
+	                          strollut_heap_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_build2)
+{
+	strollut_heap_check_build(strollut_heap_array2,
+	                          stroll_array_nr(strollut_heap_array2),
+	                          strollut_heap_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_build3)
+{
+	strollut_heap_check_build(strollut_heap_array3,
+	                          stroll_array_nr(strollut_heap_array3),
+	                          strollut_heap_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_build4)
+{
+	strollut_heap_check_build(strollut_heap_array4,
+	                          stroll_array_nr(strollut_heap_array4),
+	                          strollut_heap_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_build5)
+{
+	strollut_heap_check_build(strollut_heap_array5,
+	                          stroll_array_nr(strollut_heap_array5),
+	                          strollut_heap_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_build6)
+{
+	strollut_heap_check_build(strollut_heap_array6,
+	                          stroll_array_nr(strollut_heap_array6),
+	                          strollut_heap_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_build7)
+{
+	strollut_heap_check_build(strollut_heap_array7,
+	                          stroll_array_nr(strollut_heap_array7),
+	                          strollut_heap_compare_num_min);
+}
+
+CUTE_TEST(strollut_fheap_build8)
+{
+	strollut_heap_check_build(strollut_heap_array8,
+	                          stroll_array_nr(strollut_heap_array8),
+	                          strollut_heap_compare_num_min);
+}
+
 #else  /* !defined(CONFIG_STROLL_FHEAP) */
 
 STROLLUT_HEAP_UNSUP(strollut_fheap_extract1)
+STROLLUT_HEAP_UNSUP(strollut_fheap_extract2)
+STROLLUT_HEAP_UNSUP(strollut_fheap_extract3)
+STROLLUT_HEAP_UNSUP(strollut_fheap_extract4)
+STROLLUT_HEAP_UNSUP(strollut_fheap_extract5)
+STROLLUT_HEAP_UNSUP(strollut_fheap_extract6)
+STROLLUT_HEAP_UNSUP(strollut_fheap_extract7)
+STROLLUT_HEAP_UNSUP(strollut_fheap_extract8)
+
+STROLLUT_HEAP_UNSUP(strollut_fheap_build1)
+STROLLUT_HEAP_UNSUP(strollut_fheap_build2)
+STROLLUT_HEAP_UNSUP(strollut_fheap_build3)
+STROLLUT_HEAP_UNSUP(strollut_fheap_build4)
+STROLLUT_HEAP_UNSUP(strollut_fheap_build5)
+STROLLUT_HEAP_UNSUP(strollut_fheap_build6)
+STROLLUT_HEAP_UNSUP(strollut_fheap_build7)
+STROLLUT_HEAP_UNSUP(strollut_fheap_build8)
 
 #endif /* defined(CONFIG_STROLL_FHEAP) */
 
@@ -191,6 +316,20 @@ CUTE_GROUP(strollut_fheap_group) = {
 	CUTE_REF(strollut_fheap_extract1),
 	CUTE_REF(strollut_fheap_extract2),
 	CUTE_REF(strollut_fheap_extract3),
+	CUTE_REF(strollut_fheap_extract4),
+	CUTE_REF(strollut_fheap_extract5),
+	CUTE_REF(strollut_fheap_extract6),
+	CUTE_REF(strollut_fheap_extract7),
+	CUTE_REF(strollut_fheap_extract8),
+
+	CUTE_REF(strollut_fheap_build1),
+	CUTE_REF(strollut_fheap_build2),
+	CUTE_REF(strollut_fheap_build3),
+	CUTE_REF(strollut_fheap_build4),
+	CUTE_REF(strollut_fheap_build5),
+	CUTE_REF(strollut_fheap_build6),
+	CUTE_REF(strollut_fheap_build7),
+	CUTE_REF(strollut_fheap_build8),
 };
 
 CUTE_SUITE_STATIC(strollut_fheap_suite,
