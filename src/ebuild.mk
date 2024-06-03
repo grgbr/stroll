@@ -44,6 +44,8 @@ libstroll.so-objs    += $(call kconf_enabled,STROLL_POW2,shared/pow2.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_FBMAP,shared/fbmap.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_LVSTR,shared/lvstr.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_ARRAY,shared/array.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_HEAP_SORT,shared/heap.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_FHEAP,shared/heap.o)
 libstroll.so-cflags  := $(filter-out -fpie -fPIE,$(common-cflags)) -fpic
 libstroll.so-ldflags := $(filter-out -pie -fpie -fPIE,$(common-ldflags)) \
                         -shared -Bsymbolic -fpic -Wl,-soname,libstroll.so
@@ -54,6 +56,8 @@ libstroll.a-objs     += $(call kconf_enabled,STROLL_POW2,static/pow2.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_FBMAP,static/fbmap.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_LVSTR,static/lvstr.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_ARRAY,static/array.o)
+libstroll.a-objs     += $(call kconf_enabled,STROLL_HEAP_SORT,static/heap.o)
+libstroll.a-objs     += $(call kconf_enabled,STROLL_FHEAP,static/heap.o)
 libstroll.a-cflags   := $(common-cflags)
 endif # ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
 

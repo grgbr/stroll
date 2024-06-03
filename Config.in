@@ -288,4 +288,19 @@ config STROLL_ARRAY_HEAP_SORT
 
 endif # STROLL_ARRAY
 
+menuconfig STROLL_HEAP
+	bool "Heaps"
+	select STROLL_PROVIDES_LIBS
+	default y
+
+if STROLL_HEAP
+
+config STROLL_FHEAP
+	bool "Binary heap"
+	default y
+	help
+	  Document me!
+
+endif # STROLL_HEAP
+
 # ex: ft=kconfig:
