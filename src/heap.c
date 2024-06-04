@@ -275,15 +275,10 @@ stroll_fheap_insert_mem(const char * __restrict elem,
                         stroll_array_cmp_fn *   compare,
                         void *                  data)
 {
-	stroll_fheap_assert_intern(elem);
-	stroll_fheap_assert_intern(array);
-	stroll_fheap_assert_intern(size);
-	stroll_fheap_assert_intern(compare);
-
 	if (nr > 0) {
 		unsigned int node = nr - 1;
 
-		while (node && (compare(elem, &array[node * size], data) > 0)) {
+		while (node && (compare(elem, &array[node * size], data) < 0)) {
 			unsigned int parent = stroll_fheap_parent_index(node);
 
 			memcpy(&array[node * size],
@@ -299,16 +294,19 @@ stroll_fheap_insert_mem(const char * __restrict elem,
 }
 
 void
-stroll_fheap_insert(void * __restrict     elem,
-                    void * __restrict     array,
-                    unsigned int          nr,
-                    size_t                size,
-                    stroll_array_cmp_fn * compare,
-                    void *                data)
+stroll_fheap_insert(const void * __restrict elem,
+                    void * __restrict       array,
+                    unsigned int            nr,
+                    size_t                  size,
+                    stroll_array_cmp_fn *   compare,
+                    void *                  data)
 {
 	stroll_fheap_assert_api(elem);
 	stroll_fheap_assert_api(array);
 	stroll_fheap_assert_api(size);
+	stroll_fheap_assert_api((elem < array) ||
+	                        ((const char *)elem >=
+	                         &((char *)array)[nr * size]));
 	stroll_fheap_assert_api(compare);
 
 	stroll_fheap_insert_mem(elem, array, nr, size, compare, data);
@@ -360,11 +358,13 @@ stroll_fheap_botup_minify_mem(unsigned int          root,
                               stroll_array_cmp_fn * compare,
                               void *                data)
 {
-	stroll_fheap_assert_intern(array);
-	stroll_fheap_assert_intern(root < nr);
 	stroll_fheap_assert_intern(root_elem);
-	stroll_fheap_assert_intern(nr >= 1);
+	stroll_fheap_assert_intern(array);
+	stroll_fheap_assert_intern(nr);
+	stroll_fheap_assert_intern(root < nr);
 	stroll_fheap_assert_intern(size);
+	stroll_fheap_assert_intern((root_elem < array) ||
+	                           (root_elem >= &array[nr * size]));
 	stroll_fheap_assert_intern(compare);
 
 	unsigned int leaf;
@@ -391,12 +391,6 @@ stroll_fheap_extract_mem(char * __restrict     elem,
                          stroll_array_cmp_fn * compare,
                          void *                data)
 {
-	stroll_fheap_assert_intern(elem);
-	stroll_fheap_assert_intern(array);
-	stroll_fheap_assert_intern(nr);
-	stroll_fheap_assert_intern(size);
-	stroll_fheap_assert_intern(compare);
-
 	memcpy(elem, array, size);
 
 	if (nr == 1)
@@ -424,6 +418,8 @@ stroll_fheap_extract(void * __restrict     elem,
 	stroll_fheap_assert_api(array);
 	stroll_fheap_assert_api(nr);
 	stroll_fheap_assert_api(size);
+	stroll_fheap_assert_api((elem < array) ||
+	                        ((char *)elem >= &((char *)array)[nr * size]));
 	stroll_fheap_assert_api(compare);
 
 	stroll_fheap_extract_mem(elem, array, nr, size, compare, data);
@@ -431,16 +427,13 @@ stroll_fheap_extract(void * __restrict     elem,
 
 static __stroll_nonull(1, 4)
 void
-stroll_fheap_build_mem(char * __restrict       array,
-                       unsigned int            nr,
-                       size_t                  size,
-                       stroll_array_cmp_fn *   compare,
-                       void *                  data)
+stroll_fheap_build_mem(char * __restrict     array,
+                       unsigned int          nr,
+                       size_t                size,
+                       stroll_array_cmp_fn * compare,
+                       void *                data)
 {
-	stroll_fheap_assert_intern(array);
 	stroll_fheap_assert_intern(nr > 1);
-	stroll_fheap_assert_intern(size);
-	stroll_fheap_assert_intern(compare);
 
 	unsigned int idx = nr / 2;
 	char         tmp[size];
@@ -466,10 +459,10 @@ stroll_fheap_build(void * __restrict       array,
                    stroll_array_cmp_fn *   compare,
                    void *                  data)
 {
-	stroll_fheap_assert_intern(array);
-	stroll_fheap_assert_intern(nr);
-	stroll_fheap_assert_intern(size);
-	stroll_fheap_assert_intern(compare);
+	stroll_fheap_assert_api(array);
+	stroll_fheap_assert_api(nr);
+	stroll_fheap_assert_api(size);
+	stroll_fheap_assert_api(compare);
 
 	if (nr == 1)
 		return;
