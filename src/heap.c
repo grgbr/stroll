@@ -275,22 +275,17 @@ stroll_fheap_insert_mem(const char * __restrict elem,
                         stroll_array_cmp_fn *   compare,
                         void *                  data)
 {
-	if (nr > 0) {
-		unsigned int node = nr - 1;
+	while (nr) {
+		unsigned int parent = stroll_fheap_parent_index(nr);
 
-		while (node && (compare(elem, &array[node * size], data) < 0)) {
-			unsigned int parent = stroll_fheap_parent_index(node);
+		if (compare(elem, &array[parent * size], data) >= 0)
+			break;
 
-			memcpy(&array[node * size],
-			       &array[parent * size],
-			       size);
-			node = parent;
-		}
-
-		memcpy(&array[node * size], elem, size);
+		memcpy(&array[nr * size], &array[parent * size], size);
+		nr = parent;
 	}
-	else
-		memcpy(array, elem, size);
+
+	memcpy(&array[nr * size], elem, size);
 }
 
 void

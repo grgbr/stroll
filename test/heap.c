@@ -109,14 +109,13 @@ strollut_heap_check_recurs(unsigned int                      e,
                            unsigned int                      nr,
                            stroll_array_cmp_fn *             cmp)
 {
-	cute_check_uint(e, lower_equal, nr);
-
-	if ((e == 0) || (e == nr))
+	if (e >= nr)
 		return;
 
-	cute_check_sint(cmp(&array[(e - 1) / 2], &array[e], NULL),
-	                lower_equal,
-	                0);
+	if (e)
+		cute_check_sint(cmp(&array[(e - 1) / 2], &array[e], NULL),
+		                lower_equal,
+		                0);
 
 	strollut_heap_check_recurs((2 * e) + 1, array, nr, cmp);
 	strollut_heap_check_recurs((2 * e) + 2, array, nr, cmp);
