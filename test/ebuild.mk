@@ -29,12 +29,13 @@ utest-ldflags := $(test-cflags) \
                  -L$(BUILDDIR)/../src \
                  $(EXTRA_LDFLAGS) \
                  -Wl,-z,start-stop-visibility=hidden \
-                 -Wl,-whole-archive $(BUILDDIR)/builtin.a -Wl,-no-whole-archive \
+                 -Wl,-whole-archive $(BUILDDIR)/builtin_utest.a -Wl,-no-whole-archive \
                  -lstroll
 
 ptest-ldflags := $(test-cflags) \
                  -L$(BUILDDIR)/../src \
                  $(EXTRA_LDFLAGS) \
+                 -Wl,-whole-archive $(BUILDDIR)/builtin_ptest.a -Wl,-no-whole-archive \
                  -Wl,-z,start-stop-visibility=hidden \
                  -lstroll
 
@@ -44,9 +45,9 @@ utest-ldflags := $(filter-out -DNDEBUG,$(utest-ldflags))
 ptest-ldflags := $(filter-out -DNDEBUG,$(ptest-ldflags))
 endif # ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
 
-builtins             := builtin.a
-builtin.a-objs       := utest.o $(config-obj)
-builtin.a-cflags     := $(test-cflags)
+builtins               := builtin_utest.a
+builtin_utest.a-objs   := utest.o $(config-obj)
+builtin_utest.a-cflags := $(test-cflags)
 
 checkbins            := stroll-utest
 stroll-utest-objs    := cdefs.o
@@ -61,12 +62,21 @@ stroll-utest-cflags  := $(test-cflags)
 stroll-utest-ldflags := $(utest-ldflags)
 stroll-utest-pkgconf := libcute
 
+ifeq ($(CONFIG_STROLL_PTEST),y)
+
+builtins               += builtin_ptest.a
+builtin_ptest.a-objs   := ptest.o
+builtin_ptest.a-cflags := $(test-cflags)
+
 checkbins                  += stroll-array-ptest
-stroll-array-ptest-objs    := ptest.o array_ptest.o
+stroll-array-ptest-objs    := array_ptest.o
 stroll-array-ptest-cflags  := $(test-cflags)
 stroll-array-ptest-ldflags := $(ptest-ldflags) -lm
 
-ifeq ($(CONFIG_STROLL_PTEST),y)
+checkbins                  += stroll-heap-ptest
+stroll-heap-ptest-objs     := heap_ptest.o
+stroll-heap-ptest-cflags   := $(test-cflags)
+stroll-heap-ptest-ldflags  := $(ptest-ldflags) -lm
 
 define ptest_data_files_cmds
 for n in $(1); do

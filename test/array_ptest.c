@@ -289,7 +289,7 @@ int main(int argc, char *argv[])
 
 		opt = getopt_long(argc, argv, "hp:", lopts, NULL);
 		if (opt < 0)
-			/* No more options: go parsing positional arguments. */
+			/* No more options: go parsing positional arguments. */
 			break;
 
 		switch (opt) {
