@@ -5,50 +5,11 @@
  * Copyright (C) 2017-2024 Grégor Boirie <gregor.boirie@free.fr>
  ******************************************************************************/
 
-#include "stroll/array.h"
-#include <stdbool.h>
+#include "array.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-
-#if defined(CONFIG_STROLL_ASSERT_API)
-
-#include "stroll/assert.h"
-
-#define stroll_array_assert_api(_expr) \
-	stroll_assert("stroll:array", _expr)
-
-#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
-
-#define stroll_array_assert_api(_expr)
-
-#endif /* defined(CONFIG_STROLL_ASSERT_API) */
-
-#if defined(CONFIG_STROLL_ASSERT_INTERN)
-
-#include "stroll/assert.h"
-
-#define stroll_array_assert_intern(_expr) \
-	stroll_assert("stroll:array", _expr)
-
-#else  /* !defined(CONFIG_STROLL_ASSERT_INTERN) */
-
-#define stroll_array_assert_intern(_expr)
-
-#endif /* defined(CONFIG_STROLL_ASSERT_INTERN) */
-
-static inline __stroll_nonull(1) __stroll_const __stroll_nothrow
-bool
-stroll_array_aligned(const void * __restrict array, size_t size, size_t align)
-{
-	stroll_array_assert_intern(array);
-	stroll_array_assert_intern(size);
-	stroll_array_assert_intern(align);
-
-	return (size == align) &&
-	       stroll_aligned((unsigned long)array, align);
-}
 
 #define STROLL_ARRAY_DEFINE_SWAP(_func, _type) \
 	static __stroll_nonull(1, 2) \

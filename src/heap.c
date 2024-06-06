@@ -73,13 +73,47 @@ stroll_fheap_right_child_index(unsigned int index)
 	return (2 * index) + 2;
 }
 
-static inline __stroll_nonull(3)
+#define STROLL_FHEAP_SIFTUP(_func, _type) \
+	static inline __stroll_nonull(4) __stroll_nothrow \
+	void \
+	_func(unsigned int       root, \
+	      unsigned int       node, \
+	      _type              elem, \
+	      _type * __restrict array) \
+	{ \
+		stroll_fheap_assert_intern(node >= root); \
+		stroll_fheap_assert_intern(array); \
+		\
+		unsigned int depth; \
+		\
+		depth = stroll_fheap_index_depth(node) - \
+		        stroll_fheap_index_depth(root); \
+		while (depth--) { \
+			root = stroll_fheap_elder_index(node, depth); \
+			\
+			array[stroll_fheap_parent_index(root)] = array[root]; \
+		} \
+		\
+		array[node] = elem; \
+	}
+
+STROLL_FHEAP_SIFTUP(stroll_fheap_siftup32, uint32_t)
+
+STROLL_FHEAP_SIFTUP(stroll_fheap_siftup64, uint64_t)
+
+static inline __stroll_nonull(3, 4) __stroll_nothrow
 void
-stroll_fheap_siftup_mem(unsigned int      root,
-                        unsigned int      node,
-                        char * __restrict array,
-                        size_t            size)
+stroll_fheap_siftup_mem(unsigned int            root,
+                        unsigned int            node,
+                        const char * __restrict elem,
+                        char * __restrict       array,
+                        size_t                  size)
 {
+	stroll_fheap_assert_intern(node >= root);
+	stroll_fheap_assert_intern(elem);
+	stroll_fheap_assert_intern(array);
+	stroll_fheap_assert_intern(size);
+
 	unsigned int depth;
 
 	depth = stroll_fheap_index_depth(node) - stroll_fheap_index_depth(root);
@@ -90,11 +124,57 @@ stroll_fheap_siftup_mem(unsigned int      root,
 		       &array[root * size],
 		       size);
 	}
+
+	memcpy(&array[node * size], elem, size);
 }
 
 #if defined(CONFIG_STROLL_ARRAY_HEAP_SORT)
 
-#include "stroll/array.h"
+#include "array.h"
+
+#define STROLL_FHEAP_FIND_MAX(_func, _type) \
+	static inline __stroll_nonull(2, 3, 5) \
+	unsigned int \
+	_func(unsigned int          index, \
+	      _type * __restrict    elem, \
+	      _type * __restrict    array, \
+	      unsigned int          nr, \
+	      stroll_array_cmp_fn * compare, \
+	      void *                data) \
+	{ \
+		stroll_fheap_assert_intern(elem); \
+		stroll_fheap_assert_intern(array); \
+		stroll_fheap_assert_intern(nr); \
+		stroll_fheap_assert_intern(index < nr); \
+		stroll_fheap_assert_intern(compare); \
+		\
+		unsigned int left = stroll_fheap_left_child_index(index); \
+		unsigned int right = stroll_fheap_right_child_index(index); \
+		\
+		while (right < nr) { \
+			if (compare(&array[left], &array[right], data) >= 0) \
+				index = left; \
+			else \
+				index = right; \
+			\
+			left = stroll_fheap_left_child_index(index); \
+			right = stroll_fheap_right_child_index(index); \
+		} \
+		if (left < nr) \
+			index = left; \
+		\
+		while (compare(elem, &array[index], data) > 0) { \
+			stroll_fheap_assert_intern(index); \
+			\
+			index = stroll_fheap_parent_index(index); \
+		} \
+		\
+		return index; \
+	}
+
+STROLL_FHEAP_FIND_MAX(stroll_fheap_find_max32, uint32_t)
+
+STROLL_FHEAP_FIND_MAX(stroll_fheap_find_max64, uint64_t)
 
 static inline __stroll_nonull(2, 3, 6)
 unsigned int
@@ -106,6 +186,13 @@ stroll_fheap_find_max_mem(unsigned int          index,
                           stroll_array_cmp_fn * compare,
                           void *                data)
 {
+	stroll_fheap_assert_intern(elem);
+	stroll_fheap_assert_intern(array);
+	stroll_fheap_assert_intern(nr);
+	stroll_fheap_assert_intern(index < nr);
+	stroll_fheap_assert_intern(size);
+	stroll_fheap_assert_intern(compare);
+
 	unsigned int left = stroll_fheap_left_child_index(index);
 	unsigned int right = stroll_fheap_right_child_index(index);
 
@@ -132,6 +219,54 @@ stroll_fheap_find_max_mem(unsigned int          index,
 	return index;
 }
 
+#define STROLL_FHEAP_SORT(_func, _find_max, _siftup, _type) \
+	static __stroll_nonull(1, 3) \
+	void \
+	_func(_type * __restrict    array, \
+	      unsigned int          nr, \
+	      stroll_array_cmp_fn * compare, \
+	      void *                data) \
+	{ \
+		stroll_fheap_assert_intern(array); \
+		stroll_fheap_assert_intern(nr > 1); \
+		stroll_fheap_assert_intern(compare); \
+		\
+		unsigned int idx; \
+		unsigned int leaf; \
+		\
+		idx = nr / 2; \
+		do { \
+			idx--; \
+			leaf = _find_max(idx, \
+			                 &array[idx], \
+			                 array, \
+			                 nr, \
+			                 compare, \
+			                 data); \
+			if (leaf != idx) \
+				_siftup(idx, leaf, array[idx], array); \
+		} while (idx); \
+		\
+		idx = nr; \
+		do { \
+			_type tmp = array[--idx]; \
+			\
+			array[idx] = array[0]; \
+			leaf = _find_max(0, &tmp, array, idx, compare, data); \
+			_siftup(0, leaf, tmp, array); \
+		} while (idx > 1); \
+	}
+
+STROLL_FHEAP_SORT(stroll_fheap_sort32,
+                  stroll_fheap_find_max32,
+                  stroll_fheap_siftup32,
+                  uint32_t)
+
+STROLL_FHEAP_SORT(stroll_fheap_sort64,
+                  stroll_fheap_find_max64,
+                  stroll_fheap_siftup64,
+                  uint64_t)
+
 static __stroll_nonull(1, 4)
 void
 stroll_fheap_sort_mem(char * __restrict     array,
@@ -149,7 +284,7 @@ stroll_fheap_sort_mem(char * __restrict     array,
 	unsigned int leaf;
 	char         tmp[size];
 
-        idx = nr / 2;
+	idx = nr / 2;
 	do {
 		idx--;
 		leaf = stroll_fheap_find_max_mem(idx,
@@ -161,8 +296,7 @@ stroll_fheap_sort_mem(char * __restrict     array,
 		                                 data);
 		if (leaf != idx) {
 			memcpy(tmp, &array[idx * size], size);
-			stroll_fheap_siftup_mem(idx, leaf, array, size);
-			memcpy(&array[leaf * size], tmp, size);
+			stroll_fheap_siftup_mem(idx, leaf, tmp, array, size);
 		}
 	} while (idx);
 
@@ -178,8 +312,7 @@ stroll_fheap_sort_mem(char * __restrict     array,
 		                                 size,
 		                                 compare,
 		                                 data);
-		stroll_fheap_siftup_mem(0, leaf, array, size);
-		memcpy(&array[leaf * size], tmp, size);
+		stroll_fheap_siftup_mem(0, leaf, tmp, array, size);
 	} while (idx > 1);
 }
 
@@ -198,7 +331,12 @@ stroll_array_heap_sort(void * __restrict     array,
 	if (nr == 1)
 		return;
 
-	return stroll_fheap_sort_mem(array, nr, size, compare, data);
+	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
+		return stroll_fheap_sort32(array, nr, compare, data);
+	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
+		return stroll_fheap_sort64(array, nr, compare, data);
+	else
+		return stroll_fheap_sort_mem(array, nr, size, compare, data);
 }
 
 #endif /* defined(CONFIG_STROLL_ARRAY_HEAP_SORT) */
@@ -206,6 +344,38 @@ stroll_array_heap_sort(void * __restrict     array,
 #if defined(CONFIG_STROLL_FHEAP)
 
 #include "stroll/heap.h"
+
+#define STROLL_FHEAP_INSERT(_func, _type) \
+	static __stroll_nonull(1, 2, 4) \
+	void \
+	_func(const _type * __restrict elem, \
+	      _type * __restrict       array, \
+	      unsigned int             nr, \
+	      stroll_array_cmp_fn *    compare, \
+	      void *                   data) \
+	{ \
+		stroll_fheap_assert_intern(elem); \
+		stroll_fheap_assert_intern(array); \
+		stroll_fheap_assert_intern((elem < array) || \
+		                           (elem >= &array[nr])); \
+		stroll_fheap_assert_intern(compare); \
+		\
+		while (nr) { \
+			unsigned int parent = stroll_fheap_parent_index(nr); \
+			\
+			if (compare(elem, &array[parent], data) >= 0) \
+				break; \
+			\
+			array[nr] = array[parent]; \
+			nr = parent; \
+		} \
+		\
+		array[nr] = *elem; \
+	}
+
+STROLL_FHEAP_INSERT(stroll_fheap_insert32, uint32_t)
+
+STROLL_FHEAP_INSERT(stroll_fheap_insert64, uint64_t)
 
 static __stroll_nonull(1, 2, 5)
 void
@@ -216,6 +386,13 @@ stroll_fheap_insert_mem(const char * __restrict elem,
                         stroll_array_cmp_fn *   compare,
                         void *                  data)
 {
+	stroll_fheap_assert_intern(elem);
+	stroll_fheap_assert_intern(array);
+	stroll_fheap_assert_intern(size);
+	stroll_fheap_assert_intern((elem < array) ||
+	                           (elem >= &array[nr * size]));
+	stroll_fheap_assert_intern(compare);
+
 	while (nr) {
 		unsigned int parent = stroll_fheap_parent_index(nr);
 
@@ -245,8 +422,57 @@ stroll_fheap_insert(const void * __restrict elem,
 	                         &((char *)array)[nr * size]));
 	stroll_fheap_assert_api(compare);
 
-	stroll_fheap_insert_mem(elem, array, nr, size, compare, data);
+	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
+		return stroll_fheap_insert32(elem, array, nr, compare, data);
+	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
+		return stroll_fheap_insert64(elem, array, nr, compare, data);
+	else
+		stroll_fheap_insert_mem(elem, array, nr, size, compare, data);
 }
+
+#define STROLL_FHEAP_FIND_MIN(_func, _type) \
+	static inline __stroll_nonull(2, 3, 5) \
+	unsigned int \
+	_func(unsigned int          index, \
+	      _type * __restrict    elem, \
+	      _type * __restrict    array, \
+	      unsigned int          nr, \
+	      stroll_array_cmp_fn * compare, \
+	      void *                data) \
+	{ \
+		stroll_fheap_assert_intern(elem); \
+		stroll_fheap_assert_intern(array); \
+		stroll_fheap_assert_intern(nr); \
+		stroll_fheap_assert_intern(index < nr); \
+		stroll_fheap_assert_intern(compare); \
+		\
+		unsigned int left = stroll_fheap_left_child_index(index); \
+		unsigned int right = stroll_fheap_right_child_index(index); \
+		\
+		while (right < nr) { \
+			if (compare(&array[left], &array[right], data) <= 0) \
+				index = left; \
+			else \
+				index = right; \
+			\
+			left = stroll_fheap_left_child_index(index); \
+			right = stroll_fheap_right_child_index(index); \
+		} \
+		if (left < nr) \
+			index = left; \
+		\
+		while (compare(elem, &array[index], data) < 0) { \
+			stroll_fheap_assert_api(index); \
+			\
+			index = stroll_fheap_parent_index(index); \
+		} \
+		\
+		return index; \
+	}
+
+STROLL_FHEAP_FIND_MIN(stroll_fheap_find_min32, uint32_t)
+
+STROLL_FHEAP_FIND_MIN(stroll_fheap_find_min64, uint64_t)
 
 static inline __stroll_nonull(2, 3, 6)
 unsigned int
@@ -258,6 +484,13 @@ stroll_fheap_find_min_mem(unsigned int          index,
                           stroll_array_cmp_fn * compare,
                           void *                data)
 {
+	stroll_fheap_assert_intern(elem);
+	stroll_fheap_assert_intern(array);
+	stroll_fheap_assert_intern(nr);
+	stroll_fheap_assert_intern(index < nr);
+	stroll_fheap_assert_intern(size);
+	stroll_fheap_assert_intern(compare);
+
 	unsigned int left = stroll_fheap_left_child_index(index);
 	unsigned int right = stroll_fheap_right_child_index(index);
 
@@ -284,6 +517,48 @@ stroll_fheap_find_min_mem(unsigned int          index,
 	return index;
 }
 
+#define STROLL_FHEAP_EXTRACT(_func, _find_min, _siftup, _type) \
+	static __stroll_nonull(1, 2, 4) \
+	void \
+	_func(_type * __restrict    elem, \
+	      _type * __restrict    array, \
+	      unsigned int          nr, \
+	      stroll_array_cmp_fn * compare, \
+	      void *                data) \
+	{ \
+		stroll_fheap_assert_intern(elem); \
+		stroll_fheap_assert_intern(array); \
+		stroll_fheap_assert_intern(nr); \
+		stroll_fheap_assert_intern((elem < array) || \
+		                           (elem >= &array[nr])); \
+		stroll_fheap_assert_intern(compare); \
+		\
+		*elem = array[0]; \
+		\
+		if (nr != 1) { \
+			unsigned int leaf; \
+			\
+			nr--; \
+			leaf = _find_min(0, \
+			                 &array[nr], \
+			                 array, \
+			                 nr, \
+			                 compare, \
+			                 data); \
+			_siftup(0, leaf, array[nr], array); \
+		} \
+	}
+
+STROLL_FHEAP_EXTRACT(stroll_fheap_extract32,
+                     stroll_fheap_find_min32,
+                     stroll_fheap_siftup32,
+                     uint32_t)
+
+STROLL_FHEAP_EXTRACT(stroll_fheap_extract64,
+                     stroll_fheap_find_min64,
+                     stroll_fheap_siftup64,
+                     uint64_t)
+
 static __stroll_nonull(1, 2, 5)
 void
 stroll_fheap_extract_mem(char * __restrict     elem,
@@ -293,6 +568,14 @@ stroll_fheap_extract_mem(char * __restrict     elem,
                          stroll_array_cmp_fn * compare,
                          void *                data)
 {
+	stroll_fheap_assert_intern(elem);
+	stroll_fheap_assert_intern(array);
+	stroll_fheap_assert_intern(nr);
+	stroll_fheap_assert_intern(size);
+	stroll_fheap_assert_intern((elem < array) ||
+	                           (elem >= &array[nr * size]));
+	stroll_fheap_assert_intern(compare);
+
 	memcpy(elem, array, size);
 
 	if (nr != 1) {
@@ -306,8 +589,11 @@ stroll_fheap_extract_mem(char * __restrict     elem,
 		                                 size,
 		                                 compare,
 		                                 data);
-		stroll_fheap_siftup_mem(0, leaf, array, size);
-		memcpy(&array[leaf * size], &array[nr * size], size);
+		stroll_fheap_siftup_mem(0,
+		                        leaf,
+		                        &array[nr * size],
+		                        array,
+		                        size);
 	}
 }
 
@@ -327,8 +613,52 @@ stroll_fheap_extract(void * __restrict     elem,
 	                        ((char *)elem >= &((char *)array)[nr * size]));
 	stroll_fheap_assert_api(compare);
 
-	stroll_fheap_extract_mem(elem, array, nr, size, compare, data);
+	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
+		return stroll_fheap_extract32(elem, array, nr, compare, data);
+	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
+		return stroll_fheap_extract64(elem, array, nr, compare, data);
+	else
+		stroll_fheap_extract_mem(elem, array, nr, size, compare, data);
 }
+
+#define STROLL_FHEAP_BUILD(_func, _find_min, _siftup, _type) \
+	static __stroll_nonull(1, 3) \
+	void \
+	_func(_type * __restrict    array, \
+	      unsigned int          nr, \
+	      stroll_array_cmp_fn * compare, \
+	      void *                data) \
+	{ \
+		stroll_fheap_assert_intern(array); \
+		stroll_fheap_assert_intern(nr > 1); \
+		stroll_fheap_assert_intern(compare); \
+		\
+		unsigned int idx = nr / 2; \
+		\
+		do { \
+			unsigned int leaf; \
+			\
+			idx--; \
+			leaf = _find_min(idx, \
+			                 &array[idx], \
+			                 array, \
+			                 nr, \
+			                 compare, \
+			                 data); \
+			if (leaf != idx) \
+				_siftup(idx, leaf, array[idx], array); \
+		} while (idx); \
+	}
+
+STROLL_FHEAP_BUILD(stroll_fheap_build32,
+                   stroll_fheap_find_min32,
+                   stroll_fheap_siftup32,
+                   uint32_t)
+
+STROLL_FHEAP_BUILD(stroll_fheap_build64,
+                   stroll_fheap_find_min64,
+                   stroll_fheap_siftup64,
+                   uint64_t)
 
 static __stroll_nonull(1, 4)
 void
@@ -338,7 +668,10 @@ stroll_fheap_build_mem(char * __restrict     array,
                        stroll_array_cmp_fn * compare,
                        void *                data)
 {
+	stroll_fheap_assert_intern(array);
 	stroll_fheap_assert_intern(nr > 1);
+	stroll_fheap_assert_intern(size);
+	stroll_fheap_assert_intern(compare);
 
 	unsigned int idx = nr / 2;
 
@@ -357,8 +690,7 @@ stroll_fheap_build_mem(char * __restrict     array,
 			char tmp[size];
 
 			memcpy(tmp, &array[idx * size], size);
-			stroll_fheap_siftup_mem(idx, leaf, array, size);
-			memcpy(&array[leaf * size], tmp, size);
+			stroll_fheap_siftup_mem(idx, leaf, tmp, array, size);
 		}
 	} while (idx);
 }
@@ -378,7 +710,12 @@ stroll_fheap_build(void * __restrict       array,
 	if (nr == 1)
 		return;
 
-	stroll_fheap_build_mem(array, nr, size, compare, data);
+	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
+		return stroll_fheap_build32(array, nr, compare, data);
+	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
+		return stroll_fheap_build64(array, nr, compare, data);
+	else
+		stroll_fheap_build_mem(array, nr, size, compare, data);
 }
 
 #endif /* defined(CONFIG_STROLL_FHEAP) */

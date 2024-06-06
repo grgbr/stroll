@@ -342,7 +342,7 @@ fi
 if [ -n "$req_sngl" ]; then
 	for s in $req_sngl; do
 		if ! echo "$singles" | grep -w -q $s; then
-			error "invalid ordering ratio '$s':" \
+			error "invalid distinct value ratio '$s':" \
 			      "no matching sample file."
 			exit 1
 		fi
