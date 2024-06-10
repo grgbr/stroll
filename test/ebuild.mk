@@ -106,12 +106,27 @@ ptest-data-files   := $(strip $(shell $(call ptest_data_files_cmds, \
 ptest_data_builddir := $(BUILDDIR)/data
 
 build-check: $(BUILDDIR)/stroll-array-ptest-run.sh \
+             $(BUILDDIR)/stroll-heap-ptest-run.sh \
+             $(BUILDDIR)/ptest-common.sh \
              $(addprefix $(ptest_data_builddir)/,$(ptest-data-files))
 
 $(BUILDDIR)/stroll-array-ptest-run.sh: $(SRCDIR)/array-ptest-run.sh \
                                        | $(BUILDDIR)/
 	sed -e 's;@@BINDIR@@;$(BINDIR);g' \
 	    -e 's;@@DATADIR@@;$(DATADIR);g' \
+	    -e 's;@@LIBEXECDIR@@;$(LIBEXECDIR);g' \
+	    $(<) > $(@)
+
+$(BUILDDIR)/stroll-heap-ptest-run.sh: $(SRCDIR)/heap-ptest-run.sh | $(BUILDDIR)/
+	sed -e 's;@@BINDIR@@;$(BINDIR);g' \
+	    -e 's;@@DATADIR@@;$(DATADIR);g' \
+	    -e 's;@@LIBEXECDIR@@;$(LIBEXECDIR);g' \
+	    $(<) > $(@)
+
+$(BUILDDIR)/ptest-common.sh: $(SRCDIR)/ptest-common.sh | $(BUILDDIR)/
+	sed -e 's;@@BINDIR@@;$(BINDIR);g' \
+	    -e 's;@@DATADIR@@;$(DATADIR);g' \
+	    -e 's;@@LIBEXECDIR@@;$(LIBEXECDIR);g' \
 	    $(<) > $(@)
 
 ptest_data_base := $(ptest_data_builddir)/stroll_ptest_
@@ -150,15 +165,27 @@ clean-check: _clean-check
 .PHONY: _clean-check
 _clean-check:
 	$(call rm_recipe,$(BUILDDIR)/stroll-array-ptest-run.sh)
+	$(call rm_recipe,$(BUILDDIR)/stroll-heap-ptest-run.sh)
+	$(call rm_recipe,$(BUILDDIR)/ptest-common.sh)
 	$(call rmr_recipe,$(BUILDDIR)/data)
 
 install-check install-strip-check: \
+	$(DESTDIR)$(LIBEXECDIR)/stroll/ptest-common.sh \
 	$(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh \
+	$(DESTDIR)$(BINDIR)/stroll-heap-ptest-run.sh \
 	$(addprefix $(DESTDIR)$(DATADIR)/stroll/,$(ptest-data-files))
 
-.PHONY: $(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh
+.PHONY: $(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh \
+        $(DESTDIR)$(BINDIR)/stroll-heap-ptest-run.sh \
+        $(DESTDIR)$(LIBEXECDIR)/stroll/ptest-common.sh
 $(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh: \
 	$(BUILDDIR)/stroll-array-ptest-run.sh
+	$(call install_recipe,--mode=755,$(<),$(@))
+$(DESTDIR)$(BINDIR)/stroll-heap-ptest-run.sh: \
+	$(BUILDDIR)/stroll-heap-ptest-run.sh
+	$(call install_recipe,--mode=755,$(<),$(@))
+$(DESTDIR)$(LIBEXECDIR)/stroll/ptest-common.sh: \
+	$(BUILDDIR)/ptest-common.sh
 	$(call install_recipe,--mode=755,$(<),$(@))
 
 .PHONY: $(addprefix $(DESTDIR)$(DATADIR)/stroll/,$(ptest-data-files))
@@ -170,7 +197,9 @@ uninstall-check: _uninstall-check
 
 .PHONY: _uninstall-check
 _uninstall-check:
+	$(call rm_recipe,$(DESTDIR)$(LIBEXECDIR)/stroll/ptest-common.sh)
 	$(call rm_recipe,$(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh)
+	$(call rm_recipe,$(DESTDIR)$(BINDIR)/stroll-heap-ptest-run.sh)
 	$(call rmr_recipe,$(DESTDIR)$(DATADIR)/stroll)
 
 endif # ($(CONFIG_STROLL_PTEST),y)
