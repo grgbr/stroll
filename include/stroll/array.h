@@ -453,16 +453,28 @@ stroll_array_merge_sort(void * __restrict     array,
 
 #endif /* defined(CONFIG_STROLL_ARRAY_MERGE_SORT) */
 
-#if defined(CONFIG_STROLL_ARRAY_HEAP_SORT)
+#if defined(CONFIG_STROLL_ARRAY_FBHEAP_SORT)
 
 extern void
-stroll_array_heap_sort(void * __restrict     array,
-                       unsigned int          nr,
-                       size_t                size,
-                       stroll_array_cmp_fn * compare,
-                       void *                data)
+stroll_array_fbheap_sort(void * __restrict     array,
+                         unsigned int          nr,
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                data)
 	__stroll_nonull(1, 4);
 
-#endif /* defined(CONFIG_STROLL_ARRAY_HEAP_SORT) */
+#endif /* defined(CONFIG_STROLL_ARRAY_FBHEAP_SORT) */
+
+#if defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT)
+
+extern int
+stroll_array_fwheap_sort(void * __restrict     array,
+                         unsigned int          nr,
+                         size_t                size,
+                         stroll_array_cmp_fn * compare,
+                         void *                data)
+	__stroll_nonull(1, 4) __warn_result;
+
+#endif /* defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT) */
 
 #endif /* _STROLL_ARRAY_H */

@@ -123,8 +123,14 @@ menuconfig STROLL_HEAP
 
 if STROLL_HEAP
 
-config STROLL_FHEAP
+config STROLL_FBHEAP
 	bool "Binary heap"
+	default STROLL_HEAP
+	help
+	  Document me!
+
+config STROLL_FWHEAP
+	bool "Weak heap"
 	default STROLL_HEAP
 	help
 	  Document me!
@@ -295,8 +301,14 @@ config STROLL_ARRAY_MERGE_SORT_RUNS_BYBLOCK
 	  by one single copy of a block of ordered primary elements.
 	  This may improve performances for partially / fully ordered data sets.
 
-config STROLL_ARRAY_HEAP_SORT
-	bool "Heap sort"
+config STROLL_ARRAY_FBHEAP_SORT
+	bool "Binary heap sort"
+	default y
+	help
+	  Document me!
+
+config STROLL_ARRAY_FWHEAP_SORT
+	bool "Weak heap sort"
 	default y
 	help
 	  Document me!

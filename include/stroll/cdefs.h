@@ -249,11 +249,13 @@
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 
+#define __stroll_pure
 #define __stroll_const
 
 #else  /* !(defined(CONFIG_STROLL_ASSERT_API) || \
             defined(CONFIG_STROLL_ASSERT_INTERN)) */
 
+#define __stroll_pure  __pure
 #define __stroll_const __const
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) || \
@@ -969,22 +971,19 @@
 		((_type *)((char *)(_ptr) - offsetof(_type, _member))); \
 	 })
 
-#define __ualign_mask(_value, _align) \
+#define stroll_align_mask(_value, _align) \
 	((typeof(_value))(_align) - 1)
 
 #define stroll_aligned(_value, _size) \
-	(!((_value) & __ualign_mask(_value, _size)))
+	(!((_value) & stroll_align_mask(_value, _size)))
 
-#define ualign_mask(_align) \
-	((_align) - 1)
+#define stroll_align_lower(_value, _align) \
+	((_value) & ~stroll_align_mask(_value, _align))
 
-#define ualign_lower(_value, _align) \
-	((_value) & ~__ualign_mask(_value, _align))
+#define stroll_align_upper(_value, _align) \
+	stroll_align_lower((_value) + stroll_align_mask(_value, _align), _align)
 
-#define ualign_upper(_value, _align) \
-	ualign_lower((_value) + __ualign_mask(_value, _align), _align)
-
-#define uround_upper(_value, _align) \
+#define stroll_round_upper(_value, _align) \
 	({ \
 		typeof(_value) __value = _value; \
 		typeof(_value) __align = _align; \
@@ -993,7 +992,7 @@
 		__value * __align; \
 	 })
 
-#define uround_lower(_value, _align) \
+#define stroll_round_lower(_value, _align) \
 	({ \
 		typeof(_value) __value = _value; \
 		typeof(_value) __align = _align; \

@@ -1185,18 +1185,46 @@ CUTE_SUITE_STATIC(strollut_array_merge_suite,
                   CUTE_NULL_TEARDOWN,
                   CUTE_DFLT_TMOUT);
 
-#if defined(CONFIG_STROLL_ARRAY_HEAP_SORT)
+#if defined(CONFIG_STROLL_ARRAY_FBHEAP_SORT)
 
-STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_heap_setup,
-                             stroll_array_heap_sort,
+STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_fbheap_setup,
+                             stroll_array_fbheap_sort,
                              false)
-#else   /* !defined(CONFIG_STROLL_ARRAY_HEAP_SORT) */
-STROLLUT_ARRAY_UNSUP(strollut_array_heap_setup)
-#endif  /* defined(CONFIG_STROLL_ARRAY_HEAP_SORT) */
+#else   /* !defined(CONFIG_STROLL_ARRAY_FBHEAP_SORT) */
+STROLLUT_ARRAY_UNSUP(strollut_array_fbheap_setup)
+#endif  /* defined(CONFIG_STROLL_ARRAY_FBHEAP_SORT) */
 
-CUTE_SUITE_STATIC(strollut_array_heap_suite,
+CUTE_SUITE_STATIC(strollut_array_fbheap_suite,
                   strollut_array_sort_group,
-                  strollut_array_heap_setup,
+                  strollut_array_fbheap_setup,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);
+
+#if defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT)
+
+static void
+strollut_array_fwheap_sort(void * __restrict     array,
+                           unsigned int          nr,
+                           size_t                size,
+                           stroll_array_cmp_fn * compare,
+                           void *                data)
+{
+	int err;
+
+	err = stroll_array_fwheap_sort(array, nr, size, compare, data);
+	cute_check_sint(err, equal, 0);
+}
+
+STROLLUT_ARRAY_SORT_ALGO_SUP(strollut_array_fwheap_setup,
+                             strollut_array_fwheap_sort,
+                             false)
+#else   /* !defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT) */
+STROLLUT_ARRAY_UNSUP(strollut_array_fwheap_setup)
+#endif  /* defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT) */
+
+CUTE_SUITE_STATIC(strollut_array_fwheap_suite,
+                  strollut_array_sort_group,
+                  strollut_array_fwheap_setup,
                   CUTE_NULL_TEARDOWN,
                   CUTE_DFLT_TMOUT);
 
@@ -1208,7 +1236,8 @@ CUTE_GROUP(strollut_array_group) = {
 	CUTE_REF(strollut_array_quick_suite),
 	CUTE_REF(strollut_array_3wquick_suite),
 	CUTE_REF(strollut_array_merge_suite),
-	CUTE_REF(strollut_array_heap_suite)
+	CUTE_REF(strollut_array_fbheap_suite),
+	CUTE_REF(strollut_array_fwheap_suite)
 };
 
 CUTE_SUITE_EXTERN(strollut_array_suite,

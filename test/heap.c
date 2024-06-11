@@ -5,7 +5,7 @@
  * Copyright (C) 2017-2024 Grégor Boirie <gregor.boirie@free.fr>
  ******************************************************************************/
 
-#include "stroll/heap.h"
+#include <stroll/cdefs.h>
 #include <cute/cute.h>
 #include <cute/check.h>
 #include <cute/expect.h>
@@ -41,7 +41,9 @@ strollut_qsort_compare_num_min(const void * first, const void * second)
 	return strollut_heap_compare_num_min(first, second, NULL);
 }
 
-#if defined(CONFIG_STROLL_FHEAP)
+#if defined(CONFIG_STROLL_FBHEAP)
+
+#include "stroll/fbheap.h"
 
 static const struct strollut_heap_elem strollut_heap_array1[] = {
 	{ 0, "0zero" },
@@ -153,12 +155,12 @@ strollut_heap_check_extract(const struct strollut_heap_elem * array,
 	for (e = 0; e < nr; e++) {
 		struct strollut_heap_elem elem;
 
-		stroll_fheap_extract(&elem,
-		                     heap,
-		                     nr - e,
-		                     sizeof(array[0]),
-		                     heap_cmp,
-		                     NULL);
+		_stroll_fbheap_extract(&elem,
+		                       heap,
+		                       nr - e,
+		                       sizeof(array[0]),
+		                       heap_cmp,
+		                       NULL);
 
 		cute_check_uint(elem.id, equal, sorted[e].id);
 		cute_check_str(elem.str, equal, sorted[e].str);
@@ -170,7 +172,7 @@ strollut_heap_check_extract(const struct strollut_heap_elem * array,
 	}
 }
 
-CUTE_TEST(strollut_fheap_extract1)
+CUTE_TEST(strollut_fbheap_extract1)
 {
 	strollut_heap_check_extract(strollut_heap_array1,
 	                            stroll_array_nr(strollut_heap_array1),
@@ -178,7 +180,7 @@ CUTE_TEST(strollut_fheap_extract1)
 	                            strollut_qsort_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_extract2)
+CUTE_TEST(strollut_fbheap_extract2)
 {
 	strollut_heap_check_extract(strollut_heap_array2,
 	                            stroll_array_nr(strollut_heap_array2),
@@ -186,7 +188,7 @@ CUTE_TEST(strollut_fheap_extract2)
 	                            strollut_qsort_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_extract3)
+CUTE_TEST(strollut_fbheap_extract3)
 {
 	strollut_heap_check_extract(strollut_heap_array3,
 	                            stroll_array_nr(strollut_heap_array3),
@@ -194,7 +196,7 @@ CUTE_TEST(strollut_fheap_extract3)
 	                            strollut_qsort_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_extract4)
+CUTE_TEST(strollut_fbheap_extract4)
 {
 	strollut_heap_check_extract(strollut_heap_array4,
 	                            stroll_array_nr(strollut_heap_array4),
@@ -202,7 +204,7 @@ CUTE_TEST(strollut_fheap_extract4)
 	                            strollut_qsort_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_extract5)
+CUTE_TEST(strollut_fbheap_extract5)
 {
 	strollut_heap_check_extract(strollut_heap_array5,
 	                            stroll_array_nr(strollut_heap_array5),
@@ -210,7 +212,7 @@ CUTE_TEST(strollut_fheap_extract5)
 	                            strollut_qsort_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_extract6)
+CUTE_TEST(strollut_fbheap_extract6)
 {
 	strollut_heap_check_extract(strollut_heap_array6,
 	                            stroll_array_nr(strollut_heap_array6),
@@ -218,7 +220,7 @@ CUTE_TEST(strollut_fheap_extract6)
 	                            strollut_qsort_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_extract7)
+CUTE_TEST(strollut_fbheap_extract7)
 {
 	strollut_heap_check_extract(strollut_heap_array7,
 	                            stroll_array_nr(strollut_heap_array7),
@@ -226,7 +228,7 @@ CUTE_TEST(strollut_fheap_extract7)
 	                            strollut_qsort_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_extract8)
+CUTE_TEST(strollut_fbheap_extract8)
 {
 	strollut_heap_check_extract(strollut_heap_array8,
 	                            stroll_array_nr(strollut_heap_array8),
@@ -242,61 +244,61 @@ strollut_heap_check_build_inorder(const struct strollut_heap_elem * array,
 	struct strollut_heap_elem heap[nr];
 
 	memcpy(heap, array, sizeof(heap));
-	stroll_fheap_build(heap, nr, sizeof(heap[0]), heap_cmp, NULL);
+	_stroll_fbheap_build(heap, nr, sizeof(heap[0]), heap_cmp, NULL);
 
 	strollut_heap_check_recurs(0, heap, nr, heap_cmp);
 }
 
-CUTE_TEST(strollut_fheap_build_inorder1)
+CUTE_TEST(strollut_fbheap_build_inorder1)
 {
 	strollut_heap_check_build_inorder(strollut_heap_array1,
 	                                  stroll_array_nr(strollut_heap_array1),
 	                                  strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_inorder2)
+CUTE_TEST(strollut_fbheap_build_inorder2)
 {
 	strollut_heap_check_build_inorder(strollut_heap_array2,
 	                                  stroll_array_nr(strollut_heap_array2),
 	                                  strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_inorder3)
+CUTE_TEST(strollut_fbheap_build_inorder3)
 {
 	strollut_heap_check_build_inorder(strollut_heap_array3,
 	                                  stroll_array_nr(strollut_heap_array3),
 	                                  strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_inorder4)
+CUTE_TEST(strollut_fbheap_build_inorder4)
 {
 	strollut_heap_check_build_inorder(strollut_heap_array4,
 	                                  stroll_array_nr(strollut_heap_array4),
 	                                  strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_inorder5)
+CUTE_TEST(strollut_fbheap_build_inorder5)
 {
 	strollut_heap_check_build_inorder(strollut_heap_array5,
 	                                  stroll_array_nr(strollut_heap_array5),
 	                                  strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_inorder6)
+CUTE_TEST(strollut_fbheap_build_inorder6)
 {
 	strollut_heap_check_build_inorder(strollut_heap_array6,
 	                                  stroll_array_nr(strollut_heap_array6),
 	                                  strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_inorder7)
+CUTE_TEST(strollut_fbheap_build_inorder7)
 {
 	strollut_heap_check_build_inorder(strollut_heap_array7,
 	                                  stroll_array_nr(strollut_heap_array7),
 	                                  strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_inorder8)
+CUTE_TEST(strollut_fbheap_build_inorder8)
 {
 	strollut_heap_check_build_inorder(strollut_heap_array8,
 	                                  stroll_array_nr(strollut_heap_array8),
@@ -314,12 +316,12 @@ strollut_heap_check_build_revorder(const struct strollut_heap_elem * array,
 	for (e = 0; e < nr; e++)
 		memcpy(&heap[e], &array[nr - 1 - e], sizeof(heap[0]));
 
-	stroll_fheap_build(heap, nr, sizeof(heap[0]), heap_cmp, NULL);
+	_stroll_fbheap_build(heap, nr, sizeof(heap[0]), heap_cmp, NULL);
 
 	strollut_heap_check_recurs(0, heap, nr, heap_cmp);
 }
 
-CUTE_TEST(strollut_fheap_build_revorder1)
+CUTE_TEST(strollut_fbheap_build_revorder1)
 {
 	strollut_heap_check_build_revorder(
 		strollut_heap_array1,
@@ -327,7 +329,7 @@ CUTE_TEST(strollut_fheap_build_revorder1)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_revorder2)
+CUTE_TEST(strollut_fbheap_build_revorder2)
 {
 	strollut_heap_check_build_revorder(
 		strollut_heap_array2,
@@ -335,7 +337,7 @@ CUTE_TEST(strollut_fheap_build_revorder2)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_revorder3)
+CUTE_TEST(strollut_fbheap_build_revorder3)
 {
 	strollut_heap_check_build_revorder(
 		strollut_heap_array3,
@@ -343,7 +345,7 @@ CUTE_TEST(strollut_fheap_build_revorder3)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_revorder4)
+CUTE_TEST(strollut_fbheap_build_revorder4)
 {
 	strollut_heap_check_build_revorder(
 		strollut_heap_array4,
@@ -351,7 +353,7 @@ CUTE_TEST(strollut_fheap_build_revorder4)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_revorder5)
+CUTE_TEST(strollut_fbheap_build_revorder5)
 {
 	strollut_heap_check_build_revorder(
 		strollut_heap_array5,
@@ -359,7 +361,7 @@ CUTE_TEST(strollut_fheap_build_revorder5)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_revorder6)
+CUTE_TEST(strollut_fbheap_build_revorder6)
 {
 	strollut_heap_check_build_revorder(
 		strollut_heap_array6,
@@ -367,7 +369,7 @@ CUTE_TEST(strollut_fheap_build_revorder6)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_revorder7)
+CUTE_TEST(strollut_fbheap_build_revorder7)
 {
 	strollut_heap_check_build_revorder(
 		strollut_heap_array7,
@@ -375,7 +377,7 @@ CUTE_TEST(strollut_fheap_build_revorder7)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_build_revorder8)
+CUTE_TEST(strollut_fbheap_build_revorder8)
 {
 	strollut_heap_check_build_revorder(
 		strollut_heap_array8,
@@ -392,12 +394,12 @@ strollut_heap_check_insert_inorder(const struct strollut_heap_elem * array,
 	unsigned int              e;
 
 	for (e = 0; e < nr; e++) {
-		stroll_fheap_insert(&array[e],
-		                    heap,
-		                    e,
-		                    sizeof(array[0]),
-		                    heap_cmp,
-		                    NULL);
+		_stroll_fbheap_insert(&array[e],
+		                      heap,
+		                      e,
+		                      sizeof(array[0]),
+		                      heap_cmp,
+		                      NULL);
 		strollut_heap_check_recurs(0,
 		                           heap,
 		                           e + 1,
@@ -405,7 +407,7 @@ strollut_heap_check_insert_inorder(const struct strollut_heap_elem * array,
 	}
 }
 
-CUTE_TEST(strollut_fheap_insert_inorder1)
+CUTE_TEST(strollut_fbheap_insert_inorder1)
 {
 	strollut_heap_check_insert_inorder(
 		strollut_heap_array1,
@@ -413,7 +415,7 @@ CUTE_TEST(strollut_fheap_insert_inorder1)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_inorder2)
+CUTE_TEST(strollut_fbheap_insert_inorder2)
 {
 	strollut_heap_check_insert_inorder(
 		strollut_heap_array2,
@@ -421,7 +423,7 @@ CUTE_TEST(strollut_fheap_insert_inorder2)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_inorder3)
+CUTE_TEST(strollut_fbheap_insert_inorder3)
 {
 	strollut_heap_check_insert_inorder(
 		strollut_heap_array3,
@@ -429,7 +431,7 @@ CUTE_TEST(strollut_fheap_insert_inorder3)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_inorder4)
+CUTE_TEST(strollut_fbheap_insert_inorder4)
 {
 	strollut_heap_check_insert_inorder(
 		strollut_heap_array4,
@@ -437,7 +439,7 @@ CUTE_TEST(strollut_fheap_insert_inorder4)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_inorder5)
+CUTE_TEST(strollut_fbheap_insert_inorder5)
 {
 	strollut_heap_check_insert_inorder(
 		strollut_heap_array5,
@@ -445,7 +447,7 @@ CUTE_TEST(strollut_fheap_insert_inorder5)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_inorder6)
+CUTE_TEST(strollut_fbheap_insert_inorder6)
 {
 	strollut_heap_check_insert_inorder(
 		strollut_heap_array6,
@@ -453,7 +455,7 @@ CUTE_TEST(strollut_fheap_insert_inorder6)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_inorder7)
+CUTE_TEST(strollut_fbheap_insert_inorder7)
 {
 	strollut_heap_check_insert_inorder(
 		strollut_heap_array7,
@@ -461,7 +463,7 @@ CUTE_TEST(strollut_fheap_insert_inorder7)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_inorder8)
+CUTE_TEST(strollut_fbheap_insert_inorder8)
 {
 	strollut_heap_check_insert_inorder(
 		strollut_heap_array8,
@@ -478,12 +480,12 @@ strollut_heap_check_insert_revorder(const struct strollut_heap_elem * array,
 	unsigned int              e = nr;
 
 	for (e = 0; e < nr; e++) {
-		stroll_fheap_insert(&array[nr - 1 - e],
-		                    heap,
-		                    e,
-		                    sizeof(array[0]),
-		                    heap_cmp,
-		                    NULL);
+		_stroll_fbheap_insert(&array[nr - 1 - e],
+		                      heap,
+		                      e,
+		                      sizeof(array[0]),
+		                      heap_cmp,
+		                      NULL);
 		strollut_heap_check_recurs(0,
 		                           heap,
 		                           e + 1,
@@ -491,7 +493,7 @@ strollut_heap_check_insert_revorder(const struct strollut_heap_elem * array,
 	}
 }
 
-CUTE_TEST(strollut_fheap_insert_revorder1)
+CUTE_TEST(strollut_fbheap_insert_revorder1)
 {
 	strollut_heap_check_insert_revorder(
 		strollut_heap_array1,
@@ -499,7 +501,7 @@ CUTE_TEST(strollut_fheap_insert_revorder1)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_revorder2)
+CUTE_TEST(strollut_fbheap_insert_revorder2)
 {
 	strollut_heap_check_insert_revorder(
 		strollut_heap_array2,
@@ -507,7 +509,7 @@ CUTE_TEST(strollut_fheap_insert_revorder2)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_revorder3)
+CUTE_TEST(strollut_fbheap_insert_revorder3)
 {
 	strollut_heap_check_insert_revorder(
 		strollut_heap_array3,
@@ -515,7 +517,7 @@ CUTE_TEST(strollut_fheap_insert_revorder3)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_revorder4)
+CUTE_TEST(strollut_fbheap_insert_revorder4)
 {
 	strollut_heap_check_insert_revorder(
 		strollut_heap_array4,
@@ -523,7 +525,7 @@ CUTE_TEST(strollut_fheap_insert_revorder4)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_revorder5)
+CUTE_TEST(strollut_fbheap_insert_revorder5)
 {
 	strollut_heap_check_insert_revorder(
 		strollut_heap_array5,
@@ -531,7 +533,7 @@ CUTE_TEST(strollut_fheap_insert_revorder5)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_revorder6)
+CUTE_TEST(strollut_fbheap_insert_revorder6)
 {
 	strollut_heap_check_insert_revorder(
 		strollut_heap_array6,
@@ -539,7 +541,7 @@ CUTE_TEST(strollut_fheap_insert_revorder6)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_revorder7)
+CUTE_TEST(strollut_fbheap_insert_revorder7)
 {
 	strollut_heap_check_insert_revorder(
 		strollut_heap_array7,
@@ -547,7 +549,7 @@ CUTE_TEST(strollut_fheap_insert_revorder7)
 		strollut_heap_compare_num_min);
 }
 
-CUTE_TEST(strollut_fheap_insert_revorder8)
+CUTE_TEST(strollut_fbheap_insert_revorder8)
 {
 	strollut_heap_check_insert_revorder(
 		strollut_heap_array8,
@@ -555,110 +557,110 @@ CUTE_TEST(strollut_fheap_insert_revorder8)
 		strollut_heap_compare_num_min);
 }
 
-#else  /* !defined(CONFIG_STROLL_FHEAP) */
+#else  /* !defined(CONFIG_STROLL_FBHEAP) */
 
-STROLLUT_HEAP_UNSUP(strollut_fheap_extract1)
-STROLLUT_HEAP_UNSUP(strollut_fheap_extract2)
-STROLLUT_HEAP_UNSUP(strollut_fheap_extract3)
-STROLLUT_HEAP_UNSUP(strollut_fheap_extract4)
-STROLLUT_HEAP_UNSUP(strollut_fheap_extract5)
-STROLLUT_HEAP_UNSUP(strollut_fheap_extract6)
-STROLLUT_HEAP_UNSUP(strollut_fheap_extract7)
-STROLLUT_HEAP_UNSUP(strollut_fheap_extract8)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_extract1)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_extract2)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_extract3)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_extract4)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_extract5)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_extract6)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_extract7)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_extract8)
 
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_inorder1)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_inorder2)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_inorder3)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_inorder4)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_inorder5)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_inorder6)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_inorder7)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_inorder8)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_inorder1)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_inorder2)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_inorder3)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_inorder4)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_inorder5)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_inorder6)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_inorder7)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_inorder8)
 
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_revorder1)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_revorder2)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_revorder3)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_revorder4)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_revorder5)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_revorder6)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_revorder7)
-STROLLUT_HEAP_UNSUP(strollut_fheap_build_revorder8)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_revorder1)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_revorder2)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_revorder3)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_revorder4)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_revorder5)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_revorder6)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_revorder7)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_build_revorder8)
 
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_inorder1)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_inorder2)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_inorder3)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_inorder4)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_inorder5)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_inorder6)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_inorder7)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_inorder8)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_inorder1)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_inorder2)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_inorder3)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_inorder4)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_inorder5)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_inorder6)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_inorder7)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_inorder8)
 
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_revorder1)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_revorder2)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_revorder3)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_revorder4)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_revorder5)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_revorder6)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_revorder7)
-STROLLUT_HEAP_UNSUP(strollut_fheap_insert_revorder8)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_revorder1)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_revorder2)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_revorder3)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_revorder4)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_revorder5)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_revorder6)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_revorder7)
+STROLLUT_HEAP_UNSUP(strollut_fbheap_insert_revorder8)
 
-#endif /* defined(CONFIG_STROLL_FHEAP) */
+#endif /* defined(CONFIG_STROLL_FBHEAP) */
 
-CUTE_GROUP(strollut_fheap_group) = {
-	CUTE_REF(strollut_fheap_extract1),
-	CUTE_REF(strollut_fheap_extract2),
-	CUTE_REF(strollut_fheap_extract3),
-	CUTE_REF(strollut_fheap_extract4),
-	CUTE_REF(strollut_fheap_extract5),
-	CUTE_REF(strollut_fheap_extract6),
-	CUTE_REF(strollut_fheap_extract7),
-	CUTE_REF(strollut_fheap_extract8),
+CUTE_GROUP(strollut_fbheap_group) = {
+	CUTE_REF(strollut_fbheap_extract1),
+	CUTE_REF(strollut_fbheap_extract2),
+	CUTE_REF(strollut_fbheap_extract3),
+	CUTE_REF(strollut_fbheap_extract4),
+	CUTE_REF(strollut_fbheap_extract5),
+	CUTE_REF(strollut_fbheap_extract6),
+	CUTE_REF(strollut_fbheap_extract7),
+	CUTE_REF(strollut_fbheap_extract8),
 
-	CUTE_REF(strollut_fheap_build_inorder1),
-	CUTE_REF(strollut_fheap_build_inorder2),
-	CUTE_REF(strollut_fheap_build_inorder3),
-	CUTE_REF(strollut_fheap_build_inorder4),
-	CUTE_REF(strollut_fheap_build_inorder5),
-	CUTE_REF(strollut_fheap_build_inorder6),
-	CUTE_REF(strollut_fheap_build_inorder7),
-	CUTE_REF(strollut_fheap_build_inorder8),
+	CUTE_REF(strollut_fbheap_build_inorder1),
+	CUTE_REF(strollut_fbheap_build_inorder2),
+	CUTE_REF(strollut_fbheap_build_inorder3),
+	CUTE_REF(strollut_fbheap_build_inorder4),
+	CUTE_REF(strollut_fbheap_build_inorder5),
+	CUTE_REF(strollut_fbheap_build_inorder6),
+	CUTE_REF(strollut_fbheap_build_inorder7),
+	CUTE_REF(strollut_fbheap_build_inorder8),
 
-	CUTE_REF(strollut_fheap_build_revorder1),
-	CUTE_REF(strollut_fheap_build_revorder2),
-	CUTE_REF(strollut_fheap_build_revorder3),
-	CUTE_REF(strollut_fheap_build_revorder4),
-	CUTE_REF(strollut_fheap_build_revorder5),
-	CUTE_REF(strollut_fheap_build_revorder6),
-	CUTE_REF(strollut_fheap_build_revorder7),
-	CUTE_REF(strollut_fheap_build_revorder8),
+	CUTE_REF(strollut_fbheap_build_revorder1),
+	CUTE_REF(strollut_fbheap_build_revorder2),
+	CUTE_REF(strollut_fbheap_build_revorder3),
+	CUTE_REF(strollut_fbheap_build_revorder4),
+	CUTE_REF(strollut_fbheap_build_revorder5),
+	CUTE_REF(strollut_fbheap_build_revorder6),
+	CUTE_REF(strollut_fbheap_build_revorder7),
+	CUTE_REF(strollut_fbheap_build_revorder8),
 
-	CUTE_REF(strollut_fheap_insert_inorder1),
-	CUTE_REF(strollut_fheap_insert_inorder2),
-	CUTE_REF(strollut_fheap_insert_inorder3),
-	CUTE_REF(strollut_fheap_insert_inorder4),
-	CUTE_REF(strollut_fheap_insert_inorder5),
-	CUTE_REF(strollut_fheap_insert_inorder6),
-	CUTE_REF(strollut_fheap_insert_inorder7),
-	CUTE_REF(strollut_fheap_insert_inorder8),
+	CUTE_REF(strollut_fbheap_insert_inorder1),
+	CUTE_REF(strollut_fbheap_insert_inorder2),
+	CUTE_REF(strollut_fbheap_insert_inorder3),
+	CUTE_REF(strollut_fbheap_insert_inorder4),
+	CUTE_REF(strollut_fbheap_insert_inorder5),
+	CUTE_REF(strollut_fbheap_insert_inorder6),
+	CUTE_REF(strollut_fbheap_insert_inorder7),
+	CUTE_REF(strollut_fbheap_insert_inorder8),
 
-	CUTE_REF(strollut_fheap_insert_revorder1),
-	CUTE_REF(strollut_fheap_insert_revorder2),
-	CUTE_REF(strollut_fheap_insert_revorder3),
-	CUTE_REF(strollut_fheap_insert_revorder4),
-	CUTE_REF(strollut_fheap_insert_revorder5),
-	CUTE_REF(strollut_fheap_insert_revorder6),
-	CUTE_REF(strollut_fheap_insert_revorder7),
-	CUTE_REF(strollut_fheap_insert_revorder8),
+	CUTE_REF(strollut_fbheap_insert_revorder1),
+	CUTE_REF(strollut_fbheap_insert_revorder2),
+	CUTE_REF(strollut_fbheap_insert_revorder3),
+	CUTE_REF(strollut_fbheap_insert_revorder4),
+	CUTE_REF(strollut_fbheap_insert_revorder5),
+	CUTE_REF(strollut_fbheap_insert_revorder6),
+	CUTE_REF(strollut_fbheap_insert_revorder7),
+	CUTE_REF(strollut_fbheap_insert_revorder8),
 };
 
-CUTE_SUITE_STATIC(strollut_fheap_suite,
-                  strollut_fheap_group,
+CUTE_SUITE_STATIC(strollut_fbheap_suite,
+                  strollut_fbheap_group,
                   CUTE_NULL_SETUP,
                   CUTE_NULL_TEARDOWN,
                   CUTE_DFLT_TMOUT);
 
 CUTE_GROUP(strollut_heap_group) = {
-	CUTE_REF(strollut_fheap_suite)
+	CUTE_REF(strollut_fbheap_suite)
 };
 
 CUTE_SUITE_EXTERN(strollut_heap_suite,

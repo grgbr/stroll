@@ -41,7 +41,7 @@ stroll_array_ptest_run()
 }
 
 simple_algos="bubble select insert"
-algos="qsort quick 3wquick merge heap $simple_algos"
+algos="qsort quick 3wquick merge fbheap fwheap $simple_algos"
 
 if [ $show -eq 1 ]; then
 	echo "#Samples:        $nr"

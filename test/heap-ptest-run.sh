@@ -57,7 +57,7 @@ stroll_array_ptest_run()
 	awk -F': *' "$ptest_parse_awk"
 }
 
-algos="fheap"
+algos="fbheap"
 
 if [ $show -eq 1 ]; then
 	echo "#Samples:        $nr"

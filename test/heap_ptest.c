@@ -1,5 +1,5 @@
 #include "ptest.h"
-#include "stroll/heap.h"
+#include "stroll/fbheap.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <getopt.h>
@@ -283,12 +283,12 @@ strollpt_heap_extract(struct strollpt_elem * __restrict       array,
 }
 
 static const struct strollpt_heap_iface strollpt_heap_algos[] = {
-#if defined(CONFIG_STROLL_FHEAP)
+#if defined(CONFIG_STROLL_FBHEAP)
 	{
-		.name     = "fheap",
-		.build    = stroll_fheap_build,
-		.insert   = stroll_fheap_insert,
-		.extract  = stroll_fheap_extract
+		.name     = "fbheap",
+		.build    = _stroll_fbheap_build,
+		.insert   = _stroll_fbheap_insert,
+		.extract  = _stroll_fbheap_extract
 	},
 #endif
 };
