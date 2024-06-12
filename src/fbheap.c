@@ -755,11 +755,11 @@ stroll_fbheap_build(struct stroll_fbheap * __restrict heap,
 }
 
 void
-stroll_fbheap_init(struct stroll_fbheap * __restrict heap,
-                   void * __restrict                 array,
-                   unsigned int                      nr,
-                   size_t                            size,
-                   stroll_array_cmp_fn *             compare)
+stroll_fbheap_setup(struct stroll_fbheap * __restrict heap,
+                    void * __restrict                 array,
+                    unsigned int                      nr,
+                    size_t                            size,
+                    stroll_array_cmp_fn *             compare)
 {
 	stroll_fbheap_assert_api(heap);
 	stroll_fbheap_assert_api(array);
@@ -772,6 +772,28 @@ stroll_fbheap_init(struct stroll_fbheap * __restrict heap,
 	heap->size = size;
 	heap->compare = compare;
 	heap->elems = array;
+}
+
+struct stroll_fbheap *
+stroll_fbheap_create(void * __restrict     array,
+                     unsigned int          nr,
+                     size_t                size,
+                     stroll_array_cmp_fn * compare)
+{
+	stroll_fbheap_assert_api(array);
+	stroll_fbheap_assert_api(nr);
+	stroll_fbheap_assert_api(size);
+	stroll_fbheap_assert_api(compare);
+
+	struct stroll_fbheap * heap;
+
+	heap = malloc(sizeof(*heap));
+	if (!heap)
+		return NULL;
+
+	stroll_fbheap_setup(heap, array, nr, size, compare);
+
+	return heap;
 }
 
 #endif /* defined(CONFIG_STROLL_FBHEAP) */

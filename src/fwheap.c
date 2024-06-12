@@ -144,7 +144,7 @@ stroll_fwheap_fast_dancestor_index(unsigned int index)
  * in the subtree rooted at Aj.
  */
 static inline __stroll_nonull(3, 4, 6)
-bool
+void
 stroll_fwheap_join_mem(unsigned int               first,
                        unsigned int               second,
                        char * __restrict          array,
@@ -164,11 +164,7 @@ stroll_fwheap_join_mem(unsigned int               first,
 
 		/* Flip former distinguished ancestor's children. */
 		_stroll_fbmap_toggle(rbits, second);
-
-		return false;
 	}
-
-	return true;
 }
 
 /*
@@ -224,7 +220,8 @@ stroll_fwheap_siftdwn_mem(unsigned int               index,
 	}
 }
 
-#if 0
+#define BUILD 0
+#if BUILD == 0
 /*
  * Perform bottom-up construction of a weak heap from the content of "nodes".
  *
@@ -260,8 +257,7 @@ stroll_fwheap_build_mem(char * __restrict          array,
 		                       data);
 	} while (nr != 1);
 }
-#else
-#if 0
+#elif BUILD == 1
 static __stroll_nonull(1, 2, 5)
 void
 stroll_fwheap_build_mem(char * __restrict          array,
@@ -287,8 +283,7 @@ stroll_fwheap_build_mem(char * __restrict          array,
 		                          data);
 	} while (idx);
 }
-#endif
-
+#else
 static __stroll_nonull(3, 4, 7)
 void
 stroll_fwheap_build_recmem(unsigned int               parent,
@@ -338,6 +333,7 @@ stroll_fwheap_build_mem(char * __restrict          array,
 {
 	stroll_fwheap_assert_intern(nr > 1);
 
+	/* FIXME: ensure 0 bit is cleared when nr == 0 !! */
 	_stroll_fbmap_clear_all(rbits, nr);
 
 	stroll_fwheap_build_recmem(0,
@@ -349,7 +345,6 @@ stroll_fwheap_build_mem(char * __restrict          array,
 	                           compare,
 	                           data);
 }
-
 #endif
 
 #if defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT)

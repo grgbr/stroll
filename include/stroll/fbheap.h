@@ -21,6 +21,7 @@
 
 #include <stroll/array.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 
@@ -169,11 +170,25 @@ stroll_fbheap_clear(struct stroll_fbheap * __restrict heap)
 }
 
 extern void
-stroll_fbheap_init(struct stroll_fbheap * __restrict heap,
-                   void * __restrict                 array,
-                   unsigned int                      nr,
-                   size_t                            size,
-                   stroll_array_cmp_fn *             compare)
-	__stroll_nonull(1) __stroll_nothrow __leaf;
+stroll_fbheap_setup(struct stroll_fbheap * __restrict heap,
+                    void * __restrict                 array,
+                    unsigned int                      nr,
+                    size_t                            size,
+                    stroll_array_cmp_fn *             compare)
+	__stroll_nonull(1, 2, 5) __stroll_nothrow __leaf;
+
+extern struct stroll_fbheap *
+stroll_fbheap_create(void * __restrict     array,
+                     unsigned int          nr,
+                     size_t                size,
+                     stroll_array_cmp_fn * compare)
+	__stroll_nonull(1, 4) __stroll_nothrow __warn_result;
+
+static inline __stroll_nothrow
+void
+stroll_fbheap_destroy(struct stroll_fbheap * heap)
+{
+	free(heap);
+}
 
 #endif /* _STROLL_FBHEAP_H */

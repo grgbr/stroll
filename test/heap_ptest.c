@@ -6,37 +6,34 @@
 #include <string.h>
 #include <math.h>
 
-typedef void
-        (strollpt_heap_build_fn)(void * __restrict     array,
-                                 unsigned int          nr,
-                                 size_t                size,
-                                 stroll_array_cmp_fn * compare,
-                                 void *                data)
-	__stroll_nonull(1, 4);
+typedef void * (strollpt_heap_create_fn)(void * __restrict,
+                                         unsigned int,
+                                         size_t,
+                                         stroll_array_cmp_fn *)
+	__stroll_nonull(1, 4) __warn_result;
 
-typedef void
-        (strollpt_heap_insert_fn)(const void * __restrict elem,
-                                  void * __restrict       array,
-                                  unsigned int            nr,
-                                  size_t                  size,
-                                  stroll_array_cmp_fn *   compare,
-                                  void *                  data)
-	__stroll_nonull(1, 2, 5);
+typedef void (strollpt_heap_destroy_fn)(void * __restrict) __stroll_nonull(1);
 
-typedef void
-        (strollpt_heap_extract_fn)(void * __restrict     elem,
-                                   void * __restrict     array,
-                                   unsigned int          nr,
-                                   size_t                size,
-                                   stroll_array_cmp_fn * compare,
-                                   void *                data)
-	__stroll_nonull(1, 2, 5);
+typedef void (strollpt_heap_build_fn)(void * __restrict) __stroll_nonull(1);
+
+typedef void (strollpt_heap_insert_fn)(void * __restrict,
+                                       const void * __restrict)
+	__stroll_nonull(1, 2);
+
+typedef void (strollpt_heap_extract_fn)(void * __restrict, void * __restrict)
+	__stroll_nonull(1, 2);
+
+typedef unsigned int (strollpt_heap_count_fn)(void * __restrict)
+	__stroll_nonull(1);
 
 struct strollpt_heap_iface {
 	const char  *              name;
+	strollpt_heap_create_fn *  create;
+	strollpt_heap_destroy_fn * destroy;
 	strollpt_heap_build_fn *   build;
 	strollpt_heap_insert_fn *  insert;
 	strollpt_heap_extract_fn * extract;
+	strollpt_heap_count_fn *   count;
 };
 
 struct strollpt_elem {
@@ -127,15 +124,13 @@ strollpt_heap_validate(unsigned int                 index,
 }
 
 static int
-strollpt_heap_prepare(struct strollpt_elem ** __restrict array,
-                      struct strollpt_elem ** __restrict heap,
+strollpt_heap_prepare(void ** __restrict                 heap,
+                      struct strollpt_elem ** __restrict array,
                       const unsigned int * __restrict    elements,
                       unsigned int                       nr,
                       size_t                             size,
                       const struct strollpt_heap_iface * algo)
 {
-	assert(array);
-	assert(heap);
 	assert(elements);
 	assert(nr);
 	assert(size >= sizeof(elements[0]));
@@ -143,70 +138,78 @@ strollpt_heap_prepare(struct strollpt_elem ** __restrict array,
 	assert(algo);
 
 	struct strollpt_elem * arr;
-	struct strollpt_elem * hp;
 	unsigned int *         sort;
+	void *                 hp;
 	unsigned int           e;
 
 	arr = strollpt_array_create(elements, nr, size);
 	if (!arr)
 		return EXIT_FAILURE;
 
-	hp = strollpt_array_alloc(nr, size);
-	if (!hp)
-		goto free_array;
-	memset(hp, 0xa5, nr * size);
-
 	sort = malloc(nr * sizeof(elements[0]));
 	if (!sort)
-		goto free_heap;
+		goto free_array;
 	for (e = 0; e < nr; e++)
 		sort[e] = elements[e];
 	qsort_r(sort, nr, sizeof(sort[e]), strollpt_compare_min, NULL);
 
-	algo->build(arr, nr, size, strollpt_compare_min, NULL);
+	hp = algo->create(arr, nr, size, strollpt_compare_min);
+	if (!hp)
+		goto free_sort;
+
+	algo->build(hp);
 	if (!strollpt_heap_validate(0, arr, nr, size)) {
 		strollpt_err("Bogus heapify scheme.\n");
-		goto free_sort;
-	}
-
-	for (e = 0; e < nr; e++) {
-		char elm[size];
-
-		((struct strollpt_elem *)elm)->id = elements[e];
-		algo->insert(elm, hp, e, size, strollpt_compare_min, NULL);
-	}
-	if (!strollpt_heap_validate(0, hp, nr, size)) {
-		strollpt_err("Bogus heap insertion scheme.\n");
-		goto free_sort;
+		goto free_heap;
 	}
 
 	for (e = 0; e < nr; e++) {
 		char elm[size];
 
 		memset(elm, 0xa5, size);
-		algo->extract(elm,
-		              arr,
-		              nr - e,
-		              size,
-		              strollpt_compare_min,
-		              NULL);
+
+		algo->extract(hp, elm);
 		if (((struct strollpt_elem *)elm)->id != sort[e]) {
 			strollpt_err("Bogus heap extraction scheme.\n");
-			goto free_sort;
+			goto free_heap;
 		}
+
+		if (algo->count(hp) != (nr - e - 1)) {
+			strollpt_err("Bogus heap extraction count.\n");
+			goto free_heap;
+		}
+	}
+
+	memset(arr, 0xa5, nr * size);
+	for (e = 0; e < nr; e++) {
+		char elm[size];
+
+		memset(elm, 0, size);
+
+		((struct strollpt_elem *)elm)->id = elements[e];
+		algo->insert(hp, elm);
+
+		if (algo->count(hp) != (e + 1)) {
+			strollpt_err("Bogus heap insertion count.\n");
+			goto free_heap;
+		}
+	}
+	if (!strollpt_heap_validate(0, arr, nr, size)) {
+		strollpt_err("Bogus heap insertion scheme.\n");
+		goto free_heap;
 	}
 
 	free(sort);
 
-	*array = arr;
 	*heap = hp;
+	*array = arr;
 
 	return EXIT_SUCCESS;
 
+free_heap:
+	algo->destroy(hp);
 free_sort:
 	free(sort);
-free_heap:
-	free(hp);
 free_array:
 	free(arr);
 
@@ -214,19 +217,14 @@ free_array:
 }
 
 static void
-strollpt_heap_build(struct strollpt_elem * __restrict array,
-                    const unsigned int * __restrict   elements,
-                    unsigned int                      nr,
-                    size_t                            size,
-                    unsigned long long * __restrict   nsecs,
-                    strollpt_heap_build_fn *          build)
+strollpt_heap_build(void * __restrict                  heap,
+                    unsigned long long * __restrict    nsecs,
+                    const struct strollpt_heap_iface * algo)
 {
 	struct timespec start, elapse;
 
-	strollpt_array_init(array, elements, nr, size);
-
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
-	build(array, nr, size, strollpt_compare_min, NULL);
+	algo->build(heap);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
 
 	elapse = strollpt_tspec_sub(&elapse, &start);
@@ -234,12 +232,34 @@ strollpt_heap_build(struct strollpt_elem * __restrict array,
 }
 
 static void
-strollpt_heap_insert(struct strollpt_elem * __restrict array,
-                     const unsigned int * __restrict   elements,
-                     unsigned int                      nr,
-                     size_t                            size,
-                     unsigned long long * __restrict   nsecs,
-                     strollpt_heap_insert_fn *         insert)
+strollpt_heap_extract(void * __restrict                  heap,
+                      unsigned int                       nr,
+                      size_t                             size,
+                      unsigned long long * __restrict    nsecs,
+                      const struct strollpt_heap_iface * algo)
+{
+	struct timespec start, elapse;
+	unsigned int    e;
+
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
+	for (e = 0; e < nr; e++) {
+		char elm[size];
+
+		algo->extract(heap, elm);
+	}
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
+
+	elapse = strollpt_tspec_sub(&elapse, &start);
+	*nsecs = strollpt_tspec2ns(&elapse);
+}
+
+static void
+strollpt_heap_insert(void * __restrict                  heap,
+                     const unsigned int * __restrict    elements,
+                     unsigned int                       nr,
+                     size_t                             size,
+                     unsigned long long * __restrict    nsecs,
+                     const struct strollpt_heap_iface * algo)
 {
 	struct timespec start, elapse;
 	unsigned int    e;
@@ -249,46 +269,67 @@ strollpt_heap_insert(struct strollpt_elem * __restrict array,
 		char elm[size];
 
 		((struct strollpt_elem *)elm)->id = elements[e];
-		insert(elm, array, e, size, strollpt_compare_min, NULL);
+		algo->insert(heap, elm);
 	}
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
 
 	elapse = strollpt_tspec_sub(&elapse, &start);
 	*nsecs = strollpt_tspec2ns(&elapse);
+}
+
+#if defined(CONFIG_STROLL_FBHEAP)
+
+static void *
+strollpt_fbheap_create(void * __restrict     array,
+                       unsigned int          nr,
+                       size_t                size,
+                       stroll_array_cmp_fn * compare)
+{
+	return stroll_fbheap_create(array, nr, size, compare);
 }
 
 static void
-strollpt_heap_extract(struct strollpt_elem * __restrict       array,
-                      const struct strollpt_elem * __restrict heap,
-                      unsigned int                            nr,
-                      size_t                                  size,
-                      unsigned long long * __restrict         nsecs,
-                      strollpt_heap_extract_fn *              extract)
+strollpt_fbheap_destroy(void * __restrict heap)
 {
-	struct timespec start, elapse;
-	unsigned int    e;
-
-	memcpy(array, heap, nr * size);
-
-	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
-	for (e = 0; e < nr; e++) {
-		char elm[size];
-
-		extract(elm, array, nr - e, size, strollpt_compare_min, NULL);
-	}
-	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
-
-	elapse = strollpt_tspec_sub(&elapse, &start);
-	*nsecs = strollpt_tspec2ns(&elapse);
+	stroll_fbheap_destroy(heap);
 }
+
+static void
+strollpt_fbheap_build(void * __restrict heap)
+{
+	stroll_fbheap_build(heap, stroll_fbheap_nr(heap), NULL);
+}
+
+static void
+strollpt_fbheap_insert(void * __restrict heap, const void * __restrict elem)
+{
+	stroll_fbheap_insert(heap, elem, NULL);
+}
+
+static void
+strollpt_fbheap_extract(void * __restrict heap, void * __restrict elem)
+{
+	stroll_fbheap_extract(heap, elem, NULL);
+}
+
+static unsigned int
+strollpt_fbheap_count(void * __restrict heap)
+{
+	return stroll_fbheap_count(heap);
+}
+
+#endif /* defined(CONFIG_STROLL_FBHEAP) */
 
 static const struct strollpt_heap_iface strollpt_heap_algos[] = {
 #if defined(CONFIG_STROLL_FBHEAP)
 	{
-		.name     = "fbheap",
-		.build    = _stroll_fbheap_build,
-		.insert   = _stroll_fbheap_insert,
-		.extract  = _stroll_fbheap_extract
+		.name    = "fbheap",
+		.create  = strollpt_fbheap_create,
+		.destroy = strollpt_fbheap_destroy,
+		.build   = strollpt_fbheap_build,
+		.insert  = strollpt_fbheap_insert,
+		.extract = strollpt_fbheap_extract,
+		.count   = strollpt_fbheap_count
 	},
 #endif
 };
@@ -394,8 +435,8 @@ int main(int argc, char *argv[])
 	struct strollpt_data               data;
 	unsigned int *                     elems;
 	int                                ret;
+	void *                             heap;
 	struct strollpt_elem *             array;
-	struct strollpt_elem *             heap;
 	unsigned long long *               nsecs;
 
 	while (true) {
@@ -458,34 +499,29 @@ int main(int argc, char *argv[])
 
 	ret = EXIT_FAILURE;
 
-	if (strollpt_heap_prepare(&array, &heap, elems, data.nr, dsize, algo))
+	if (strollpt_heap_prepare(&heap, &array, elems, data.nr, dsize, algo))
 		goto free_elems;
 
 	if (strollpt_setup_sched_prio(prio))
-		goto free_heaps;
+		goto free_heap;
 
 	nsecs = malloc(3 * loops * sizeof(nsecs[0]));
 	if (!nsecs)
-		goto free_heaps;
+		goto free_heap;
 	for (l = 0; l < loops; l++) {
-		strollpt_heap_build(array,
-		                    elems,
-		                    data.nr,
-		                    dsize,
-		                    &nsecs[l],
-		                    algo->build);
-		strollpt_heap_insert(array,
+		strollpt_array_init(array, elems, data.nr, dsize);
+		strollpt_heap_build(heap, &nsecs[l], algo);
+		strollpt_heap_extract(heap,
+		                      data.nr,
+		                      dsize,
+		                      &nsecs[loops + l],
+		                      algo);
+		strollpt_heap_insert(heap,
 		                     elems,
 		                     data.nr,
 		                     dsize,
-		                     &nsecs[loops + l],
-		                     algo->insert);
-		strollpt_heap_extract(array,
-		                      heap,
-		                      data.nr,
-		                      dsize,
-		                      &nsecs[(2 * loops) + l],
-		                      algo->extract);
+		                     &nsecs[(2 * loops) + l],
+		                     algo);
 	}
 
 	printf("#Samples:       %u\n"
@@ -501,16 +537,16 @@ int main(int argc, char *argv[])
 	       dsize,
 	       loops);
 	strollpt_heap_show_stats("Heapify", nsecs, loops);
-	strollpt_heap_show_stats("Insert", &nsecs[loops], loops);
-	strollpt_heap_show_stats("Extract", &nsecs[2 * loops], loops);
+	strollpt_heap_show_stats("Extract", &nsecs[loops], loops);
+	strollpt_heap_show_stats("Insert", &nsecs[2 * loops], loops);
 
 	ret = EXIT_SUCCESS;
 
 	free(nsecs);
 
-free_heaps:
+free_heap:
+	algo->destroy(heap);
 	free(array);
-	free(heap);
 free_elems:
 	free(elems);
 
