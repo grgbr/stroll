@@ -5,10 +5,8 @@
  * Copyright (C) 2017-2024 Grégor Boirie <gregor.boirie@free.fr>
  ******************************************************************************/
 
-//#include "stroll/fwheap.h"
+#include "stroll/fwheap.h"
 #include "array.h"
-#include "stroll/fbmap.h"
-#include <stdlib.h>
 
 /*
  * https://en.wikipedia.org/wiki/Weak_heap
@@ -16,19 +14,6 @@
  * https://www.sciencedirect.com/science/article/pii/S1570866713000592
  * https://www.sciencedirect.com/science/article/pii/S1570866712000792
  */
-
-#if defined(CONFIG_STROLL_ASSERT_API)
-
-#include "stroll/assert.h"
-
-#define stroll_fwheap_assert_api(_expr) \
-	stroll_assert("stroll:fwheap", _expr)
-
-#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
-
-#define stroll_fwheap_assert_api(_expr)
-
-#endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
 #if defined(CONFIG_STROLL_ASSERT_INTERN)
 
@@ -411,3 +396,312 @@ stroll_array_fwheap_sort(void * __restrict     array,
 }
 
 #endif /* defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT) */
+
+#if defined(CONFIG_STROLL_FWHEAP)
+
+static inline __stroll_nonull(3, 4, 6)
+bool
+stroll_fwheap_join_min_mem(unsigned int               dancestor,
+                           unsigned int               child,
+                           char * __restrict          array,
+                           unsigned long * __restrict rbits,
+                           size_t                     size,
+                           stroll_array_cmp_fn *      compare,
+                           void *                     data)
+{
+	if (compare(&array[child * size], &array[dancestor * size], data) < 0) {
+		/*
+		 * Swap node and its distinguished ancestor to restore proper
+		 * heap ordering.
+		 */
+		stroll_array_swap(&array[child * size],
+		                  &array[dancestor * size],
+		                  size);
+
+		/* Flip former distinguished ancestor's children. */
+		_stroll_fbmap_toggle(rbits, child);
+
+		/*
+		 * Tell caller that we swapped child and its distinguished
+		 * ancestor.
+		 */
+		return false;
+	}
+
+	return true;
+}
+
+static inline __stroll_nonull(2, 3, 6)
+void
+stroll_fwheap_siftdwn_min_mem(unsigned int               index,
+                              char * __restrict          array,
+                              unsigned long * __restrict rbits,
+                              unsigned int               nr,
+                              size_t                     size,
+                              stroll_array_cmp_fn *      compare,
+                              void *                     data)
+{
+	unsigned int idx = stroll_fwheap_right_child_index(index, rbits);
+
+	/* Identify last node of root's right subtree left spine. */
+	while (true) {
+		unsigned int left = stroll_fwheap_left_child_index(idx, rbits);
+
+		if (left >= nr)
+			break;
+
+		idx = left;
+	}
+
+	/*
+	 * Now, traverse back up to the root, restoring weak heap property at
+	 * each visited node.
+	 */
+	while (idx != index) {
+		stroll_fwheap_join_min_mem(index,
+		                           idx,
+		                           array,
+		                           rbits,
+		                           size,
+		                           compare,
+		                           data);
+
+		idx = stroll_fwheap_parent_index(idx);
+	}
+}
+
+static
+void
+stroll_fwheap_insert_min_mem(const char * __restrict    elem,
+                             char * __restrict          array,
+                             unsigned long * __restrict rbits,
+                             unsigned int               nr,
+                             size_t                     size,
+                             stroll_array_cmp_fn *      compare,
+                             void *                     data)
+{
+	stroll_fwheap_assert_intern(elem);
+	stroll_fwheap_assert_intern(array);
+	stroll_fwheap_assert_intern(rbits);
+	stroll_fwheap_assert_intern(size);
+	stroll_fwheap_assert_intern((elem < array) ||
+	                            ((const char *)elem >=
+	                             &((char *)array)[nr * size]));
+	stroll_fwheap_assert_intern(compare);
+
+	memcpy(&array[nr], elem, size);
+	_stroll_fbmap_clear(rbits, nr);
+
+	if (!nr)
+		return;
+
+	if (!(nr & 1))
+		/*
+		 * If this leaf is the only child of its parent, we make
+		 * it a left child by updating the reverse bit at the
+		 * parent to save an unnecessary element comparison.
+		 */
+		_stroll_fbmap_clear(rbits, stroll_fwheap_parent_index(nr));
+
+	/*
+	 * Sift inserted node up, i.e. reestablish heap ordering between element
+	 * initially located at idx and those located at its ancestors.
+	 */
+	do {
+		/* Find distinguished ancestor for current node */
+		unsigned int didx = stroll_fwheap_dancestor_index(nr, rbits);
+
+		/*
+		 * Join both sub-heaps rooted at current node and its
+		 * distinguished ancestor.
+		 */
+		if (stroll_fwheap_join_min_mem(didx,
+		                               nr,
+		                               array,
+		                               rbits,
+		                               size,
+		                               compare,
+		                               data))
+			break;
+
+		/* Iterate up to root. */
+		nr = didx;
+	} while (nr);
+}
+
+void
+_stroll_fwheap_insert(const void * __restrict    elem,
+                      void * __restrict          array,
+                      unsigned long * __restrict rbits,
+                      unsigned int               nr,
+                      size_t                     size,
+                      stroll_array_cmp_fn *      compare,
+                      void *                     data)
+{
+	stroll_fwheap_assert_api(elem);
+	stroll_fwheap_assert_api(array);
+	stroll_fwheap_assert_api(rbits);
+	stroll_fwheap_assert_api(size);
+	stroll_fwheap_assert_api((elem < array) ||
+	                         ((const char *)elem >=
+	                          &((char *)array)[nr * size]));
+	stroll_fwheap_assert_api(compare);
+
+	stroll_fwheap_insert_min_mem(elem,
+	                             array,
+	                             rbits,
+	                             nr,
+	                             size,
+	                             compare,
+	                             data);
+}
+
+static
+void
+stroll_fwheap_extract_min_mem(char * __restrict          elem,
+                              char * __restrict          array,
+                              unsigned long * __restrict rbits,
+                              unsigned int               nr,
+                              size_t                     size,
+                              stroll_array_cmp_fn *      compare,
+                              void *                     data)
+{
+	stroll_fwheap_assert_intern(elem);
+	stroll_fwheap_assert_intern(array);
+	stroll_fwheap_assert_intern(rbits);
+	stroll_fwheap_assert_intern(nr);
+	stroll_fwheap_assert_intern(size);
+	stroll_fwheap_assert_intern((elem < array) ||
+	                            ((char *)elem >=
+	                             &((char *)array)[nr * size]));
+	stroll_fwheap_assert_intern(compare);
+
+	memcpy(elem, array, size);
+	if (nr == 1)
+		return;
+
+	memcpy(array, &array[--nr], size);
+	if (nr != 1) {
+		unsigned int idx = stroll_fwheap_right_child_index(0, rbits);
+
+		/* Identify last node of root's right subtree left spine. */
+		while (true) {
+			unsigned int left;
+
+			left = stroll_fwheap_left_child_index(idx, rbits);
+			if (left >= nr)
+				break;
+
+			idx = left;
+		}
+
+		/*
+		 * Now, traverse back up to the root, restoring weak heap
+		 * property at each visited node.
+		 */
+		while (idx) {
+			stroll_fwheap_join_min_mem(0,
+						   idx,
+						   array,
+						   rbits,
+						   size,
+						   compare,
+						   data);
+
+			idx = stroll_fwheap_parent_index(idx);
+		}
+	}
+}
+
+void
+_stroll_fwheap_extract(void * __restrict          elem,
+                       void * __restrict          array,
+                       unsigned long * __restrict rbits,
+                       unsigned int               nr,
+                       size_t                     size,
+                       stroll_array_cmp_fn *      compare,
+                       void *                     data)
+{
+	stroll_fwheap_assert_api(elem);
+	stroll_fwheap_assert_api(array);
+	stroll_fwheap_assert_api(rbits);
+	stroll_fwheap_assert_api(nr);
+	stroll_fwheap_assert_api(size);
+	stroll_fwheap_assert_api((elem < array) ||
+	                         ((char *)elem >= &((char *)array)[nr * size]));
+	stroll_fwheap_assert_api(compare);
+
+	stroll_fwheap_extract_min_mem(elem,
+	                              array,
+	                              rbits,
+	                              nr,
+	                              size,
+	                              compare,
+	                              data);
+}
+
+static __stroll_nonull(1, 2, 5)
+void
+stroll_fwheap_build_min_mem(char * __restrict          array,
+                            unsigned long * __restrict rbits,
+                            unsigned int               nr,
+                            size_t                     size,
+                            stroll_array_cmp_fn *      compare,
+                            void *                     data)
+{
+	stroll_fwheap_assert_intern(array);
+	stroll_fwheap_assert_intern(rbits);
+	stroll_fwheap_assert_intern(nr > 1);
+	stroll_fwheap_assert_intern(size);
+	stroll_fwheap_assert_intern(compare);
+
+	_stroll_fbmap_clear_all(rbits, nr);
+
+	do {
+		unsigned int danc = stroll_fwheap_fast_dancestor_index(--nr);
+
+		stroll_fwheap_join_min_mem(danc,
+		                           nr,
+		                           array,
+		                           rbits,
+		                           size,
+		                           compare,
+		                           data);
+	} while (nr != 1);
+}
+
+void
+_stroll_fwheap_build(void * __restrict          array,
+                     unsigned long * __restrict rbits,
+                     unsigned int               nr,
+                     size_t                     size,
+                     stroll_array_cmp_fn *      compare,
+                     void *                     data)
+{
+	stroll_fwheap_assert_api(array);
+	stroll_fwheap_assert_api(rbits);
+	stroll_fwheap_assert_api(nr);
+	stroll_fwheap_assert_api(size);
+	stroll_fwheap_assert_api(compare);
+
+	if (nr == 1)
+		return;
+
+	stroll_fwheap_build_min_mem(array, rbits, nr, size, compare, data);
+}
+
+unsigned long *
+_stroll_fwheap_alloc_rbits(unsigned int nr)
+{
+	stroll_fwheap_assert_api(nr);
+
+	return malloc(_stroll_fwheap_rbits_size(nr));
+}
+
+void
+_stroll_fwheap_free_rbits(unsigned long * rbits)
+{
+	free(rbits);
+}
+
+#endif /* defined(CONFIG_STROLL_FWHEAP) */

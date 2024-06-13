@@ -38,6 +38,9 @@
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
+#define STROLL_FBMAP_WORD_NR(_nr) \
+	(((_nr) + __WORDSIZE - 1) >> STROLL_WORD_SHIFT)
+
 static inline __const __nothrow __warn_result
 unsigned int
 stroll_fbmap_word_no(unsigned int bit_no)

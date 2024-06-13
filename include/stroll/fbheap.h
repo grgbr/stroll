@@ -7,7 +7,7 @@
 
 /**
  * @file
- * Heap data structures interface
+ * Binary heap interface
  *
  * @author    Grégor Boirie <gregor.boirie@free.fr>
  * @date      02 Jun 2024
@@ -182,7 +182,7 @@ stroll_fbheap_create(void * __restrict     array,
                      unsigned int          nr,
                      size_t                size,
                      stroll_array_cmp_fn * compare)
-	__stroll_nonull(1, 4) __stroll_nothrow __warn_result;
+	__stroll_nonull(1, 4) __stroll_nothrow __leaf __warn_result;
 
 static inline __stroll_nothrow
 void
