@@ -489,7 +489,7 @@ stroll_fwheap_insert_min_mem(const char * __restrict    elem,
 	                             &((char *)array)[nr * size]));
 	stroll_fwheap_assert_intern(compare);
 
-	memcpy(&array[nr], elem, size);
+	memcpy(&array[nr * size], elem, size);
 	_stroll_fbmap_clear(rbits, nr);
 
 	if (!nr)
@@ -580,7 +580,7 @@ stroll_fwheap_extract_min_mem(char * __restrict          elem,
 	if (nr == 1)
 		return;
 
-	memcpy(array, &array[--nr], size);
+	memcpy(array, &array[(--nr) * size], size);
 	if (nr != 1) {
 		unsigned int idx = stroll_fwheap_right_child_index(0, rbits);
 
@@ -601,12 +601,12 @@ stroll_fwheap_extract_min_mem(char * __restrict          elem,
 		 */
 		while (idx) {
 			stroll_fwheap_join_min_mem(0,
-						   idx,
-						   array,
-						   rbits,
-						   size,
-						   compare,
-						   data);
+			                           idx,
+			                           array,
+			                           rbits,
+			                           size,
+			                           compare,
+			                           data);
 
 			idx = stroll_fwheap_parent_index(idx);
 		}

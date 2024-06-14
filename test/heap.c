@@ -35,18 +35,23 @@ typedef void strollut_heap_build_fn(void * __restrict,
                                     void *)
 	__stroll_nonull(1, 4);
 
-struct strollut_heap_iface {
-	strollut_heap_build_fn *   build;
-	strollut_heap_insert_fn *  insert;
-	strollut_heap_extract_fn * extract;
-};
-
-static struct strollut_heap_iface strollut_heap_algo;
-
 struct strollut_heap_elem {
 	unsigned int id;
 	const char * str;
 };
+
+typedef void strollut_heap_check_fn(const struct strollut_heap_elem *,
+                                    unsigned int,
+                                    stroll_array_cmp_fn *);
+
+struct strollut_heap_iface {
+	strollut_heap_build_fn *   build;
+	strollut_heap_insert_fn *  insert;
+	strollut_heap_extract_fn * extract;
+	strollut_heap_check_fn *   check;
+};
+
+static struct strollut_heap_iface strollut_heap_algo;
 
 static int
 strollut_heap_compare_num_min(const void * first,
@@ -124,38 +129,6 @@ static const struct strollut_heap_elem strollut_heap_array8[] = {
 #define STROLLUT_HEAP_ELEM_NR (stroll_array_nr(strollut_heap_array8))
 
 static void
-strollut_heap_check_recurs(unsigned int                      e,
-                           const struct strollut_heap_elem * array,
-                           unsigned int                      nr,
-                           stroll_array_cmp_fn *             cmp)
-{
-	const char * const check[] = {
-		[0] = "0zero",
-		[1] = "1one",
-		[2] = "2two",
-		[3] = "3three",
-		[4] = "4four",
-		[5] = "5five",
-		[6] = "6six",
-		[7] = "7seven"
-	};
-
-	if (e >= nr)
-		return;
-
-	if (e)
-		cute_check_sint(cmp(&array[(e - 1) / 2], &array[e], NULL),
-		                lower_equal,
-		                0);
-
-	cute_check_uint(array[e].id, lower, stroll_array_nr(check));
-	cute_check_str(array[e].str, equal, check[array[e].id]);
-
-	strollut_heap_check_recurs((2 * e) + 1, array, nr, cmp);
-	strollut_heap_check_recurs((2 * e) + 2, array, nr, cmp);
-}
-
-static void
 strollut_heap_check_extract(const struct strollut_heap_elem * array,
                             unsigned int                      nr,
                             stroll_array_cmp_fn *             compare)
@@ -182,10 +155,7 @@ strollut_heap_check_extract(const struct strollut_heap_elem * array,
 		cute_check_uint(elem.id, equal, sorted[e].id);
 		cute_check_str(elem.str, equal, sorted[e].str);
 
-		strollut_heap_check_recurs(0,
-		                           heap,
-		                           nr - e,
-		                           compare);
+		strollut_heap_algo.check(heap, nr - e, compare);
 	}
 }
 
@@ -255,7 +225,7 @@ strollut_heap_check_build_inorder(const struct strollut_heap_elem * array,
 	memcpy(heap, array, sizeof(heap));
 	strollut_heap_algo.build(heap, nr, sizeof(heap[0]), compare, NULL);
 
-	strollut_heap_check_recurs(0, heap, nr, compare);
+	strollut_heap_algo.check(heap, nr, compare);
 }
 
 CUTE_TEST(strollut_heap_build_inorder1)
@@ -327,7 +297,7 @@ strollut_heap_check_build_revorder(const struct strollut_heap_elem * array,
 
 	strollut_heap_algo.build(heap, nr, sizeof(heap[0]), compare, NULL);
 
-	strollut_heap_check_recurs(0, heap, nr, compare);
+	strollut_heap_algo.check(heap, nr, compare);
 }
 
 CUTE_TEST(strollut_heap_build_revorder1)
@@ -410,10 +380,7 @@ strollut_heap_check_insert_inorder(const struct strollut_heap_elem * array,
 		                          sizeof(array[0]),
 		                          compare,
 		                          NULL);
-		strollut_heap_check_recurs(0,
-		                           heap,
-		                           e + 1,
-		                           compare);
+		strollut_heap_algo.check(heap, e + 1, compare);
 	}
 }
 
@@ -496,10 +463,7 @@ strollut_heap_check_insert_revorder(const struct strollut_heap_elem * array,
 		                          sizeof(array[0]),
 		                          compare,
 		                          NULL);
-		strollut_heap_check_recurs(0,
-		                           heap,
-		                           e + 1,
-		                           compare);
+		strollut_heap_algo.check(heap, e + 1, compare);
 	}
 }
 
@@ -619,11 +583,52 @@ CUTE_GROUP(strollut_heap_group) = {
 #include "stroll/fbheap.h"
 
 static void
+strollut_fbheap_check_recurs(unsigned int                      e,
+                             const struct strollut_heap_elem * array,
+                             unsigned int                      nr,
+                             stroll_array_cmp_fn *             cmp)
+{
+	const char * const check[] = {
+		[0] = "0zero",
+		[1] = "1one",
+		[2] = "2two",
+		[3] = "3three",
+		[4] = "4four",
+		[5] = "5five",
+		[6] = "6six",
+		[7] = "7seven"
+	};
+
+	if (e >= nr)
+		return;
+
+	if (e)
+		cute_check_sint(cmp(&array[(e - 1) / 2], &array[e], NULL),
+		                lower_equal,
+		                0);
+
+	cute_check_uint(array[e].id, lower, stroll_array_nr(check));
+	cute_check_str(array[e].str, equal, check[array[e].id]);
+
+	strollut_fbheap_check_recurs((2 * e) + 1, array, nr, cmp);
+	strollut_fbheap_check_recurs((2 * e) + 2, array, nr, cmp);
+}
+
+static void
+strollut_fbheap_check(const struct strollut_heap_elem * array,
+                      unsigned int                      nr,
+                      stroll_array_cmp_fn *             cmp)
+{
+	strollut_fbheap_check_recurs(0, array, nr, cmp);
+}
+
+static void
 strollut_fbheap_setup(void)
 {
 	strollut_heap_algo.build = _stroll_fbheap_build;
 	strollut_heap_algo.insert = _stroll_fbheap_insert;
 	strollut_heap_algo.extract = _stroll_fbheap_extract;
+	strollut_heap_algo.check = strollut_fbheap_check;
 }
 
 #else  /* !defined(CONFIG_STROLL_FBHEAP) */
@@ -698,12 +703,105 @@ strollut_fwheap_extract(void * __restrict     elem,
 	                       data);
 }
 
+static inline unsigned int
+strollut_fwheap_parent(unsigned int index)
+{
+	assert(index);
+
+	return index / 2;
+}
+
+static inline unsigned int
+strollut_fwheap_left(unsigned int index)
+{
+	return (2 * index) +
+	       (unsigned int)_stroll_fbmap_test(strollut_fwheap_rbits, index);
+}
+
+static inline unsigned int
+strollut_fwheap_right(unsigned int index)
+{
+	return (2 * index) +
+	       1 - (unsigned int)_stroll_fbmap_test(strollut_fwheap_rbits,
+	                                            index);
+}
+
+static inline bool
+strollut_fwheap_isleft(unsigned int index)
+{
+	assert(index);
+
+	return (!!(index & 1)) ==
+	       _stroll_fbmap_test(strollut_fwheap_rbits,
+	                          strollut_fwheap_parent(index));
+}
+
+static inline unsigned int
+strollut_fwheap_dancestor(unsigned int index)
+{
+	/* Move up untill index points to a right child. */
+	while (strollut_fwheap_isleft(index))
+		index = strollut_fwheap_parent(index);
+
+	/* Then return its parent. */
+	return strollut_fwheap_parent(index);
+}
+
+static void
+strollut_fwheap_check_recurs(unsigned int                      e,
+                             const struct strollut_heap_elem * array,
+                             unsigned int                      nr,
+                             stroll_array_cmp_fn *             cmp)
+{
+	const char * const check[] = {
+		[0] = "0zero",
+		[1] = "1one",
+		[2] = "2two",
+		[3] = "3three",
+		[4] = "4four",
+		[5] = "5five",
+		[6] = "6six",
+		[7] = "7seven"
+	};
+
+	if (e >= nr)
+		return;
+
+	if (e) {
+		unsigned int didx = strollut_fwheap_dancestor(e);
+
+		cute_check_sint(cmp(&array[didx], &array[e], NULL),
+		                lower_equal,
+		                0);
+	}
+
+	cute_check_uint(array[e].id, lower, stroll_array_nr(check));
+	cute_check_str(array[e].str, equal, check[array[e].id]);
+
+	if (e)
+		/* Root node has no left child ! */
+		strollut_fwheap_check_recurs(strollut_fwheap_left(e),
+		                             array,
+		                             nr,
+		                             cmp);
+	strollut_fwheap_check_recurs(strollut_fwheap_right(e), array, nr, cmp);
+}
+
+static void
+strollut_fwheap_check(const struct strollut_heap_elem * array,
+                      unsigned int                      nr,
+                      stroll_array_cmp_fn *             cmp)
+{
+	strollut_fwheap_check_recurs(0, array, nr, cmp);
+}
+
 static void
 strollut_fwheap_setup(void)
 {
 	strollut_heap_algo.build = strollut_fwheap_build;
 	strollut_heap_algo.insert = strollut_fwheap_insert;
 	strollut_heap_algo.extract = strollut_fwheap_extract;
+	strollut_heap_algo.check = strollut_fwheap_check;
 }
 
 #else  /* !defined(CONFIG_STROLL_FWHEAP) */
