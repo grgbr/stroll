@@ -49,7 +49,7 @@ _stroll_fwheap_rbits_size(unsigned int nr)
 
 static inline __stroll_nonull(1) __stroll_const __stroll_nothrow
 const void *
-_stroll_fwheap_find(const void * __restrict array)
+_stroll_fwheap_peek(const void * __restrict array)
 {
 	stroll_fwheap_assert_api(array);
 
@@ -89,8 +89,130 @@ extern unsigned long *
 _stroll_fwheap_alloc_rbits(unsigned int nr)
 	__stroll_nothrow __leaf __warn_result;
 
-extern void
+static inline __stroll_nothrow
+void
 _stroll_fwheap_free_rbits(unsigned long * rbits)
-	__stroll_nothrow __leaf;
+{
+	free(rbits);
+}
+
+struct stroll_fwheap {
+	unsigned int          cnt;
+	unsigned int          nr;
+	size_t                size;
+	void *                rbits;
+	void *                elems;
+	stroll_array_cmp_fn * compare;
+};
+
+#define stroll_fwheap_assert_heap_api(_heap) \
+	stroll_fwheap_assert_api(_heap); \
+	stroll_fwheap_assert_api((_heap)->nr); \
+	stroll_fwheap_assert_api((_heap)->cnt <= heap->nr); \
+	stroll_fwheap_assert_api((_heap)->size); \
+	stroll_fwheap_assert_api((_heap)->rbits); \
+	stroll_fwheap_assert_api((_heap)->elems); \
+	stroll_fwheap_assert_api((_heap)->compare)
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
+unsigned int
+stroll_fwheap_count(const struct stroll_fwheap * __restrict heap)
+{
+	stroll_fwheap_assert_heap_api(heap);
+
+	return heap->cnt;
+}
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
+unsigned int
+stroll_fwheap_nr(const struct stroll_fwheap * __restrict heap)
+{
+	stroll_fwheap_assert_heap_api(heap);
+
+	return heap->nr;
+}
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
+bool
+stroll_fwheap_isempty(const struct stroll_fwheap * __restrict heap)
+{
+	stroll_fwheap_assert_heap_api(heap);
+
+	return !heap->cnt;
+}
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
+bool
+stroll_fwheap_isfull(const struct stroll_fwheap * __restrict heap)
+{
+	stroll_fwheap_assert_heap_api(heap);
+
+	return heap->cnt == heap->nr;
+}
+
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+stroll_fwheap_clear(struct stroll_fwheap * __restrict heap)
+{
+	stroll_fwheap_assert_heap_api(heap);
+
+	heap->cnt = 0;
+}
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
+const void *
+stroll_fwheap_peek(const struct stroll_fwheap * __restrict heap)
+{
+	stroll_fwheap_assert_heap_api(heap);
+	stroll_fwheap_assert_api(heap->cnt);
+
+	return _stroll_fwheap_peek(heap->elems);
+}
+
+extern void
+stroll_fwheap_insert(struct stroll_fwheap * __restrict heap,
+                     const void * __restrict           elem,
+                     void *                            data)
+	__stroll_nonull(1, 2);
+
+extern void
+stroll_fwheap_extract(struct stroll_fwheap * __restrict heap,
+                      void * __restrict                 elem,
+                      void *                            data)
+	__stroll_nonull(1, 2);
+
+extern void
+stroll_fwheap_build(struct stroll_fwheap * __restrict heap,
+                    unsigned int                      count,
+                    void *                            data)
+	__stroll_nonull(1);
+
+extern int
+stroll_fwheap_init(struct stroll_fwheap * __restrict heap,
+                   void * __restrict                 array,
+                   unsigned int                      nr,
+                   size_t                            size,
+                   stroll_array_cmp_fn *             compare)
+	__stroll_nonull(1, 2, 5) __stroll_nothrow __leaf;
+
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+stroll_fwheap_fini(struct stroll_fwheap * __restrict heap)
+{
+	stroll_fwheap_assert_heap_api(heap);
+
+	_stroll_fwheap_free_rbits(heap->rbits);
+}
+
+extern struct stroll_fwheap *
+stroll_fwheap_create(void * __restrict     array,
+                     unsigned int          nr,
+                     size_t                size,
+                     stroll_array_cmp_fn * compare)
+	__stroll_nonull(1, 4) __stroll_nothrow __leaf __warn_result;
+
+extern void
+stroll_fwheap_destroy(struct stroll_fwheap * heap)
+	__stroll_nonull(1) __stroll_nothrow __leaf;
 
 #endif /* _STROLL_FWHEAP_H */

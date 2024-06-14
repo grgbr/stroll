@@ -1,10 +1,19 @@
 #include "ptest.h"
-#include "stroll/fbheap.h"
+#include "stroll/array.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <getopt.h>
 #include <string.h>
 #include <math.h>
+
+struct strollpt_elem {
+	unsigned int id;
+	const char   data[0];
+};
+
+typedef bool (strollpt_heap_validate_fn)(unsigned int,
+                                         const void *,
+                                         unsigned int);
 
 typedef void * (strollpt_heap_create_fn)(void * __restrict,
                                          unsigned int,
@@ -28,17 +37,13 @@ typedef unsigned int (strollpt_heap_count_fn)(void * __restrict)
 
 struct strollpt_heap_iface {
 	const char  *              name;
-	strollpt_heap_create_fn *  create;
-	strollpt_heap_destroy_fn * destroy;
-	strollpt_heap_build_fn *   build;
-	strollpt_heap_insert_fn *  insert;
-	strollpt_heap_extract_fn * extract;
-	strollpt_heap_count_fn *   count;
-};
-
-struct strollpt_elem {
-	unsigned int id;
-	const char   data[0];
+	strollpt_heap_create_fn *   create;
+	strollpt_heap_destroy_fn *  destroy;
+	strollpt_heap_build_fn *    build;
+	strollpt_heap_insert_fn *   insert;
+	strollpt_heap_extract_fn *  extract;
+	strollpt_heap_count_fn *    count;
+	strollpt_heap_validate_fn * validate;
 };
 
 static void
@@ -90,37 +95,12 @@ strollpt_array_create(const unsigned int * elements,
 
 	return elms;
 }
-
 static bool
-strollpt_heap_validate(unsigned int                 index,
-                       const struct strollpt_elem * elements,
-                       unsigned int                 nr,
-                       size_t                       size)
+strollpt_heap_validate(const void *                                  heap,
+                       unsigned int                                  nr,
+                       const struct strollpt_heap_iface * __restrict algo)
 {
-	assert(elements);
-	assert(nr);
-
-	const char * elms = (const char *)elements;
-
-	if (index >= nr)
-		return true;
-
-	if (index) {
-		unsigned int parent = (index - 1) / 2;
-
-		if (strollpt_compare_min(&elms[parent * size],
-		                         &elms[index * size],
-		                         NULL) > 0)
-			return false;
-	}
-
-	if (!strollpt_heap_validate((2 * index) + 1, elements, nr, size))
-		return false;
-
-	if (!strollpt_heap_validate((2 * index) + 2, elements, nr, size))
-		return false;
-
-	return true;
+	return algo->validate(0, heap, nr);
 }
 
 static int
@@ -158,7 +138,7 @@ strollpt_heap_prepare(void ** __restrict                 heap,
 		goto free_sort;
 
 	algo->build(hp);
-	if (!strollpt_heap_validate(0, arr, nr, size)) {
+	if (!strollpt_heap_validate(hp, nr, algo)) {
 		strollpt_err("Bogus heapify scheme.\n");
 		goto free_heap;
 	}
@@ -194,7 +174,7 @@ strollpt_heap_prepare(void ** __restrict                 heap,
 			goto free_heap;
 		}
 	}
-	if (!strollpt_heap_validate(0, arr, nr, size)) {
+	if (!strollpt_heap_validate(hp, nr, algo)) {
 		strollpt_err("Bogus heap insertion scheme.\n");
 		goto free_heap;
 	}
@@ -279,6 +259,36 @@ strollpt_heap_insert(void * __restrict                  heap,
 
 #if defined(CONFIG_STROLL_FBHEAP)
 
+#include "stroll/fbheap.h"
+
+static bool
+strollpt_fbheap_validate(unsigned int index, const void * heap, unsigned int nr)
+{
+	assert(heap);
+	assert(nr);
+
+	const struct stroll_fbheap * hp = heap;
+	size_t                       sz = hp->size;
+
+	if (index >= nr)
+		return true;
+
+	if (index) {
+		const char * elms = (const char *)hp->elems;
+		unsigned int parent = (index - 1) / 2;
+
+		if (strollpt_compare_min(&elms[parent * sz],
+		                         &elms[index * sz],
+		                         NULL) > 0)
+			return false;
+	}
+
+	if (!strollpt_fbheap_validate((2 * index) + 1, heap, nr))
+		return false;
+
+	return strollpt_fbheap_validate((2 * index) + 2, heap, nr);
+}
+
 static void *
 strollpt_fbheap_create(void * __restrict     array,
                        unsigned int          nr,
@@ -320,16 +330,151 @@ strollpt_fbheap_count(void * __restrict heap)
 
 #endif /* defined(CONFIG_STROLL_FBHEAP) */
 
+#if defined(CONFIG_STROLL_FWHEAP)
+
+#include "stroll/fwheap.h"
+
+static inline unsigned int
+strollpt_fwheap_parent(unsigned int index)
+{
+	assert(index);
+
+	return index / 2;
+}
+
+static inline unsigned int
+strollpt_fwheap_left(unsigned int index, const unsigned long * rbits)
+{
+	return (2 * index) +
+	       (unsigned int)_stroll_fbmap_test(rbits, index);
+}
+
+static inline unsigned int
+strollpt_fwheap_right(unsigned int index, const unsigned long * rbits)
+{
+	return (2 * index) + 1 - (unsigned int)_stroll_fbmap_test(rbits, index);
+}
+
+static inline bool
+strollpt_fwheap_isleft(unsigned int index, const unsigned long * rbits)
+{
+	assert(index);
+
+	return (!!(index & 1)) ==
+	       _stroll_fbmap_test(rbits, strollpt_fwheap_parent(index));
+}
+
+static inline unsigned int
+strollpt_fwheap_dancestor(unsigned int index, const unsigned long * rbits)
+{
+	/* Move up untill index points to a right child. */
+	while (strollpt_fwheap_isleft(index, rbits))
+		index = strollpt_fwheap_parent(index);
+
+	/* Then return its parent. */
+	return strollpt_fwheap_parent(index);
+}
+
+static bool
+strollpt_fwheap_validate(unsigned int index, const void * heap, unsigned int nr)
+{
+	assert(elements);
+	assert(nr);
+
+	const struct stroll_fwheap * hp = heap;
+	size_t                       sz = hp->size;
+
+	if (index >= nr)
+		return true;
+
+	if (index) {
+		const char * elms = (const char *)hp->elems;
+		unsigned int danc = strollpt_fwheap_dancestor(index, hp->rbits);
+
+		if (strollpt_compare_min(&elms[danc * sz],
+		                         &elms[index * sz],
+		                         NULL) > 0)
+			return false;
+	}
+
+	if (index) {
+		/* Root node has no left child ! */
+		if (!strollpt_fwheap_validate(strollpt_fwheap_left(index,
+		                                                   hp->rbits),
+		                              heap,
+		                              nr))
+			return false;
+	}
+
+	return strollpt_fwheap_validate(strollpt_fwheap_right(index, hp->rbits),
+	                                heap,
+	                                nr);
+}
+
+static void *
+strollpt_fwheap_create(void * __restrict     array,
+                       unsigned int          nr,
+                       size_t                size,
+                       stroll_array_cmp_fn * compare)
+{
+	return stroll_fwheap_create(array, nr, size, compare);
+}
+
+static void
+strollpt_fwheap_destroy(void * __restrict heap)
+{
+	stroll_fwheap_destroy(heap);
+}
+
+static void
+strollpt_fwheap_build(void * __restrict heap)
+{
+	stroll_fwheap_build(heap, stroll_fwheap_nr(heap), NULL);
+}
+
+static void
+strollpt_fwheap_insert(void * __restrict heap, const void * __restrict elem)
+{
+	stroll_fwheap_insert(heap, elem, NULL);
+}
+
+static void
+strollpt_fwheap_extract(void * __restrict heap, void * __restrict elem)
+{
+	stroll_fwheap_extract(heap, elem, NULL);
+}
+
+static unsigned int
+strollpt_fwheap_count(void * __restrict heap)
+{
+	return stroll_fwheap_count(heap);
+}
+
+#endif /* defined(CONFIG_STROLL_FWHEAP) */
+
 static const struct strollpt_heap_iface strollpt_heap_algos[] = {
 #if defined(CONFIG_STROLL_FBHEAP)
 	{
-		.name    = "fbheap",
-		.create  = strollpt_fbheap_create,
-		.destroy = strollpt_fbheap_destroy,
-		.build   = strollpt_fbheap_build,
-		.insert  = strollpt_fbheap_insert,
-		.extract = strollpt_fbheap_extract,
-		.count   = strollpt_fbheap_count
+		.name     = "fbheap",
+		.create   = strollpt_fbheap_create,
+		.destroy  = strollpt_fbheap_destroy,
+		.build    = strollpt_fbheap_build,
+		.insert   = strollpt_fbheap_insert,
+		.extract  = strollpt_fbheap_extract,
+		.count    = strollpt_fbheap_count,
+		.validate = strollpt_fbheap_validate
+	},
+#endif
+#if defined(CONFIG_STROLL_FWHEAP)
+	{
+		.name     = "fwheap",
+		.create   = strollpt_fwheap_create,
+		.destroy  = strollpt_fwheap_destroy,
+		.build    = strollpt_fwheap_build,
+		.insert   = strollpt_fwheap_insert,
+		.extract  = strollpt_fwheap_extract,
+		.count    = strollpt_fwheap_count,
+		.validate = strollpt_fwheap_validate
 	},
 #endif
 };

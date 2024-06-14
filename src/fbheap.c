@@ -711,6 +711,7 @@ stroll_fbheap_insert(struct stroll_fbheap * __restrict heap,
                      void * __restrict                 data)
 {
 	stroll_fbheap_assert_heap_api(heap);
+	stroll_fbheap_assert_api(elem);
 	stroll_fbheap_assert_api(heap->cnt < heap->nr);
 
 	_stroll_fbheap_insert(elem,
@@ -727,6 +728,7 @@ stroll_fbheap_extract(struct stroll_fbheap * __restrict heap,
                       void * __restrict                 data)
 {
 	stroll_fbheap_assert_heap_api(heap);
+	stroll_fbheap_assert_api(elem);
 	stroll_fbheap_assert_api(heap->cnt);
 
 	_stroll_fbheap_extract(elem,

@@ -38,7 +38,7 @@
 
 static inline __stroll_nonull(1) __stroll_const __stroll_nothrow
 const void *
-_stroll_fbheap_find(const void * __restrict array)
+_stroll_fbheap_peek(const void * __restrict array)
 {
 	stroll_fbheap_assert_api(array);
 
@@ -132,6 +132,15 @@ stroll_fbheap_isfull(const struct stroll_fbheap * __restrict heap)
 	return heap->cnt == heap->nr;
 }
 
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+stroll_fbheap_clear(struct stroll_fbheap * __restrict heap)
+{
+	stroll_fbheap_assert_heap_api(heap);
+
+	heap->cnt = 0;
+}
+
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 const void *
 stroll_fbheap_peek(const struct stroll_fbheap * __restrict heap)
@@ -139,7 +148,7 @@ stroll_fbheap_peek(const struct stroll_fbheap * __restrict heap)
 	stroll_fbheap_assert_heap_api(heap);
 	stroll_fbheap_assert_api(heap->cnt);
 
-	return _stroll_fbheap_find(heap->elems);
+	return _stroll_fbheap_peek(heap->elems);
 }
 
 extern void
@@ -159,15 +168,6 @@ stroll_fbheap_build(struct stroll_fbheap * __restrict heap,
                     unsigned int                      count,
                     void *                            data)
 	__stroll_nonull(1);
-
-static inline __stroll_nonull(1)
-void
-stroll_fbheap_clear(struct stroll_fbheap * __restrict heap)
-{
-	stroll_fbheap_assert_heap_api(heap);
-
-	heap->cnt = 0;
-}
 
 extern void
 stroll_fbheap_setup(struct stroll_fbheap * __restrict heap,

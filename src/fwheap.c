@@ -699,9 +699,124 @@ _stroll_fwheap_alloc_rbits(unsigned int nr)
 }
 
 void
-_stroll_fwheap_free_rbits(unsigned long * rbits)
+stroll_fwheap_insert(struct stroll_fwheap * __restrict heap,
+                     const void * __restrict           elem,
+                     void * __restrict                 data)
 {
-	free(rbits);
+	stroll_fwheap_assert_heap_api(heap);
+	stroll_fwheap_assert_api(elem);
+	stroll_fwheap_assert_api(heap->cnt < heap->nr);
+
+	_stroll_fwheap_insert(elem,
+	                      heap->elems,
+	                      heap->rbits,
+	                      heap->cnt++,
+	                      heap->size,
+	                      heap->compare,
+	                      data);
+}
+
+void
+stroll_fwheap_extract(struct stroll_fwheap * __restrict heap,
+                      void * __restrict                 elem,
+                      void * __restrict                 data)
+{
+	stroll_fwheap_assert_heap_api(heap);
+	stroll_fwheap_assert_api(elem);
+	stroll_fwheap_assert_api(heap->cnt);
+
+	_stroll_fwheap_extract(elem,
+	                       heap->elems,
+	                       heap->rbits,
+	                       heap->cnt--,
+	                       heap->size,
+	                       heap->compare,
+	                       data);
+}
+
+void
+stroll_fwheap_build(struct stroll_fwheap * __restrict heap,
+                    unsigned int                      count,
+                    void * __restrict                 data)
+{
+	stroll_fwheap_assert_heap_api(heap);
+	stroll_fwheap_assert_api(count);
+	stroll_fwheap_assert_api(count <= heap->nr);
+
+	_stroll_fwheap_build(heap->elems,
+	                     heap->rbits,
+	                     count,
+	                     heap->size,
+	                     heap->compare,
+	                     data);
+	heap->cnt = count;
+}
+
+
+int
+stroll_fwheap_init(struct stroll_fwheap * __restrict heap,
+                   void * __restrict                 array,
+                   unsigned int                      nr,
+                   size_t                            size,
+                   stroll_array_cmp_fn *             compare)
+{
+	stroll_fwheap_assert_api(heap);
+	stroll_fwheap_assert_api(array);
+	stroll_fwheap_assert_api(nr);
+	stroll_fwheap_assert_api(size);
+	stroll_fwheap_assert_api(compare);
+
+	heap->rbits = _stroll_fwheap_alloc_rbits(nr);
+	if (!heap->rbits)
+		return -errno;
+
+	heap->cnt = 0;
+	heap->nr = nr;
+	heap->size = size;
+	heap->compare = compare;
+	heap->elems = array;
+
+	return 0;
+}
+
+struct stroll_fwheap *
+stroll_fwheap_create(void * __restrict     array,
+                     unsigned int          nr,
+                     size_t                size,
+                     stroll_array_cmp_fn * compare)
+{
+	stroll_fwheap_assert_api(array);
+	stroll_fwheap_assert_api(nr);
+	stroll_fwheap_assert_api(size);
+	stroll_fwheap_assert_api(compare);
+
+	struct stroll_fwheap * heap;
+	int                    err;
+
+	heap = malloc(sizeof(*heap));
+	if (!heap)
+		return NULL;
+
+	err = stroll_fwheap_init(heap, array, nr, size, compare);
+	if (err)
+		goto free;
+
+	return heap;
+
+free:
+	free(heap);
+
+	errno = -err;
+
+	return NULL;
+}
+
+void
+stroll_fwheap_destroy(struct stroll_fwheap * heap)
+{
+	stroll_fwheap_fini(heap);
+
+	free(heap);
 }
 
 #endif /* defined(CONFIG_STROLL_FWHEAP) */
