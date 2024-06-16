@@ -114,6 +114,30 @@ stroll_fwheap_fast_dancestor_index(unsigned int index)
 }
 
 /*
+ * Identify last node of index's right subtree left spine.
+ */
+static inline __stroll_pure __stroll_nothrow __stroll_nonull(1)
+unsigned int
+stroll_fwheap_last_child(const unsigned long * __restrict rbits,
+                         unsigned int                     nr)
+{
+	stroll_fwheap_assert_intern(rbits);
+	stroll_fwheap_assert_intern(nr);
+
+	unsigned int last = 0;
+	unsigned int idx = stroll_fwheap_right_child_index(last, rbits);
+
+	while (idx < nr) {
+		last = idx;
+		idx = stroll_fwheap_left_child_index(idx, rbits);
+	}
+
+	return last;
+}
+
+#if defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT)
+
+/*
  * Join weak sub-heaps rooted at "node" node and its distinguished ancestor
  * "dancestor" into a single one rooted at "dancestor" (ensuring proper nodes
  * ordering).
@@ -130,209 +154,32 @@ stroll_fwheap_fast_dancestor_index(unsigned int index)
  */
 static inline __stroll_nonull(3, 4, 6)
 void
-stroll_fwheap_join_mem(unsigned int               first,
-                       unsigned int               second,
-                       char * __restrict          array,
-                       unsigned long * __restrict rbits,
-                       size_t                     size,
-                       stroll_array_cmp_fn *      compare,
-                       void *                     data)
-{
-	if (compare(&array[second * size], &array[first * size], data) > 0) {
-		/*
-		 * Swap node and its distinguished ancestor to restore proper
-		 * heap ordering.
-		 */
-		stroll_array_swap(&array[first * size],
-		                  &array[second * size],
-		                  size);
-
-		/* Flip former distinguished ancestor's children. */
-		_stroll_fbmap_toggle(rbits, second);
-	}
-}
-
-/*
- * Re-establish weak-heap ordering between elements located at root and all its
- * descendants (i.e., in root's right subtree since it has no left child).
- *
- * Starting from the right child of root, the last node on the left spine of the
- * right subtree of root is identified by repeatedly visiting left children
- * until reaching a node that has no left child.
- * The path from this node to the right child of root is traversed upwards,
- * and join operations are repeatedly performed between root and the nodes along
- * this path.
- * The correctness of the siftdown operation follows from the fact that, after
- * each join, the element at root is less than or equal to every element in
- * the left subtree of the node considered in the next join.
- */
-static inline __stroll_nonull(2, 3, 6)
-void
-stroll_fwheap_siftdwn_mem(unsigned int               index,
-                          char * __restrict          array,
-                          unsigned long * __restrict rbits,
-                          unsigned int               nr,
-                          size_t                     size,
-                          stroll_array_cmp_fn *      compare,
-                          void *                     data)
-{
-	unsigned int idx = stroll_fwheap_right_child_index(index, rbits);
-
-	/* Identify last node of root's right subtree left spine. */
-	while (true) {
-		unsigned int left = stroll_fwheap_left_child_index(idx, rbits);
-
-		if (left >= nr)
-			break;
-
-		idx = left;
-	}
-
-	/*
-	 * Now, traverse back up to the root, restoring weak heap property at
-	 * each visited node.
-	 */
-	while (idx != index) {
-		stroll_fwheap_join_mem(index,
-		                       idx,
-		                       array,
-		                       rbits,
-		                       size,
-		                       compare,
-		                       data);
-
-		idx = stroll_fwheap_parent_index(idx);
-	}
-}
-
-#define BUILD 0
-#if BUILD == 0
-/*
- * Perform bottom-up construction of a weak heap from the content of "nodes".
- *
- * Nodes are visited one by one in reverse order, and the two weak heaps rooted
- * at a node and its distinguished ancestor are joined.
- */
-static __stroll_nonull(1, 2, 5)
-void
-stroll_fwheap_build_mem(char * __restrict          array,
-                        unsigned long * __restrict rbits,
-                        unsigned int               nr,
-                        size_t                     size,
-                        stroll_array_cmp_fn *      compare,
-                        void *                     data)
-{
-	stroll_fwheap_assert_intern(array);
-	stroll_fwheap_assert_intern(rbits);
-	stroll_fwheap_assert_intern(nr > 1);
-	stroll_fwheap_assert_intern(size);
-	stroll_fwheap_assert_intern(compare);
-
-	_stroll_fbmap_clear_all(rbits, nr);
-
-	do {
-		unsigned int danc = stroll_fwheap_fast_dancestor_index(--nr);
-
-		stroll_fwheap_join_mem(danc,
-		                       nr,
-		                       array,
-		                       rbits,
-		                       size,
-		                       compare,
-		                       data);
-	} while (nr != 1);
-}
-#elif BUILD == 1
-static __stroll_nonull(1, 2, 5)
-void
-stroll_fwheap_build_mem(char * __restrict          array,
-                        unsigned long * __restrict rbits,
-                        unsigned int               nr,
-                        size_t                     size,
-                        stroll_array_cmp_fn *      compare,
-                        void *                     data)
-{
-	stroll_fwheap_assert_intern(nr > 1);
-
-	unsigned int idx = nr / 2;
-
-	_stroll_fbmap_clear_all(rbits, nr);
-
-	do {
-		stroll_fwheap_siftdwn_mem(--idx,
-		                          array,
-		                          rbits,
-		                          nr,
-		                          size,
-		                          compare,
-		                          data);
-	} while (idx);
-}
-#else
-static __stroll_nonull(3, 4, 7)
-void
-stroll_fwheap_build_recmem(unsigned int               parent,
+stroll_fwheap_join_max_mem(unsigned int               dancestor,
                            unsigned int               child,
                            char * __restrict          array,
                            unsigned long * __restrict rbits,
-                           unsigned int               nr,
                            size_t                     size,
                            stroll_array_cmp_fn *      compare,
                            void *                     data)
 {
-	if (child < (nr / 2)) {
-		stroll_fwheap_build_recmem(child,
-		                           (2 * child) + 1,
-		                           array,
-		                           rbits,
-		                           nr,
-		                           size,
-		                           compare,
-		                           data);
-		stroll_fwheap_build_recmem(parent,
-		                           2 * child,
-		                           array,
-		                           rbits,
-		                           nr,
-		                           size,
-		                           compare,
-		                           data);
-	}
-	stroll_fwheap_join_mem(parent,
-	                       child,
-	                       array,
-	                       rbits,
-	                       size,
-	                       compare,
-	                       data);
+	stroll_fwheap_assert_intern(child > dancestor);
+	stroll_fwheap_assert_intern(array);
+	stroll_fwheap_assert_intern(rbits);
+	stroll_fwheap_assert_intern(size);
+	stroll_fwheap_assert_intern(compare);
+
+	if (compare(&array[dancestor * size], &array[child * size], data) >= 0)
+		return;
+
+	/*
+	 * Swap node and its distinguished ancestor to restore proper heap
+	 * ordering.
+	 */
+	stroll_array_swap(&array[dancestor * size], &array[child * size], size);
+
+	/* Flip former distinguished ancestor's children. */
+	_stroll_fbmap_toggle(rbits, child);
 }
-
-static __stroll_nonull(1, 2, 5)
-void
-stroll_fwheap_build_mem(char * __restrict          array,
-                        unsigned long * __restrict rbits,
-                        unsigned int               nr,
-                        size_t                     size,
-                        stroll_array_cmp_fn *      compare,
-                        void *                     data)
-{
-	stroll_fwheap_assert_intern(nr > 1);
-
-	/* FIXME: ensure 0 bit is cleared when nr == 0 !! */
-	_stroll_fbmap_clear_all(rbits, nr);
-
-	stroll_fwheap_build_recmem(0,
-	                           1,
-	                           array,
-	                           rbits,
-	                           nr,
-	                           size,
-	                           compare,
-	                           data);
-}
-#endif
-
-#if defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT)
 
 static __stroll_nonull(1, 2, 5)
 void
@@ -351,20 +198,64 @@ stroll_fwheap_sort_mem(char * __restrict          array,
 
 	unsigned int idx = nr;
 
-	stroll_fwheap_build_mem(array, rbits, nr, size, compare, data);
+	/*
+	 * Perform bottom-up construction of a weak heap from the content of
+	 * "nodes".
+	 *
+	 * Nodes are visited one by one in reverse order, and the two weak heaps
+	 * rooted at a node and its distinguished ancestor are joined.
+	 */
+	_stroll_fbmap_clear_all(rbits, idx);
+	while (--idx)
+		stroll_fwheap_join_max_mem(
+			stroll_fwheap_fast_dancestor_index(idx),
+			idx,
+			array,
+			rbits,
+			size,
+			compare,
+			data);
 
-	while (true) {
-		stroll_array_swap(array, &array[--idx * size], size);
-		if (idx == 1)
-			break;
+	/*
+	 * As long as max-heap is not empty, extract max element and store it
+	 * into first sorted array location, i.e., right after heap array's last
+	 * element.
+	 * At the same time, copy last heap element into top position then
+	 * re-heapify remaining weak heap.
+	 */
+	while (--nr) {
+		/* Extract max heap element and store it into sorted array. */
+		stroll_array_swap(array, &array[nr * size], size);
 
-		stroll_fwheap_siftdwn_mem(0,
-		                          array,
-		                          rbits,
-		                          idx,
-		                          size,
-		                          compare,
-		                          data);
+		/*
+		 * Re-establish weak-heap ordering between elements located at
+		 * root and all its descendants (i.e., in root's right subtree
+		 * since it has no left child) according to a "sift-down"
+		 * procedure.
+		 *
+		 * Starting from the right child of root, the last node on the
+		 * left spine of the right subtree of root is identified by
+		 * repeatedly visiting left children until reaching a node that
+		 * has no left child.
+		 * The path from this node to the right child of root is
+		 * traversed upwards, and join operations are repeatedly
+		 * performed between root and the nodes along this path.
+		 * The correctness of the siftdown operation follows from the
+		 * fact that, after each join, the element at root is less than
+		 * or equal to every element in the left subtree of the node
+		 * considered in the next join.
+		 */
+		idx = stroll_fwheap_last_child(rbits, nr);
+		while (idx) {
+			stroll_fwheap_join_max_mem(0,
+			                           idx,
+			                           array,
+			                           rbits,
+			                           size,
+			                           compare,
+			                           data);
+			idx = stroll_fwheap_parent_index(idx);
+		}
 	}
 }
 
@@ -399,7 +290,7 @@ stroll_array_fwheap_sort(void * __restrict     array,
 
 #if defined(CONFIG_STROLL_FWHEAP)
 
-static inline __stroll_nonull(3, 4, 6)
+static __stroll_nonull(3, 4, 6)
 bool
 stroll_fwheap_join_min_mem(unsigned int               dancestor,
                            unsigned int               child,
@@ -409,65 +300,26 @@ stroll_fwheap_join_min_mem(unsigned int               dancestor,
                            stroll_array_cmp_fn *      compare,
                            void *                     data)
 {
-	if (compare(&array[child * size], &array[dancestor * size], data) < 0) {
-		/*
-		 * Swap node and its distinguished ancestor to restore proper
-		 * heap ordering.
-		 */
-		stroll_array_swap(&array[child * size],
-		                  &array[dancestor * size],
-		                  size);
+	stroll_fwheap_assert_intern(child > dancestor);
+	stroll_fwheap_assert_intern(array);
+	stroll_fwheap_assert_intern(rbits);
+	stroll_fwheap_assert_intern(size);
+	stroll_fwheap_assert_intern(compare);
 
-		/* Flip former distinguished ancestor's children. */
-		_stroll_fbmap_toggle(rbits, child);
-
-		/*
-		 * Tell caller that we swapped child and its distinguished
-		 * ancestor.
-		 */
-		return false;
-	}
-
-	return true;
-}
-
-static inline __stroll_nonull(2, 3, 6)
-void
-stroll_fwheap_siftdwn_min_mem(unsigned int               index,
-                              char * __restrict          array,
-                              unsigned long * __restrict rbits,
-                              unsigned int               nr,
-                              size_t                     size,
-                              stroll_array_cmp_fn *      compare,
-                              void *                     data)
-{
-	unsigned int idx = stroll_fwheap_right_child_index(index, rbits);
-
-	/* Identify last node of root's right subtree left spine. */
-	while (true) {
-		unsigned int left = stroll_fwheap_left_child_index(idx, rbits);
-
-		if (left >= nr)
-			break;
-
-		idx = left;
-	}
+	if (compare(&array[dancestor * size], &array[child * size], data) <= 0)
+		return true;
 
 	/*
-	 * Now, traverse back up to the root, restoring weak heap property at
-	 * each visited node.
+	 * Swap node and its distinguished ancestor to restore proper heap
+	 * ordering.
 	 */
-	while (idx != index) {
-		stroll_fwheap_join_min_mem(index,
-		                           idx,
-		                           array,
-		                           rbits,
-		                           size,
-		                           compare,
-		                           data);
+	stroll_array_swap(&array[dancestor * size], &array[child * size], size);
 
-		idx = stroll_fwheap_parent_index(idx);
-	}
+	/* Flip former distinguished ancestor's children. */
+	_stroll_fbmap_toggle(rbits, child);
+
+	/* Tell caller that we swapped child and its distinguished ancestor. */
+	return false;
 }
 
 static
@@ -577,28 +429,12 @@ stroll_fwheap_extract_min_mem(char * __restrict          elem,
 	stroll_fwheap_assert_intern(compare);
 
 	memcpy(elem, array, size);
-	if (nr == 1)
-		return;
 
-	memcpy(array, &array[(--nr) * size], size);
-	if (nr != 1) {
-		unsigned int idx = stroll_fwheap_right_child_index(0, rbits);
+	if (--nr) {
+		unsigned int idx = stroll_fwheap_last_child(rbits, nr);
 
-		/* Identify last node of root's right subtree left spine. */
-		while (true) {
-			unsigned int left;
+		memcpy(array, &array[nr * size], size);
 
-			left = stroll_fwheap_left_child_index(idx, rbits);
-			if (left >= nr)
-				break;
-
-			idx = left;
-		}
-
-		/*
-		 * Now, traverse back up to the root, restoring weak heap
-		 * property at each visited node.
-		 */
 		while (idx) {
 			stroll_fwheap_join_min_mem(0,
 			                           idx,
@@ -607,7 +443,6 @@ stroll_fwheap_extract_min_mem(char * __restrict          elem,
 			                           size,
 			                           compare,
 			                           data);
-
 			idx = stroll_fwheap_parent_index(idx);
 		}
 	}
@@ -657,17 +492,15 @@ stroll_fwheap_build_min_mem(char * __restrict          array,
 
 	_stroll_fbmap_clear_all(rbits, nr);
 
-	do {
-		unsigned int danc = stroll_fwheap_fast_dancestor_index(--nr);
-
-		stroll_fwheap_join_min_mem(danc,
-		                           nr,
-		                           array,
-		                           rbits,
-		                           size,
-		                           compare,
-		                           data);
-	} while (nr != 1);
+	while (--nr)
+		stroll_fwheap_join_min_mem(
+			stroll_fwheap_fast_dancestor_index(nr),
+			nr,
+			array,
+			rbits,
+			size,
+			compare,
+			data);
 }
 
 void

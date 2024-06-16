@@ -378,7 +378,7 @@ strollpt_fwheap_dancestor(unsigned int index, const unsigned long * rbits)
 static bool
 strollpt_fwheap_validate(unsigned int index, const void * heap, unsigned int nr)
 {
-	assert(elements);
+	assert(heap);
 	assert(nr);
 
 	const struct stroll_fwheap * hp = heap;

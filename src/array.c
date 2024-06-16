@@ -10,6 +10,40 @@
 #include <string.h>
 #include <errno.h>
 
+#define STROLL_ARRAY_DEFINE_SWAP(_func, _type) \
+	void \
+	_func(_type * __restrict first, _type * __restrict second) \
+	{ \
+		stroll_array_assert_intern(first); \
+		stroll_array_assert_intern(second); \
+		\
+		_type tmp; \
+		\
+		tmp = *first; \
+		*first = *second; \
+		*second = tmp; \
+	}
+
+STROLL_ARRAY_DEFINE_SWAP(stroll_array_swap32, uint32_t)
+
+STROLL_ARRAY_DEFINE_SWAP(stroll_array_swap64, uint64_t)
+
+void
+stroll_array_swap(void * __restrict first,
+                  void * __restrict second,
+                  size_t            size)
+{
+	stroll_array_assert_intern(first);
+	stroll_array_assert_intern(second);
+	stroll_array_assert_intern(size);
+
+	char tmp[size];
+
+	memcpy(tmp, first, size);
+	memcpy(first, second, size);
+	memcpy(second, tmp, size);
+}
+
 #if defined(CONFIG_STROLL_ARRAY_BISECT_SEARCH)
 
 void *

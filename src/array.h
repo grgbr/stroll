@@ -50,40 +50,18 @@ stroll_array_aligned(const void * __restrict array, size_t size, size_t align)
 	return (size == align) && stroll_aligned((unsigned long)array, align);
 }
 
-#define STROLL_ARRAY_DEFINE_SWAP(_func, _type) \
-	static inline __stroll_nonull(1, 2) \
-	void \
-	_func(_type * __restrict first, _type * __restrict second) \
-	{ \
-		stroll_array_assert_intern(first); \
-		stroll_array_assert_intern(second); \
-		\
-		_type tmp; \
-		\
-		tmp = *first; \
-		*first = *second; \
-		*second = tmp; \
-	}
+extern void
+stroll_array_swap32(uint32_t * __restrict first, uint32_t * __restrict second)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __export_intern;
 
-STROLL_ARRAY_DEFINE_SWAP(stroll_array_swap32, uint32_t)
+extern void
+stroll_array_swap64(uint64_t * __restrict first, uint64_t * __restrict second)
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __export_intern;
 
-STROLL_ARRAY_DEFINE_SWAP(stroll_array_swap64, uint64_t)
-
-static inline __stroll_nonull(1, 2)
-void
+extern void
 stroll_array_swap(void * __restrict first,
                   void * __restrict second,
                   size_t            size)
-{
-	stroll_array_assert_intern(first);
-	stroll_array_assert_intern(second);
-	stroll_array_assert_intern(size);
-
-	char tmp[size];
-
-	memcpy(tmp, first, size);
-	memcpy(first, second, size);
-	memcpy(second, tmp, size);
-}
+	__stroll_nonull(1, 2) __stroll_nothrow __leaf __export_intern;
 
 #endif /* _STROLL_ARRAY_INTERN_H */
