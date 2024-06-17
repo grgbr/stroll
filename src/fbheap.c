@@ -321,11 +321,11 @@ stroll_array_fbheap_sort(void * __restrict     array,
 		return;
 
 	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
-		return stroll_fbheap_sort32(array, nr, compare, data);
+		stroll_fbheap_sort32(array, nr, compare, data);
 	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
-		return stroll_fbheap_sort64(array, nr, compare, data);
+		stroll_fbheap_sort64(array, nr, compare, data);
 	else
-		return stroll_fbheap_sort_mem(array, nr, size, compare, data);
+		stroll_fbheap_sort_mem(array, nr, size, compare, data);
 }
 
 #endif /* defined(CONFIG_STROLL_ARRAY_FBHEAP_SORT) */
@@ -410,9 +410,9 @@ _stroll_fbheap_insert(const void * __restrict elem,
 	stroll_fbheap_assert_api(compare);
 
 	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
-		return stroll_fbheap_insert32(elem, array, nr, compare, data);
+		stroll_fbheap_insert32(elem, array, nr, compare, data);
 	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
-		return stroll_fbheap_insert64(elem, array, nr, compare, data);
+		stroll_fbheap_insert64(elem, array, nr, compare, data);
 	else
 		stroll_fbheap_insert_mem(elem, array, nr, size, compare, data);
 }
@@ -601,9 +601,9 @@ _stroll_fbheap_extract(void * __restrict     elem,
 	stroll_fbheap_assert_api(compare);
 
 	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
-		return stroll_fbheap_extract32(elem, array, nr, compare, data);
+		stroll_fbheap_extract32(elem, array, nr, compare, data);
 	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
-		return stroll_fbheap_extract64(elem, array, nr, compare, data);
+		stroll_fbheap_extract64(elem, array, nr, compare, data);
 	else
 		stroll_fbheap_extract_mem(elem, array, nr, size, compare, data);
 }
@@ -698,9 +698,9 @@ _stroll_fbheap_build(void * __restrict       array,
 		return;
 
 	if (stroll_array_aligned(array, size, sizeof(uint32_t)))
-		return stroll_fbheap_build32(array, nr, compare, data);
+		stroll_fbheap_build32(array, nr, compare, data);
 	else if (stroll_array_aligned(array, size, sizeof(uint64_t)))
-		return stroll_fbheap_build64(array, nr, compare, data);
+		stroll_fbheap_build64(array, nr, compare, data);
 	else
 		stroll_fbheap_build_mem(array, nr, size, compare, data);
 }
