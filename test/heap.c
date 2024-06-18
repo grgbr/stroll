@@ -9,6 +9,7 @@
 #include <cute/cute.h>
 #include <cute/check.h>
 #include <cute/expect.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef void strollut_heap_insert_fn(const void *,
@@ -43,11 +44,21 @@ typedef void strollut_heap_check_fn(const struct strollut_heap_elem *,
                                     unsigned int,
                                     stroll_array_cmp_fn *);
 
+typedef void strollut_heap_check32_fn(const uint32_t *,
+                                      unsigned int,
+                                      stroll_array_cmp_fn *);
+
+typedef void strollut_heap_check64_fn(const uint64_t *,
+                                      unsigned int,
+                                      stroll_array_cmp_fn *);
+
 struct strollut_heap_iface {
 	strollut_heap_build_fn *   build;
 	strollut_heap_insert_fn *  insert;
 	strollut_heap_extract_fn * extract;
 	strollut_heap_check_fn *   check;
+	strollut_heap_check32_fn * check32;
+	strollut_heap_check64_fn * check64;
 };
 
 static struct strollut_heap_iface strollut_heap_algo;
@@ -76,6 +87,28 @@ strollut_heap_compare_str_min(const void * first,
 		(const struct strollut_heap_elem *)second;
 
 	return strcmp(fst->str, snd->str);
+}
+
+static int
+strollut_heap_compare_min32(const void * first,
+                            const void * second,
+                            void *       data __unused)
+{
+	const uint32_t * fst = first;
+	const uint32_t * snd = second;
+
+	return (*fst > *snd) - (*fst < *snd);
+}
+
+static int
+strollut_heap_compare_min64(const void * first,
+                            const void * second,
+                            void *       data __unused)
+{
+	const uint64_t * fst = first;
+	const uint64_t * snd = second;
+
+	return (*fst > *snd) - (*fst < *snd);
 }
 
 static const struct strollut_heap_elem strollut_heap_array1[] = {
@@ -281,6 +314,192 @@ CUTE_TEST(strollut_heap_extract8_str)
 	strollut_heap_check_extract(strollut_heap_array8,
 	                            stroll_array_nr(strollut_heap_array8),
 	                            strollut_heap_compare_str_min);
+}
+
+static void
+strollut_heap_check_extract32(uint32_t * array, unsigned int nr)
+{
+	uint32_t     sorted[nr];
+	unsigned int e;
+
+	memcpy(sorted, array, sizeof(sorted));
+	qsort_r(sorted,
+	        nr,
+	        sizeof(sorted[0]),
+	        strollut_heap_compare_min32,
+	        NULL);
+
+	strollut_heap_algo.build(array,
+	                         nr,
+	                         sizeof(array[0]),
+	                         strollut_heap_compare_min32,
+	                         NULL);
+
+	for (e = 0; e < nr; e++) {
+		uint32_t elem;
+
+		strollut_heap_algo.extract(&elem,
+		                           array,
+		                           nr - e,
+		                           sizeof(array[0]),
+		                           strollut_heap_compare_min32,
+		                           NULL);
+
+		cute_check_uint(elem, equal, sorted[e]);
+
+		strollut_heap_algo.check32(array,
+		                           nr - e,
+		                           strollut_heap_compare_min32);
+	}
+}
+
+CUTE_TEST(strollut_heap_extract1_32)
+{
+	uint32_t array[] = { 4 };
+
+	strollut_heap_check_extract32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract2_32)
+{
+	uint32_t array[] = { 4, 3 };
+
+	strollut_heap_check_extract32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract3_32)
+{
+	uint32_t array[] = { 4, 3, 6 };
+
+	strollut_heap_check_extract32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract4_32)
+{
+	uint32_t array[] = { 4, 3, 6, 0 };
+
+	strollut_heap_check_extract32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract5_32)
+{
+	uint32_t array[] = { 4, 3, 6, 0, 5 };
+
+	strollut_heap_check_extract32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract6_32)
+{
+	uint32_t array[] = { 4, 3, 6, 0, 5, 1 };
+
+	strollut_heap_check_extract32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract7_32)
+{
+	uint32_t array[] = { 4, 3, 6, 0, 5, 1, 2 };
+
+	strollut_heap_check_extract32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract8_32)
+{
+	uint32_t array[] = { 4, 3, 6, 0, 5, 1, 2, 7 };
+
+	strollut_heap_check_extract32(array, stroll_array_nr(array));
+}
+
+static void
+strollut_heap_check_extract64(uint64_t * array, unsigned int nr)
+{
+	uint64_t     sorted[nr];
+	unsigned int e;
+
+	memcpy(sorted, array, sizeof(sorted));
+	qsort_r(sorted,
+	        nr,
+	        sizeof(sorted[0]),
+	        strollut_heap_compare_min64,
+	        NULL);
+
+	strollut_heap_algo.build(array,
+	                         nr,
+	                         sizeof(array[0]),
+	                         strollut_heap_compare_min64,
+	                         NULL);
+
+	for (e = 0; e < nr; e++) {
+		uint64_t elem;
+
+		strollut_heap_algo.extract(&elem,
+		                           array,
+		                           nr - e,
+		                           sizeof(array[0]),
+		                           strollut_heap_compare_min64,
+		                           NULL);
+
+		cute_check_uint(elem, equal, sorted[e]);
+
+		strollut_heap_algo.check64(array,
+		                           nr - e,
+		                           strollut_heap_compare_min64);
+	}
+}
+
+CUTE_TEST(strollut_heap_extract1_64)
+{
+	uint64_t array[] = { 4 };
+
+	strollut_heap_check_extract64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract2_64)
+{
+	uint64_t array[] = { 4, 3 };
+
+	strollut_heap_check_extract64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract3_64)
+{
+	uint64_t array[] = { 4, 3, 6 };
+
+	strollut_heap_check_extract64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract4_64)
+{
+	uint64_t array[] = { 4, 3, 6, 0 };
+
+	strollut_heap_check_extract64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract5_64)
+{
+	uint64_t array[] = { 4, 3, 6, 0, 5 };
+
+	strollut_heap_check_extract64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract6_64)
+{
+	uint64_t array[] = { 4, 3, 6, 0, 5, 1 };
+
+	strollut_heap_check_extract64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract7_64)
+{
+	uint64_t array[] = { 4, 3, 6, 0, 5, 1, 2 };
+
+	strollut_heap_check_extract64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_extract8_64)
+{
+	uint64_t array[] = { 4, 3, 6, 0, 5, 1, 2, 7 };
+
+	strollut_heap_check_extract64(array, stroll_array_nr(array));
 }
 
 static void
@@ -550,6 +769,142 @@ CUTE_TEST(strollut_heap_build_revorder8_str)
 		strollut_heap_array8,
 		stroll_array_nr(strollut_heap_array8),
 		strollut_heap_compare_str_min);
+}
+
+static void
+strollut_heap_check_build32(uint32_t * array, unsigned int nr)
+{
+	strollut_heap_algo.build(array,
+	                         nr,
+	                         sizeof(array[0]),
+	                         strollut_heap_compare_min32,
+	                         NULL);
+
+	strollut_heap_algo.check32(array, nr, strollut_heap_compare_min32);
+}
+
+static void
+strollut_heap_check_build64(uint64_t * array, unsigned int nr)
+{
+	strollut_heap_algo.build(array,
+	                         nr,
+	                         sizeof(array[0]),
+	                         strollut_heap_compare_min64,
+	                         NULL);
+
+	strollut_heap_algo.check64(array, nr, strollut_heap_compare_min64);
+}
+
+CUTE_TEST(strollut_heap_build1_num32)
+{
+	uint32_t array[] = { 4 };
+
+	strollut_heap_check_build32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build1_num64)
+{
+	uint64_t array[] = { 4 };
+
+	strollut_heap_check_build64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build2_num32)
+{
+	uint32_t array[] = { 4, 3 };
+
+	strollut_heap_check_build32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build2_num64)
+{
+	uint64_t array[] = { 4, 3 };
+
+	strollut_heap_check_build64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build3_num32)
+{
+	uint32_t array[] = { 4, 3, 6 };
+
+	strollut_heap_check_build32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build3_num64)
+{
+	uint64_t array[] = { 4, 3, 6 };
+
+	strollut_heap_check_build64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build4_num32)
+{
+	uint32_t array[] = { 4, 3, 6, 0 };
+
+	strollut_heap_check_build32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build4_num64)
+{
+	uint64_t array[] = { 4, 3, 6, 0 };
+
+	strollut_heap_check_build64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build5_num32)
+{
+	uint32_t array[] = { 4, 3, 6, 0, 5 };
+
+	strollut_heap_check_build32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build5_num64)
+{
+	uint64_t array[] = { 4, 3, 6, 0, 5 };
+
+	strollut_heap_check_build64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build6_num32)
+{
+	uint32_t array[] = { 4, 3, 6, 0, 5, 1 };
+
+	strollut_heap_check_build32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build6_num64)
+{
+	uint64_t array[] = { 4, 3, 6, 0, 5, 1 };
+
+	strollut_heap_check_build64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build7_num32)
+{
+	uint32_t array[] = { 4, 3, 6, 0, 5, 1, 2 };
+
+	strollut_heap_check_build32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build7_num64)
+{
+	uint64_t array[] = { 4, 3, 6, 0, 5, 1, 2 };
+
+	strollut_heap_check_build64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build8_num32)
+{
+	uint32_t array[] = { 4, 3, 6, 0, 5, 1, 2, 7 };
+
+	strollut_heap_check_build32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_build8_num64)
+{
+	uint64_t array[] = { 4, 3, 6, 0, 5, 1, 2, 7 };
+
+	strollut_heap_check_build64(array, stroll_array_nr(array));
 }
 
 static void
@@ -847,6 +1202,156 @@ CUTE_TEST(strollut_heap_insert_revorder8_str)
 		strollut_heap_compare_str_min);
 }
 
+static void
+strollut_heap_check_insert32(const uint32_t * array, unsigned int nr)
+{
+	uint32_t     heap[nr];
+	unsigned int e;
+
+	for (e = 0; e < nr; e++) {
+		strollut_heap_algo.insert(&array[e],
+		                          heap,
+		                          e,
+		                          sizeof(array[0]),
+		                          strollut_heap_compare_min32,
+		                          NULL);
+		strollut_heap_algo.check32(heap,
+		                           e + 1,
+		                           strollut_heap_compare_min32);
+	}
+}
+
+CUTE_TEST(strollut_heap_insert1_32)
+{
+	const uint32_t array[] = { 7 };
+
+	strollut_heap_check_insert32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert2_32)
+{
+	const uint32_t array[] = { 7, 4 };
+
+	strollut_heap_check_insert32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert3_32)
+{
+	const uint32_t array[] = { 7, 4, 3 };
+
+	strollut_heap_check_insert32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert4_32)
+{
+	const uint32_t array[] = { 7, 4, 3, 6 };
+
+	strollut_heap_check_insert32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert5_32)
+{
+	const uint32_t array[] = { 7, 4, 3, 6, 0 };
+
+	strollut_heap_check_insert32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert6_32)
+{
+	const uint32_t array[] = { 7, 4, 3, 6, 0, 5 };
+
+	strollut_heap_check_insert32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert7_32)
+{
+	const uint32_t array[] = { 7, 4, 3, 6, 0, 5, 1 };
+
+	strollut_heap_check_insert32(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert8_32)
+{
+	const uint32_t array[] = { 7, 4, 3, 6, 0, 5, 1, 2 };
+
+	strollut_heap_check_insert32(array, stroll_array_nr(array));
+}
+
+static void
+strollut_heap_check_insert64(const uint64_t * array, unsigned int nr)
+{
+	uint64_t     heap[nr];
+	unsigned int e;
+
+	for (e = 0; e < nr; e++) {
+		strollut_heap_algo.insert(&array[e],
+		                          heap,
+		                          e,
+		                          sizeof(array[0]),
+		                          strollut_heap_compare_min64,
+		                          NULL);
+		strollut_heap_algo.check64(heap,
+		                           e + 1,
+		                           strollut_heap_compare_min64);
+	}
+}
+
+CUTE_TEST(strollut_heap_insert1_64)
+{
+	const uint64_t array[] = { 7 };
+
+	strollut_heap_check_insert64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert2_64)
+{
+	const uint64_t array[] = { 7, 4 };
+
+	strollut_heap_check_insert64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert3_64)
+{
+	const uint64_t array[] = { 7, 4, 3 };
+
+	strollut_heap_check_insert64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert4_64)
+{
+	const uint64_t array[] = { 7, 4, 3, 6 };
+
+	strollut_heap_check_insert64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert5_64)
+{
+	const uint64_t array[] = { 7, 4, 3, 6, 0 };
+
+	strollut_heap_check_insert64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert6_64)
+{
+	const uint64_t array[] = { 7, 4, 3, 6, 0, 5 };
+
+	strollut_heap_check_insert64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert7_64)
+{
+	const uint64_t array[] = { 7, 4, 3, 6, 0, 5, 1 };
+
+	strollut_heap_check_insert64(array, stroll_array_nr(array));
+}
+
+CUTE_TEST(strollut_heap_insert8_64)
+{
+	const uint64_t array[] = { 7, 4, 3, 6, 0, 5, 1, 2 };
+
+	strollut_heap_check_insert64(array, stroll_array_nr(array));
+}
+
 CUTE_GROUP(strollut_heap_group) = {
 	CUTE_REF(strollut_heap_build_inorder1_num),
 	CUTE_REF(strollut_heap_build_inorder2_num),
@@ -884,6 +1389,24 @@ CUTE_GROUP(strollut_heap_group) = {
 	CUTE_REF(strollut_heap_build_revorder7_str),
 	CUTE_REF(strollut_heap_build_revorder8_str),
 
+	CUTE_REF(strollut_heap_build1_num32),
+	CUTE_REF(strollut_heap_build2_num32),
+	CUTE_REF(strollut_heap_build3_num32),
+	CUTE_REF(strollut_heap_build4_num32),
+	CUTE_REF(strollut_heap_build5_num32),
+	CUTE_REF(strollut_heap_build6_num32),
+	CUTE_REF(strollut_heap_build7_num32),
+	CUTE_REF(strollut_heap_build8_num32),
+
+	CUTE_REF(strollut_heap_build1_num64),
+	CUTE_REF(strollut_heap_build2_num64),
+	CUTE_REF(strollut_heap_build3_num64),
+	CUTE_REF(strollut_heap_build4_num64),
+	CUTE_REF(strollut_heap_build5_num64),
+	CUTE_REF(strollut_heap_build6_num64),
+	CUTE_REF(strollut_heap_build7_num64),
+	CUTE_REF(strollut_heap_build8_num64),
+
 	CUTE_REF(strollut_heap_extract1_num),
 	CUTE_REF(strollut_heap_extract2_num),
 	CUTE_REF(strollut_heap_extract3_num),
@@ -901,6 +1424,24 @@ CUTE_GROUP(strollut_heap_group) = {
 	CUTE_REF(strollut_heap_extract6_str),
 	CUTE_REF(strollut_heap_extract7_str),
 	CUTE_REF(strollut_heap_extract8_str),
+
+	CUTE_REF(strollut_heap_extract1_32),
+	CUTE_REF(strollut_heap_extract2_32),
+	CUTE_REF(strollut_heap_extract3_32),
+	CUTE_REF(strollut_heap_extract4_32),
+	CUTE_REF(strollut_heap_extract5_32),
+	CUTE_REF(strollut_heap_extract6_32),
+	CUTE_REF(strollut_heap_extract7_32),
+	CUTE_REF(strollut_heap_extract8_32),
+
+	CUTE_REF(strollut_heap_extract1_64),
+	CUTE_REF(strollut_heap_extract2_64),
+	CUTE_REF(strollut_heap_extract3_64),
+	CUTE_REF(strollut_heap_extract4_64),
+	CUTE_REF(strollut_heap_extract5_64),
+	CUTE_REF(strollut_heap_extract6_64),
+	CUTE_REF(strollut_heap_extract7_64),
+	CUTE_REF(strollut_heap_extract8_64),
 
 	CUTE_REF(strollut_heap_insert_inorder1_num),
 	CUTE_REF(strollut_heap_insert_inorder2_num),
@@ -937,6 +1478,24 @@ CUTE_GROUP(strollut_heap_group) = {
 	CUTE_REF(strollut_heap_insert_revorder6_str),
 	CUTE_REF(strollut_heap_insert_revorder7_str),
 	CUTE_REF(strollut_heap_insert_revorder8_str),
+
+	CUTE_REF(strollut_heap_insert1_32),
+	CUTE_REF(strollut_heap_insert2_32),
+	CUTE_REF(strollut_heap_insert3_32),
+	CUTE_REF(strollut_heap_insert4_32),
+	CUTE_REF(strollut_heap_insert5_32),
+	CUTE_REF(strollut_heap_insert6_32),
+	CUTE_REF(strollut_heap_insert7_32),
+	CUTE_REF(strollut_heap_insert8_32),
+
+	CUTE_REF(strollut_heap_insert1_64),
+	CUTE_REF(strollut_heap_insert2_64),
+	CUTE_REF(strollut_heap_insert3_64),
+	CUTE_REF(strollut_heap_insert4_64),
+	CUTE_REF(strollut_heap_insert5_64),
+	CUTE_REF(strollut_heap_insert6_64),
+	CUTE_REF(strollut_heap_insert7_64),
+	CUTE_REF(strollut_heap_insert8_64)
 };
 
 #if defined(CONFIG_STROLL_FBHEAP)
@@ -984,12 +1543,66 @@ strollut_fbheap_check(const struct strollut_heap_elem * array,
 }
 
 static void
+strollut_fbheap_check_recurs32(unsigned int          e,
+                               const uint32_t *      array,
+                               unsigned int          nr,
+                               stroll_array_cmp_fn * cmp)
+{
+	if (e >= nr)
+		return;
+
+	if (e)
+		cute_check_sint(cmp(&array[(e - 1) / 2], &array[e], NULL),
+		                lower_equal,
+		                0);
+
+	strollut_fbheap_check_recurs32((2 * e) + 1, array, nr, cmp);
+	strollut_fbheap_check_recurs32((2 * e) + 2, array, nr, cmp);
+}
+
+static void
+strollut_fbheap_check32(const uint32_t *      array,
+                        unsigned int          nr,
+                        stroll_array_cmp_fn * cmp)
+{
+	strollut_fbheap_check_recurs32(0, array, nr, cmp);
+}
+
+static void
+strollut_fbheap_check_recurs64(unsigned int          e,
+                               const uint64_t *      array,
+                               unsigned int          nr,
+                               stroll_array_cmp_fn * cmp)
+{
+	if (e >= nr)
+		return;
+
+	if (e)
+		cute_check_sint(cmp(&array[(e - 1) / 2], &array[e], NULL),
+		                lower_equal,
+		                0);
+
+	strollut_fbheap_check_recurs64((2 * e) + 1, array, nr, cmp);
+	strollut_fbheap_check_recurs64((2 * e) + 2, array, nr, cmp);
+}
+
+static void
+strollut_fbheap_check64(const uint64_t *      array,
+                        unsigned int          nr,
+                        stroll_array_cmp_fn * cmp)
+{
+	strollut_fbheap_check_recurs64(0, array, nr, cmp);
+}
+
+static void
 strollut_fbheap_setup(void)
 {
 	strollut_heap_algo.build = _stroll_fbheap_build;
 	strollut_heap_algo.insert = _stroll_fbheap_insert;
 	strollut_heap_algo.extract = _stroll_fbheap_extract;
 	strollut_heap_algo.check = strollut_fbheap_check;
+	strollut_heap_algo.check32 = strollut_fbheap_check32;
+	strollut_heap_algo.check64 = strollut_fbheap_check64;
 }
 
 #else  /* !defined(CONFIG_STROLL_FBHEAP) */
@@ -1157,12 +1770,88 @@ strollut_fwheap_check(const struct strollut_heap_elem * array,
 }
 
 static void
+strollut_fwheap_check_recurs32(unsigned int          e,
+                               const uint32_t *      array,
+                               unsigned int          nr,
+                               stroll_array_cmp_fn * cmp)
+{
+	if (e >= nr)
+		return;
+
+	if (e) {
+		unsigned int didx = strollut_fwheap_dancestor(e);
+
+		cute_check_sint(cmp(&array[didx], &array[e], NULL),
+		                lower_equal,
+		                0);
+	}
+
+	if (e)
+		/* Root node has no left child ! */
+		strollut_fwheap_check_recurs32(strollut_fwheap_left(e),
+		                               array,
+		                               nr,
+		                               cmp);
+	strollut_fwheap_check_recurs32(strollut_fwheap_right(e),
+	                               array,
+	                               nr,
+	                               cmp);
+}
+
+static void
+strollut_fwheap_check32(const uint32_t *      array,
+                        unsigned int          nr,
+                        stroll_array_cmp_fn * cmp)
+{
+	strollut_fwheap_check_recurs32(0, array, nr, cmp);
+}
+
+static void
+strollut_fwheap_check_recurs64(unsigned int          e,
+                               const uint64_t *      array,
+                               unsigned int          nr,
+                               stroll_array_cmp_fn * cmp)
+{
+	if (e >= nr)
+		return;
+
+	if (e) {
+		unsigned int didx = strollut_fwheap_dancestor(e);
+
+		cute_check_sint(cmp(&array[didx], &array[e], NULL),
+		                lower_equal,
+		                0);
+	}
+
+	if (e)
+		/* Root node has no left child ! */
+		strollut_fwheap_check_recurs64(strollut_fwheap_left(e),
+		                               array,
+		                               nr,
+		                               cmp);
+	strollut_fwheap_check_recurs64(strollut_fwheap_right(e),
+	                               array,
+	                               nr,
+	                               cmp);
+}
+
+static void
+strollut_fwheap_check64(const uint64_t *      array,
+                        unsigned int          nr,
+                        stroll_array_cmp_fn * cmp)
+{
+	strollut_fwheap_check_recurs64(0, array, nr, cmp);
+}
+
+static void
 strollut_fwheap_setup(void)
 {
 	strollut_heap_algo.build = strollut_fwheap_build;
 	strollut_heap_algo.insert = strollut_fwheap_insert;
 	strollut_heap_algo.extract = strollut_fwheap_extract;
 	strollut_heap_algo.check = strollut_fwheap_check;
+	strollut_heap_algo.check32 = strollut_fwheap_check32;
+	strollut_heap_algo.check64 = strollut_fwheap_check64;
 }
 
 #else  /* !defined(CONFIG_STROLL_FWHEAP) */
