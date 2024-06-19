@@ -22,6 +22,7 @@ from ptest_show import ptest_load, \
                        ptest_plot_lin, \
                        ptest_plot_log, \
                        ptest_print_1darray, \
+                       ptest_init_prop, \
                        ptest_init_algos, \
                        ptest_init_nrs, \
                        ptest_init_singles, \
@@ -36,32 +37,35 @@ from ptest_show import ptest_load, \
                        ptest_check_single_size, \
                        ptest_check_single_nr
 
-
-def array_ptest_load(path: str) -> np.array:
+def heap_ptest_load(path: str) -> np.array:
     return ptest_load(path, np.dtype([('algo', object),
                                       ('nr', int),
                                       ('single', int),
                                       ('order', int),
                                       ('size', int),
+                                      ('oper', object),
                                       ('nsec', int)]))
 
 
-def array_ptest_select(results: np.array,
+def heap_ptest_select(results: np.array,
                        algos: np.array,
                        orders: np.array,
                        sizes: np.array,
+                       opers: np.array,
                        nrs: np.array) -> np.array:
     return results[np.in1d(results['algo'], algos) &
                    np.in1d(results['order'], orders) &
                    np.in1d(results['size'], sizes) &
+                   np.in1d(results['oper'], opers) &
                    np.in1d(results['nr'], nrs)]
 
 
-def array_ptest_list(results,
+def heap_ptest_list(results,
                      algos: np.array,
                      singles: np.array,
                      orders: np.array,
                      sizes: np.array,
+                     opers: np.array,
                      nrs: np.array) -> None:
     print('FIELD  DESCRIPTION           VALUES')
     ptest_print_1darray(algos,   'algo   ', 'algorithms      ')
@@ -69,9 +73,10 @@ def array_ptest_list(results,
     ptest_print_1darray(singles, 'single ', 'Distinct ratios ')
     ptest_print_1darray(orders,  'order  ', 'Ordering ratios ')
     ptest_print_1darray(sizes,   'size   ', 'Sample sizes    ')
+    ptest_print_1darray(opers,   'oper   ', 'Operations      ')
 
 
-ARRAY_PTEST_PROPS = {
+HEAP_PTEST_PROPS = {
     'algo': {
         'label':  '  ALGORITHM       ',
         'format': '  {:16s}',
@@ -97,24 +102,30 @@ ARRAY_PTEST_PROPS = {
         'format': '     {:4d}',
         'get':    lambda r: r['size']
     },
+    'oper': {
+        'label':  ' OPERATION',
+        'format': ' {:7.7s}  ',
+        'get':    lambda r: r['oper']
+    },
     'nsec': {
-        'label':  '     TIME(us)',
-        'format': '  {:11.3f}',
+        'label':  '    TIME(us)',
+        'format': ' {:11.3f}',
         'get':    lambda r: r['nsec'] / 1000
     }
 }
 
 
-def array_ptest_print(results: np.array,
-                      groupby: list[str],
-                      algos: np.array,
-                      singles: np.array,
-                      orders: np.array,
-                      sizes: np.array,
-                      nrs: np.array) -> None:
-    ptest_print(array_ptest_select(results, algos, orders, sizes, nrs),
+def heap_ptest_print(results: np.array,
+                     groupby: list[str],
+                     algos: np.array,
+                     singles: np.array,
+                     orders: np.array,
+                     sizes: np.array,
+                     opers: np.array,
+                     nrs: np.array) -> None:
+    ptest_print(heap_ptest_select(results, algos, orders, sizes, opers, nrs),
                 groupby,
-                ARRAY_PTEST_PROPS)
+                HEAP_PTEST_PROPS)
 
 
 def array_ptest_plot_algos_funcof_singles(axe: matplotlib.axes.Axes,
@@ -555,7 +566,7 @@ def array_ptest_plot_nrs_funcof_sizes(axe: matplotlib.axes.Axes,
                        res[res['nr'] == n])
 
 
-ARRAY_PTEST_SINGLE_PLOTTERS = {
+HEAP_PTEST_SINGLE_PLOTTERS = {
         'algo':  {
             'single': array_ptest_plot_algos_funcof_singles,
             'order':  array_ptest_plot_algos_funcof_orders,
@@ -596,7 +607,7 @@ def array_ptest_single_plotter(funcof: list[str]) -> Callable[[matplotlib.axes.A
                                                                np.array,
                                                                np.array],
                                                               None]:
-    plotter: object = ARRAY_PTEST_SINGLE_PLOTTERS
+    plotter: object = HEAP_PTEST_SINGLE_PLOTTERS
     for fld in funcof:
         if not isinstance(plotter, dict):
             raise Exception("'{}': unexpected extra plotter name"
@@ -830,7 +841,7 @@ def array_ptest_plot_nr_group(results: np.array,
                     nrs[nrs == nrs[indx]])
 
 
-ARRAY_PTEST_GROUP_PLOTTERS = {
+HEAP_PTEST_GROUP_PLOTTERS = {
         'algo':   array_ptest_plot_algo_group,
         'single': array_ptest_plot_distinct_group,
         'order':  array_ptest_plot_order_group,
@@ -847,7 +858,7 @@ def array_ptest_show_plots_group(results,
                                  orders: np.array,
                                  sizes: np.array,
                                  nrs: np.array) -> None:
-    group_plotter = ARRAY_PTEST_GROUP_PLOTTERS[group]
+    group_plotter = HEAP_PTEST_GROUP_PLOTTERS[group]
     funcof_plotter = array_ptest_single_plotter(funcof)
     title = array_ptest_plots_title(group,
                                     funcof,
@@ -867,19 +878,27 @@ def array_ptest_show_plots_group(results,
     plt.show()
 
 
-def array_ptest_parse_print_groupby(arg: str) -> list[str]:
-    return ptest_parse_clause(arg, 'groupby', ARRAY_PTEST_PROPS)
+def heap_ptest_parse_print_groupby(arg: str) -> list[str]:
+    return ptest_parse_clause(arg, 'groupby', HEAP_PTEST_PROPS)
 
 
-def array_ptest_parse_plot_groupby(arg: str) -> str:
-    if arg not in ARRAY_PTEST_GROUP_PLOTTERS.keys():
+def heap_ptest_parse_plot_groupby(arg: str) -> str:
+    if arg not in HEAP_PTEST_GROUP_PLOTTERS.keys():
         raise argp.ArgumentError(None,
                                  "'" + arg + "': unexpected plot group field.")
     return arg
 
 
-def array_ptest_parse_plot_funcof(arg: str) -> list[str]:
-    return ptest_parse_clause(arg, 'funcof', ARRAY_PTEST_SINGLE_PLOTTERS)
+def heap_ptest_parse_plot_funcof(arg: str) -> list[str]:
+    return ptest_parse_clause(arg, 'funcof', HEAP_PTEST_SINGLE_PLOTTERS)
+
+
+def ptest_init_opers(results: np.array, args: argp.Namespace) -> np.array:
+    opers = ptest_init_prop(results, 'oper', args)
+    if len(opers) == 0:
+        raise Exception('Unexpected list of heap operation(s) specified')
+
+    return opers
 
 
 def main():
@@ -899,6 +918,11 @@ def main():
                             type = ptest_parse_int_list,
                             metavar = 'SINGLE_RATIOS',
                             help = 'Comma separated list of distinct value ratios')
+    opt_parser.add_argument('-p', '--operations',
+                            dest = 'oper',
+                            type = ptest_parse_str_list,
+                            metavar = 'OPERATIONS',
+                            help = 'Comma separated list of heap operations')
     opt_parser.add_argument('-r', '--order-ratios',
                             dest = 'order',
                             type = ptest_parse_int_list,
@@ -928,7 +952,7 @@ def main():
                                          help = 'Print test results')
     print_parser.add_argument('-g', '--groupby',
                               dest = 'groupby',
-                              type = array_ptest_parse_print_groupby,
+                              type = heap_ptest_parse_print_groupby,
                               default = 'algo,nr,order,size,single',
                               metavar = 'RESULT_FIELDS',
                               help = 'Comma separated list of result fields to '
@@ -939,7 +963,7 @@ def main():
                                         help = 'Plot test results')
     plot_parser.add_argument('-f', '--funcof',
                              dest = 'funcof',
-                             type = array_ptest_parse_plot_funcof,
+                             type = heap_ptest_parse_plot_funcof,
                              default = 'algo,order',
                              metavar = 'RESULT_FIELDS',
                              help = 'Comma separated list of 2 result fields '
@@ -947,7 +971,7 @@ def main():
                                     'the 2nd')
     plot_parser.add_argument('-g', '--groupby',
                              dest = 'groupby',
-                             type = array_ptest_parse_plot_groupby,
+                             type = heap_ptest_parse_plot_groupby,
                              default = None,
                              metavar = 'RESULT_FIELDS',
                              help = 'Comma separated list of result '
@@ -957,24 +981,26 @@ def main():
     args = main_parser.parse_args()
 
     try:
-        results = array_ptest_load(args.results_path)
+        results = heap_ptest_load(args.results_path)
 
         algos = ptest_init_algos(results, args)
         nrs = ptest_init_nrs(results, args)
         singles = ptest_init_singles(results, args)
         orders = ptest_init_orders(results, args)
         sizes = ptest_init_sizes(results, args)
+        opers = ptest_init_opers(results, args)
 
         if args.cmd == 'list':
-            array_ptest_list(results, algos, singles, orders, sizes, nrs)
+            heap_ptest_list(results, algos, singles, orders, sizes, opers, nrs)
         elif args.cmd == 'print':
-            array_ptest_print(results,
-                              args.groupby,
-                              algos,
-                              singles,
-                              orders,
-                              sizes,
-                              nrs)
+            heap_ptest_print(results,
+                             args.groupby,
+                             algos,
+                             singles,
+                             orders,
+                             sizes,
+                             opers,
+                             nrs)
         elif args.cmd == 'plot':
             if args.groupby is not None:
                 array_ptest_show_plots_group(results,
@@ -998,7 +1024,6 @@ def main():
               file=sys.stderr)
         sys.exit(1)
     except Exception as e:
-        raise e
         print("{}: {}.".format(os.path.basename(sys.argv[0]), e),
               file=sys.stderr)
         sys.exit(1)
