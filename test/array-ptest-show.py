@@ -7,20 +7,19 @@
 # Copyright (C) 2024 Grégor Boirie <gregor.boirie@free.fr>
 ################################################################################
 
-from typing import Iterator, Callable, Optional, cast
+from typing import Callable, Optional, cast
 import sys
 import os
 import argparse as argp
 import matplotlib
-matplotlib.use('GTK3Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-import math
 
 from ptest_show import ptest_load, \
                        ptest_print, \
                        ptest_plot_lin, \
                        ptest_plot_log, \
+                       ptest_group_plots, \
                        ptest_print_1darray, \
                        ptest_init_algos, \
                        ptest_init_nrs, \
@@ -598,14 +597,14 @@ def array_ptest_single_plotter(funcof: list[str]) -> Callable[[matplotlib.axes.A
                                                               None]:
     plotter: object = ARRAY_PTEST_SINGLE_PLOTTERS
     for fld in funcof:
-        if not isinstance(plotter, dict):
-            raise Exception("'{}': unexpected extra plotter name"
-                            " field".format(','.join(funcof)))
+        if not (isinstance(plotter, dict) and (fld in plotter)):
+            raise Exception("'{}': unexpected extra funcof plotter name"
+                            " field".format(fld))
         assert fld in plotter
         plotter = plotter[fld]
 
     if isinstance(plotter, dict):
-        raise Exception("'{}': plotter name field "
+        raise Exception("'{}': funcof plotter name field "
                         "missing".format(','.join(funcof)))
 
     return cast(Callable[[matplotlib.axes.Axes,
@@ -667,7 +666,7 @@ def array_ptest_plots_title(group_field: Optional[str],
             ptest_check_single_order(orders)
             lst.append('Order: {}%'.format(orders[0]))
         elif f == 'size':
-            ptest_check_single_order(sizes)
+            ptest_check_single_size(sizes)
             lst.append('Size: {} Bytes'.format(sizes[0]))
     sub = ' - '.join(lst)
 
@@ -696,35 +695,6 @@ def array_ptest_show_single_plot(results,
     plt.show()
 
 
-def array_ptest_group_plots(title: str,
-                            groups: list[str]) -> Iterator[tuple[int,
-                                                                 matplotlib.axes.Axes,
-                                                                 bool,
-                                                                 bool]]:
-    rows = round(math.sqrt(len(groups)))
-    cols = math.ceil(len(groups) / rows)
-    fig, axes = plt.subplots(nrows = rows,
-                             ncols = cols,
-                             sharex = True,
-                             sharey = True,
-                             constrained_layout = True)
-    fig.suptitle(title, fontweight = 'bold')
-
-    if (rows + cols) > 2:
-        indx = 0
-        for r in range(0, rows):
-            for c in range(0, cols):
-                if indx >= len(groups):
-                    break
-                ax = axes[r, c] if axes.ndim == 2 else axes[c]
-                showx = r == (rows - 1)
-                showy = c == 0
-                yield (indx, ax, showx, showy)
-                indx += 1
-    else:
-                yield (0, axes, True, True)
-
-
 def array_ptest_plot_algo_group(results: np.array,
                                 title: str,
                                 plotter,
@@ -733,7 +703,7 @@ def array_ptest_plot_algo_group(results: np.array,
                                 orders: np.array,
                                 sizes: np.array,
                                 nrs: np.array) -> None:
-    for indx, axe, showx, showy in array_ptest_group_plots(title, algos):
+    for indx, axe, showx, showy in ptest_group_plots(title, algos):
             plotter(axe,
                     "Algorithm: {}".format(algos[indx]),
                     showx,
@@ -754,7 +724,7 @@ def array_ptest_plot_distinct_group(results: np.array,
                                     orders: np.array,
                                     sizes: np.array,
                                     nrs: np.array) -> None:
-    for indx, axe, showx, showy in array_ptest_group_plots(title, singles):
+    for indx, axe, showx, showy in ptest_group_plots(title, singles):
             plotter(axe,
                     "Distinct: {}%".format(singles[indx]),
                     showx,
@@ -775,7 +745,7 @@ def array_ptest_plot_order_group(results: np.array,
                                  orders: np.array,
                                  sizes: np.array,
                                  nrs: np.array) -> None:
-    for indx, axe, showx, showy in array_ptest_group_plots(title, orders):
+    for indx, axe, showx, showy in ptest_group_plots(title, orders):
             plotter(axe,
                     "Order: {}%".format(orders[indx]),
                     showx,
@@ -796,7 +766,7 @@ def array_ptest_plot_size_group(results: np.array,
                                 orders: np.array,
                                 sizes: np.array,
                                 nrs: np.array) -> None:
-    for indx, axe, showx, showy in array_ptest_group_plots(title, sizes):
+    for indx, axe, showx, showy in ptest_group_plots(title, sizes):
             plotter(axe,
                     "Size: {} Bytes".format(sizes[indx]),
                     showx,
@@ -817,7 +787,7 @@ def array_ptest_plot_nr_group(results: np.array,
                               orders: np.array,
                               sizes: np.array,
                               nrs: np.array) -> None:
-    for indx, axe, showx, showy in array_ptest_group_plots(title, nrs):
+    for indx, axe, showx, showy in ptest_group_plots(title, nrs):
             plotter(axe,
                     "#Samples: {}".format(nrs[indx]),
                     showx,
@@ -915,8 +885,8 @@ def main():
                             metavar = 'SAMPLE_COUNTS',
                             help = 'Comma separated list of number of samples')
 
-    main_parser = argp.ArgumentParser(description = 'Stroll performance test '
-                                                    'visualization tool')
+    main_parser = argp.ArgumentParser(description = 'Stroll array performance '
+                                                    'test visualization tool')
     cmd_parser = main_parser.add_subparsers(dest = 'cmd',
                                             required = True,
                                             metavar = 'COMMAND')
@@ -998,7 +968,6 @@ def main():
               file=sys.stderr)
         sys.exit(1)
     except Exception as e:
-        raise e
         print("{}: {}.".format(os.path.basename(sys.argv[0]), e),
               file=sys.stderr)
         sys.exit(1)

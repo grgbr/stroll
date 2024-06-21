@@ -7,20 +7,19 @@
 # Copyright (C) 2024 Grégor Boirie <gregor.boirie@free.fr>
 ################################################################################
 
-from typing import Iterator, Callable, Optional, cast
+from typing import Callable, Optional, cast
 import sys
 import os
 import argparse as argp
 import matplotlib
-matplotlib.use('GTK3Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-import math
 
 from ptest_show import ptest_load, \
                        ptest_print, \
                        ptest_plot_lin, \
                        ptest_plot_log, \
+                       ptest_group_plots, \
                        ptest_print_1darray, \
                        ptest_init_prop, \
                        ptest_init_algos, \
@@ -128,23 +127,31 @@ def heap_ptest_print(results: np.array,
                 HEAP_PTEST_PROPS)
 
 
-def array_ptest_plot_algos_funcof_singles(axe: matplotlib.axes.Axes,
-                                          title: Optional[str],
-                                          showx: bool,
-                                          showy: bool,
-                                          results,
-                                          algos: np.array,
-                                          singles: np.array,
-                                          orders: np.array,
-                                          sizes: np.array,
-                                          nrs: np.array) -> None:
+def heap_ptest_check_single_oper(opers: np.array) -> None:
+    if opers.size != 1:
+        raise Exception('one single operation expected')
+
+
+def heap_ptest_plot_algos_funcof_singles(axe: matplotlib.axes.Axes,
+                                         title: Optional[str],
+                                         showx: bool,
+                                         showy: bool,
+                                         results,
+                                         algos: np.array,
+                                         singles: np.array,
+                                         orders: np.array,
+                                         sizes: np.array,
+                                         opers: np.array,
+                                         nrs: np.array) -> None:
     ptest_check_single_order(orders)
     ptest_check_single_size(sizes)
     ptest_check_single_nr(nrs)
+    heap_ptest_check_single_oper(opers)
 
     res = results[(results['nr'] == nrs[0]) & \
                   (results['order'] == orders[0]) & \
-                  (results['size'] == sizes[0])]
+                  (results['size'] == sizes[0]) & \
+                  (results['oper'] == opers[0])]
     for a in algos:
         ptest_plot_lin(axe,
                        title,
@@ -155,23 +162,26 @@ def array_ptest_plot_algos_funcof_singles(axe: matplotlib.axes.Axes,
                        res[res['algo'] == a])
 
 
-def array_ptest_plot_algos_funcof_orders(axe: matplotlib.axes.Axes,
-                                         title: Optional[str],
-                                         showx: bool,
-                                         showy: bool,
-                                         results,
-                                         algos: np.array,
-                                         singles: np.array,
-                                         orders: np.array,
-                                         sizes: np.array,
-                                         nrs: np.array) -> None:
+def heap_ptest_plot_algos_funcof_orders(axe: matplotlib.axes.Axes,
+                                        title: Optional[str],
+                                        showx: bool,
+                                        showy: bool,
+                                        results,
+                                        algos: np.array,
+                                        singles: np.array,
+                                        orders: np.array,
+                                        sizes: np.array,
+                                        opers: np.array,
+                                        nrs: np.array) -> None:
     ptest_check_single_distinct(singles)
     ptest_check_single_size(sizes)
     ptest_check_single_nr(nrs)
+    heap_ptest_check_single_oper(opers)
 
     res = results[(results['nr'] == nrs[0]) & \
                   (results['single'] == singles[0]) & \
-                  (results['size'] == sizes[0])]
+                  (results['size'] == sizes[0]) & \
+                  (results['oper'] == opers[0])]
     for a in algos:
         ptest_plot_lin(axe,
                        title,
@@ -182,23 +192,26 @@ def array_ptest_plot_algos_funcof_orders(axe: matplotlib.axes.Axes,
                        res[res['algo'] == a])
 
 
-def array_ptest_plot_algos_funcof_sizes(axe: matplotlib.axes.Axes,
-                                        title: Optional[str],
-                                        showx: bool,
-                                        showy: bool,
-                                        results,
-                                        algos: np.array,
-                                        singles: np.array,
-                                        orders: np.array,
-                                        sizes: np.array,
-                                        nrs: np.array) -> None:
+def heap_ptest_plot_algos_funcof_sizes(axe: matplotlib.axes.Axes,
+                                       title: Optional[str],
+                                       showx: bool,
+                                       showy: bool,
+                                       results,
+                                       algos: np.array,
+                                       singles: np.array,
+                                       orders: np.array,
+                                       sizes: np.array,
+                                       opers: np.array,
+                                       nrs: np.array) -> None:
     ptest_check_single_distinct(singles)
     ptest_check_single_order(orders)
     ptest_check_single_nr(nrs)
+    heap_ptest_check_single_oper(opers)
 
     res = results[(results['nr'] == nrs[0]) & \
                   (results['single'] == singles[0]) & \
-                  (results['order'] == orders[0])]
+                  (results['order'] == orders[0]) & \
+                  (results['oper'] == opers[0])]
     for a in algos:
         ptest_plot_lin(axe,
                        title,
@@ -209,23 +222,26 @@ def array_ptest_plot_algos_funcof_sizes(axe: matplotlib.axes.Axes,
                        res[res['algo'] == a])
 
 
-def array_ptest_plot_algos_funcof_nrs(axe: matplotlib.axes.Axes,
-                                      title: Optional[str],
-                                      showx: bool,
-                                      showy: bool,
-                                      results,
-                                      algos: np.array,
-                                      singles: np.array,
-                                      orders: np.array,
-                                      sizes: np.array,
-                                      nrs: np.array) -> None:
+def heap_ptest_plot_algos_funcof_nrs(axe: matplotlib.axes.Axes,
+                                     title: Optional[str],
+                                     showx: bool,
+                                     showy: bool,
+                                     results,
+                                     algos: np.array,
+                                     singles: np.array,
+                                     orders: np.array,
+                                     sizes: np.array,
+                                     opers: np.array,
+                                     nrs: np.array) -> None:
     ptest_check_single_distinct(singles)
     ptest_check_single_order(orders)
     ptest_check_single_size(sizes)
+    heap_ptest_check_single_oper(opers)
 
     res = results[(results['single'] == singles[0]) & \
                   (results['order'] == orders[0]) & \
-                  (results['size'] == sizes[0])]
+                  (results['size'] == sizes[0]) & \
+                  (results['oper'] == opers[0])]
     for a in algos:
         ptest_plot_log(axe,
                        title,
@@ -237,34 +253,7 @@ def array_ptest_plot_algos_funcof_nrs(axe: matplotlib.axes.Axes,
                        res[res['algo'] == a])
 
 
-def array_ptest_plot_singles_funcof_orders(axe: matplotlib.axes.Axes,
-                                           title: Optional[str],
-                                           showx: bool,
-                                           showy: bool,
-                                           results,
-                                           algos: np.array,
-                                           singles: np.array,
-                                           orders: np.array,
-                                           sizes: np.array,
-                                           nrs: np.array) -> None:
-    ptest_check_single_algo(algos)
-    ptest_check_single_size(sizes)
-    ptest_check_single_nr(nrs)
-
-    res = results[(results['algo'] == algos[0]) & \
-                  (results['size'] == sizes[0]) & \
-                  (results['nr'] == nrs[0])]
-    for s in singles:
-        ptest_plot_lin(axe,
-                       title,
-                       '{}%'.format(s),
-                       'Order ratio' if showx else None,
-                       'order',
-                       showy,
-                       res[res['single'] == s])
-
-
-def array_ptest_plot_singles_funcof_sizes(axe: matplotlib.axes.Axes,
+def heap_ptest_plot_singles_funcof_orders(axe: matplotlib.axes.Axes,
                                           title: Optional[str],
                                           showx: bool,
                                           showy: bool,
@@ -273,14 +262,47 @@ def array_ptest_plot_singles_funcof_sizes(axe: matplotlib.axes.Axes,
                                           singles: np.array,
                                           orders: np.array,
                                           sizes: np.array,
+                                          opers: np.array,
                                           nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_size(sizes)
+    ptest_check_single_nr(nrs)
+    heap_ptest_check_single_oper(opers)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['size'] == sizes[0]) & \
+                  (results['nr'] == nrs[0]) & \
+                  (results['oper'] == opers[0])]
+    for s in singles:
+        ptest_plot_lin(axe,
+                       title,
+                       '{}%'.format(s),
+                       'Order ratio' if showx else None,
+                       'order',
+                       showy,
+                       res[res['single'] == s])
+
+
+def heap_ptest_plot_singles_funcof_sizes(axe: matplotlib.axes.Axes,
+                                         title: Optional[str],
+                                         showx: bool,
+                                         showy: bool,
+                                         results,
+                                         algos: np.array,
+                                         singles: np.array,
+                                         orders: np.array,
+                                         sizes: np.array,
+                                         opers: np.array,
+                                         nrs: np.array) -> None:
     ptest_check_single_algo(algos)
     ptest_check_single_order(orders)
     ptest_check_single_nr(nrs)
+    heap_ptest_check_single_oper(opers)
 
     res = results[(results['algo'] == algos[0]) & \
                   (results['order'] == orders[0]) & \
-                  (results['nr'] == nrs[0])]
+                  (results['nr'] == nrs[0]) & \
+                  (results['oper'] == opers[0])]
     for s in singles:
         ptest_plot_lin(axe,
                        title,
@@ -291,23 +313,26 @@ def array_ptest_plot_singles_funcof_sizes(axe: matplotlib.axes.Axes,
                        res[res['single'] == s])
 
 
-def array_ptest_plot_singles_funcof_nrs(axe: matplotlib.axes.Axes,
-                                        title: Optional[str],
-                                        showx: bool,
-                                        showy: bool,
-                                        results,
-                                        algos: np.array,
-                                        singles: np.array,
-                                        orders: np.array,
-                                        sizes: np.array,
-                                        nrs: np.array) -> None:
+def heap_ptest_plot_singles_funcof_nrs(axe: matplotlib.axes.Axes,
+                                       title: Optional[str],
+                                       showx: bool,
+                                       showy: bool,
+                                       results,
+                                       algos: np.array,
+                                       singles: np.array,
+                                       orders: np.array,
+                                       sizes: np.array,
+                                       opers: np.array,
+                                       nrs: np.array) -> None:
     ptest_check_single_algo(algos)
     ptest_check_single_order(orders)
     ptest_check_single_size(sizes)
+    heap_ptest_check_single_oper(opers)
 
     res = results[(results['algo'] == algos[0]) & \
                   (results['order'] == orders[0]) & \
-                  (results['size'] == sizes[0])]
+                  (results['size'] == sizes[0]) & \
+                  (results['oper'] == opers[0])]
     for s in singles:
         ptest_plot_log(axe,
                        title,
@@ -319,61 +344,341 @@ def array_ptest_plot_singles_funcof_nrs(axe: matplotlib.axes.Axes,
                        res[res['single'] == s])
 
 
-def array_ptest_plot_orders_funcof_singles(axe: matplotlib.axes.Axes,
-                                           title: Optional[str],
-                                           showx: bool,
-                                           showy: bool,
-                                           results,
-                                           algos: np.array,
-                                           singles: np.array,
-                                           orders: np.array,
-                                           sizes: np.array,
-                                           nrs: np.array) -> None:
+def heap_ptest_plot_orders_funcof_singles(axe: matplotlib.axes.Axes,
+                                          title: Optional[str],
+                                          showx: bool,
+                                          showy: bool,
+                                          results,
+                                          algos: np.array,
+                                          singles: np.array,
+                                          orders: np.array,
+                                          sizes: np.array,
+                                          opers: np.array,
+                                          nrs: np.array) -> None:
     ptest_check_single_algo(algos)
+    ptest_check_single_size(sizes)
+    ptest_check_single_nr(nrs)
+    heap_ptest_check_single_oper(opers)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['nr'] == nrs[0]) & \
+                  (results['size'] == sizes[0]) & \
+                  (results['oper'] == opers[0])]
+    for o in orders:
+        ptest_plot_lin(axe,
+                       title,
+                       '{}%'.format(o),
+                       'Distinct ratio' if showx else None,
+                       'single',
+                       showy,
+                       res[res['order'] == o])
+
+
+def heap_ptest_plot_orders_funcof_sizes(axe: matplotlib.axes.Axes,
+                                        title: Optional[str],
+                                        showx: bool,
+                                        showy: bool,
+                                        results,
+                                        algos: np.array,
+                                        singles: np.array,
+                                        orders: np.array,
+                                        sizes: np.array,
+                                        opers: np.array,
+                                        nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_distinct(singles)
+    ptest_check_single_nr(nrs)
+    heap_ptest_check_single_oper(opers)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['single'] == singles[0]) & \
+                  (results['nr'] == nrs[0]) & \
+                  (results['oper'] == opers[0])]
+    for o in orders:
+        ptest_plot_lin(axe,
+                       title,
+                       '{}%'.format(o),
+                       'Sample size' if showx else None,
+                       'size',
+                       showy,
+                       res[res['order'] == o])
+
+
+def heap_ptest_plot_orders_funcof_nrs(axe: matplotlib.axes.Axes,
+                                      title: Optional[str],
+                                      showx: bool,
+                                      showy: bool,
+                                      results,
+                                      algos: np.array,
+                                      singles: np.array,
+                                      orders: np.array,
+                                      sizes: np.array,
+                                      opers: np.array,
+                                      nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_distinct(singles)
+    ptest_check_single_size(sizes)
+    heap_ptest_check_single_oper(opers)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['single'] == singles[0]) & \
+                  (results['size'] == sizes[0]) & \
+                  (results['oper'] == opers[0])]
+    for o in orders:
+        ptest_plot_log(axe,
+                       title,
+                       '{}%'.format(o),
+                       2,
+                       '#Samples' if showx else None,
+                       'nr',
+                       showy,
+                       res[res['order'] == o])
+
+
+
+def heap_ptest_plot_sizes_funcof_orders(axe: matplotlib.axes.Axes,
+                                        title: Optional[str],
+                                        showx: bool,
+                                        showy: bool,
+                                        results,
+                                        algos: np.array,
+                                        singles: np.array,
+                                        orders: np.array,
+                                        sizes: np.array,
+                                        opers: np.array,
+                                        nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_distinct(singles)
+    ptest_check_single_nr(nrs)
+    heap_ptest_check_single_oper(opers)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['single'] == singles[0]) & \
+                  (results['nr'] == nrs[0]) & \
+                  (results['oper'] == opers[0])]
+    for s in sizes:
+        ptest_plot_lin(axe,
+                       title,
+                       '{} Bytes'.format(s),
+                       'Order ratio' if showx else None,
+                       'order',
+                       showy,
+                       res[res['size'] == s])
+
+def heap_ptest_plot_sizes_funcof_singles(axe: matplotlib.axes.Axes,
+                                          title: Optional[str],
+                                          showx: bool,
+                                          showy: bool,
+                                          results,
+                                          algos: np.array,
+                                          singles: np.array,
+                                          orders: np.array,
+                                          sizes: np.array,
+                                          opers: np.array,
+                                          nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_order(orders)
+    ptest_check_single_nr(nrs)
+    heap_ptest_check_single_oper(opers)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['order'] == orders[0]) & \
+                  (results['nr'] == nrs[0]) & \
+                  (results['oper'] == opers[0])]
+    for s in sizes:
+        ptest_plot_lin(axe,
+                       title,
+                       '{} Bytes'.format(s),
+                       'Distinct ratio' if showx else None,
+                       'single',
+                       showy,
+                       res[res['size'] == s])
+
+
+def heap_ptest_plot_sizes_funcof_nrs(axe: matplotlib.axes.Axes,
+                                     title: Optional[str],
+                                     showx: bool,
+                                     showy: bool,
+                                     results,
+                                     algos: np.array,
+                                     singles: np.array,
+                                     orders: np.array,
+                                     sizes: np.array,
+                                     opers: np.array,
+                                     nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_distinct(singles)
+    ptest_check_single_order(orders)
+    heap_ptest_check_single_oper(opers)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['single'] == singles[0]) & \
+                  (results['order'] == orders[0]) & \
+                  (results['oper'] == opers[0])]
+    for s in sizes:
+        ptest_plot_log(axe,
+                       title,
+                       '{} Bytes'.format(s),
+                       2,
+                       '#Samples' if showx else None,
+                       'nr',
+                       showy,
+                       res[res['size'] == s])
+
+
+def heap_ptest_plot_nrs_funcof_orders(axe: matplotlib.axes.Axes,
+                                      title: Optional[str],
+                                      showx: bool,
+                                      showy: bool,
+                                      results,
+                                      algos: np.array,
+                                      singles: np.array,
+                                      orders: np.array,
+                                      sizes: np.array,
+                                      opers: np.array,
+                                      nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_distinct(singles)
+    ptest_check_single_size(sizes)
+    heap_ptest_check_single_oper(opers)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['single'] == singles[0]) & \
+                  (results['size'] == sizes[0]) & \
+                  (results['oper'] == opers[0])]
+    for n in nrs:
+        ptest_plot_lin(axe,
+                       title,
+                       n,
+                       'Order ratio' if showx else None,
+                       'order',
+                       showy,
+                       res[res['nr'] == n])
+
+
+
+def heap_ptest_plot_nrs_funcof_singles(axe: matplotlib.axes.Axes,
+                                       title: Optional[str],
+                                       showx: bool,
+                                       showy: bool,
+                                       results,
+                                       algos: np.array,
+                                       singles: np.array,
+                                       orders: np.array,
+                                       sizes: np.array,
+                                       opers: np.array,
+                                       nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_order(orders)
+    ptest_check_single_size(sizes)
+    heap_ptest_check_single_oper(opers)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['order'] == orders[0]) & \
+                  (results['size'] == sizes[0]) & \
+                  (results['oper'] == opers[0])]
+    for n in nrs:
+        ptest_plot_lin(axe,
+                       title,
+                       n,
+                       'Distinct ratio' if showx else None,
+                       'single',
+                       showy,
+                       res[res['nr'] == n])
+
+
+
+def heap_ptest_plot_nrs_funcof_sizes(axe: matplotlib.axes.Axes,
+                                     title: Optional[str],
+                                     showx: bool,
+                                     showy: bool,
+                                     results,
+                                     algos: np.array,
+                                     singles: np.array,
+                                     orders: np.array,
+                                     sizes: np.array,
+                                     opers: np.array,
+                                     nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_distinct(singles)
+    ptest_check_single_order(orders)
+    heap_ptest_check_single_oper(opers)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['single'] == singles[0]) & \
+                  (results['order'] == orders[0]) & \
+                  (results['oper'] == opers[0])]
+    for n in nrs:
+        ptest_plot_lin(axe,
+                       title,
+                       n,
+                       'Sample size' if showx else None,
+                       'size',
+                       showy,
+                       res[res['nr'] == n])
+
+
+def heap_ptest_plot_opers_funcof_singles(axe: matplotlib.axes.Axes,
+                                         title: Optional[str],
+                                         showx: bool,
+                                         showy: bool,
+                                         results,
+                                         algos: np.array,
+                                         singles: np.array,
+                                         orders: np.array,
+                                         sizes: np.array,
+                                         opers: np.array,
+                                         nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_order(orders)
+    ptest_check_single_size(sizes)
+    ptest_check_single_nr(nrs)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['order'] == orders[0]) & \
+                  (results['size'] == sizes[0]) & \
+                  (results['nr'] == nrs[0])]
+    for o in opers:
+        ptest_plot_lin(axe,
+                       title,
+                       o,
+                       'Distinct ratio' if showx else None,
+                       'single',
+                       showy,
+                       res[res['oper'] == o])
+
+
+def heap_ptest_plot_opers_funcof_orders(axe: matplotlib.axes.Axes,
+                                        title: Optional[str],
+                                        showx: bool,
+                                        showy: bool,
+                                        results,
+                                        algos: np.array,
+                                        singles: np.array,
+                                        orders: np.array,
+                                        sizes: np.array,
+                                        opers: np.array,
+                                        nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_distinct(singles)
     ptest_check_single_size(sizes)
     ptest_check_single_nr(nrs)
 
     res = results[(results['algo'] == algos[0]) & \
                   (results['nr'] == nrs[0]) & \
-                  (results['size'] == sizes[0])]
-    for o in orders:
-        ptest_plot_lin(axe,
-                       title,
-                       '{}%'.format(o),
-                       'Distinct ratio' if showx else None,
-                       'single',
-                       showy,
-                       res[res['order'] == o])
-
-
-def array_ptest_plot_orders_funcof_sizes(axe: matplotlib.axes.Axes,
-                                         title: Optional[str],
-                                         showx: bool,
-                                         showy: bool,
-                                         results,
-                                         algos: np.array,
-                                         singles: np.array,
-                                         orders: np.array,
-                                         sizes: np.array,
-                                         nrs: np.array) -> None:
-    ptest_check_single_algo(algos)
-    ptest_check_single_distinct(singles)
-    ptest_check_single_nr(nrs)
-
-    res = results[(results['algo'] == algos[0]) & \
                   (results['single'] == singles[0]) & \
-                  (results['nr'] == nrs[0])]
-    for o in orders:
+                  (results['size'] == sizes[0])]
+    for o in opers:
         ptest_plot_lin(axe,
                        title,
-                       '{}%'.format(o),
-                       'Sample size' if showx else None,
-                       'size',
+                       o,
+                       'Order ratio' if showx else None,
+                       'order',
                        showy,
-                       res[res['order'] == o])
+                       res[res['oper'] == o])
 
 
-def array_ptest_plot_orders_funcof_nrs(axe: matplotlib.axes.Axes,
+def heap_ptest_plot_opers_funcof_sizes(axe: matplotlib.axes.Axes,
                                        title: Optional[str],
                                        showx: bool,
                                        showy: bool,
@@ -382,241 +687,116 @@ def array_ptest_plot_orders_funcof_nrs(axe: matplotlib.axes.Axes,
                                        singles: np.array,
                                        orders: np.array,
                                        sizes: np.array,
+                                       opers: np.array,
                                        nrs: np.array) -> None:
     ptest_check_single_algo(algos)
     ptest_check_single_distinct(singles)
-    ptest_check_single_size(sizes)
-
-    res = results[(results['algo'] == algos[0]) & \
-                  (results['single'] == singles[0]) & \
-                  (results['size'] == sizes[0])]
-    for o in orders:
-        ptest_plot_log(axe,
-                       title,
-                       '{}%'.format(o),
-                       2,
-                       '#Samples' if showx else None,
-                       'nr',
-                       showy,
-                       res[res['order'] == o])
-
-
-
-def array_ptest_plot_sizes_funcof_orders(axe: matplotlib.axes.Axes,
-                                         title: Optional[str],
-                                         showx: bool,
-                                         showy: bool,
-                                         results,
-                                         algos: np.array,
-                                         singles: np.array,
-                                         orders: np.array,
-                                         sizes: np.array,
-                                         nrs: np.array) -> None:
-    ptest_check_single_algo(algos)
-    ptest_check_single_distinct(singles)
-    ptest_check_single_nr(nrs)
-
-    res = results[(results['algo'] == algos[0]) & \
-                  (results['single'] == singles[0]) & \
-                  (results['nr'] == nrs[0])]
-    for s in sizes:
-        ptest_plot_lin(axe,
-                       title,
-                       '{} Bytes'.format(s),
-                       'Order ratio' if showx else None,
-                       'order',
-                       showy,
-                       res[res['size'] == s])
-
-def array_ptest_plot_sizes_funcof_singles(axe: matplotlib.axes.Axes,
-                                          title: Optional[str],
-                                          showx: bool,
-                                          showy: bool,
-                                          results,
-                                          algos: np.array,
-                                          singles: np.array,
-                                          orders: np.array,
-                                          sizes: np.array,
-                                          nrs: np.array) -> None:
-    ptest_check_single_algo(algos)
     ptest_check_single_order(orders)
     ptest_check_single_nr(nrs)
 
     res = results[(results['algo'] == algos[0]) & \
-                  (results['order'] == orders[0]) & \
-                  (results['nr'] == nrs[0])]
-    for s in sizes:
-        ptest_plot_lin(axe,
-                       title,
-                       '{} Bytes'.format(s),
-                       'Distinct ratio' if showx else None,
-                       'single',
-                       showy,
-                       res[res['size'] == s])
-
-
-def array_ptest_plot_sizes_funcof_nrs(axe: matplotlib.axes.Axes,
-                                      title: Optional[str],
-                                      showx: bool,
-                                      showy: bool,
-                                      results,
-                                      algos: np.array,
-                                      singles: np.array,
-                                      orders: np.array,
-                                      sizes: np.array,
-                                      nrs: np.array) -> None:
-    ptest_check_single_algo(algos)
-    ptest_check_single_distinct(singles)
-    ptest_check_single_order(orders)
-
-    res = results[(results['algo'] == algos[0]) & \
+                  (results['nr'] == nrs[0]) & \
                   (results['single'] == singles[0]) & \
                   (results['order'] == orders[0])]
-    for s in sizes:
-        ptest_plot_log(axe,
-                       title,
-                       '{} Bytes'.format(s),
-                       2,
-                       '#Samples' if showx else None,
-                       'nr',
-                       showy,
-                       res[res['size'] == s])
-
-
-def array_ptest_plot_nrs_funcof_orders(axe: matplotlib.axes.Axes,
-                                       title: Optional[str],
-                                       showx: bool,
-                                       showy: bool,
-                                       results,
-                                       algos: np.array,
-                                       singles: np.array,
-                                       orders: np.array,
-                                       sizes: np.array,
-                                       nrs: np.array) -> None:
-    ptest_check_single_algo(algos)
-    ptest_check_single_distinct(singles)
-    ptest_check_single_size(sizes)
-
-    res = results[(results['algo'] == algos[0]) & \
-                  (results['single'] == singles[0]) & \
-                  (results['size'] == sizes[0])]
-    for n in nrs:
+    for o in opers:
         ptest_plot_lin(axe,
                        title,
-                       n,
-                       'Order ratio' if showx else None,
-                       'order',
-                       showy,
-                       res[res['nr'] == n])
-
-
-
-def array_ptest_plot_nrs_funcof_singles(axe: matplotlib.axes.Axes,
-                                        title: Optional[str],
-                                        showx: bool,
-                                        showy: bool,
-                                        results,
-                                        algos: np.array,
-                                        singles: np.array,
-                                        orders: np.array,
-                                        sizes: np.array,
-                                        nrs: np.array) -> None:
-    ptest_check_single_algo(algos)
-    ptest_check_single_order(orders)
-    ptest_check_single_size(sizes)
-
-    res = results[(results['algo'] == algos[0]) & \
-                  (results['order'] == orders[0]) & \
-                  (results['size'] == sizes[0])]
-    for n in nrs:
-        ptest_plot_lin(axe,
-                       title,
-                       n,
-                       'Distinct ratio' if showx else None,
-                       'single',
-                       showy,
-                       res[res['nr'] == n])
-
-
-
-def array_ptest_plot_nrs_funcof_sizes(axe: matplotlib.axes.Axes,
-                                      title: Optional[str],
-                                      showx: bool,
-                                      showy: bool,
-                                      results,
-                                      algos: np.array,
-                                      singles: np.array,
-                                      orders: np.array,
-                                      sizes: np.array,
-                                      nrs: np.array) -> None:
-    ptest_check_single_algo(algos)
-    ptest_check_single_distinct(singles)
-    ptest_check_single_order(orders)
-
-    res = results[(results['algo'] == algos[0]) & \
-                  (results['single'] == singles[0]) & \
-                  (results['order'] == orders[0])]
-    for n in nrs:
-        ptest_plot_lin(axe,
-                       title,
-                       n,
+                       o,
                        'Sample size' if showx else None,
                        'size',
                        showy,
-                       res[res['nr'] == n])
+                       res[res['oper'] == o])
+
+
+def heap_ptest_plot_opers_funcof_nrs(axe: matplotlib.axes.Axes,
+                                     title: Optional[str],
+                                     showx: bool,
+                                     showy: bool,
+                                     results,
+                                     algos: np.array,
+                                     singles: np.array,
+                                     orders: np.array,
+                                     sizes: np.array,
+                                     opers: np.array,
+                                     nrs: np.array) -> None:
+    ptest_check_single_algo(algos)
+    ptest_check_single_distinct(singles)
+    ptest_check_single_order(orders)
+    ptest_check_single_size(sizes)
+
+    res = results[(results['algo'] == algos[0]) & \
+                  (results['single'] == singles[0]) & \
+                  (results['order'] == orders[0]) & \
+                  (results['size'] == sizes[0])]
+    for o in opers:
+        ptest_plot_log(axe,
+                       title,
+                       o,
+                       2,
+                       '#Samples' if showx else None,
+                       'nr',
+                       showy,
+                       res[res['oper'] == o])
 
 
 HEAP_PTEST_SINGLE_PLOTTERS = {
         'algo':  {
-            'single': array_ptest_plot_algos_funcof_singles,
-            'order':  array_ptest_plot_algos_funcof_orders,
-            'size':   array_ptest_plot_algos_funcof_sizes,
-            'nr':     array_ptest_plot_algos_funcof_nrs
+            'single': heap_ptest_plot_algos_funcof_singles,
+            'order':  heap_ptest_plot_algos_funcof_orders,
+            'size':   heap_ptest_plot_algos_funcof_sizes,
+            'nr':     heap_ptest_plot_algos_funcof_nrs
         },
         'single':  {
-            'order': array_ptest_plot_singles_funcof_orders,
-            'size':  array_ptest_plot_singles_funcof_sizes,
-            'nr':    array_ptest_plot_singles_funcof_nrs
+            'order': heap_ptest_plot_singles_funcof_orders,
+            'size':  heap_ptest_plot_singles_funcof_sizes,
+            'nr':    heap_ptest_plot_singles_funcof_nrs
         },
         'order':  {
-            'single': array_ptest_plot_orders_funcof_singles,
-            'size':   array_ptest_plot_orders_funcof_sizes,
-            'nr':     array_ptest_plot_orders_funcof_nrs
+            'single': heap_ptest_plot_orders_funcof_singles,
+            'size':   heap_ptest_plot_orders_funcof_sizes,
+            'nr':     heap_ptest_plot_orders_funcof_nrs
         },
         'size':  {
-            'order':  array_ptest_plot_sizes_funcof_orders,
-            'single': array_ptest_plot_sizes_funcof_singles,
-            'nr':     array_ptest_plot_sizes_funcof_nrs
+            'order':  heap_ptest_plot_sizes_funcof_orders,
+            'single': heap_ptest_plot_sizes_funcof_singles,
+            'nr':     heap_ptest_plot_sizes_funcof_nrs
         },
         'nr':  {
-            'order':  array_ptest_plot_nrs_funcof_orders,
-            'single': array_ptest_plot_nrs_funcof_singles,
-            'size':   array_ptest_plot_nrs_funcof_sizes
+            'order':  heap_ptest_plot_nrs_funcof_orders,
+            'single': heap_ptest_plot_nrs_funcof_singles,
+            'size':   heap_ptest_plot_nrs_funcof_sizes
+        },
+        'oper': {
+            'single': heap_ptest_plot_opers_funcof_singles,
+            'order':  heap_ptest_plot_opers_funcof_orders,
+            'size':   heap_ptest_plot_opers_funcof_sizes,
+            'nr':     heap_ptest_plot_opers_funcof_nrs
         }
 }
 
 
-def array_ptest_single_plotter(funcof: list[str]) -> Callable[[matplotlib.axes.Axes,
-                                                               Optional[str],
-                                                               bool,
-                                                               bool,
-                                                               np.array,
-                                                               np.array,
-                                                               np.array,
-                                                               np.array,
-                                                               np.array,
-                                                               np.array],
+def heap_ptest_single_plotter(funcof: list[str]) -> Callable[[matplotlib.axes.Axes,
+                                                              Optional[str],
+                                                              bool,
+                                                              bool,
+                                                              np.array,
+                                                              np.array,
+                                                              np.array,
+                                                              np.array,
+                                                              np.array,
+                                                              np.array,
+                                                              np.array],
                                                               None]:
     plotter: object = HEAP_PTEST_SINGLE_PLOTTERS
     for fld in funcof:
-        if not isinstance(plotter, dict):
-            raise Exception("'{}': unexpected extra plotter name"
-                            " field".format(','.join(funcof)))
+        if not (isinstance(plotter, dict) and (fld in plotter)):
+            raise Exception("'{}': unexpected extra funcof plotter name"
+                            " field".format(fld))
         assert fld in plotter
         plotter = plotter[fld]
 
     if isinstance(plotter, dict):
-        raise Exception("'{}': plotter name field "
+        raise Exception("'{}': funcof plotter name field "
                         "missing".format(','.join(funcof)))
 
     return cast(Callable[[matplotlib.axes.Axes,
@@ -628,18 +808,20 @@ def array_ptest_single_plotter(funcof: list[str]) -> Callable[[matplotlib.axes.A
                           np.array,
                           np.array,
                           np.array,
+                          np.array,
                           np.array],
                          None],
                 plotter)
 
 
-def array_ptest_plots_title(group_field: Optional[str],
-                            funcof_fields: list[str],
-                            algos: np.array,
-                            singles: np.array,
-                            orders: np.array,
-                            sizes: np.array,
-                            nrs: np.array) -> str:
+def heap_ptest_plots_title(group_field: Optional[str],
+                           funcof_fields: list[str],
+                           algos: np.array,
+                           singles: np.array,
+                           orders: np.array,
+                           sizes: np.array,
+                           opers: np.array,
+                           nrs: np.array) -> str:
     if (group_field is not None) and (group_field in funcof_fields):
         raise Exception("'{}': unexpected duplicate plot group"
                         " field".format(group_field))
@@ -654,12 +836,14 @@ def array_ptest_plots_title(group_field: Optional[str],
             lst.append('Distinct ratios')
         elif f == 'order':
             lst.append('Order ratios')
+        elif f == 'oper':
+            lst.append('Operations')
         elif f == 'size':
             lst.append('Sample sizes')
     sup = ' as a function of '.join(lst)
 
     lst = []
-    flds = [ 'algo', 'nr', 'single', 'order', 'size' ]
+    flds = [ 'algo', 'oper', 'nr', 'single', 'order', 'size' ]
     if group_field is not None:
         flds.remove(group_field)
     for f in funcof_fields:
@@ -677,74 +861,61 @@ def array_ptest_plots_title(group_field: Optional[str],
         elif f == 'order':
             ptest_check_single_order(orders)
             lst.append('Order: {}%'.format(orders[0]))
+        elif f == 'oper':
+            heap_ptest_check_single_oper(opers)
+            lst.append('Operation: {}'.format(opers[0]))
         elif f == 'size':
-            ptest_check_single_order(sizes)
+            ptest_check_single_size(sizes)
             lst.append('Size: {} Bytes'.format(sizes[0]))
     sub = ' - '.join(lst)
 
     return sup + '\n' + sub
 
 
-def array_ptest_show_single_plot(results,
-                                 funcof: list[str],
-                                 algos: np.array,
-                                 singles: np.array,
-                                 orders: np.array,
-                                 sizes: np.array,
-                                 nrs: np.array) -> None:
-    plotter = array_ptest_single_plotter(funcof)
-
-    fig, axe = plt.subplots(nrows = 1, ncols = 1, constrained_layout = True)
-    title = array_ptest_plots_title(None,
-                                    funcof,
-                                    algos,
-                                    singles,
-                                    orders,
-                                    sizes,
-                                    nrs)
-    fig.suptitle(title, fontweight = 'bold')
-    plotter(axe, None, True, True, results, algos, singles, orders, sizes, nrs)
-    plt.show()
-
-
-def array_ptest_group_plots(title: str,
-                            groups: list[str]) -> Iterator[tuple[int,
-                                                                 matplotlib.axes.Axes,
-                                                                 bool,
-                                                                 bool]]:
-    rows = round(math.sqrt(len(groups)))
-    cols = math.ceil(len(groups) / rows)
-    fig, axes = plt.subplots(nrows = rows,
-                             ncols = cols,
-                             sharex = True,
-                             sharey = True,
-                             constrained_layout = True)
-    fig.suptitle(title, fontweight = 'bold')
-
-    if (rows + cols) > 2:
-        indx = 0
-        for r in range(0, rows):
-            for c in range(0, cols):
-                if indx >= len(groups):
-                    break
-                ax = axes[r, c] if axes.ndim == 2 else axes[c]
-                showx = r == (rows - 1)
-                showy = c == 0
-                yield (indx, ax, showx, showy)
-                indx += 1
-    else:
-                yield (0, axes, True, True)
-
-
-def array_ptest_plot_algo_group(results: np.array,
-                                title: str,
-                                plotter,
+def heap_ptest_show_single_plot(results,
+                                funcof: list[str],
                                 algos: np.array,
                                 singles: np.array,
                                 orders: np.array,
                                 sizes: np.array,
+                                opers: np.array,
                                 nrs: np.array) -> None:
-    for indx, axe, showx, showy in array_ptest_group_plots(title, algos):
+    plotter = heap_ptest_single_plotter(funcof)
+
+    fig, axe = plt.subplots(nrows = 1, ncols = 1, constrained_layout = True)
+    title = heap_ptest_plots_title(None,
+                                   funcof,
+                                   algos,
+                                   singles,
+                                   orders,
+                                   sizes,
+                                   opers,
+                                   nrs)
+    fig.suptitle(title, fontweight = 'bold')
+    plotter(axe,
+            None,
+            True,
+            True,
+            results,
+            algos,
+            singles,
+            orders,
+            sizes,
+            opers,
+            nrs)
+    plt.show()
+
+
+def heap_ptest_plot_algo_group(results: np.array,
+                               title: str,
+                               plotter,
+                               algos: np.array,
+                               singles: np.array,
+                               orders: np.array,
+                               sizes: np.array,
+                               opers: np.array,
+                               nrs: np.array) -> None:
+    for indx, axe, showx, showy in ptest_group_plots(title, algos):
             plotter(axe,
                     "Algorithm: {}".format(algos[indx]),
                     showx,
@@ -754,18 +925,20 @@ def array_ptest_plot_algo_group(results: np.array,
                     singles,
                     orders,
                     sizes,
+                    opers,
                     nrs)
 
 
-def array_ptest_plot_distinct_group(results: np.array,
-                                    title: str,
-                                    plotter,
-                                    algos: np.array,
-                                    singles: np.array,
-                                    orders: np.array,
-                                    sizes: np.array,
-                                    nrs: np.array) -> None:
-    for indx, axe, showx, showy in array_ptest_group_plots(title, singles):
+def heap_ptest_plot_distinct_group(results: np.array,
+                                   title: str,
+                                   plotter,
+                                   algos: np.array,
+                                   singles: np.array,
+                                   orders: np.array,
+                                   sizes: np.array,
+                                   opers: np.array,
+                                   nrs: np.array) -> None:
+    for indx, axe, showx, showy in ptest_group_plots(title, singles):
             plotter(axe,
                     "Distinct: {}%".format(singles[indx]),
                     showx,
@@ -775,18 +948,20 @@ def array_ptest_plot_distinct_group(results: np.array,
                     singles[singles == singles[indx]],
                     orders,
                     sizes,
+                    opers,
                     nrs)
 
 
-def array_ptest_plot_order_group(results: np.array,
-                                 title: str,
-                                 plotter,
-                                 algos: np.array,
-                                 singles: np.array,
-                                 orders: np.array,
-                                 sizes: np.array,
-                                 nrs: np.array) -> None:
-    for indx, axe, showx, showy in array_ptest_group_plots(title, orders):
+def heap_ptest_plot_order_group(results: np.array,
+                                title: str,
+                                plotter,
+                                algos: np.array,
+                                singles: np.array,
+                                orders: np.array,
+                                sizes: np.array,
+                                opers: np.array,
+                                nrs: np.array) -> None:
+    for indx, axe, showx, showy in ptest_group_plots(title, orders):
             plotter(axe,
                     "Order: {}%".format(orders[indx]),
                     showx,
@@ -796,18 +971,20 @@ def array_ptest_plot_order_group(results: np.array,
                     singles,
                     orders[orders == orders[indx]],
                     sizes,
+                    opers,
                     nrs)
 
 
-def array_ptest_plot_size_group(results: np.array,
-                                title: str,
-                                plotter,
-                                algos: np.array,
-                                singles: np.array,
-                                orders: np.array,
-                                sizes: np.array,
-                                nrs: np.array) -> None:
-    for indx, axe, showx, showy in array_ptest_group_plots(title, sizes):
+def heap_ptest_plot_size_group(results: np.array,
+                               title: str,
+                               plotter,
+                               algos: np.array,
+                               singles: np.array,
+                               orders: np.array,
+                               sizes: np.array,
+                               opers: np.array,
+                               nrs: np.array) -> None:
+    for indx, axe, showx, showy in ptest_group_plots(title, sizes):
             plotter(axe,
                     "Size: {} Bytes".format(sizes[indx]),
                     showx,
@@ -817,18 +994,43 @@ def array_ptest_plot_size_group(results: np.array,
                     singles,
                     orders,
                     sizes[sizes == sizes[indx]],
+                    opers,
                     nrs)
 
 
-def array_ptest_plot_nr_group(results: np.array,
-                              title: str,
-                              plotter,
-                              algos: np.array,
-                              singles: np.array,
-                              orders: np.array,
-                              sizes: np.array,
-                              nrs: np.array) -> None:
-    for indx, axe, showx, showy in array_ptest_group_plots(title, nrs):
+def heap_ptest_plot_oper_group(results: np.array,
+                               title: str,
+                               plotter,
+                               algos: np.array,
+                               singles: np.array,
+                               orders: np.array,
+                               sizes: np.array,
+                               opers: np.array,
+                               nrs: np.array) -> None:
+    for indx, axe, showx, showy in ptest_group_plots(title, opers):
+            plotter(axe,
+                    "Operation: {}".format(opers[indx]),
+                    showx,
+                    showy,
+                    results,
+                    algos,
+                    singles,
+                    orders,
+                    sizes,
+                    opers[opers == opers[indx]],
+                    nrs)
+
+
+def heap_ptest_plot_nr_group(results: np.array,
+                             title: str,
+                             plotter,
+                             algos: np.array,
+                             singles: np.array,
+                             orders: np.array,
+                             sizes: np.array,
+                             opers: np.array,
+                             nrs: np.array) -> None:
+    for indx, axe, showx, showy in ptest_group_plots(title, nrs):
             plotter(axe,
                     "#Samples: {}".format(nrs[indx]),
                     showx,
@@ -838,35 +1040,39 @@ def array_ptest_plot_nr_group(results: np.array,
                     singles,
                     orders,
                     sizes,
+                    opers,
                     nrs[nrs == nrs[indx]])
 
 
 HEAP_PTEST_GROUP_PLOTTERS = {
-        'algo':   array_ptest_plot_algo_group,
-        'single': array_ptest_plot_distinct_group,
-        'order':  array_ptest_plot_order_group,
-        'size':   array_ptest_plot_size_group,
-        'nr':     array_ptest_plot_nr_group
+        'algo':   heap_ptest_plot_algo_group,
+        'single': heap_ptest_plot_distinct_group,
+        'order':  heap_ptest_plot_order_group,
+        'size':   heap_ptest_plot_size_group,
+        'oper':   heap_ptest_plot_oper_group,
+        'nr':     heap_ptest_plot_nr_group
 }
 
 
-def array_ptest_show_plots_group(results,
-                                 group: str,
-                                 funcof: list[str],
-                                 algos: np.array,
-                                 singles: np.array,
-                                 orders: np.array,
-                                 sizes: np.array,
-                                 nrs: np.array) -> None:
+def heap_ptest_show_plots_group(results,
+                                group: str,
+                                funcof: list[str],
+                                algos: np.array,
+                                singles: np.array,
+                                orders: np.array,
+                                sizes: np.array,
+                                opers: np.array,
+                                nrs: np.array) -> None:
     group_plotter = HEAP_PTEST_GROUP_PLOTTERS[group]
-    funcof_plotter = array_ptest_single_plotter(funcof)
-    title = array_ptest_plots_title(group,
-                                    funcof,
-                                    algos,
-                                    singles,
-                                    orders,
-                                    sizes,
-                                    nrs)
+    funcof_plotter = heap_ptest_single_plotter(funcof)
+    title = heap_ptest_plots_title(group,
+                                   funcof,
+                                   algos,
+                                   singles,
+                                   orders,
+                                   sizes,
+                                   opers,
+                                   nrs)
     group_plotter(results,
                   title,
                   funcof_plotter,
@@ -874,6 +1080,7 @@ def array_ptest_show_plots_group(results,
                   singles,
                   orders,
                   sizes,
+                  opers,
                   nrs)
     plt.show()
 
@@ -893,7 +1100,7 @@ def heap_ptest_parse_plot_funcof(arg: str) -> list[str]:
     return ptest_parse_clause(arg, 'funcof', HEAP_PTEST_SINGLE_PLOTTERS)
 
 
-def ptest_init_opers(results: np.array, args: argp.Namespace) -> np.array:
+def heap_ptest_init_opers(results: np.array, args: argp.Namespace) -> np.array:
     opers = ptest_init_prop(results, 'oper', args)
     if len(opers) == 0:
         raise Exception('Unexpected list of heap operation(s) specified')
@@ -939,8 +1146,8 @@ def main():
                             metavar = 'SAMPLE_COUNTS',
                             help = 'Comma separated list of number of samples')
 
-    main_parser = argp.ArgumentParser(description = 'Stroll performance test '
-                                                    'visualization tool')
+    main_parser = argp.ArgumentParser(description = 'Stroll heap performance '
+                                                    'test visualization tool')
     cmd_parser = main_parser.add_subparsers(dest = 'cmd',
                                             required = True,
                                             metavar = 'COMMAND')
@@ -988,7 +1195,7 @@ def main():
         singles = ptest_init_singles(results, args)
         orders = ptest_init_orders(results, args)
         sizes = ptest_init_sizes(results, args)
-        opers = ptest_init_opers(results, args)
+        opers = heap_ptest_init_opers(results, args)
 
         if args.cmd == 'list':
             heap_ptest_list(results, algos, singles, orders, sizes, opers, nrs)
@@ -1003,22 +1210,24 @@ def main():
                              nrs)
         elif args.cmd == 'plot':
             if args.groupby is not None:
-                array_ptest_show_plots_group(results,
-                                             args.groupby,
-                                             args.funcof,
-                                             algos,
-                                             singles,
-                                             orders,
-                                             sizes,
-                                             nrs)
+                heap_ptest_show_plots_group(results,
+                                            args.groupby,
+                                            args.funcof,
+                                            algos,
+                                            singles,
+                                            orders,
+                                            sizes,
+                                            opers,
+                                            nrs)
             else:
-                array_ptest_show_single_plot(results,
-                                             args.funcof,
-                                             algos,
-                                             singles,
-                                             orders,
-                                             sizes,
-                                             nrs)
+                heap_ptest_show_single_plot(results,
+                                            args.funcof,
+                                            algos,
+                                            singles,
+                                            orders,
+                                            sizes,
+                                            opers,
+                                            nrs)
     except KeyboardInterrupt:
         print("{}: Interrupted!".format(os.path.basename(sys.argv[0])),
               file=sys.stderr)

@@ -7,12 +7,15 @@
 # Copyright (C) 2024 Grégor Boirie <gregor.boirie@free.fr>
 ################################################################################
 
-from typing import Callable, Optional, cast, Union
+from typing import Iterator, Callable, Optional, cast, Union
 import argparse as argp
 import _io
 import csv
+import math
 import numpy as np
 import matplotlib
+matplotlib.use('GTK3Agg')
+import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
 # Skip the first 8 lines and comment lines starting with the '#' character.
@@ -139,25 +142,34 @@ def ptest_plot_log(axe: matplotlib.axes.Axes,
     ptest_finish_plot(axe)
 
 
+def ptest_group_plots(title: str,
+                      groups: list[str]) -> Iterator[tuple[int,
+                                                           matplotlib.axes.Axes,
+                                                           bool,
+                                                           bool]]:
+    rows = round(math.sqrt(len(groups)))
+    cols = math.ceil(len(groups) / rows)
+    fig, axes = plt.subplots(nrows = rows,
+                             ncols = cols,
+                             sharex = True,
+                             sharey = True,
+                             constrained_layout = True)
+    fig.suptitle(title, fontweight = 'bold')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    if (rows + cols) > 2:
+        indx = 0
+        for r in range(0, rows):
+            for c in range(0, cols):
+                ax = axes[r, c] if axes.ndim == 2 else axes[c]
+                if indx >= len(groups):
+                    ax.set_axis_off()
+                    continue
+                showx = r == (rows - 1)
+                showy = c == 0
+                yield (indx, ax, showx, showy)
+                indx += 1
+    else:
+                yield (0, axes, True, True)
 
 
 def ptest_init_prop(results: np.array,
