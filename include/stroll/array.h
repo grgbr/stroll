@@ -28,6 +28,9 @@
  * Use this to implement a function that compares 2 data blocks given as
  * arguments according to an arbitrary logic.
  *
+ * Last argument may point to an optional arbitrary user data used for
+ * comparison purposes.
+ *
  * The function *MUST* return an integer less than, equal to, or greater than
  * zero if first argument is found, respectively, to be less than, to match, or
  * be greater than the second one.
@@ -49,7 +52,7 @@ typedef int stroll_array_cmp_fn(const void * __restrict,
  * @param[in]    nr      @p array number of elements
  * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
- * @param[inout] data    optional arbitrary user data
+ * @param[inout] data    Optional arbitrary user data
  *
  * @return Matching array element when found, `NULL` otherwise.
  *
@@ -95,7 +98,7 @@ stroll_array_bisect_search(const void *          key,
  * @param[in]    nr      @p array number of elements
  * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
- * @param[inout] data    optional arbitrary user data
+ * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
  * comparison function according to the @rstlnk{Bubble sort} algorithm.
@@ -139,7 +142,7 @@ stroll_array_bubble_sort(void * __restrict     array,
  * @param[in]    nr      @p array number of elements
  * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
- * @param[inout] data    optional arbitrary user data
+ * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
  * comparison function according to the @rstlnk{Selection sort} algorithm.
@@ -182,7 +185,7 @@ stroll_array_select_sort(void * __restrict     array,
  * @param[in]    nr      @p array number of elements
  * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
- * @param[inout] data    optional arbitrary user data
+ * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
  * comparison function according to the @rstlnk{Insertion sort} algorithm.
@@ -218,7 +221,7 @@ stroll_array_insert_sort(void * __restrict     array,
  * @param[inout] elem    Last element of @p array
  * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
- * @param[inout] data    optional arbitrary user data
+ * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array, given:
  * - @p array, an existing *pre-sorted* array ;
@@ -270,7 +273,7 @@ stroll_array_insert_inpsort_elem(void * __restrict     array,
  * @param[inout] elem    Element to insert into @p array
  * @param[in]    size    Size of a single @p array element
  * @param[in]    compare @p array elements comparison function
- * @param[inout] data    optional arbitrary user data
+ * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array, given:
  * - @p array, an existing *pre-sorted* array ;
@@ -335,7 +338,7 @@ stroll_array_insert_oopsort_elem(void * __restrict       array,
  * @param[in]    size    Size of a single @p array element
  * @param[in]    nr      @p array number of elements
  * @param[in]    compare @p array elements comparison function
- * @param[inout] data    optional arbitrary user data
+ * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
  * comparison function according to the @rstlnk{Quick sort} algorithm.
@@ -376,7 +379,7 @@ stroll_array_quick_sort(void * __restrict     array,
  * @param[in]    size    Size of a single @p array element
  * @param[in]    nr      @p array number of elements
  * @param[in]    compare @p array elements comparison function
- * @param[inout] data    optional arbitrary user data
+ * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
  * comparison function according to the @rstlnk{Quick sort} algorithm.
@@ -417,7 +420,7 @@ stroll_array_3wquick_sort(void * __restrict     array,
  * @param[in]    size    Size of a single @p array element
  * @param[in]    nr      @p array number of elements
  * @param[in]    compare @p array elements comparison function
- * @param[inout] data    optional arbitrary user data
+ * @param[inout] data    Optional arbitrary user data
  *
  * @return `0` when successful, an errno-like return code otherwise.
  * @retval 0       Success

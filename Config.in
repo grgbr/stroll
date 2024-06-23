@@ -158,7 +158,9 @@ config STROLL_ARRAY_BUBBLE_SORT
 	select STROLL_PROVIDES_LIBS
 	default n
 	help
-	  Build stroll library with support for the bubble sort algorithm.
+	  Build stroll library with support for the bubble sort algorithm over
+	  arrays.
+	  See <stroll/array.h>.
 	  Implemented for reference only: **DO NOT USE IT**.
 
 config STROLL_ARRAY_SELECT_SORT
@@ -166,7 +168,9 @@ config STROLL_ARRAY_SELECT_SORT
 	select STROLL_PROVIDES_LIBS
 	default n
 	help
-	  Build stroll library with support for the selection sort algorithm.
+	  Build stroll library with support for the selection sort algorithm
+	  over arrays.
+	  See <stroll/array.h>.
 	  Implemented for reference only: **DO NOT USE IT**.
 
 config STROLL_ARRAY_INSERT_SORT
@@ -174,7 +178,8 @@ config STROLL_ARRAY_INSERT_SORT
 	select STROLL_PROVIDES_LIBS
 	default y
 	help
-	  Build stroll library with support for the insertion sort algorithm.
+	  Build stroll library with support for the insertion sort algorithm
+	  over arrays.
 	  See <stroll/array.h>.
 
 config STROLL_ARRAY_QUICK_SORT_UTILS
@@ -189,7 +194,7 @@ config STROLL_ARRAY_QUICK_SORT
 	default y
 	help
 	  Build stroll library with support for an optimized hybrid version of
-	  the quick sort algorithm.
+	  the quick sort algorithm over arrays.
 	  See <stroll/array.h>.
 
 config STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD
@@ -210,8 +215,8 @@ config STROLL_ARRAY_3WQUICK_SORT
 	default y
 	help
 	  Build stroll library with support for an optimized hybrid version of
-	  the 3-way partition quick sort algorithm optimized for inputs
-	  containing many duplicate elements.
+	  the 3-way partition quick sort algorithm over arrays optimized for
+	  inputs containing many duplicate elements.
 	  See <stroll/array.h>.
 
 config STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD
@@ -265,7 +270,7 @@ config STROLL_ARRAY_MERGE_SORT
 	default y
 	help
 	  Build stroll library with support for an optimized hybrid version of
-	  the merge sort algorithm.
+	  the merge sort algorithm over arrays.
 	  See <stroll/array.h>.
 
 config STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD
@@ -314,5 +319,59 @@ config STROLL_ARRAY_FWHEAP_SORT
 	  Document me!
 
 endif # STROLL_ARRAY
+
+menuconfig STROLL_LIST
+	bool "Linked list based algorithms"
+	select STROLL_PROVIDES_LIBS
+	default y
+
+if STROLL_LIST
+
+config STROLL_SLIST
+	bool "Singly linked list"
+	default y
+	help
+	  Document me!
+
+config STROLL_SLIST_BUBBLE_SORT
+	bool "Bubble sort"
+	depends on STROLL_SLIST
+	default n
+	help
+	  Build stroll library with support for the bubble sort algorithm over
+	  singly linked lists.
+	  See <stroll/slist.h>.
+	  Implemented for reference only: **DO NOT USE IT**.
+
+config STROLL_SLIST_SELECT_SORT
+	bool "Selection sort"
+	depends on STROLL_SLIST
+	default n
+	help
+	  Build stroll library with support for the selection sort algorithm
+	  over singly linked lists.
+	  See <stroll/slist.h>.
+	  Implemented for reference only: **DO NOT USE IT**.
+
+config STROLL_SLIST_INSERT_SORT
+	bool "Insertion sort"
+	depends on STROLL_SLIST
+	default y
+	help
+	  Build stroll library with support for the insertion sort algorithm
+	  over singly linked list.
+	  See <stroll/slist.h>.
+
+config STROLL_SLIST_MERGE_SORT
+	bool "Merge sort"
+	depends on STROLL_SLIST
+	select STROLL_SLIST_INSERT_SORT
+	default y
+	help
+	  Build stroll library with support for an optimized hybrid version of
+	  the merge sort algorithm over singly linked lists.
+	  See <stroll/slist.h>.
+
+endif # STROLL_LIST
 
 # ex: ft=kconfig:
