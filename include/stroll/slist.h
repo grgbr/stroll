@@ -247,8 +247,8 @@ extern void stroll_slist_move(struct stroll_slist *                 list,
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
-stroll_slist_nqueue(struct stroll_slist *                 list,
-                    struct stroll_slist_node * __restrict node)
+stroll_slist_nqueue_back(struct stroll_slist *                 list,
+                         struct stroll_slist_node * __restrict node)
 {
 	stroll_slist_assert_api(list);
 	stroll_slist_assert_api(!list->head.next || list->tail);
@@ -261,7 +261,25 @@ stroll_slist_nqueue(struct stroll_slist *                 list,
 }
 
 /**
- * Remove a node of the begining of a stroll_slist and return it.
+ * Add a node to the begining of a stroll_slist.
+ *
+ * @param list stroll_slist to add node to.
+ * @param node Node to enqueue.
+ */
+static inline __stroll_nonull(1, 2) __stroll_nothrow
+void
+stroll_slist_nqueue_front(struct stroll_slist *                 list,
+                          struct stroll_slist_node * __restrict node)
+{
+	stroll_slist_assert_api(list);
+	stroll_slist_assert_api(!list->head.next || list->tail);
+	stroll_slist_assert_api(node);
+
+	stroll_slist_append(list, &list->head, node);
+}
+
+/**
+ * Remove a node from the begining of a stroll_slist and return it.
  *
  * @param list stroll_slist to dequeue node from.
  *
@@ -271,7 +289,7 @@ stroll_slist_nqueue(struct stroll_slist *                 list,
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 struct stroll_slist_node *
-stroll_slist_dqueue(struct stroll_slist * __restrict list)
+stroll_slist_dqueue_front(struct stroll_slist * __restrict list)
 {
 	stroll_slist_assert_api(!stroll_slist_empty(list));
 	stroll_slist_assert_api(list->tail);
@@ -305,6 +323,7 @@ stroll_slist_withdraw(struct stroll_slist *                       list,
 	stroll_slist_assert_api(!stroll_slist_empty(list));
 	stroll_slist_assert_api(first);
 	stroll_slist_assert_api(last);
+	stroll_slist_assert_api(first != last);
 
 	first->next = last->next;
 
