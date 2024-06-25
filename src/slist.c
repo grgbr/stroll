@@ -53,6 +53,10 @@ stroll_slist_splice(struct stroll_slist * __restrict      result,
 	stroll_slist_assert_api(source);
 	stroll_slist_assert_api(first);
 	stroll_slist_assert_api(last);
+	stroll_slist_assert_api(at != first);
+	stroll_slist_assert_api(at != last);
+	stroll_slist_assert_api(first != last);
+	stroll_slist_assert_api(result != source);
 
 	struct stroll_slist_node * fst = stroll_slist_next(first);
 

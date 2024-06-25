@@ -47,6 +47,12 @@ struct stroll_slist_node {
 };
 
 /**
+ * stroll_slist_node constant initializer.
+ */
+#define STROLL_SLIST_NODE_INIT \
+	{ .next = NULL }
+
+/**
  * Singly linked list
  */
 struct stroll_slist {
@@ -63,8 +69,8 @@ struct stroll_slist {
  */
 #define STROLL_SLIST_INIT(_list) \
 	{ \
-		.head.next = NULL, \
-		.tail      = &(_list)->head \
+		.head = STROLL_SLIST_NODE_INIT, \
+		.tail = &(_list)->head \
 	}
 
 /**
@@ -343,14 +349,16 @@ static inline __stroll_nonull(1, 2, 3, 4) __stroll_nothrow
 void
 stroll_slist_embed(struct stroll_slist *                 list,
                    struct stroll_slist_node * __restrict at,
-                   struct stroll_slist_node * __restrict first,
-                   struct stroll_slist_node * __restrict last)
+                   struct stroll_slist_node *            first,
+                   struct stroll_slist_node *            last)
 {
 	stroll_slist_assert_api(list);
 	stroll_slist_assert_api(!list->head.next || list->tail);
 	stroll_slist_assert_api(at);
 	stroll_slist_assert_api(first);
 	stroll_slist_assert_api(last);
+	stroll_slist_assert_api(at != first);
+	stroll_slist_assert_api(at != last);
 
 	last->next = at->next;
 	if (!last->next)
