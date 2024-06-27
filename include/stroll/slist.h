@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: LGPL-3.0-only
  *
  * This file is part of Stroll.
- * Copyright (C) 2024 Grégor Boirie <gregor.boirie@free.fr>
+ * Copyright (C) 2017-2024 Grégor Boirie <gregor.boirie@free.fr>
  ******************************************************************************/
 
 /**
@@ -42,7 +42,13 @@
  * Describes a single entry linked into a stroll_slist.
  */
 struct stroll_slist_node {
-	/** Node following this node into a stroll_slist. */
+	/**
+	 * @internal
+	 *
+	 * Node following this node into a stroll_slist.
+	 *
+	 * Points to `NULL` if this node ends a stroll_slist.
+	 */
 	struct stroll_slist_node * next;
 };
 
@@ -54,29 +60,41 @@ struct stroll_slist_node {
 
 /**
  * Singly linked list
+ *
+ * @see stroll_slist_node
  */
 struct stroll_slist {
-	/** stroll_slist head allowing to locate the first linked node. */
+	/**
+	 * @internal
+	 *
+	 * Head node allowing to locate first node of this stroll_slist.
+	 */
 	struct stroll_slist_node   head;
-	/** Last entry in this stroll_slist. */
+	/**
+	 * @internal
+	 *
+	 * Last entry node ending this stroll_slist.
+	 */
 	struct stroll_slist_node * tail;
 };
 
 /**
  * stroll_slist constant initializer.
  *
- * @param _list stroll_slist variable to initialize.
+ * @param[out] _list stroll_slist variable to initialize.
+ *
+ * @see stroll_slist
  */
 #define STROLL_SLIST_INIT(_list) \
 	{ \
 		.head = STROLL_SLIST_NODE_INIT, \
-		.tail = &(_list)->head \
+		.tail = &(_list).head \
 	}
 
 /**
  * Initialize a stroll_slist
  *
- * @param list stroll_slist to initialize.
+ * @param[out] list stroll_slist to initialize.
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 void
@@ -91,10 +109,17 @@ stroll_slist_init(struct stroll_slist * __restrict list)
 /**
  * Test wether a stroll_slist is empty or not.
  *
- * @param list stroll_slist to test.
+ * @param[in] list stroll_slist to test.
  *
  * @retval true  empty
  * @retval false not empty
+ *
+ * @warning
+ * Result is undefined if @p list has not been previously initialized.
+ *
+ * @see
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 bool
@@ -109,9 +134,12 @@ stroll_slist_empty(const struct stroll_slist * __restrict list)
 /**
  * Return stroll_slist head.
  *
- * @param list stroll_slist to get head from.
+ * @param[in] list stroll_slist to get head from.
  *
- * @return Pointer to list's head node.
+ * Return a pointer to the stroll_slist internal node that points to first
+ * user / data stroll_slist_node.
+ *
+ * @return Pointer to stroll_list's head node.
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 struct stroll_slist_node *
@@ -126,9 +154,13 @@ stroll_slist_head(struct stroll_slist * __restrict list)
 /**
  * Get node following specified node.
  *
- * @param node Node which to get the successor from.
+ * @param[in] node Node which to get the successor from.
  *
  * @return Pointer to following node.
+ *
+ * @see
+ * - STROLL_SLIST_NODE_INIT()
+ * - stroll_slist_next_entry()
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 struct stroll_slist_node *
@@ -142,12 +174,21 @@ stroll_slist_next(const struct stroll_slist_node * __restrict node)
 /**
  * Get first node of specified stroll_slist.
  *
- * @param list stroll_slist to get the first node from.
+ * @param[in] list stroll_slist to get the first node from.
  *
  * @retval Pointer to first list's node.
  * @retval NULL means list is empty.
  *
- * @warning Behavior is undefined when called on an empty stroll_slist.
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is undefined when called on an empty stroll_slist.
+ *
+ * @see
+ * - stroll_slist_empty()
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_head()
+ * - stroll_slist_first_entry()
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 struct stroll_slist_node *
@@ -161,14 +202,21 @@ stroll_slist_first(const struct stroll_slist * __restrict list)
 /**
  * Get last node of specified stroll_slist.
  *
- * @param list stroll_slist to get the last node from.
+ * @param[in] list stroll_slist to get the last node from.
  *
  * @retval Pointer to last list's node.
- * @retval Pointer to list's head node means list is empty.
  *
- * @warning Behavior is undefined when called on an empty stroll_slist.
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - The returned value points to list's head node when @p list is empty.
  *
- * @see stroll_slist_head()
+ * @see
+ * - stroll_slist_empty()
+ * - stroll_slist_head()
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_first()
+ * - stroll_slist_last_entry()
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 struct stroll_slist_node *
@@ -182,9 +230,18 @@ stroll_slist_last(const struct stroll_slist * __restrict list)
 /**
  * Add a node into a stroll_slist.
  *
- * @param list     stroll_slist to add node to.
- * @param previous Node preceding the one to add.
- * @param node     Node to add.
+ * @param[inout] list     stroll_slist to add node to.
+ * @param[inout] previous Node preceding the one to add.
+ * @param[out]   node     Node to add.
+ *
+ * @warning
+ * Result is undefined if @p list has not been previously initialized.
+ *
+ * @see
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_remove()
+ * - stroll_slist_move()
  */
 static inline __stroll_nonull(1, 2, 3) __stroll_nothrow
 void
@@ -208,11 +265,22 @@ stroll_slist_append(struct stroll_slist *                 list,
 /**
  * Remove a node from a stroll_slist.
  *
- * @param list     stroll_slist to remove node from.
- * @param previous Node preceding the one to remove.
- * @param node     Node to remove.
+ * @param[inout] list     stroll_slist to remove node from.
+ * @param[inout] previous Node preceding the one to remove.
+ * @param[in]    node     Node to remove.
  *
- * @warning Behavior is undefined when called on an empty stroll_slist.
+ * @p list **MUST** contain @p previous and @p node nodes.
+ *
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is undefined when called on an empty stroll_slist.
+ *
+ * @see
+ * - stroll_slist_empty()
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_append()
+ * - stroll_slist_move()
  */
 static inline __stroll_nonull(1, 2, 3) __stroll_nothrow
 void
@@ -234,10 +302,24 @@ stroll_slist_remove(struct stroll_slist *                       list,
 /**
  * Move stroll_slist node from one location to another.
  *
- * @param list     stroll_slist to insert node into
- * @param at       list's node to insert node after
- * @param previous Node preceding the node to move
- * @param node     Node to move
+ * @param[inout] list     stroll_slist to insert node into
+ * @param[inout] at       list's node to insert node after
+ * @param[inout] previous Node preceding the node to move
+ * @param[inout] node     Node to move
+ *
+ * @p list **MUST** contain @p at, @p previous and @p node nodes.
+ *
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is undefined when called on an empty stroll_slist.
+ *
+ * @see
+ * - stroll_slist_empty()
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_empty()
+ * - stroll_slist_append()
+ * - stroll_slist_remove()
  */
 extern void stroll_slist_move(struct stroll_slist *                 list,
                               struct stroll_slist_node * __restrict at,
@@ -246,10 +328,46 @@ extern void stroll_slist_move(struct stroll_slist *                 list,
 	__stroll_nonull(1, 2, 3, 4) __stroll_nothrow __leaf;
 
 /**
+ * Add a node to the begining of a stroll_slist.
+ *
+ * @param[inout] list stroll_slist to add node to.
+ * @param[out]   node Node to enqueue.
+ *
+ * @warning
+ * Result is undefined if @p list has not been previously initialized.
+ *
+ * @see
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_dqueue_front()
+ * - stroll_slist_nqueue_back()
+ */
+static inline __stroll_nonull(1, 2) __stroll_nothrow
+void
+stroll_slist_nqueue_front(struct stroll_slist *                 list,
+                          struct stroll_slist_node * __restrict node)
+{
+	stroll_slist_assert_api(list);
+	stroll_slist_assert_api(!list->head.next || list->tail);
+	stroll_slist_assert_api(node);
+
+	stroll_slist_append(list, &list->head, node);
+}
+
+/**
  * Add a node to the end of a stroll_slist.
  *
- * @param list stroll_slist to add node to.
- * @param node Node to enqueue.
+ * @param[inout] list stroll_slist to add node to.
+ * @param[out]   node Node to enqueue.
+ *
+ * @warning
+ * Result is undefined if @p list has not been previously initialized.
+ *
+ * @see
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_dqueue_front()
+ * - stroll_slist_nqueue_front()
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
@@ -267,31 +385,22 @@ stroll_slist_nqueue_back(struct stroll_slist *                 list,
 }
 
 /**
- * Add a node to the begining of a stroll_slist.
- *
- * @param list stroll_slist to add node to.
- * @param node Node to enqueue.
- */
-static inline __stroll_nonull(1, 2) __stroll_nothrow
-void
-stroll_slist_nqueue_front(struct stroll_slist *                 list,
-                          struct stroll_slist_node * __restrict node)
-{
-	stroll_slist_assert_api(list);
-	stroll_slist_assert_api(!list->head.next || list->tail);
-	stroll_slist_assert_api(node);
-
-	stroll_slist_append(list, &list->head, node);
-}
-
-/**
  * Remove a node from the begining of a stroll_slist and return it.
  *
- * @param list stroll_slist to dequeue node from.
+ * @param[inout] list stroll_slist to dequeue node from.
  *
  * @return Pointer to dequeued node.
  *
- * @warning Behavior is undefined when called on an empty stroll_slist.
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is undefined when called on an empty stroll_slist.
+ *
+ * @see
+ * - stroll_slist_empty()
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_nqueue_front()
+ * - stroll_slist_nqueue_back()
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 struct stroll_slist_node *
@@ -313,11 +422,22 @@ stroll_slist_dqueue_front(struct stroll_slist * __restrict list)
 /**
  * Extract / remove a portion of nodes from a stroll_slist.
  *
- * @param list  stroll_slist to remove nodes from.
- * @param first Node preceding the first node of the portion to remove.
- * @param last  Last node of portion to remove.
+ * @param[inout] list  stroll_slist to remove nodes from.
+ * @param[inout] first Node preceding the first node of the portion to remove.
+ * @param[inout] last  Last node of portion to remove.
  *
- * @warning Behavior is undefined when called on an empty stroll_slist.
+ * @p list **MUST** contain the [@p first,@p last] range of nodes.
+ *
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is undefined when called on an empty stroll_slist.
+ *
+ * @see
+ * - stroll_slist_empty()
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_embed()
+ * - stroll_slist_splice()
  */
 static inline __stroll_nonull(1, 2, 3) __stroll_nothrow
 void
@@ -340,10 +460,25 @@ stroll_slist_withdraw(struct stroll_slist *                       list,
 /**
  * Insert a portion of nodes into a stroll_slist.
  *
- * @param list  stroll_slist to insert nodes into.
- * @param at    Node after which portion is inserted.
- * @param first First node of portion to insert.
- * @param last  Last node of portion to insert.
+ * @param[inout] list  stroll_slist to insert nodes into.
+ * @param[inout] at    Node after which portion is inserted.
+ * @param[in]    first First node of portion to insert.
+ * @param[inout] last  Last node of portion to insert.
+ *
+ * @p list **MUST** contain the @p at node.
+ *
+ * The stroll_list within which the [@p first,@p last] range of nodes is
+ * contained is not updated to reflect link changes. If required, use
+ * stroll_slist_splice() instead.
+ *
+ * @warning
+ * Result is undefined if @p list has not been previously initialized.
+ *
+ * @see
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_withdraw()
+ * - stroll_slist_splice()
  */
 static inline __stroll_nonull(1, 2, 3, 4) __stroll_nothrow
 void
@@ -370,13 +505,24 @@ stroll_slist_embed(struct stroll_slist *                 list,
 /**
  * Extract source list portion and move it to result list at specified location.
  *
- * @param result stroll_slist to insert nodes into.
- * @param at     result's node to insert nodes after.
- * @param source stroll_slist to extract nodes from.
- * @param first  Node preceding the nodes portion to move.
- * @param last   Last portions's node to move.
+ * @param[inout] result stroll_slist to insert nodes into.
+ * @param[inout] at     result's node to insert nodes after.
+ * @param[inout] source stroll_slist to extract nodes from.
+ * @param[inout] first  Node preceding the nodes portion to move.
+ * @param[inout] last   Last portions's node to move.
  *
- * @warning Behavior is undefined when called on an empty @p source stroll_slist.
+ * @p source **MUST** contain the [@p first,@p last] range of nodes.
+ *
+ * @warning
+ * - Result is undefined if @p result and / or @p source have not been previously
+ *   initialized.
+ * - Behavior is undefined when called on an empty @p source stroll_slist.
+ *
+ * @see
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_withdraw()
+ * - stroll_slist_embed()
  */
 extern void
 stroll_slist_splice(struct stroll_slist *      __restrict result,
@@ -387,20 +533,11 @@ stroll_slist_splice(struct stroll_slist *      __restrict result,
 	__stroll_nonull(1, 2, 3, 4, 5) __stroll_nothrow __leaf;
 
 /**
- * Iterate over stroll_slist nodes.
- *
- * @param _list stroll_slist to iterate over.
- * @param _node Pointer to current node.
- */
-#define stroll_slist_foreach_node(_list, _node) \
-	for (_node = (_list)->head.next; _node; _node = _node->next)
-
-/**
  * Return type casted pointer to entry containing specified node.
  *
- * @param _node   stroll_slist node to retrieve container from.
- * @param _type   Type of container
- * @param _member Member field of container structure pointing to _node.
+ * @param[in] _node   stroll_slist node to retrieve container from.
+ * @param     _type   Type of container
+ * @param     _member Member field of container structure pointing to @p _node.
  *
  * @return Pointer to type casted entry.
  */
@@ -408,52 +545,106 @@ stroll_slist_splice(struct stroll_slist *      __restrict result,
 	containerof(_node, _type, _member)
 
 /**
- * Return type casted pointer to entry containing first node of specified
- * stroll_slist.
- *
- * @param _list   stroll_slist to get the first node from.
- * @param _type   Type of container.
- * @param _member Member field of container structure pointing to first _list's
- *                node.
- *
- * @return Pointer to type casted entry.
- */
-#define stroll_slist_first_entry(_list, _type, _member) \
-	stroll_slist_entry(stroll_slist_first(_list), _type, _member)
-
-/**
- * Return type casted pointer to entry containing last node of specified stroll_slist.
- *
- * @param _list   stroll_slist to get the last node from.
- * @param _type   Type of container.
- * @param _member Member field of container structure pointing to last _list's
- *                node.
- *
- * @return Pointer to type casted entry.
- */
-#define stroll_slist_last_entry(_list, _type, _member) \
-	stroll_slist_entry(stroll_slist_last(_list), _type, _member)
-
-
-/**
  * Return type casted pointer to entry following specified entry.
  *
- * @param _entry  Entry containing stroll_slist node.
- * @param _member Member field of container structure pointing to stroll_slist
- *                node.
+ * @param[in] _entry  Entry containing stroll_slist node.
+ * @param     _member Member field of container structure holding the
+ *                    stroll_slist_node node.
  *
  * @return Pointer to following entry.
+ *
+ * @see
+ * - stroll_slist_next()
  */
 #define stroll_slist_next_entry(_entry, _member) \
 	stroll_slist_entry(next(&(_entry)->_member), typeof(*(_entry)), _member)
 
 /**
+ * Return type casted pointer to entry containing first node of specified
+ * stroll_slist.
+ *
+ * @param[in] _list   stroll_slist to get the first node from.
+ * @param     _type   Type of container.
+ * @param     _member Member field of container structure @p _type holding the
+ *                    stroll_slist_node node.
+ *
+ * @return Pointer to type casted entry.
+ *
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is undefined when called on an empty stroll_slist.
+ *
+ * @see
+ * - stroll_slist_empty()
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_first()
+ */
+#define stroll_slist_first_entry(_list, _type, _member) \
+	stroll_slist_entry(stroll_slist_first(_list), _type, _member)
+
+/**
+ * Return type casted pointer to entry containing last node of specified
+ * stroll_slist.
+ *
+ * @param[in] _list   stroll_slist to get the last node from.
+ * @param     _type   Type of container.
+ * @param     _member Member field of container structure @p _type holding the
+ *                    stroll_slist_node node.
+ *
+ * @return Pointer to type casted entry.
+ *
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is undefined when called on an empty stroll_slist.
+ *
+ * @see
+ * - stroll_slist_empty()
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_last()
+ */
+#define stroll_slist_last_entry(_list, _type, _member) \
+	stroll_slist_entry(stroll_slist_last(_list), _type, _member)
+
+/**
+ * Iterate over stroll_slist nodes.
+ *
+ * @param[in]  _list stroll_slist to iterate over.
+ * @param[out] _node Pointer to current node.
+ *
+ * @warning
+ * - Result is undefined if @p _list has not been previously initialized.
+ * - Behavior is undefined when @p _node is removed while iterating over
+ *   @p _list.
+ *
+ * @see
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_foreach_entry()
+ */
+#define stroll_slist_foreach_node(_list, _node) \
+	for (_node = (_list)->head.next; _node; _node = _node->next)
+
+/**
  * Iterate over stroll_slist node container entries.
  *
- * @param _list   stroll_slist to iterate over.
- * @param _entry  Pointer to entry containing @p _list's current node.
- * @param _member Member field of container structure pointing to stroll_slist
- *                node.
+ * @param[in]  _list   stroll_slist to iterate over.
+ * @param[out] _entry  Pointer to entry containing @p _list's current node.
+ * @param      _member Member field of container structure holding the
+ *                     stroll_slist_node node.
+ *
+ * @warning
+ * - Result is undefined if @p _list has not been previously initialized.
+ * - Behavior is undefined when @p _entry is removed while iterating over
+ *   @p _list.
+ * - Behavior is undefined when called on an empty stroll_slist.
+ *
+ * @see
+ * - stroll_slist_empty()
+ * - stroll_slist_init()
+ * - STROLL_SLIST_INIT()
+ * - stroll_slist_foreach()
  */
 #define stroll_slist_foreach_entry(_list, _entry, _member) \
 	for (_entry = stroll_slist_entry((_list)->head.next, \
@@ -493,6 +684,28 @@ typedef int (stroll_slist_compare_fn)
  * @param[inout] list    stroll_slist to sort.
  * @param[in]    compare @p list nodes comparison function.
  * @param[inout] data    Optional arbitrary user data.
+ *
+ * Sort the @p list using the @p compare comparison function according to
+ * the @rstlnk{Bubble sort} algorithm.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p list elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting lists} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * - Behavior is undefined when called on an empty stroll_slist.
+ * - Implemented for reference only: **DO NOT USE IT**. Refer to
+ *   @rstlnk{Sorting lists} for more informations related to algorithm
+ *   selection.
  */
 extern void
 stroll_slist_bubble_sort(struct stroll_slist * __restrict list,

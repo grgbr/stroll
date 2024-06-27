@@ -26,9 +26,10 @@ you can refer to for further details :
 * `Power of 2 operations`_,
 * `Bitmaps`_,
 * `Fixed sized bitmaps`_,
-* `Length-value strings`_.
-* `Searching arrays`_.
-* `Sorting arrays`_.
+* `Length-value strings`_,
+* `Searching arrays`_,
+* `Sorting arrays`_,
+* `Linked lists`_.
 
 Stroll_ sources are distributed under the :ref:`GNU Lesser General Public
 License <lgpl>` whereas documentation manuals are distributed under the
@@ -64,6 +65,11 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_FBMAP`
 * :c:macro:`CONFIG_STROLL_LVSTR`
 * :c:macro:`CONFIG_STROLL_POW2`
+* :c:macro:`CONFIG_STROLL_SLIST`
+* :c:macro:`CONFIG_STROLL_SLIST_BUBBLE_SORT`
+* :c:macro:`CONFIG_STROLL_SLIST_INSERT_SORT`
+* :c:macro:`CONFIG_STROLL_SLIST_MERGE_SORT`
+* :c:macro:`CONFIG_STROLL_SLIST_SELECT_SORT`
 * :c:macro:`CONFIG_STROLL_UTEST`
 * :c:macro:`CONFIG_STROLL_VALGRIND`
 
@@ -735,6 +741,95 @@ configuration option enabled, the Stroll_ library provides support for
    Implemented for reference only: **DO NOT USE IT**. Refer to
    `Sorting arrays`_ for more informations related to algorithm selection.
 
+.. index:: linked list, list
+
+Linked lists
+============
+
+Stroll_ provides support for 2 different kinds of :term:`linked list`: 
+
+* `singly linked lists`_,
+* and `doubly linked lists`_.
+
+.. index:: singly linked list, linked list;singly, list;singly
+
+Singly linked lists
+-------------------
+
+When compiled with the :c:macro:`CONFIG_STROLL_SLIST` build configuration option
+enabled, the Stroll_ library provides support for :c:struct:`stroll_slist`
+singly linked lists where each :c:struct:`stroll_slist_node` node contains a
+single reference to the next one in the sequence.
+
+The following API is available:
+
+.. hlist::
+
+   * Initialization:
+
+      * :c:macro:`STROLL_SLIST_INIT()`
+      * :c:macro:`STROLL_SLIST_NODE_INIT`
+      * :c:func:`stroll_slist_init()`
+
+   * Accessing / iterating over nodes:
+
+      * :c:func:`stroll_slist_first()`
+      * :c:macro:`stroll_slist_first_entry()`
+      * :c:macro:`stroll_slist_foreach_node()`
+      * :c:macro:`stroll_slist_foreach_entry()`
+      * :c:func:`stroll_slist_head()`
+      * :c:func:`stroll_slist_last()`
+      * :c:macro:`stroll_slist_last_entry()`
+      * :c:func:`stroll_slist_next()`
+      * :c:macro:`stroll_slist_next_entry()`
+
+   * Modifying:
+
+      * :c:func:`stroll_slist_append()`
+      * :c:func:`stroll_slist_dqueue_front()`
+      * :c:func:`stroll_slist_embed()`
+      * :c:func:`stroll_slist_move()`
+      * :c:func:`stroll_slist_nqueue_back()`
+      * :c:func:`stroll_slist_nqueue_front()`
+      * :c:func:`stroll_slist_remove()`
+      * :c:func:`stroll_slist_splice()`
+      * :c:func:`stroll_slist_withdraw()`
+
+   * Various:
+
+      * :c:func:`stroll_slist_empty()`
+      * :c:macro:`stroll_slist_entry()`
+
+.. index:: singly linked list, linked list;singly, list;singly
+
+Doubly linked lists
+-------------------
+
+Document me!
+
+Sorting lists
+-------------
+
+Bubble sort
+***********
+
+When compiled with the :c:macro:`CONFIG_STROLL_SLIST_BUBBLE_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`Bubble`_ sort algorithm over :term:`linked lists` thanks to the
+:c:func:`stroll_slist_bubble_sort`.
+
+.. note::
+
+   * high number of items swaps ;
+   * decent efficiency with pre-sorted data sets ;
+   * poor to extremely low efficiency even over small data sets.
+
+.. warning::
+
+   Implemented for reference only: **DO NOT USE IT**. Refer to
+   `Sorting lists`_ for more informations related to algorithm selection.
+
+
 .. index:: API reference, reference
 
 Reference
@@ -849,6 +944,31 @@ CONFIG_STROLL_POW2
 .. doxygendefine:: CONFIG_STROLL_POW2
 
 .. _CONFIG_STROLL_UTEST:
+
+CONFIG_STROLL_SLIST
+*******************
+
+.. doxygendefine:: CONFIG_STROLL_SLIST
+
+CONFIG_STROLL_SLIST_BUBBLE_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_SLIST_BUBBLE_SORT
+
+CONFIG_STROLL_SLIST_INSERT_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_SLIST_INSERT_SORT
+
+CONFIG_STROLL_SLIST_MERGE_SORT
+******************************
+
+.. doxygendefine:: CONFIG_STROLL_SLIST_MERGE_SORT
+
+CONFIG_STROLL_SLIST_SELECT_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_SLIST_SELECT_SORT
 
 CONFIG_STROLL_UTEST
 *******************
@@ -1068,6 +1188,16 @@ STROLL_PREFETCH_LOCALITY_TMP
 
 .. doxygendefine:: STROLL_PREFETCH_LOCALITY_TMP
 
+STROLL_SLIST_INIT
+*****************
+
+.. doxygendefine:: STROLL_SLIST_INIT
+
+STROLL_SLIST_NODE_INIT
+**********************
+
+.. doxygendefine:: STROLL_SLIST_NODE_INIT
+
 STROLL_STRING
 *************
 
@@ -1188,6 +1318,36 @@ stroll_prefetch
 
 .. doxygendefine:: stroll_prefetch
 
+stroll_slist_entry
+******************
+
+.. doxygendefine:: stroll_slist_entry
+
+stroll_slist_first_entry
+************************
+
+.. doxygendefine:: stroll_slist_first_entry
+
+stroll_slist_foreach_node
+*************************
+
+.. doxygendefine:: stroll_slist_foreach_node
+
+stroll_slist_foreach_entry
+**************************
+
+.. doxygendefine:: stroll_slist_foreach_entry
+
+stroll_slist_last_entry
+***********************
+
+.. doxygendefine:: stroll_slist_last_entry
+
+stroll_slist_next_entry
+***********************
+
+.. doxygendefine:: stroll_slist_next_entry
+
 stroll_unlikely
 ***************
 
@@ -1215,6 +1375,16 @@ stroll_lvstr
 ************
 
 .. doxygenstruct:: stroll_lvstr
+
+stroll_slist
+************
+
+.. doxygenstruct:: stroll_slist
+
+stroll_slist_node
+*****************
+
+.. doxygenstruct:: stroll_slist_node
 
 Functions
 ---------
@@ -2067,3 +2237,83 @@ stroll_pow2_upul
 ****************
 
 .. doxygenfunction:: stroll_pow2_upul
+
+stroll_slist_append
+*******************
+
+.. doxygenfunction:: stroll_slist_append
+
+stroll_slist_bubble_sort
+*************************
+
+.. doxygenfunction:: stroll_slist_bubble_sort
+
+stroll_slist_dqueue_front
+*************************
+
+.. doxygenfunction:: stroll_slist_dqueue_front
+
+stroll_slist_embed
+******************
+
+.. doxygenfunction:: stroll_slist_embed
+
+stroll_slist_empty
+******************
+
+.. doxygenfunction:: stroll_slist_empty
+
+stroll_slist_first
+******************
+
+.. doxygenfunction:: stroll_slist_first
+
+stroll_slist_head
+*****************
+
+.. doxygenfunction:: stroll_slist_head
+
+stroll_slist_init
+*****************
+
+.. doxygenfunction:: stroll_slist_init
+
+stroll_slist_last
+*****************
+
+.. doxygenfunction:: stroll_slist_last
+
+stroll_slist_move
+*****************
+
+.. doxygenfunction:: stroll_slist_move
+
+stroll_slist_next
+*****************
+
+.. doxygenfunction:: stroll_slist_next
+
+stroll_slist_nqueue_back
+************************
+
+.. doxygenfunction:: stroll_slist_nqueue_back
+
+stroll_slist_nqueue_front
+*************************
+
+.. doxygenfunction:: stroll_slist_nqueue_front
+
+stroll_slist_remove
+*******************
+
+.. doxygenfunction:: stroll_slist_remove
+
+stroll_slist_splice
+*******************
+
+.. doxygenfunction:: stroll_slist_splice
+
+stroll_slist_withdraw
+*********************
+
+.. doxygenfunction:: stroll_slist_withdraw

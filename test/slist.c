@@ -18,7 +18,7 @@
 
 CUTE_TEST(strollut_slist_empty)
 {
-	struct stroll_slist lst = STROLL_SLIST_INIT(&lst);
+	struct stroll_slist lst = STROLL_SLIST_INIT(lst);
 
 	cute_check_bool(stroll_slist_empty(&lst), is, true);
 }
@@ -50,7 +50,7 @@ CUTE_TEST(strollut_slist_init)
 
 CUTE_TEST(strollut_slist_iterate_empty)
 {
-	struct stroll_slist        lst = STROLL_SLIST_INIT(&lst);
+	struct stroll_slist        lst = STROLL_SLIST_INIT(lst);
 	struct stroll_slist_node * node;
 
 	stroll_slist_foreach_node(&lst, node)
@@ -130,7 +130,7 @@ CUTE_TEST(strollut_slist_second)
 
 CUTE_TEST(strollut_slist_append)
 {
-	struct stroll_slist        list = STROLL_SLIST_INIT(&list);
+	struct stroll_slist        list = STROLL_SLIST_INIT(list);
 	struct stroll_slist_node   nodes[8];
 	struct stroll_slist_node * node;
 	unsigned int               c;
@@ -157,7 +157,7 @@ CUTE_TEST(strollut_slist_append)
 
 CUTE_TEST(strollut_slist_append_assert)
 {
-	struct stroll_slist      list = STROLL_SLIST_INIT(&list);
+	struct stroll_slist      list = STROLL_SLIST_INIT(list);
 	struct stroll_slist_node node;
 
 	cute_expect_assertion(stroll_slist_append(NULL,
@@ -209,7 +209,7 @@ CUTE_TEST(strollut_slist_remove)
 
 CUTE_TEST(strollut_slist_remove_assert)
 {
-	struct stroll_slist      list = STROLL_SLIST_INIT(&list);
+	struct stroll_slist      list = STROLL_SLIST_INIT(list);
 	struct stroll_slist_node node;
 
 	cute_expect_assertion(stroll_slist_remove(NULL,
@@ -288,7 +288,7 @@ CUTE_TEST(strollut_slist_move)
 
 CUTE_TEST(strollut_slist_move_assert)
 {
-	struct stroll_slist      list = STROLL_SLIST_INIT(&list);
+	struct stroll_slist      list = STROLL_SLIST_INIT(list);
 	struct stroll_slist_node prev = { 0 };
 	struct stroll_slist_node node = { 0 };
 
@@ -318,7 +318,7 @@ STROLLUT_SLIST_NOASSERT(strollut_slist_remove_assert)
 
 CUTE_TEST(strollut_slist_nqueue_back)
 {
-	struct stroll_slist        list = STROLL_SLIST_INIT(&list);
+	struct stroll_slist        list = STROLL_SLIST_INIT(list);
 	struct stroll_slist_node   nodes[8];
 	struct stroll_slist_node * node;
 	unsigned int               c;
@@ -344,7 +344,7 @@ CUTE_TEST(strollut_slist_nqueue_back)
 
 CUTE_TEST(strollut_slist_nqueue_back_assert)
 {
-	struct stroll_slist      list = STROLL_SLIST_INIT(&list);
+	struct stroll_slist      list = STROLL_SLIST_INIT(list);
 	struct stroll_slist_node node;
 
 	cute_expect_assertion(stroll_slist_nqueue_back(NULL, &node));
@@ -359,7 +359,7 @@ STROLLUT_SLIST_NOASSERT(strollut_slist_append_assert)
 
 CUTE_TEST(strollut_slist_nqueue_front)
 {
-	struct stroll_slist        list = STROLL_SLIST_INIT(&list);
+	struct stroll_slist        list = STROLL_SLIST_INIT(list);
 	struct stroll_slist_node   nodes[8];
 	struct stroll_slist_node * node;
 	unsigned int               c = stroll_array_nr(nodes);
@@ -385,7 +385,7 @@ CUTE_TEST(strollut_slist_nqueue_front)
 
 CUTE_TEST(strollut_slist_nqueue_front_assert)
 {
-	struct stroll_slist      list = STROLL_SLIST_INIT(&list);
+	struct stroll_slist      list = STROLL_SLIST_INIT(list);
 	struct stroll_slist_node node;
 
 	cute_expect_assertion(stroll_slist_nqueue_front(NULL, &node));
@@ -657,7 +657,7 @@ STROLLUT_SLIST_NOASSERT(strollut_slist_embed_assert)
 
 CUTE_TEST(strollut_slist_embed_empty)
 {
-	struct stroll_slist        list = STROLL_SLIST_INIT(&list);
+	struct stroll_slist        list = STROLL_SLIST_INIT(list);
 	struct stroll_slist_node   node = STROLL_SLIST_NODE_INIT;
 	struct stroll_slist_node * n;
 	unsigned int               c;
@@ -822,7 +822,7 @@ CUTE_TEST(strollut_slist_splice_assert)
 		.head.next = &src_nodes[0],
 		.tail      = &src_nodes[2]
 	};
-	struct stroll_slist        dst = STROLL_SLIST_INIT(&dst);
+	struct stroll_slist        dst = STROLL_SLIST_INIT(dst);
 	struct stroll_slist *      lst_alias;
 	struct stroll_slist_node * node_alias;
 
@@ -892,7 +892,7 @@ CUTE_TEST(strollut_slist_splice_empty)
 		.head.next = &src_nodes[0],
 		.tail      = &src_nodes[2]
 	};
-	struct stroll_slist        dst = STROLL_SLIST_INIT(&dst);
+	struct stroll_slist        dst = STROLL_SLIST_INIT(dst);
 	struct stroll_slist_node * node;
 
 	stroll_slist_splice(&dst,

@@ -18,6 +18,12 @@ Glossary
       Sorting algorithms known to be *in-place* only require a constant amount
       of additional memory space to operate. See `Sorting algorithms`_.
 
+   linked list
+      A linear collection of data elements where each element points to the next
+      and / or the previous one. These kind of structures allow for efficient
+      insertion or removal of elements from any position in the sequence at the
+      expense of poor random access performances. See `Linked lists`_.
+
    online
       Sorting algorithms known to be *online* can sort input elements as they
       receive them, i.e. on-the-fly. See `Sorting algorithms`_.
