@@ -74,6 +74,12 @@ stroll-array-ptest-objs    := array_ptest.o
 stroll-array-ptest-cflags  := $(test-cflags)
 stroll-array-ptest-ldflags := $(ptest-ldflags) -lm
 
+checkbins                  += $(call kconf_enabled,STROLL_SLIST, \
+                                                   stroll-slist-ptest)
+stroll-slist-ptest-objs    := slist_ptest.o
+stroll-slist-ptest-cflags  := $(test-cflags)
+stroll-slist-ptest-ldflags := $(ptest-ldflags) -lm
+
 checkbins                  += stroll-heap-ptest
 stroll-heap-ptest-objs     := heap_ptest.o
 stroll-heap-ptest-cflags   := $(test-cflags)

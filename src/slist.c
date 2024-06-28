@@ -73,7 +73,7 @@ stroll_slist_splice(struct stroll_slist * __restrict      result,
 /* Implementation is always stable */
 void
 stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
-                         stroll_slist_compare_fn *        compare,
+                         stroll_slist_cmp_fn *            compare,
                          void *                           data)
 {
 	stroll_slist_assert_api(!stroll_slist_empty(list));
@@ -163,7 +163,7 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
  */
 void
 stroll_slist_select_sort(struct stroll_slist * __restrict list,
-                         stroll_slist_compare_fn *        compare,
+                         stroll_slist_cmp_fn *            compare,
                          void *                           data)
 {
 	stroll_slist_assert_api(!stroll_slist_empty(list));
@@ -223,7 +223,7 @@ static __stroll_nonull(1, 2, 3)
 void
 stroll_slist_insert_inorder(struct stroll_slist * __restrict      list,
                             struct stroll_slist_node * __restrict node,
-                            stroll_slist_compare_fn *             compare,
+                            stroll_slist_cmp_fn *                 compare,
                             void *                                data)
 {
 	stroll_slist_assert_intern(list);
@@ -268,7 +268,7 @@ stroll_slist_insert_inorder(struct stroll_slist * __restrict      list,
 
 void
 stroll_slist_insert_sort(struct stroll_slist * __restrict list,
-                         stroll_slist_compare_fn *        compare,
+                         stroll_slist_cmp_fn *            compare,
                          void *                           data)
 {
 	stroll_slist_assert_api(!stroll_slist_empty(list));
@@ -295,7 +295,7 @@ void
 stroll_slist_counted_insert_sort(struct stroll_slist * __restrict result,
                                  struct stroll_slist * __restrict source,
                                  unsigned int                     count,
-                                 stroll_slist_compare_fn *        compare,
+                                 stroll_slist_cmp_fn *            compare,
                                  void *                           data)
 {
 	stroll_slist_assert_api(stroll_slist_empty(result));
@@ -351,7 +351,7 @@ struct stroll_slist_node *
 stroll_slist_merge_sorted_subs(struct stroll_slist *      result,
                                struct stroll_slist_node * at,
                                struct stroll_slist *      source,
-                               stroll_slist_compare_fn *  compare,
+                               stroll_slist_cmp_fn *      compare,
                                void *                     data)
 {
 	stroll_slist_assert_api(!stroll_slist_empty(result));
@@ -434,7 +434,7 @@ splice:
 void
 stroll_slist_merge_presort(struct stroll_slist * __restrict result,
                            struct stroll_slist * __restrict source,
-                           stroll_slist_compare_fn *        compare,
+                           stroll_slist_cmp_fn *            compare,
                            void *                           data)
 {
 	stroll_slist_assert_api(!stroll_slist_empty(result));
@@ -469,7 +469,7 @@ void
 stroll_slist_split_merge_sort(struct stroll_slist * __restrict list,
                               unsigned int                     run_len,
                               unsigned int                     subs_nr,
-                              stroll_slist_compare_fn *        compare,
+                              stroll_slist_cmp_fn *            compare,
                               void *                           data)
 {
 	stroll_slist_assert_intern(list);
@@ -528,7 +528,7 @@ void
 stroll_slist_hybrid_merge_sort(struct stroll_slist * __restrict list,
                                unsigned int                     run_len,
                                unsigned int                     nodes_nr,
-                               stroll_slist_compare_fn *        compare,
+                               stroll_slist_cmp_fn *            compare,
                                void *                           data)
 {
 	stroll_slist_assert_api(!stroll_slist_empty(list));
@@ -548,7 +548,7 @@ stroll_slist_hybrid_merge_sort(struct stroll_slist * __restrict list,
 void
 stroll_slist_merge_sort(struct stroll_slist * __restrict list,
                       unsigned int                       nodes_nr,
-                      stroll_slist_compare_fn *          compare,
+                      stroll_slist_cmp_fn *              compare,
                       void *                             data)
 {
 	stroll_slist_assert_api(nodes_nr);

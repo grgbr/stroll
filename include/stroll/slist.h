@@ -557,7 +557,9 @@ stroll_slist_splice(struct stroll_slist *      __restrict result,
  * - stroll_slist_next()
  */
 #define stroll_slist_next_entry(_entry, _member) \
-	stroll_slist_entry(next(&(_entry)->_member), typeof(*(_entry)), _member)
+	stroll_slist_entry(stroll_slist_next(&(_entry)->_member), \
+	                   typeof(*(_entry)), \
+	                   _member)
 
 /**
  * Return type casted pointer to entry containing first node of specified
@@ -670,7 +672,7 @@ stroll_slist_splice(struct stroll_slist *      __restrict result,
  * zero if first argument is found, respectively, to be less than, to match, or
  * be greater than the second one.
  */
-typedef int (stroll_slist_compare_fn)
+typedef int (stroll_slist_cmp_fn)
             (const struct stroll_slist_node * __restrict,
              const struct stroll_slist_node * __restrict,
              void *)
@@ -709,7 +711,7 @@ typedef int (stroll_slist_compare_fn)
  */
 extern void
 stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
-                         stroll_slist_compare_fn *        compare,
+                         stroll_slist_cmp_fn *            compare,
                          void *                           data)
 	__stroll_nonull(1, 2);
 
@@ -726,7 +728,7 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
  */
 extern void
 stroll_slist_select_sort(struct stroll_slist * __restrict list,
-                         stroll_slist_compare_fn *        compare,
+                         stroll_slist_cmp_fn *            compare,
                          void *                           data)
 	__stroll_nonull(1, 2);
 
@@ -743,7 +745,7 @@ stroll_slist_select_sort(struct stroll_slist * __restrict list,
  */
 extern void
 stroll_slist_insert_sort(struct stroll_slist * __restrict list,
-                         stroll_slist_compare_fn *        compare,
+                         stroll_slist_cmp_fn *            compare,
                          void *                           data)
 	__stroll_nonull(1, 2);
 
@@ -761,7 +763,7 @@ extern void
 stroll_slist_counted_insert_sort(struct stroll_slist * __restrict result,
                                  struct stroll_slist * __restrict source,
                                  unsigned int                     count,
-                                 stroll_slist_compare_fn *        compare,
+                                 stroll_slist_cmp_fn *            compare,
                                  void *                           data)
 	__stroll_nonull(1, 2, 4);
 
@@ -782,7 +784,7 @@ stroll_slist_counted_insert_sort(struct stroll_slist * __restrict result,
 extern void
 stroll_slist_merge_presort(struct stroll_slist * __restrict result,
                            struct stroll_slist * __restrict source,
-                           stroll_slist_compare_fn *        compare,
+                           stroll_slist_cmp_fn *            compare,
                            void *                           data)
 	__stroll_nonull(1, 2, 3);
 
@@ -831,7 +833,7 @@ extern void
 stroll_slist_hybrid_merge_sort(struct stroll_slist * __restrict list,
                                unsigned int                     run_len,
                                unsigned int                     nodes_nr,
-                               stroll_slist_compare_fn *        compare,
+                               stroll_slist_cmp_fn *            compare,
                                void *                           data)
 	__stroll_nonull(1, 4);
 
@@ -854,7 +856,7 @@ stroll_slist_hybrid_merge_sort(struct stroll_slist * __restrict list,
 extern void
 stroll_slist_merge_sort(struct stroll_slist * __restrict list,
                         unsigned int                     nodes_nr,
-                        stroll_slist_compare_fn *        compare,
+                        stroll_slist_cmp_fn *            compare,
                         void *                           data)
 	__stroll_nonull(1, 3);
 

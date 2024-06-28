@@ -312,7 +312,7 @@ CUTE_TEST(strollut_slist_move_assert)
 
 #else  /* !defined(CONFIG_STROLL_ASSERT_API) */
 
-STROLLUT_SLIST_NOASSERT(strollut_slist_remove_assert)
+STROLLUT_SLIST_NOASSERT(strollut_slist_move_assert)
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
@@ -353,7 +353,7 @@ CUTE_TEST(strollut_slist_nqueue_back_assert)
 
 #else  /* !defined(CONFIG_STROLL_ASSERT_API) */
 
-STROLLUT_SLIST_NOASSERT(strollut_slist_append_assert)
+STROLLUT_SLIST_NOASSERT(strollut_slist_nqueue_back_assert)
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
@@ -394,7 +394,7 @@ CUTE_TEST(strollut_slist_nqueue_front_assert)
 
 #else  /* !defined(CONFIG_STROLL_ASSERT_API) */
 
-STROLLUT_SLIST_NOASSERT(strollut_slist_front_assert)
+STROLLUT_SLIST_NOASSERT(strollut_slist_nqueue_front_assert)
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 

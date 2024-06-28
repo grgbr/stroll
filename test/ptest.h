@@ -20,9 +20,9 @@
                 ## __VA_ARGS__)
 
 static inline int
-strollpt_compare_min(const void * __restrict a,
-                     const void * __restrict b,
-                     void *                  data __unused)
+strollpt_array_compare_min(const void * __restrict a,
+                           const void * __restrict b,
+                           void *                  data __unused)
 {
 	unsigned int _a = *(const unsigned int *)a;
 	unsigned int _b = *(const unsigned int *)b;
@@ -31,11 +31,11 @@ strollpt_compare_min(const void * __restrict a,
 }
 
 static inline int
-strollpt_compare_max(const void * __restrict a,
-                     const void * __restrict b,
-                     void *                  data __unused)
+strollpt_array_compare_max(const void * __restrict a,
+                           const void * __restrict b,
+                           void *                  data __unused)
 {
-	return 0 - strollpt_compare_min(a, b, NULL);
+	return 0 - strollpt_array_compare_min(a, b, NULL);
 }
 
 struct strollpt_stats {
@@ -63,18 +63,6 @@ strollpt_tspec2ns(const struct timespec * __restrict tspec)
 	       (unsigned long long)tspec->tv_nsec;
 }
 
-extern int
-strollpt_parse_data_size(const char * __restrict arg,
-                         size_t * __restrict     data_size);
-
-extern int
-strollpt_parse_loop_nr(const char * __restrict   arg,
-                       unsigned int * __restrict loop_nr);
-
-extern int
-strollpt_parse_sched_prio(const char * __restrict arg,
-                          int * __restrict        priority);
-
 extern int strollpt_setup_sched_prio(int priority);
 
 enum strollpt_endian {
@@ -93,18 +81,19 @@ struct strollpt_data {
 	char *               cmd;
 };
 
-extern int
-strollpt_init_data_iter(const struct strollpt_data * __restrict data);
+struct strollpt {
+	const char *         algo_name;
+	size_t               data_size;
+	unsigned int         loops_nr;
+	int                  sched_prio;
+	struct strollpt_data data_desc;
+	unsigned int *       data_elems;
+};
 
 extern int
-strollpt_step_data_iter(const struct strollpt_data * __restrict data,
-                        unsigned int * __restrict               element);
-
-extern int
-strollpt_open_data(struct strollpt_data * __restrict data,
-                   const char * __restrict           pathname);
+strollpt_init(struct strollpt * ptest, int argc, char * const argv[]);
 
 extern void
-strollpt_close_data(const struct strollpt_data * __restrict data);
+strollpt_fini(const struct strollpt * ptest);
 
 #endif /* _STROLL_PTEST_H */

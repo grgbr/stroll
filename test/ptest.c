@@ -8,11 +8,13 @@
 #include "ptest.h"
 #include "stroll/cdefs.h"
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 #include <math.h>
 #include <unistd.h>
+#include <getopt.h>
 #include <sched.h>
 #include <assert.h>
 #include <errno.h>
@@ -176,7 +178,25 @@ strollpt_tspec_sub(const struct timespec * __restrict a,
 	return res;
 }
 
-int
+static int
+strollpt_parse_algo_name(const char * __restrict  arg,
+                         const char ** __restrict algo)
+{
+	size_t len;
+
+#define STROLLPT_ALGO_NAME_MAX (128U)
+	len = strnlen(arg, STROLLPT_ALGO_NAME_MAX);
+	if (!len || (len == STROLLPT_ALGO_NAME_MAX)) {
+		strollpt_err("invalid algorithm name.\n");
+		return EXIT_FAILURE;
+	}
+
+	*algo = arg;
+
+	return EXIT_SUCCESS;
+}
+
+static int
 strollpt_parse_data_size(const char * __restrict arg,
                          size_t * __restrict     data_size)
 {
@@ -185,22 +205,24 @@ strollpt_parse_data_size(const char * __restrict arg,
 
 	char *        str;
 	unsigned long sz;
-	int           err = 0;
 
 	sz = strtoul(arg, &str, 0);
-	if (*str)
-		err = EINVAL;
-	else if (!sz || (sz > UINT_MAX))
-		err = ERANGE;
-	else if (sz % 4U)
-		err = EINVAL;
-
-	if (err) {
+	if (*str) {
 		strollpt_err("invalid data element size '%s' specified: "
-		             "%s (%d).\n",
-		             arg,
-		             strerror(err),
-		             err);
+		             "positive integer expected.\n",
+		             arg);
+		return EXIT_FAILURE;
+	}
+	else if (!sz) {
+		strollpt_err("invalid data element size '%s' specified: "
+		             "non-zero integer expected.\n",
+		             arg);
+		return EXIT_FAILURE;
+	}
+	else if (sz > UINT_MAX) {
+		strollpt_err("invalid data element size '%s' specified: "
+		             "integer <= UINT_MAX expected.\n",
+		             arg);
 		return EXIT_FAILURE;
 	}
 
@@ -209,7 +231,7 @@ strollpt_parse_data_size(const char * __restrict arg,
 	return EXIT_SUCCESS;
 }
 
-int
+static int
 strollpt_parse_loop_nr(const char * __restrict   arg,
                        unsigned int * __restrict loop_nr)
 {
@@ -240,7 +262,7 @@ strollpt_parse_loop_nr(const char * __restrict   arg,
 	return EXIT_SUCCESS;
 }
 
-int
+static int
 strollpt_parse_sched_prio(const char * __restrict arg,
                           int * __restrict        priority)
 {
@@ -293,7 +315,7 @@ strollpt_setup_sched_prio(int priority)
 	return EXIT_SUCCESS;
 }
 
-int
+static int
 strollpt_step_data_iter(const struct strollpt_data * __restrict data,
                         unsigned int * __restrict               element)
 {
@@ -325,7 +347,7 @@ strollpt_step_data_iter(const struct strollpt_data * __restrict data,
 	return -EIO;
 }
 
-int
+static int
 strollpt_init_data_iter(const struct strollpt_data * __restrict data)
 {
 	assert(data);
@@ -342,7 +364,7 @@ strollpt_init_data_iter(const struct strollpt_data * __restrict data)
 	return 0;
 }
 
-int
+static int
 strollpt_open_data(struct strollpt_data * __restrict data,
                    const char * __restrict           pathname)
 {
@@ -481,11 +503,141 @@ close:
 	return EXIT_FAILURE;
 }
 
-void
+static void
 strollpt_close_data(const struct strollpt_data * __restrict data)
 {
 	assert(data);
 
 	free(data->cmd);
 	fclose(data->file);
+}
+
+static unsigned int *
+strollpt_load_data(struct strollpt_data * __restrict data,
+                   const char * __restrict           pathname)
+{
+	unsigned int * keys;
+	unsigned int * k;
+	int            ret;
+
+	if (strollpt_open_data(data, pathname))
+		return NULL;
+
+	keys = malloc(sizeof(*k) * data->nr);
+	if (!keys)
+		goto close;
+
+	ret = strollpt_init_data_iter(data);
+	if (ret)
+		goto free;
+
+	k = keys;
+	while (true) {
+		ret = strollpt_step_data_iter(data, k);
+		if (ret)
+			break;
+
+		k++;
+	}
+
+	if (ret == -EPERM) {
+		strollpt_close_data(data);
+		return keys;
+	}
+
+free:
+	free(keys);
+close:
+	strollpt_close_data(data);
+
+	strollpt_err("failed to load data elements.\n");
+
+	return NULL;
+}
+
+static void
+strollpt_usage(FILE * __restrict stdio)
+{
+	fprintf(stdio,
+	        "Usage: %s [OPTIONS] FILE ALGORITHM SIZE LOOPS\n"
+	        "where OPTIONS:\n"
+	        "    -p|--prio  PRIORITY\n"
+	        "    -h|--help\n",
+	        program_invocation_short_name);
+}
+
+int
+strollpt_init(struct strollpt * ptest, int argc, char * const argv[])
+{
+	assert(ptest);
+	assert(argc);
+	assert(argv);
+
+	memset(ptest, 0, sizeof(*ptest));
+
+	while (true) {
+		int                        opt;
+		static const struct option lopts[] = {
+			{"help",    0, NULL, 'h'},
+			{"prio",    1, NULL, 'p'},
+			{0,         0, 0,    0}
+		};
+
+		opt = getopt_long(argc, argv, "hp:", lopts, NULL);
+		if (opt < 0)
+			/* No more options: go parsing positional arguments. */
+			break;
+
+		switch (opt) {
+		case 'p': /* priority */
+			if (strollpt_parse_sched_prio(optarg,
+			                              &ptest->sched_prio)) {
+				strollpt_usage(stderr);
+				return EXIT_FAILURE;
+			}
+
+			break;
+
+		case 'h': /* Help message. */
+			strollpt_usage(stdout);
+			exit(EXIT_SUCCESS);
+
+		case '?': /* Unknown option. */
+		default:
+			strollpt_usage(stderr);
+			return EXIT_FAILURE;
+		}
+	}
+
+	/*
+	 * Check positional arguments are properly specified on command
+	 * line.
+	 */
+	argc -= optind;
+	if (argc != 4) {
+		strollpt_err("invalid number of arguments.\n");
+		strollpt_usage(stderr);
+		return EXIT_FAILURE;
+	}
+
+	if (strollpt_parse_algo_name(argv[optind + 1], &ptest->algo_name))
+		return EXIT_FAILURE;
+
+	if (strollpt_parse_data_size(argv[optind + 2], &ptest->data_size))
+		return EXIT_FAILURE;
+
+	if (strollpt_parse_loop_nr(argv[optind + 3], &ptest->loops_nr))
+		return EXIT_FAILURE;
+
+	ptest->data_elems = strollpt_load_data(&ptest->data_desc, argv[optind]);
+	if (!ptest->data_elems)
+		return EXIT_FAILURE;
+
+	return  EXIT_SUCCESS;
+}
+
+void
+strollpt_fini(const struct strollpt * ptest)
+{
+	free(ptest->data_elems);
 }
