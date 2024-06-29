@@ -65,25 +65,23 @@ stroll-utest-pkgconf := libcute
 
 ifeq ($(CONFIG_STROLL_PTEST),y)
 
-builtins               += builtin_ptest.a
-builtin_ptest.a-objs   := ptest.o
-builtin_ptest.a-cflags := $(test-cflags)
+builtins                  += builtin_ptest.a
+builtin_ptest.a-objs      := ptest.o
+builtin_ptest.a-cflags    := $(test-cflags)
 
-checkbins                  += stroll-array-ptest
-stroll-array-ptest-objs    := array_ptest.o
-stroll-array-ptest-cflags  := $(test-cflags)
-stroll-array-ptest-ldflags := $(ptest-ldflags) -lm
+ifneq ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST)),)
 
-checkbins                  += $(call kconf_enabled,STROLL_SLIST, \
-                                                   stroll-slist-ptest)
-stroll-slist-ptest-objs    := slist_ptest.o
-stroll-slist-ptest-cflags  := $(test-cflags)
-stroll-slist-ptest-ldflags := $(ptest-ldflags) -lm
+checkbins                 += stroll-sort-ptest
+stroll-sort-ptest-objs    := sort_ptest.o
+stroll-sort-ptest-cflags  := $(test-cflags)
+stroll-sort-ptest-ldflags := $(ptest-ldflags) -lm
 
-checkbins                  += stroll-heap-ptest
-stroll-heap-ptest-objs     := heap_ptest.o
-stroll-heap-ptest-cflags   := $(test-cflags)
-stroll-heap-ptest-ldflags  := $(ptest-ldflags) -lm
+endif # ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST)),)
+
+checkbins                 += $(call kconf_enabled,STROLL_HEAP,stroll-heap-ptest)
+stroll-heap-ptest-objs    := heap_ptest.o
+stroll-heap-ptest-cflags  := $(test-cflags)
+stroll-heap-ptest-ldflags := $(ptest-ldflags) -lm
 
 define ptest_data_files_cmds
 for n in $(1); do
@@ -112,12 +110,12 @@ ptest-data-files   := $(strip $(shell $(call ptest_data_files_cmds, \
 
 ptest_data_builddir := $(BUILDDIR)/data
 
-build-check: $(BUILDDIR)/stroll-array-ptest-run.sh \
+build-check: $(BUILDDIR)/stroll-sort-ptest-run.sh \
              $(BUILDDIR)/stroll-heap-ptest-run.sh \
              $(BUILDDIR)/ptest-common.sh \
              $(addprefix $(ptest_data_builddir)/,$(ptest-data-files))
 
-$(BUILDDIR)/stroll-array-ptest-run.sh: $(SRCDIR)/array-ptest-run.sh \
+$(BUILDDIR)/stroll-sort-ptest-run.sh: $(SRCDIR)/sort-ptest-run.sh \
                                        | $(BUILDDIR)/
 	sed -e 's;@@BINDIR@@;$(BINDIR);g' \
 	    -e 's;@@DATADIR@@;$(DATADIR);g' \
@@ -171,22 +169,22 @@ clean-check: _clean-check
 
 .PHONY: _clean-check
 _clean-check:
-	$(call rm_recipe,$(BUILDDIR)/stroll-array-ptest-run.sh)
+	$(call rm_recipe,$(BUILDDIR)/stroll-sort-ptest-run.sh)
 	$(call rm_recipe,$(BUILDDIR)/stroll-heap-ptest-run.sh)
 	$(call rm_recipe,$(BUILDDIR)/ptest-common.sh)
 	$(call rmr_recipe,$(BUILDDIR)/data)
 
 install-check install-strip-check: \
 	$(DESTDIR)$(LIBEXECDIR)/stroll/ptest-common.sh \
-	$(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh \
+	$(DESTDIR)$(BINDIR)/stroll-sort-ptest-run.sh \
 	$(DESTDIR)$(BINDIR)/stroll-heap-ptest-run.sh \
 	$(addprefix $(DESTDIR)$(DATADIR)/stroll/,$(ptest-data-files))
 
-.PHONY: $(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh \
+.PHONY: $(DESTDIR)$(BINDIR)/stroll-sort-ptest-run.sh \
         $(DESTDIR)$(BINDIR)/stroll-heap-ptest-run.sh \
         $(DESTDIR)$(LIBEXECDIR)/stroll/ptest-common.sh
-$(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh: \
-	$(BUILDDIR)/stroll-array-ptest-run.sh
+$(DESTDIR)$(BINDIR)/stroll-sort-ptest-run.sh: \
+	$(BUILDDIR)/stroll-sort-ptest-run.sh
 	$(call install_recipe,--mode=755,$(<),$(@))
 $(DESTDIR)$(BINDIR)/stroll-heap-ptest-run.sh: \
 	$(BUILDDIR)/stroll-heap-ptest-run.sh
@@ -205,7 +203,7 @@ uninstall-check: _uninstall-check
 .PHONY: _uninstall-check
 _uninstall-check:
 	$(call rm_recipe,$(DESTDIR)$(LIBEXECDIR)/stroll/ptest-common.sh)
-	$(call rm_recipe,$(DESTDIR)$(BINDIR)/stroll-array-ptest-run.sh)
+	$(call rm_recipe,$(DESTDIR)$(BINDIR)/stroll-sort-ptest-run.sh)
 	$(call rm_recipe,$(DESTDIR)$(BINDIR)/stroll-heap-ptest-run.sh)
 	$(call rmr_recipe,$(DESTDIR)$(DATADIR)/stroll)
 
