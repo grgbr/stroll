@@ -110,8 +110,8 @@ def ptest_setup_log(axe: matplotlib.axes.Axes,
 
 
 def ptest_finish_plot(axe: matplotlib.axes.Axes) -> None:
-    axe.grid(which = 'major', linestyle = '-', alpha = 0.4)
-    axe.grid(which = 'minor', linestyle = '--', alpha = 0.2)
+    axe.grid(which = 'major', linestyle = '-', alpha = 0.4, visible = True)
+    axe.grid(which = 'minor', linestyle = '--', alpha = 0.2, visible = True)
     axe.legend(loc = 'upper left')
 
 
