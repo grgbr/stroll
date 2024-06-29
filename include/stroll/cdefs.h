@@ -966,9 +966,18 @@
 #define sizeof_member(_type, _member) \
 	(sizeof(((_type *)0)->_member))
 
+#define STROLL_IGNORE_WARN(_warn) \
+	_Pragma("GCC diagnostic push") \
+	_Pragma(_STROLL_STRING(GCC diagnostic ignored _warn))
+
+#define STROLL_RESTORE_WARN \
+	_Pragma("GCC diagnostic pop") \
+
 #define containerof(_ptr, _type, _member) \
 	({ \
-		((_type *)((char *)(_ptr) - offsetof(_type, _member))); \
+		STROLL_IGNORE_WARN("-Wcast-qual") \
+		((_type *)((const char *)(_ptr) - offsetof(_type, _member))); \
+		STROLL_RESTORE_WARN \
 	 })
 
 #define stroll_align_mask(_value, _align) \
