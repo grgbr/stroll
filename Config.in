@@ -14,7 +14,7 @@ config STROLL_ASSERT
 	select STROLL_PROVIDES_LIBS
 	default n
 	help
-	  Build stroll library assertion framework exposing a programmatic
+	  Build Stroll library assertion framework exposing a programmatic
 	  assertion API for use by client code. See <stroll/assert.h>.
 
 config STROLL_ASSERT_API
@@ -22,7 +22,7 @@ config STROLL_ASSERT_API
 	select STROLL_ASSERT
 	default n
 	help
-	  Build stroll library with high-level API assertions enabled to ensure
+	  Build Stroll library with high-level API assertions enabled to ensure
 	  that API functions exposed by Stroll will perform full verification of
 	  arguments consistency.
 
@@ -31,34 +31,34 @@ config STROLL_ASSERT_INTERN
 	select STROLL_ASSERT_API
 	default n
 	help
-	  Build stroll library with internal assertions enabled to check for
+	  Build Stroll library with internal assertions enabled to check for
 	  internal Stroll behavioral consistency.
 
 config STROLL_UTEST
 	bool "Unit tests"
 	default n
 	help
-	  Build stroll library unit test suite.
+	  Build Stroll library unit test suite.
 
 config STROLL_VALGRIND
 	bool "Valgrind support"
 	depends on STROLL_UTEST
 	default n
 	help
-	  Build stroll library unit test suite with Valgrind support enabled.
+	  Build Stroll library unit test suite with Valgrind support enabled.
 	  For debugging purposes only: do not use in production.
 
 config STROLL_PTEST
 	bool "Performance tests"
 	default n
 	help
-	  Build stroll library performance test suite.
+	  Build Stroll library performance test suite.
 
 config STROLL_BOPS
 	bool "Bit operations"
 	default y
 	help
-	  Build stroll library bit operations framework exposing functions to
+	  Build Stroll library bit operations framework exposing functions to
 	  perform bitwise operations upon words in memory such as:
 	  * find first bit set,
 	  * find first bit cleared,
@@ -73,7 +73,7 @@ config STROLL_POW2
 	select STROLL_BOPS
 	select STROLL_PROVIDES_LIBS
 	help
-	  Build stroll library basic power of 2 operations framework exposing
+	  Build Stroll library basic power of 2 operations framework exposing
 	  functions to find closes lower / upper power of 2 of a word.
 	  See <stroll/pow2.h>.
 
@@ -82,7 +82,7 @@ config STROLL_BMAP
 	default y
 	select STROLL_BOPS
 	help
-	  Build stroll library with bitmap framework exposing functions to
+	  Build Stroll library with bitmap framework exposing functions to
 	  perform usual operations over bitmaps stored into memory words such
 	  as:
 	  - and / or / xor operations,
@@ -98,7 +98,7 @@ config STROLL_FBMAP
 	select STROLL_BOPS
 	select STROLL_PROVIDES_LIBS
 	help
-	  Build stroll library with a bitmap framework allowing to manipulate
+	  Build Stroll library with a bitmap framework allowing to manipulate
 	  bitmaps stored into memory area of arbitrary fixed sizes.
 	  Multiple functions are exposed to perform usual operations such as:
 	  - test bit / mask / bit range,
@@ -112,7 +112,7 @@ config STROLL_LVSTR
 	select STROLL_PROVIDES_LIBS
 	default y
 	help
-	  Build stroll library with length-value string framework meant to ease
+	  Build Stroll library with length-value string framework meant to ease
 	  the life-cycle of C strings.
 	  See <stroll/lvstr.h>.
 
@@ -149,7 +149,7 @@ config STROLL_ARRAY_BISECT_SEARCH
 	select STROLL_PROVIDES_LIBS
 	default y
 	help
-	  Build stroll library with support for bisection / dichotomic search
+	  Build Stroll library with support for bisection / dichotomic search
 	  within pre-sorted arrays.
 	  See <stroll/array.h>.
 
@@ -158,7 +158,7 @@ config STROLL_ARRAY_BUBBLE_SORT
 	select STROLL_PROVIDES_LIBS
 	default n
 	help
-	  Build stroll library with support for the bubble sort algorithm over
+	  Build Stroll library with support for the bubble sort algorithm over
 	  arrays.
 	  See <stroll/array.h>.
 	  Implemented for reference only: **DO NOT USE IT**.
@@ -168,7 +168,7 @@ config STROLL_ARRAY_SELECT_SORT
 	select STROLL_PROVIDES_LIBS
 	default n
 	help
-	  Build stroll library with support for the selection sort algorithm
+	  Build Stroll library with support for the selection sort algorithm
 	  over arrays.
 	  See <stroll/array.h>.
 	  Implemented for reference only: **DO NOT USE IT**.
@@ -178,7 +178,7 @@ config STROLL_ARRAY_INSERT_SORT
 	select STROLL_PROVIDES_LIBS
 	default y
 	help
-	  Build stroll library with support for the insertion sort algorithm
+	  Build Stroll library with support for the insertion sort algorithm
 	  over arrays.
 	  See <stroll/array.h>.
 
@@ -193,7 +193,7 @@ config STROLL_ARRAY_QUICK_SORT
 	select STROLL_ARRAY_INSERT
 	default y
 	help
-	  Build stroll library with support for an optimized hybrid version of
+	  Build Stroll library with support for an optimized hybrid version of
 	  the quick sort algorithm over arrays.
 	  See <stroll/array.h>.
 
@@ -214,7 +214,7 @@ config STROLL_ARRAY_3WQUICK_SORT
 	select STROLL_ARRAY_INSERT
 	default y
 	help
-	  Build stroll library with support for an optimized hybrid version of
+	  Build Stroll library with support for an optimized hybrid version of
 	  the 3-way partition quick sort algorithm over arrays optimized for
 	  inputs containing many duplicate elements.
 	  See <stroll/array.h>.
@@ -269,7 +269,7 @@ config STROLL_ARRAY_MERGE_SORT
 	select STROLL_ARRAY_INSERT
 	default y
 	help
-	  Build stroll library with support for an optimized hybrid version of
+	  Build Stroll library with support for an optimized hybrid version of
 	  the merge sort algorithm over arrays.
 	  See <stroll/array.h>.
 
@@ -331,14 +331,16 @@ config STROLL_SLIST
 	bool "Singly linked list"
 	default y
 	help
-	  Document me!
+	  Build Stroll library with support for singly linked lists where
+	  each node contains a single reference to the next one in the sequence.
+	  See <stroll/slist.h>.
 
 config STROLL_SLIST_BUBBLE_SORT
 	bool "Bubble sort"
 	depends on STROLL_SLIST
 	default n
 	help
-	  Build stroll library with support for the bubble sort algorithm over
+	  Build Stroll library with support for the bubble sort algorithm over
 	  singly linked lists.
 	  See <stroll/slist.h>.
 	  Implemented for reference only: **DO NOT USE IT**.
@@ -348,27 +350,36 @@ config STROLL_SLIST_SELECT_SORT
 	depends on STROLL_SLIST
 	default n
 	help
-	  Build stroll library with support for the selection sort algorithm
+	  Build Stroll library with support for the selection sort algorithm
 	  over singly linked lists.
 	  See <stroll/slist.h>.
 	  Implemented for reference only: **DO NOT USE IT**.
 
+config STROLL_SLIST_INSERT_SORT_UTILS
+	bool
+	depends on STROLL_SLIST
+	default n
+	help
+	  Build Stroll library with support for internal utilities to sort
+	  singly linked list according to the insertion sort scheme.
+
 config STROLL_SLIST_INSERT_SORT
 	bool "Insertion sort"
 	depends on STROLL_SLIST
+	select STROLL_SLIST_INSERT_SORT_UTILS
 	default y
 	help
-	  Build stroll library with support for the insertion sort algorithm
+	  Build Stroll library with support for the insertion sort algorithm
 	  over singly linked list.
 	  See <stroll/slist.h>.
 
 config STROLL_SLIST_MERGE_SORT
 	bool "Merge sort"
 	depends on STROLL_SLIST
-	select STROLL_SLIST_INSERT_SORT
+	select STROLL_SLIST_INSERT_SORT_UTILS
 	default y
 	help
-	  Build stroll library with support for an optimized hybrid version of
+	  Build Stroll library with support for an optimized hybrid version of
 	  the merge sort algorithm over singly linked lists.
 	  See <stroll/slist.h>.
 

@@ -101,7 +101,7 @@ stroll_array_bisect_search(const void *          key,
  * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
- * comparison function according to the @rstlnk{Bubble sort} algorithm.
+ * comparison function according to the @rstlnk{Array bubble sort} algorithm.
  *
  * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
@@ -145,7 +145,7 @@ stroll_array_bubble_sort(void * __restrict     array,
  * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
- * comparison function according to the @rstlnk{Selection sort} algorithm.
+ * comparison function according to the @rstlnk{Array selection sort} algorithm.
  *
  * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
@@ -188,7 +188,7 @@ stroll_array_select_sort(void * __restrict     array,
  * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
- * comparison function according to the @rstlnk{Insertion sort} algorithm.
+ * comparison function according to the @rstlnk{Array insertion sort} algorithm.
  *
  * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
@@ -230,7 +230,7 @@ stroll_array_insert_sort(void * __restrict     array,
  *
  * @p array should contain elements of size @p size, *pre-sorted* with respect
  * to the @p compare comparison function. Sorting is performed according to the
- * @rstlnk{Insertion sort} algorithm.
+ * @rstlnk{Array insertion sort} algorithm.
  *
  * @p elem *MUST* point to the first unsorted and last element of @p array.
  *
@@ -281,7 +281,7 @@ stroll_array_insert_inpsort_elem(void * __restrict     array,
  *
  * @p array should contain elements of size @p size, *pre-sorted* with respect
  * to the @p compare comparison function. Sorting is performed according to the
- * @rstlnk{Insertion sort} algorithm.
+ * @rstlnk{Array insertion sort} algorithm.
  *
  * @p end *MUST* point to the end of @p array, i.e. to the first unused element
  * location of @p array.
@@ -341,7 +341,7 @@ stroll_array_insert_oopsort_elem(void * __restrict       array,
  * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
- * comparison function according to the @rstlnk{Quick sort} algorithm.
+ * comparison function according to the @rstlnk{Array quick sort} algorithm.
  *
  * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
@@ -382,7 +382,8 @@ stroll_array_quick_sort(void * __restrict     array,
  * @param[inout] data    Optional arbitrary user data
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
- * comparison function according to the @rstlnk{Quick sort} algorithm.
+ * comparison function according to the @rstlnk{Array 3-way quick sort}
+ * algorithm.
  *
  * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.
@@ -427,7 +428,7 @@ stroll_array_3wquick_sort(void * __restrict     array,
  * @retval -ENOMEM Memory allocation failure
  *
  * Sort @p array containing @p nr elements of size @p size using the @p compare
- * comparison function according to the @rstlnk{Merge sort} algorithm.
+ * comparison function according to the @rstlnk{Array merge sort} algorithm.
  *
  * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p array elements.

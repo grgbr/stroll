@@ -502,48 +502,48 @@ The table below presents available implementations with their related
 :term:`sorting properties` to help you to select the right algorithm according
 to your applicative requirements.
 
-.. table:: Sorting algorithm properties
+.. table:: Array sorting algorithm properties
 
-    +------------------------+-----------------------------------------------------------------------------------------------------------------------+
-    |                        | Algorithms                                                                                                            |
-    | Properties             +------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    |                        | `Merge                 | `Quick              | `3-way quick        | `Insertion     | `Selection     | `Bubble        |
-    |                        | sort`_                 | sort`_              | sort`_              | sort`_         | sort`_         | sort`_         |
-    +========================+========================+=====================+=====================+================+================+================+
-    | |adaptive|             | no                     | duplicate /         | no                  | yes            | no             | yes            |
-    |                        |                        | in-order inputs     |                     |                |                |                |
-    +------------------------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    | |online|               | no                     | no                  | no                  | yes            | no             | no             |
-    +------------------------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    | |stable|               | yes                    | no                  | no                  | yes            | no             | yes            |
-    +------------------------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    | |recursive|            | yes                    | yes                 | yes                 | no             | no             | no             |
-    +------------------------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    | |in-place|             | no                     | yes                 | yes                 | yes            | yes            | yes            |
-    +------------------------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    | **allocation**         | on stack & heap        | on stack            | on stack            | none           | none           | none           |
-    +--------------+---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    |              | worst   | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    |              +---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    | **space**    | average | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    | |complexity| +---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    |              | best    | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(log(n))`   | :math:`O(1)`   | :math:`O(1)`   | :math:`O(1)`   |
-    +--------------+---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    |              | worst   | :math:`O(n log(n))`    | :math:`O(n^2)`      | :math:`O(n^2)`      | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
-    |              +---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    | **time**     | average | :math:`O(n log(n))`    | :math:`O(n log(n))` | :math:`O(n log(n))` | :math:`O(n^2)` | :math:`O(n^2)` | :math:`O(n^2)` |
-    | |complexity| +---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
-    |              | best    | :math:`O(n log(n))`    | :math:`O(n log(n))` | :math:`O(n log(n))` | :math:`O(n)`   | :math:`O(n^2)` | :math:`O(n)`   |
-    +--------------+---------+------------------------+---------------------+---------------------+----------------+----------------+----------------+
+    +------------------------+---------------------------------------------------------------------------------------------------------------------------+
+    |                        | Algorithms                                                                                                                |
+    | Properties             +------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    |                        | `Array merge           | `Array quick        | `Array 3-way quick  | `Array insertion | `Array selection | `Array bubble  |
+    |                        | sort`_                 | sort`_              | sort`_              | sort`_           | sort`_           | sort`_         |
+    +========================+========================+=====================+=====================+==================+==================+================+
+    | |adaptive|             | no                     | duplicate /         | no                  | yes              | no               | yes            |
+    |                        |                        | in-order inputs     |                     |                  |                  |                |
+    +------------------------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    | |online|               | no                     | no                  | no                  | yes              | no               | no             |
+    +------------------------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    | |stable|               | yes                    | no                  | no                  | yes              | no               | yes            |
+    +------------------------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    | |recursive|            | yes                    | yes                 | yes                 | no               | no               | no             |
+    +------------------------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    | |in-place|             | no                     | yes                 | yes                 | yes              | yes              | yes            |
+    +------------------------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    | **allocation**         | on stack & heap        | on stack            | on stack            | none             | none             | none           |
+    +--------------+---------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    |              | worst   | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(log(n))`   | :math:`O(1)`     | :math:`O(1)`     | :math:`O(1)`   |
+    |              +---------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    | **space**    | average | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(log(n))`   | :math:`O(1)`     | :math:`O(1)`     | :math:`O(1)`   |
+    | |complexity| +---------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    |              | best    | :math:`O(\frac{n}{2})` | :math:`O(log(n))`   | :math:`O(log(n))`   | :math:`O(1)`     | :math:`O(1)`     | :math:`O(1)`   |
+    +--------------+---------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    |              | worst   | :math:`O(n log(n))`    | :math:`O(n^2)`      | :math:`O(n^2)`      | :math:`O(n^2)`   | :math:`O(n^2)`   | :math:`O(n^2)` |
+    |              +---------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    | **time**     | average | :math:`O(n log(n))`    | :math:`O(n log(n))` | :math:`O(n log(n))` | :math:`O(n^2)`   | :math:`O(n^2)`   | :math:`O(n^2)` |
+    | |complexity| +---------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
+    |              | best    | :math:`O(n log(n))`    | :math:`O(n log(n))` | :math:`O(n log(n))` | :math:`O(n)`     | :math:`O(n^2)`   | :math:`O(n)`   |
+    +--------------+---------+------------------------+---------------------+---------------------+------------------+------------------+----------------+
 
-.. index:: merge, merge sort
+.. index:: sort;array merge sort, merge sort;array, array;merge sort
 
-Merge sort
-**********
+Array merge sort
+****************
 
 When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT` build
 configuration option enabled, the Stroll_ library provides support for
-`Merge sort`_ algorithm thanks to :c:func:`stroll_array_merge_sort`.
+`merge`_ sort algorithm thanks to :c:func:`stroll_array_merge_sort`.
 
 Algorithm is implemented according to a top-down recursive implementation that
 shows better runtime performances than its iterative bottom-up counterpart. It
@@ -554,16 +554,17 @@ includes the following usual optimizations:
 * partially bypass merging operation when input is already in (reverse-)order
   (see :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_FULL_RUNS` and 
   :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_RUNS_BYBLOCK`) ;
-* switch to `Insertion sort`_ when the number of partition elements is less than
-  :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD` to limit recursion
-  depth.
+* switch to `array insertion sort`_ when the number of partition elements is
+  less than :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD` to limit
+  recursion depth.
 
-You may customize `merge sort`_ switch to `insertion sort`_ at Stroll_ building
-time thanks to the :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD`
-build configuration macro.
+You may customize `array merge sort`_ switch to `array insertion sort`_ at
+Stroll_ building time thanks to the
+:c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_INSERT_THRESHOLD` build configuration
+macro.
 For each partition, when the number of elements left to sort is below this
-threshold, `merge sort`_ will switch to `insertion sort`_ to minimize the number
-of element swap operations and recursion depth.
+threshold, `array merge sort`_ will switch to `array insertion sort`_ to
+minimize the number of element swap operations and recursion depth.
 
 The :c:macro:`CONFIG_STROLL_ARRAY_MERGE_SORT_FULL_RUNS` build configuration
 macro may be enabled to give merge sort the ability to detect fully ordered
@@ -589,10 +590,12 @@ ordered data sets.
    * refer to `Sorting arrays`_ for more informations related to algorithm
      selection.
 
-.. index:: sort, quick sort
+.. index:: sort;array quick sort,
+           quick sort;array,
+           array;quick sort
 
-Quick sort
-**********
+Array quick sort
+****************
 
 When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT` build
 configuration option enabled, the Stroll_ library provides support for
@@ -608,30 +611,34 @@ the following usual optimizations:
   :math:`O(n^2)` degradation for already sorted inputs ;
 * when the number of partition elements is less than
   :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD`, stop recursion and
-  run a final `insertion sort`_ pass.
+  run a final `array insertion sort`_ pass.
 
-You may customize `quick sort`_ switch to `insertion sort`_ at Stroll_ building
-time thanks to the :c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD`
-build configuration macro.
+You may customize `array quick sort`_ switch to `array insertion sort`_ at
+Stroll_ building time thanks to the
+:c:macro:`CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD` build configuration
+macro.
 For each partition, when the number of elements left to sort is below this
-threshold, `quick sort`_ will switch to `insertion sort`_ to minimize the number
-of element swap operations and recursion depth.
+threshold, `array quick sort`_ will switch to `array insertion sort`_ to
+minimize the number of element swap operations and recursion depth.
 
 .. note::
 
    * efficient, general-purpose sorting algorithm ;
    * not |stable| but |in-place| ;
    * exhibits poor performance for inputs containing small number of distinct
-     keys (prefer `3-way quick sort`_ instead) ;
-   * most of the time, exhibits slightly worse performances than `merge sort`_,
-     especially for (reverse-)ordered inputs and/or larger data sets ;
+     keys (prefer `array 3-way quick sort`_ instead) ;
+   * most of the time, exhibits slightly worse performances than
+     `array merge sort`_, especially for (reverse-)ordered inputs and/or larger
+     data sets ;
    * refer to `Sorting arrays`_ for more informations related to algorithm
      selection.
 
-.. index:: sort, 3-way quick sort, quick sort
+.. index:: sort;array 3-way quick sort,
+           3-way quick sort;array,
+           array;3-way quick sort
 
-3-way quick sort
-****************
+Array 3-way quick sort
+**********************
 
 When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT` build
 configuration option enabled, the Stroll_ library provides support for
@@ -646,7 +653,7 @@ the following usual optimizations:
   :math:`O(n^2)` degradation for already sorted inputs ;
 * when the number of partition elements is less than
   :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD`, stop recursion
-  and run a final `insertion sort`_ pass.
+  and run a final `array insertion sort`_ pass.
 
 Elements are partitioned into 3 sub-arrays according to one of the following
 scheme that can be configured at building time:
@@ -659,28 +666,30 @@ scheme that can be configured at building time:
 `Dijkstra`_'s scheme is implemented for *reference only*. Use
 `Bentley-McIlroy`_'s scheme instead unless you really know what you are doing.
 
-You may customize `3-way quick sort`_ switch to `insertion sort`_ at Stroll_
-building time thanks to the
+You may customize `array 3-way quick sort`_ switch to `array insertion sort`_ at
+Stroll_ building time thanks to the
 :c:macro:`CONFIG_STROLL_ARRAY_3WQUICK_SORT_INSERT_THRESHOLD` build configuration
 macro.
 For each partition, when the number of elements left to sort is below this
-threshold, `3-way quick sort`_ will switch to `insertion sort`_ to minimize the
-number of element swap operations and recursion depth.
+threshold, `array 3-way quick sort`_ will switch to `array insertion sort`_ to
+minimize the number of element swap operations and recursion depth.
 
 .. note::
 
    * general-purpose sorting algorithm efficient for inputs containing **many**
      duplicates;
    * not |stable| but |in-place| ;
-   * exhibits worse performance than standard `Quick sort`_ for inputs
+   * exhibits worse performance than standard `array quick sort`_ for inputs
      containing moderate to high number of distinct key values ;
    * refer to `Sorting arrays`_ for more informations related to algorithm
      selection.
 
-.. index:: sort, insertion sort
+.. index:: sort;array insertion sort,
+           insertion sort;array,
+           array;insertion sort
 
-Insertion sort
-**************
+Array insertion sort
+********************
 
 When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_INSERT_SORT` build
 configuration option enabled, the Stroll_ library provides support for
@@ -703,10 +712,12 @@ sorting a *continuous stream of input elements*. These are:
    * refer to `Sorting arrays`_ for more informations related to algorithm
      selection.
 
-.. index:: sort, selection sort
+.. index:: sort;array selection sort,
+           selection sort;array,
+           array;selection sort
 
-Selection sort
-**************
+Array selection sort
+********************
 
 When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_SELECT_SORT` build
 configuration option enabled, the Stroll_ library provides support for
@@ -721,10 +732,12 @@ configuration option enabled, the Stroll_ library provides support for
    Implemented for reference only: **DO NOT USE IT**. Refer to
    `Sorting arrays`_ for more informations related to algorithm selection.
 
-.. index:: sort, bubble sort
+.. index:: sort;array bubble sort,
+           bubble sort;array,
+           array;bubble sort
 
-Bubble sort
-***********
+Array bubble sort
+*****************
 
 When compiled with the :c:macro:`CONFIG_STROLL_ARRAY_BUBBLE_SORT` build
 configuration option enabled, the Stroll_ library provides support for
@@ -810,12 +823,141 @@ Document me!
 Sorting lists
 -------------
 
-Bubble sort
-***********
+The Stroll_ library provides support for sorting :term:`linked lists` thanks to
+multiple algorithms.
+
+The table below presents available implementations with their related
+:term:`sorting properties` to help you to select the right algorithm according
+to your applicative requirements.
+
+.. table:: Linked list sorting algorithm properties
+
+    +------------------------+-------------------------------------------------------------------------------+
+    |                        | Algorithms                                                                    |
+    | Properties             +------------------------+------------------+------------------+----------------+
+    |                        | `List merge            | `List insertion  | `List selection  | `List bubble   |
+    |                        | sort`_                 | sort`_           | sort`_           | sort`_         |
+    +========================+========================+==================+==================+================+
+    | |adaptive|             | sort of                | yes              | no               | yes            |
+    |                        |                        |                  |                  |                |
+    +------------------------+------------------------+------------------+------------------+----------------+
+    | |online|               | no                     | yes              | no               | no             |
+    +------------------------+------------------------+------------------+------------------+----------------+
+    | |stable|               | yes                    | yes              | yes              | yes            |
+    +------------------------+------------------------+------------------+------------------+----------------+
+    | |recursive|            | no                     | no               | no               | no             |
+    +------------------------+------------------------+------------------+------------------+----------------+
+    | |in-place|             | no                     | yes              | yes              | yes            |
+    +------------------------+------------------------+------------------+------------------+----------------+
+    | **allocation**         | on stack               | none             | none             | none           |
+    +--------------+---------+------------------------+------------------+------------------+----------------+
+    |              | worst   | :math:`O(log(n))`      | :math:`O(1)`     | :math:`O(1)`     | :math:`O(1)`   |
+    |              +---------+------------------------+------------------+------------------+----------------+
+    | **space**    | average | :math:`O(log(n))`      | :math:`O(1)`     | :math:`O(1)`     | :math:`O(1)`   |
+    | |complexity| +---------+------------------------+------------------+------------------+----------------+
+    |              | best    | :math:`O(log(n))`      | :math:`O(1)`     | :math:`O(1)`     | :math:`O(1)`   |
+    +--------------+---------+------------------------+------------------+------------------+----------------+
+    |              | worst   | :math:`O(1)`           | :math:`O(n^2)`   | :math:`O(n^2)`   | :math:`O(n^2)` |
+    |              +---------+------------------------+------------------+------------------+----------------+
+    | **time**     | average | :math:`O(n log(n))`    | :math:`O(n^2)`   | :math:`O(n^2)`   | :math:`O(n^2)` |
+    | |complexity| +---------+------------------------+------------------+------------------+----------------+
+    |              | best    | :math:`O(n)`           | :math:`O(n)`     | :math:`O(n^2)`   | :math:`O(n)`   |
+    +--------------+---------+------------------------+------------------+------------------+----------------+
+
+.. index:: sort;list merge sort,
+           merge sort;list,
+           list;merge sort
+
+List merge sort
+***************
+
+When compiled with the :c:macro:`CONFIG_STROLL_SLIST_MERGE_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`Merge`_ sort algorithm over :term:`linked lists` thanks to:
+
+* :c:func:`stroll_slist_merge_presort`,
+* :c:func:`stroll_slist_merge_sort`
+
+Algorithm is implemented according to an iterative bottom-up implementation
+based upon an original idea attributed to Jon McCarthy and described
+`here <http://richardhartersworld.com/cri/2007/schoen.html>`_.
+
+The approach tries to avoid excessive scanning of the lists during sublist
+splitting phases by using an additional :math:`O(log(n))` bounded auxiliary
+space to store sublist heads.
+
+The algorithm starts by using the `merge`_ sort’s divide and conquer strategy.
+To limit the number of merging passes, it switches to `list insertion sort`_
+when the number of keys to be sorted is lower than a calculated threshold.
+The latter is automatically computed according to an heuristic implemented
+in :c:func:`stroll_slist_merge_sort()` according to the following tradeoffs:
+
+* the lower the value, the better the worst case in terms of computational
+  complexity and the larger the used stack space ;
+* the greater the value, the better the best case in terms of computational
+  complexity and the lower the used stack space.
+
+.. note::
+
+   * efficient, general-purpose sorting algorithm ;
+   * is |stable| but not |in-place| ;
+   * exhibits much better performances than `list insertion sort`_, except for
+     very small data sets ;
+   * refer to `Sorting lists`_ for more informations related to algorithm
+     selection.
+
+.. index:: sort;list insertion sort,
+           insertion sort;list,
+           list;insertion sort
+
+List insertion sort
+*******************
+
+When compiled with the :c:macro:`CONFIG_STROLL_SLIST_INSERT_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`Insertion`_ sort algorithm over :term:`linked lists` thanks to
+:c:func:`stroll_slist_insert_sort`.
+
+.. note::
+
+   * simple implementation ;
+   * limited number of items swaps ;
+   * very efficient on small and pre-sorted data sets ;
+   * poor efficiency over large data sets ;
+   * refer to `Sorting lists`_ for more informations related to algorithm
+     selection.
+
+.. index:: sort;list selection sort,
+           selection sort;list,
+           list;selection sort
+
+List selection sort
+*******************
+
+When compiled with the :c:macro:`CONFIG_STROLL_SLIST_SELECT_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`Selection`_ sort algorithm over :term:`linked lists` thanks to
+:c:func:`stroll_slist_select_sort`.
+
+.. note::
+
+   * poor to extremely low efficiency even over small data sets.
+
+.. warning::
+
+   Implemented for reference only: **DO NOT USE IT**. Refer to
+   `Sorting lists`_ for more informations related to algorithm selection.
+
+.. index:: sort;list bubble sort,
+           bubble sort;list,
+           list;bubble sort
+
+List bubble sort
+****************
 
 When compiled with the :c:macro:`CONFIG_STROLL_SLIST_BUBBLE_SORT` build
 configuration option enabled, the Stroll_ library provides support for
-`Bubble`_ sort algorithm over :term:`linked lists` thanks to the
+`Bubble`_ sort algorithm over :term:`linked lists` thanks to
 :c:func:`stroll_slist_bubble_sort`.
 
 .. note::
@@ -2278,10 +2420,25 @@ stroll_slist_init
 
 .. doxygenfunction:: stroll_slist_init
 
+stroll_slist_insert_sort
+************************
+
+.. doxygenfunction:: stroll_slist_insert_sort
+
 stroll_slist_last
 *****************
 
 .. doxygenfunction:: stroll_slist_last
+
+stroll_slist_merge_sort
+***********************
+
+.. doxygenfunction:: stroll_slist_merge_sort
+
+stroll_slist_merge_presort
+**************************
+
+.. doxygenfunction:: stroll_slist_merge_presort
 
 stroll_slist_move
 *****************
@@ -2307,6 +2464,11 @@ stroll_slist_remove
 *******************
 
 .. doxygenfunction:: stroll_slist_remove
+
+stroll_slist_select_sort
+************************
+
+.. doxygenfunction:: stroll_slist_select_sort
 
 stroll_slist_splice
 *******************

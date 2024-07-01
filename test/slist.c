@@ -210,7 +210,7 @@ CUTE_TEST(strollut_slist_remove)
 CUTE_TEST(strollut_slist_remove_assert)
 {
 	struct stroll_slist      list = STROLL_SLIST_INIT(list);
-	struct stroll_slist_node node;
+	struct stroll_slist_node node = STROLL_SLIST_NODE_INIT;
 
 	cute_expect_assertion(stroll_slist_remove(NULL,
 	                                          stroll_slist_head(&list),

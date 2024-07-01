@@ -9,6 +9,7 @@
 .. _bubble:             https://en.wikipedia.org/wiki/Bubble_sort
 .. _insertion:          https://en.wikipedia.org/wiki/Insertion_sort
 .. _selection:          https://en.wikipedia.org/wiki/Selection_sort
+.. _merge:              https://en.wikipedia.org/wiki/Merge_sort
 .. _quick:              https://en.wikipedia.org/wiki/Quicksort
 .. _3-way quick:        https://algs4.cs.princeton.edu/lectures/demo/23DemoPartitioning.pdf
 .. _hoare:              https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme

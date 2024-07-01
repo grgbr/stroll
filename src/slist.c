@@ -210,7 +210,7 @@ stroll_slist_select_sort(struct stroll_slist * __restrict list,
  * Singly linked list insertion sorting
  ******************************************************************************/
 
-#if defined(CONFIG_STROLL_SLIST_INSERT_SORT)
+#if defined(CONFIG_STROLL_SLIST_INSERT_SORT_UTILS)
 
 /*
  * Insert node into stroll_slist in order.
@@ -266,6 +266,10 @@ stroll_slist_insert_inorder(struct stroll_slist * __restrict      list,
 	stroll_slist_append(list, prev, node);
 }
 
+#endif /* defined(CONFIG_STROLL_SLIST_INSERT_SORT_UTILS) */
+
+#if defined(CONFIG_STROLL_SLIST_INSERT_SORT)
+
 void
 stroll_slist_insert_sort(struct stroll_slist * __restrict list,
                          stroll_slist_cmp_fn *            compare,
@@ -291,16 +295,38 @@ stroll_slist_insert_sort(struct stroll_slist * __restrict list,
 	}
 }
 
-void
+#endif /* defined(CONFIG_STROLL_SLIST_INSERT_SORT) */
+
+/******************************************************************************
+ * Singly linked list hybrid merge sorting
+ ******************************************************************************/
+
+#if defined(CONFIG_STROLL_SLIST_MERGE_SORT)
+
+/*
+ * Sort a specified number of nodes from a stroll_slist according to the
+ * insertion sort scheme and move sorted nodes into a result stroll_slist.
+ *
+ * @param[inout] result  Result stroll_slist where sorted nodes are moved.
+ * @param[inout] source  Source stroll_slist to sort.
+ * @param[in]    count   Maximum number of source nodes to sort.
+ * @param[in]    compare stroll_list nodes comparison function.
+ * @param[inout] data    Optional arbitrary user data.
+ *
+ * @warning
+ * - Behavior is undefined when called on a non empty @p result stroll_slist.
+ * - Behavior is undefined when called on an empty @p source stroll_slist.
+ */
+static void __stroll_nonull(1, 2, 4)
 stroll_slist_counted_insert_sort(struct stroll_slist * __restrict result,
                                  struct stroll_slist * __restrict source,
                                  unsigned int                     count,
                                  stroll_slist_cmp_fn *            compare,
                                  void *                           data)
 {
-	stroll_slist_assert_api(stroll_slist_empty(result));
-	stroll_slist_assert_api(!stroll_slist_empty(source));
-	stroll_slist_assert_api(compare);
+	stroll_slist_assert_intern(stroll_slist_empty(result));
+	stroll_slist_assert_intern(!stroll_slist_empty(source));
+	stroll_slist_assert_intern(compare);
 
 	struct stroll_slist_node * prev = stroll_slist_first(source);
 	struct stroll_slist_node * curr = stroll_slist_next(prev);
@@ -328,21 +354,14 @@ stroll_slist_counted_insert_sort(struct stroll_slist * __restrict result,
 	                    prev);
 }
 
-#endif /* defined(CONFIG_STROLL_SLIST_INSERT_SORT) */
-
-/******************************************************************************
- * Singly linked list hybrid merge sorting
- ******************************************************************************/
-
-#if defined(CONFIG_STROLL_SLIST_MERGE_SORT)
-
 /*
  * Merge 2 sorted (sub)lists segments.
  *
- * @param result  stroll_slist within which both stroll_slist will be sorted into.
- * @param at      First node of result's segment.
- * @param source  Source stroll_slist to sort within result.
- * @param compare comparison function used to perform in order insertion
+ * @param[inout] result  stroll_slist within which both stroll_slist will be
+ *                       sorted into.
+ * @param[inout] at      First node of result's segment.
+ * @param[inout] source  Source stroll_slist to sort within result.
+ * @param[in]    compare comparison function used to perform in order merge.
  *
  * @return Last sorted node merged into result.
  */
@@ -354,9 +373,9 @@ stroll_slist_merge_sorted_subs(struct stroll_slist *      result,
                                stroll_slist_cmp_fn *      compare,
                                void *                     data)
 {
-	stroll_slist_assert_api(!stroll_slist_empty(result));
-	stroll_slist_assert_api(at);
-	stroll_slist_assert_api(!stroll_slist_empty(source));
+	stroll_slist_assert_intern(!stroll_slist_empty(result));
+	stroll_slist_assert_intern(at);
+	stroll_slist_assert_intern(!stroll_slist_empty(source));
 
 	struct stroll_slist_node * res_cur = at;
 	struct stroll_slist_node * res_nxt = at;
@@ -458,7 +477,7 @@ stroll_slist_merge_presort(struct stroll_slist * __restrict result,
  * @param list    stroll_slist to sort.
  * @param run_len Primary sorting run length in number of nodes.
  * @param subs_nr Logarithm base 2 of number of merging pass.
- * @param compare Comparison function used to perform in order insertion.
+ * @param compare Comparison function used to perform in order merge.
  *
  * @note
  * Merge sorting sublists are allocated onto stack since implementation needs
@@ -524,17 +543,17 @@ stroll_slist_split_merge_sort(struct stroll_slist * __restrict list,
 			                           data);
 }
 
-void
+static void __stroll_nonull(1, 4)
 stroll_slist_hybrid_merge_sort(struct stroll_slist * __restrict list,
                                unsigned int                     run_len,
                                unsigned int                     nodes_nr,
                                stroll_slist_cmp_fn *            compare,
                                void *                           data)
 {
-	stroll_slist_assert_api(!stroll_slist_empty(list));
-	stroll_slist_assert_api(run_len);
-	stroll_slist_assert_api(nodes_nr);
-	stroll_slist_assert_api(compare);
+	stroll_slist_assert_intern(!stroll_slist_empty(list));
+	stroll_slist_assert_intern(run_len);
+	stroll_slist_assert_intern(nodes_nr);
+	stroll_slist_assert_intern(compare);
 
 	/* Perform the real merge sort. */
 	stroll_slist_split_merge_sort(
@@ -547,9 +566,9 @@ stroll_slist_hybrid_merge_sort(struct stroll_slist * __restrict list,
 
 void
 stroll_slist_merge_sort(struct stroll_slist * __restrict list,
-                      unsigned int                       nodes_nr,
-                      stroll_slist_cmp_fn *              compare,
-                      void *                             data)
+                        unsigned int                     nodes_nr,
+                        stroll_slist_cmp_fn *            compare,
+                        void *                           data)
 {
 	stroll_slist_assert_api(nodes_nr);
 

@@ -594,42 +594,6 @@ struct stroll_array_quick {
 		return *mid; \
 	}
 
-#define STROLL_ARRAY_DEFINE_QUICK_HOARE_PART(_part_func, \
-                                             _med_func, \
-                                             _swap_func, \
-                                             _type) \
-	static __stroll_nonull(1, 2, 3) \
-	_type * \
-	_part_func(const struct stroll_array_quick * __restrict parms, \
-	           _type *                                      array, \
-	           _type *                                      last) \
-	{ \
-		stroll_array_assert_intern(parms); \
-		stroll_array_assert_intern(array); \
-		stroll_array_assert_intern(last > array); \
-		\
-		_type pivot = _med_func(parms, array, last); \
-		\
-		while (true) { \
-			do { \
-				array++; \
-			} while (parms->compare(&pivot, \
-			                        array, \
-			                        parms->data) > 0); \
-			\
-			do { \
-				last--; \
-			} while (parms->compare(last, \
-			                        &pivot, \
-			                        parms->data) > 0); \
-			\
-			if (array >= last) \
-				return last; \
-			\
-			_swap_func(array, last); \
-		} \
-	}
-
 #define STROLL_ARRAY_DEFINE_QUICK_SORT(_sort_func, \
                                        _recsort_func, \
                                        _insert_func, \
@@ -660,18 +624,10 @@ struct stroll_array_quick {
 STROLL_ARRAY_DEFINE_QUICK_MED(stroll_array_quick_med32,
                               stroll_array_swap32,
                               uint32_t)
-STROLL_ARRAY_DEFINE_QUICK_HOARE_PART(stroll_array_quick_hoare_part32,
-                                     stroll_array_quick_med32,
-                                     stroll_array_swap32,
-                                     uint32_t)
 
 STROLL_ARRAY_DEFINE_QUICK_MED(stroll_array_quick_med64,
                               stroll_array_swap64,
                               uint64_t)
-STROLL_ARRAY_DEFINE_QUICK_HOARE_PART(stroll_array_quick_hoare_part64,
-                                     stroll_array_quick_med64,
-                                     stroll_array_swap64,
-                                     uint64_t)
 
 /*
  * Select pivot for the [array:last] array according to the median-of-three
@@ -716,6 +672,104 @@ stroll_array_quick_med_mem(
 
 	memcpy(pivot, mid, sz);
 }
+
+#endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT_UTILS) */
+
+#if defined(CONFIG_STROLL_ARRAY_QUICK_SORT)
+
+#if CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD < 2
+#error Invalid Quicksort insertion threshold !
+#endif /* CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD < 2 */
+
+#define STROLL_QSORT_INSERT_THRESHOLD \
+	STROLL_CONCAT(CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD, U)
+
+#define STROLL_ARRAY_DEFINE_QUICK_HOARE_PART(_part_func, \
+                                             _med_func, \
+                                             _swap_func, \
+                                             _type) \
+	static __stroll_nonull(1, 2, 3) \
+	_type * \
+	_part_func(const struct stroll_array_quick * __restrict parms, \
+	           _type *                                      array, \
+	           _type *                                      last) \
+	{ \
+		stroll_array_assert_intern(parms); \
+		stroll_array_assert_intern(array); \
+		stroll_array_assert_intern(last > array); \
+		\
+		_type pivot = _med_func(parms, array, last); \
+		\
+		while (true) { \
+			do { \
+				array++; \
+			} while (parms->compare(&pivot, \
+			                        array, \
+			                        parms->data) > 0); \
+			\
+			do { \
+				last--; \
+			} while (parms->compare(last, \
+			                        &pivot, \
+			                        parms->data) > 0); \
+			\
+			if (array >= last) \
+				return last; \
+			\
+			_swap_func(array, last); \
+		} \
+	}
+
+#define STROLL_ARRAY_QUICK_RECSORT(_recsort_func, _part_func, _type) \
+	static __stroll_nonull(1, 2, 3) \
+	void \
+	_recsort_func(const struct stroll_array_quick * __restrict parms, \
+	              _type *                                      array, \
+	              _type *                                      last) \
+	{ \
+		stroll_array_quick_assert(parms); \
+		stroll_array_assert_intern(array); \
+		stroll_array_assert_intern(last >= array); \
+		\
+		while (&array[parms->thres] <= last) { \
+			_type * pivot = _part_func(parms, array, last); \
+			\
+			if ((pivot - array) < (last - pivot)) { \
+				_recsort_func(parms, array, pivot); \
+				array = pivot + 1; \
+			} \
+			else { \
+				_recsort_func(parms, pivot + 1, last); \
+				last = pivot; \
+			} \
+		} \
+	}
+
+STROLL_ARRAY_DEFINE_QUICK_HOARE_PART(stroll_array_quick_hoare_part32,
+                                     stroll_array_quick_med32,
+                                     stroll_array_swap32,
+                                     uint32_t)
+STROLL_ARRAY_QUICK_RECSORT(stroll_array_quick_sort_rec32,
+                           stroll_array_quick_hoare_part32,
+                           uint32_t)
+STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_quick_sort32,
+                               stroll_array_quick_sort_rec32,
+                               stroll_array_insert_sort32,
+                               STROLL_QSORT_INSERT_THRESHOLD,
+                               uint32_t)
+
+STROLL_ARRAY_DEFINE_QUICK_HOARE_PART(stroll_array_quick_hoare_part64,
+                                     stroll_array_quick_med64,
+                                     stroll_array_swap64,
+                                     uint64_t)
+STROLL_ARRAY_QUICK_RECSORT(stroll_array_quick_sort_rec64,
+                           stroll_array_quick_hoare_part64,
+                           uint64_t)
+STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_quick_sort64,
+                               stroll_array_quick_sort_rec64,
+                               stroll_array_insert_sort64,
+                               STROLL_QSORT_INSERT_THRESHOLD,
+                               uint64_t)
 
 /*
  * Partition [array:last] array into 2 consecutive and non empty sub-arrays
@@ -825,60 +879,6 @@ stroll_array_quick_hoare_part_mem(
 		stroll_array_swap(array, last, sz);
 	}
 }
-
-#endif /* defined(CONFIG_STROLL_ARRAY_QUICK_SORT_UTILS) */
-
-#if defined(CONFIG_STROLL_ARRAY_QUICK_SORT)
-
-#if CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD < 2
-#error Invalid Quicksort insertion threshold !
-#endif /* CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD < 2 */
-
-#define STROLL_QSORT_INSERT_THRESHOLD \
-	STROLL_CONCAT(CONFIG_STROLL_ARRAY_QUICK_SORT_INSERT_THRESHOLD, U)
-
-#define STROLL_ARRAY_QUICK_RECSORT(_recsort_func, _part_func, _type) \
-	static __stroll_nonull(1, 2, 3) \
-	void \
-	_recsort_func(const struct stroll_array_quick * __restrict parms, \
-	              _type *                                      array, \
-	              _type *                                      last) \
-	{ \
-		stroll_array_quick_assert(parms); \
-		stroll_array_assert_intern(array); \
-		stroll_array_assert_intern(last >= array); \
-		\
-		while (&array[parms->thres] <= last) { \
-			_type * pivot = _part_func(parms, array, last); \
-			\
-			if ((pivot - array) < (last - pivot)) { \
-				_recsort_func(parms, array, pivot); \
-				array = pivot + 1; \
-			} \
-			else { \
-				_recsort_func(parms, pivot + 1, last); \
-				last = pivot; \
-			} \
-		} \
-	}
-
-STROLL_ARRAY_QUICK_RECSORT(stroll_array_quick_sort_rec32,
-                           stroll_array_quick_hoare_part32,
-                           uint32_t)
-STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_quick_sort32,
-                               stroll_array_quick_sort_rec32,
-                               stroll_array_insert_sort32,
-                               STROLL_QSORT_INSERT_THRESHOLD,
-                               uint32_t)
-
-STROLL_ARRAY_QUICK_RECSORT(stroll_array_quick_sort_rec64,
-                           stroll_array_quick_hoare_part64,
-                           uint64_t)
-STROLL_ARRAY_DEFINE_QUICK_SORT(stroll_array_quick_sort64,
-                               stroll_array_quick_sort_rec64,
-                               stroll_array_insert_sort64,
-                               STROLL_QSORT_INSERT_THRESHOLD,
-                               uint64_t)
 
 /*
  * A recursive implementation of quicksort with recursive tail call elimination

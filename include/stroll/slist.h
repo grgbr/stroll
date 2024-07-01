@@ -688,7 +688,7 @@ typedef int (stroll_slist_cmp_fn)
  * @param[inout] data    Optional arbitrary user data.
  *
  * Sort the @p list using the @p compare comparison function according to
- * the @rstlnk{Bubble sort} algorithm.
+ * the @rstlnk{List bubble sort} algorithm.
  *
  * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p list elements.
@@ -720,11 +720,33 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
 #if defined(CONFIG_STROLL_SLIST_SELECT_SORT)
 
 /**
- * Sort specified list according to the insertion sort scheme.
+ * Sort specified list according to the selection sort scheme.
  *
  * @param[inout] list    stroll_slist to sort.
  * @param[in]    compare @p list nodes comparison function.
  * @param[inout] data    Optional arbitrary user data.
+ *
+ * Sort the @p list using the @p compare comparison function according to
+ * the @rstlnk{List selection sort} algorithm.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p list elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting lists} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * - Behavior is undefined when called on an empty stroll_slist.
+ * - Implemented for reference only: **DO NOT USE IT**. Refer to
+ *   @rstlnk{Sorting lists} for more informations related to algorithm
+ *   selection.
  */
 extern void
 stroll_slist_select_sort(struct stroll_slist * __restrict list,
@@ -742,6 +764,25 @@ stroll_slist_select_sort(struct stroll_slist * __restrict list,
  * @param[inout] list    stroll_slist to sort.
  * @param[in]    compare @p list nodes comparison function.
  * @param[inout] data    Optional arbitrary user data.
+ *
+ * Sort the @p list using the @p compare comparison function according to
+ * the @rstlnk{List insertion sort} algorithm.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p list elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting lists} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * Behavior is undefined when called on an empty stroll_slist.
  */
 extern void
 stroll_slist_insert_sort(struct stroll_slist * __restrict list,
@@ -749,27 +790,10 @@ stroll_slist_insert_sort(struct stroll_slist * __restrict list,
                          void *                           data)
 	__stroll_nonull(1, 2);
 
-/**
- * Sort a specified number of nodes from a stroll_slist according to the
- * insertion sort scheme and move sorted nodes into a result stroll_slist.
- *
- * @param[inout] result  Result stroll_slist where sorted nodes are moved.
- * @param[inout] source  Source stroll_slist to sort.
- * @param[in]    count   Maximum number of source nodes to sort.
- * @param[in]    compare stroll_list nodes comparison function.
- * @param[inout] data    Optional arbitrary user data.
- */
-extern void
-stroll_slist_counted_insert_sort(struct stroll_slist * __restrict result,
-                                 struct stroll_slist * __restrict source,
-                                 unsigned int                     count,
-                                 stroll_slist_cmp_fn *            compare,
-                                 void *                           data)
-	__stroll_nonull(1, 2, 4);
-
 #endif /* defined(CONFIG_STROLL_SLIST_INSERT_SORT) */
 
 #if defined(CONFIG_STROLL_SLIST_MERGE_SORT)
+
 /**
  * Sort 2 presorted stroll_slists into a single one.
  *
@@ -779,7 +803,25 @@ stroll_slist_counted_insert_sort(struct stroll_slist * __restrict result,
  * @param[in]    compare stroll_list nodes comparison function.
  * @param[inout] data    Optional arbitrary user data.
  *
- * @warning Behavior is undefined when called on an empty @p source stroll_slist.
+ * Merge the already sorted @p result and @p source lists using the @p compare
+ * comparison function. Sorted result is stored into the @p result list.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p list elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting lists} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * - Behavior is undefined when called on an empty @p result stroll_slist.
+ * - Behavior is undefined when called on an empty @p source stroll_slist.
  */
 extern void
 stroll_slist_merge_presort(struct stroll_slist * __restrict result,
@@ -789,55 +831,6 @@ stroll_slist_merge_presort(struct stroll_slist * __restrict result,
 	__stroll_nonull(1, 2, 3);
 
 /**
- * Sort specified list according to an hybrid sort scheme mixing insertion and
- * merge sort algorithms.
- *
- * @param[inout] list     stroll_slist to sort.
- * @param[in]    run_len  Primary sorting run length in number of nodes.
- * @param[in]    nodes_nr Number of nodes linked into list.
- * @param[in]    compare  @p list nodes comparison function.
- * @param[inout] data     Optional arbitrary user data.
- *
- * Description
- * ----------
- *
- * Use insertion scheme to sort sublists shorter than @p run_len nodes then
- * switch to merge sort strategy for longer ones.
- *
- * Merge sorting implementation is based on an original idea attributed to
- * Jon McCarthy and described
- * [here](http://richardhartersworld.com/cri/2007/schoen.html).
- *
- * The whole point is : avoid excessive scanning of the list during sublist
- * splitting phases by using an additional bounded auxiliary space to store
- * sublist heads.
- * The whole process is performed in an iterative manner.
- *
- * __Time complexity__
- * worst       | average     | best
- * ------------|-------------|-----
- * O(n.log(n)) | O(n.log(n)) | O(n)
- *
- * __Auxiliary space__: allocated on stack
- * worst                | average   | best
- * ---------------------|-----------|--------
- * 27 slists (54 words) | O(log(n)) | 0 words
- *
- * __Stability__: yes
- *
- * @warning Behavior is undefined when called on an empty stroll_slist.
- * @warning Behavior is undefined when called with @p run_len < 1.
- * @warning Behavior is undefined when called with @p nodes_nr < 1.
- */
-extern void
-stroll_slist_hybrid_merge_sort(struct stroll_slist * __restrict list,
-                               unsigned int                     run_len,
-                               unsigned int                     nodes_nr,
-                               stroll_slist_cmp_fn *            compare,
-                               void *                           data)
-	__stroll_nonull(1, 4);
-
-/**
  * Sort specified list according to an hybrid merge sort scheme.
  *
  * @param[inout] list     stroll_slist to sort.
@@ -845,13 +838,25 @@ stroll_slist_hybrid_merge_sort(struct stroll_slist * __restrict list,
  * @param[in]    compare  @p list nodes comparison function.
  * @param[inout] data     Optional arbitrary user data.
  *
- * Basically a wrapper around stroll_slist_hybrid_merge_sort() implementing a
- * heuristic to automatically compute a proper value for the initial run length.
+ * Sort the @p list using the @p compare comparison function according to
+ * the @rstlnk{List merge sort} algorithm.
  *
- * @warning Behavior is undefined when called on an empty stroll_slist.
- * @warning Behavior is undefined when called with @p nodes_nr < 1.
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p list elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
  *
- * @see stroll_slist_hybrid_merge_sort()
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting lists} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * - Behavior is undefined when called on an empty stroll_slist.
+ * - Behavior is undefined when called with @p nodes_nr < 1.
  */
 extern void
 stroll_slist_merge_sort(struct stroll_slist * __restrict list,
