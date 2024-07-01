@@ -36,7 +36,7 @@ typedef unsigned int (strollpt_heap_count_fn)(void * __restrict)
 	__stroll_nonull(1);
 
 struct strollpt_heap_iface {
-	const char  *              name;
+	const char *               name;
 	strollpt_heap_create_fn *   create;
 	strollpt_heap_destroy_fn *  destroy;
 	strollpt_heap_build_fn *    build;

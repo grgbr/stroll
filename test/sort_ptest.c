@@ -82,11 +82,11 @@ strollpt_sort_validate_array(const unsigned int * __restrict elements,
 	unsigned int                 n;
 	int                          ret = EXIT_FAILURE;
 
-	if (size % sizeof(struct strollpt_array_elem)) {
+	if (size % sizeof_member(struct strollpt_array_elem, id)) {
 		strollpt_err("invalid data element size %zu specified: "
 		             "multiple of %zu expected.\n",
 		             size,
-		             sizeof(struct strollpt_array_elem));
+		             sizeof_member(struct strollpt_array_elem, id));
 		return EXIT_FAILURE;
 	}
 
@@ -534,7 +534,7 @@ strollpt_sort_create_slist(const unsigned int * __restrict elements,
 	assert(elements);
 	assert(nr);
 	assert(size);
-	assert(size >= sizeof(struct strollpt_slist_node));
+	assert(size >= sizeof_member(struct strollpt_slist_node, id));
 
 	struct stroll_slist * list;
 	unsigned int          n;
@@ -547,7 +547,7 @@ strollpt_sort_create_slist(const unsigned int * __restrict elements,
 	for (n = 0; n < nr; n++) {
 		struct strollpt_slist_node * node;
 
-		node = malloc(size);
+		node = malloc(sizeof(node->super) + size);
 		if (!node)
 			goto destroy;
 
@@ -579,11 +579,11 @@ strollpt_sort_validate_slist(const unsigned int * __restrict elements,
 	unsigned int                       cnt = 0;
 	int                                ret = EXIT_FAILURE;
 
-	if (size % sizeof(struct strollpt_slist_node)) {
+	if (size % sizeof_member(struct strollpt_slist_node, id)) {
 		strollpt_err("invalid data element size %zu specified: "
 		             "multiple of %zu expected.\n",
 		             size,
-		             sizeof(struct strollpt_slist_node));
+		             sizeof_member(struct strollpt_slist_node, id));
 		return EXIT_FAILURE;
 	}
 

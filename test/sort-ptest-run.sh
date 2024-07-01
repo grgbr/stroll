@@ -48,19 +48,19 @@ sort_ptest_run()
 }
 
 sort_algos='
-array_bubble     4096  4
-array_select     4096  4
-array_insert     4096  4
-slist_bubble     4096 16
-slist_select     4096 16
-slist_insert     4096 16
-array_qsort   1048576  4
-array_quick   1048576  4
-array_3wquick 1048576  4
-array_merge   1048576  4
-array_fbheap  1048576  4
-array_fwheap  1048576  4
-slist_merge   1048576 16
+array_bubble     4096
+array_select     4096
+array_insert     4096
+slist_bubble     4096
+slist_select     4096
+slist_insert     4096
+array_qsort   1048576
+array_quick   1048576
+array_3wquick 1048576
+array_merge   1048576
+array_fbheap  1048576
+array_fwheap  1048576
+slist_merge   1048576
 '
 
 sort_list_algos()
@@ -98,22 +98,6 @@ sort_algo_max_nr()
 	while read algo max_nr dummy; do
 		if [ "$algo" = "$name" ]; then
 			echo $max_nr
-		fi
-	done <<-_EOF
-	$sort_algos
-	_EOF
-}
-
-sort_algo_min_sz()
-{
-	local name="$1"
-	local algo
-	local max_nr
-	local min_sz
-
-	while read algo max_nr min_sz; do
-		if [ "$algo" = "$name" ]; then
-			echo $min_sz
 		fi
 	done <<-_EOF
 	$sort_algos
@@ -161,7 +145,6 @@ for a in $algos; do
 	# Restrict number of test data samples to 8192 since these may take
 	# quite a long time to complete (up to several tenth of minutes...).
 	maxnr=$(sort_algo_max_nr "$a")
-	minsz=$(sort_algo_min_sz "$a")
 	for n in $nr; do
 		if [ $n -gt $maxnr ]; then
 			continue
@@ -177,9 +160,6 @@ for a in $algos; do
 					continue
 				fi
 				for s in $sizes; do
-					if [ $s -lt $minsz ]; then
-						continue
-					fi
 					if ! sort_ptest_run "$a" \
 					                    "$path" \
 					                    "$s" \
