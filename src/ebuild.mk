@@ -51,6 +51,7 @@ ifneq ($(filter y,$(CONFIG_STROLL_FWHEAP) $(CONFIG_STROLL_ARRAY_FWHEAP_SORT)),)
 libstroll.so-objs    += shared/fwheap.o
 endif
 libstroll.so-objs    += $(call kconf_enabled,STROLL_SLIST,shared/slist.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_DLIST,shared/dlist.o)
 libstroll.so-cflags  := $(filter-out -fpie -fPIE,$(common-cflags)) -fpic
 libstroll.so-ldflags := $(filter-out -pie -fpie -fPIE,$(common-ldflags)) \
                         -shared -Bsymbolic -fpic -Wl,-soname,libstroll.so
@@ -68,6 +69,7 @@ ifneq ($(filter y,$(CONFIG_STROLL_FWHEAP) $(CONFIG_STROLL_ARRAY_FWHEAP_SORT)),)
 libstroll.a-objs     += static/fwheap.o
 endif
 libstroll.a-objs     += $(call kconf_enabled,STROLL_SLIST,static/slist.o)
+libstroll.a-objs     += $(call kconf_enabled,STROLL_DLIST,static/dlist.o)
 libstroll.a-cflags   := $(common-cflags)
 endif # ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
 

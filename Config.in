@@ -383,6 +383,15 @@ config STROLL_SLIST_MERGE_SORT
 	  the merge sort algorithm over singly linked lists.
 	  See <stroll/slist.h>.
 
+config STROLL_DLIST
+	bool "Doubly linked list"
+	default y
+	help
+	  Build Stroll library with support for doubly linked lists where
+	  each node contains 2 references, respectively to previous and next
+	  nodes in the sequence.
+	  See <stroll/dlist.h>.
+
 endif # STROLL_LIST
 
 # ex: ft=kconfig:

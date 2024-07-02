@@ -21,7 +21,6 @@
 
 #include <stroll/cdefs.h>
 #include <stdbool.h>
-#include <stdlib.h>
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 
