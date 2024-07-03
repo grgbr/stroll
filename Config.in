@@ -392,6 +392,16 @@ config STROLL_DLIST
 	  nodes in the sequence.
 	  See <stroll/dlist.h>.
 
+config STROLL_DLIST_BUBBLE_SORT
+	bool "Bubble sort"
+	depends on STROLL_DLIST
+	default n
+	help
+	  Build Stroll library with support for the bubble sort algorithm over
+	  doubly linked lists.
+	  See <stroll/dlist.h>.
+	  Implemented for reference only: **DO NOT USE IT**.
+
 endif # STROLL_LIST
 
 # ex: ft=kconfig:

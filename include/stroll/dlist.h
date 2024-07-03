@@ -222,6 +222,8 @@ static inline __stroll_nonull(1) __stroll_nothrow
 void
 stroll_dlist_remove(const struct stroll_dlist_node * __restrict node)
 {
+	stroll_dlist_assert_api(node);
+
 	struct stroll_dlist_node * next = node->next;
 	struct stroll_dlist_node * prev = node->prev;
 
@@ -439,5 +441,67 @@ stroll_dlist_splice(struct stroll_dlist_node * __restrict at,
 	                                 typeof(*(_entry)), _member); \
 	     &(_entry)->_member != (_list); \
 	     _entry = stroll_dlist_next_entry(_entry, _member))
+
+/******************************************************************************
+ * Stroll doubly linked list sorting
+ ******************************************************************************/
+
+/**
+ * stroll_dlist_node item comparison routine prototype.
+ *
+ * Use this to implement a function that compares 2 stroll_dlist_node nodes
+ * given as arguments according to an arbitrary logic.
+ *
+ * Last argument may point to an optional arbitrary user data used for
+ * comparison purposes.
+ *
+ * The function *MUST* return an integer less than, equal to, or greater than
+ * zero if first argument is found, respectively, to be less than, to match, or
+ * be greater than the second one.
+ */
+typedef int (stroll_dlist_cmp_fn)
+            (const struct stroll_dlist_node * __restrict,
+             const struct stroll_dlist_node * __restrict,
+             void *)
+	__stroll_nonull(1, 2);
+
+#if defined(CONFIG_STROLL_DLIST_BUBBLE_SORT)
+
+/**
+ * Sort specified list according to the bubble sort scheme.
+ *
+ * @param[inout] head    head of list to sort.
+ * @param[in]    compare @p list nodes comparison function.
+ * @param[inout] data    Optional arbitrary user data.
+ *
+ * Sort the @p list using the @p compare comparison function according to
+ * the @rstlnk{List bubble sort} algorithm.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p list elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting lists} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * - Behavior is undefined when called on an empty list.
+ * - Implemented for reference only: **DO NOT USE IT**. Refer to
+ *   @rstlnk{Sorting lists} for more informations related to algorithm
+ *   selection.
+ */
+extern void
+stroll_dlist_bubble_sort(struct stroll_dlist_node * __restrict head,
+                         stroll_dlist_cmp_fn *                 compare,
+                         void *                                data)
+	__stroll_nonull(1, 2);
+
+#endif /* defined(CONFIG_STROLL_SLIST_BUBBLE_SORT) */
 
 #endif /* _STROLL_DLIST_H */
