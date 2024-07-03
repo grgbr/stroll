@@ -9,6 +9,7 @@
 #include <cute/cute.h>
 #include <cute/check.h>
 #include <cute/expect.h>
+#include <string.h>
 
 #define STROLLUT_SLIST_NOASSERT(_test) \
 	CUTE_TEST(_test) \
@@ -1051,6 +1052,911 @@ CUTE_TEST(strollut_slist_splice_trail)
 	cute_check_ptr(node, equal, &src_nodes[2]);
 }
 
+/******************************************************************************
+ * Sorting tests
+ ******************************************************************************/
+
+struct strollut_slist_node {
+	struct stroll_slist_node super;
+	unsigned int             id;
+	const char *             str;
+};
+
+#define STROLLUT_SLIST_NODE_INIT(_id) \
+	{ \
+		.super = STROLL_SLIST_NODE_INIT, \
+		.id    = _id, \
+		.str   = # _id \
+	}
+
+struct strollut_list_xpct {
+	unsigned int id;
+	const char * str;
+	const void * ptr;
+};
+
+#define STROLLUT_LIST_XPCT_INIT(_id, _ptr) \
+	{ \
+		.id  = _id, \
+		.str = # _id, \
+		.ptr = _ptr \
+	}
+
+static void (*strollut_slist_sort)(struct stroll_slist * __restrict list,
+                                   unsigned int                     nr,
+                                   stroll_slist_cmp_fn *            compare);
+
+#define STROLLUT_SLIST_SORT_SETUP(_setup, _sort) \
+	static void _setup(void) \
+	{ \
+		strollut_slist_sort = _sort; \
+	}
+
+#define STROLLUT_SLIST_UNSUP(_setup) \
+	static void _setup(void) { cute_skip("support not compiled-in"); }
+
+static inline int
+strollut_slist_compare_min_num(
+	const struct stroll_slist_node * __restrict a,
+	const struct stroll_slist_node * __restrict b,
+	void *                                      data __unused)
+{
+	const struct strollut_slist_node * _a =
+		stroll_slist_entry(a, const struct strollut_slist_node, super);
+	const struct strollut_slist_node * _b =
+		stroll_slist_entry(b, const struct strollut_slist_node, super);
+
+	return (_a->id > _b->id) - (_a->id < _b->id);
+}
+
+static void
+strollut_slist_sort_check_num(struct strollut_slist_node      nodes[],
+	                      const struct strollut_list_xpct expected[],
+	                      unsigned int                    nr)
+{
+	struct stroll_slist list = STROLL_SLIST_INIT(list);
+	unsigned int        n;
+
+	for (n = 0; n < nr; n++)
+		stroll_slist_nqueue_back(&list, &nodes[n].super);
+
+	strollut_slist_sort(&list, nr, strollut_slist_compare_min_num);
+
+	for (n = 0; n < nr; n++) {
+		const struct strollut_list_xpct *  xpct = &expected[n];
+		struct strollut_slist_node *       node;
+
+		cute_check_bool(stroll_slist_empty(&list), is, false);
+
+		node = stroll_slist_entry(stroll_slist_dqueue_front(&list),
+		                          struct strollut_slist_node,
+		                          super);
+
+		cute_check_uint(node->id, equal, xpct->id);
+		cute_check_str(node->str, equal, xpct->str);
+		cute_check_ptr(node, equal, xpct->ptr);
+	}
+
+	cute_check_bool(stroll_slist_empty(&list), is, true);
+}
+
+CUTE_TEST(strollut_slist_sort_num1)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(0)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0, &nodes[0])
+	};
+
+	strollut_slist_sort_check_num(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_inorder_num2)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(1)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0, &nodes[0]),
+		STROLLUT_LIST_XPCT_INIT(1, &nodes[1])
+	};
+
+	strollut_slist_sort_check_num(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_revorder_num2)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(1),
+		STROLLUT_SLIST_NODE_INIT(0)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0, &nodes[1]),
+		STROLLUT_LIST_XPCT_INIT(1, &nodes[0])
+	};
+
+	strollut_slist_sort_check_num(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_duplicate_num2)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(0)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0, &nodes[0]),
+		STROLLUT_LIST_XPCT_INIT(0, &nodes[1])
+	};
+
+	strollut_slist_sort_check_num(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_inorder_num17)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(1),
+		STROLLUT_SLIST_NODE_INIT(2),
+		STROLLUT_SLIST_NODE_INIT(3),
+		STROLLUT_SLIST_NODE_INIT(4),
+		STROLLUT_SLIST_NODE_INIT(5),
+		STROLLUT_SLIST_NODE_INIT(6),
+		STROLLUT_SLIST_NODE_INIT(7),
+		STROLLUT_SLIST_NODE_INIT(8),
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(10),
+		STROLLUT_SLIST_NODE_INIT(11),
+		STROLLUT_SLIST_NODE_INIT(12),
+		STROLLUT_SLIST_NODE_INIT(13),
+		STROLLUT_SLIST_NODE_INIT(14),
+		STROLLUT_SLIST_NODE_INIT(15),
+		STROLLUT_SLIST_NODE_INIT(16)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0,  &nodes[0]),
+		STROLLUT_LIST_XPCT_INIT(1,  &nodes[1]),
+		STROLLUT_LIST_XPCT_INIT(2,  &nodes[2]),
+		STROLLUT_LIST_XPCT_INIT(3,  &nodes[3]),
+		STROLLUT_LIST_XPCT_INIT(4,  &nodes[4]),
+		STROLLUT_LIST_XPCT_INIT(5,  &nodes[5]),
+		STROLLUT_LIST_XPCT_INIT(6,  &nodes[6]),
+		STROLLUT_LIST_XPCT_INIT(7,  &nodes[7]),
+		STROLLUT_LIST_XPCT_INIT(8,  &nodes[8]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[9]),
+		STROLLUT_LIST_XPCT_INIT(10, &nodes[10]),
+		STROLLUT_LIST_XPCT_INIT(11, &nodes[11]),
+		STROLLUT_LIST_XPCT_INIT(12, &nodes[12]),
+		STROLLUT_LIST_XPCT_INIT(13, &nodes[13]),
+		STROLLUT_LIST_XPCT_INIT(14, &nodes[14]),
+		STROLLUT_LIST_XPCT_INIT(15, &nodes[15]),
+		STROLLUT_LIST_XPCT_INIT(16, &nodes[16])
+	};
+
+	strollut_slist_sort_check_num(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_revorder_num17)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(16),
+		STROLLUT_SLIST_NODE_INIT(15),
+		STROLLUT_SLIST_NODE_INIT(14),
+		STROLLUT_SLIST_NODE_INIT(13),
+		STROLLUT_SLIST_NODE_INIT(12),
+		STROLLUT_SLIST_NODE_INIT(11),
+		STROLLUT_SLIST_NODE_INIT(10),
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(8),
+		STROLLUT_SLIST_NODE_INIT(7),
+		STROLLUT_SLIST_NODE_INIT(6),
+		STROLLUT_SLIST_NODE_INIT(5),
+		STROLLUT_SLIST_NODE_INIT(4),
+		STROLLUT_SLIST_NODE_INIT(3),
+		STROLLUT_SLIST_NODE_INIT(2),
+		STROLLUT_SLIST_NODE_INIT(1),
+		STROLLUT_SLIST_NODE_INIT(0)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0,  &nodes[16]),
+		STROLLUT_LIST_XPCT_INIT(1,  &nodes[15]),
+		STROLLUT_LIST_XPCT_INIT(2,  &nodes[14]),
+		STROLLUT_LIST_XPCT_INIT(3,  &nodes[13]),
+		STROLLUT_LIST_XPCT_INIT(4,  &nodes[12]),
+		STROLLUT_LIST_XPCT_INIT(5,  &nodes[11]),
+		STROLLUT_LIST_XPCT_INIT(6,  &nodes[10]),
+		STROLLUT_LIST_XPCT_INIT(7,  &nodes[9]),
+		STROLLUT_LIST_XPCT_INIT(8,  &nodes[8]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[7]),
+		STROLLUT_LIST_XPCT_INIT(10, &nodes[6]),
+		STROLLUT_LIST_XPCT_INIT(11, &nodes[5]),
+		STROLLUT_LIST_XPCT_INIT(12, &nodes[4]),
+		STROLLUT_LIST_XPCT_INIT(13, &nodes[3]),
+		STROLLUT_LIST_XPCT_INIT(14, &nodes[2]),
+		STROLLUT_LIST_XPCT_INIT(15, &nodes[1]),
+		STROLLUT_LIST_XPCT_INIT(16, &nodes[0])
+	};
+
+	strollut_slist_sort_check_num(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_unorder_num17)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(11),
+		STROLLUT_SLIST_NODE_INIT(16),
+		STROLLUT_SLIST_NODE_INIT(1),
+		STROLLUT_SLIST_NODE_INIT(7),
+		STROLLUT_SLIST_NODE_INIT(14),
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(15),
+		STROLLUT_SLIST_NODE_INIT(8),
+		STROLLUT_SLIST_NODE_INIT(3),
+		STROLLUT_SLIST_NODE_INIT(6),
+		STROLLUT_SLIST_NODE_INIT(12),
+		STROLLUT_SLIST_NODE_INIT(2),
+		STROLLUT_SLIST_NODE_INIT(5),
+		STROLLUT_SLIST_NODE_INIT(10),
+		STROLLUT_SLIST_NODE_INIT(4),
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(13)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0,  &nodes[15]),
+		STROLLUT_LIST_XPCT_INIT(1,  &nodes[2]),
+		STROLLUT_LIST_XPCT_INIT(2,  &nodes[11]),
+		STROLLUT_LIST_XPCT_INIT(3,  &nodes[8]),
+		STROLLUT_LIST_XPCT_INIT(4,  &nodes[14]),
+		STROLLUT_LIST_XPCT_INIT(5,  &nodes[12]),
+		STROLLUT_LIST_XPCT_INIT(6,  &nodes[9]),
+		STROLLUT_LIST_XPCT_INIT(7,  &nodes[3]),
+		STROLLUT_LIST_XPCT_INIT(8,  &nodes[7]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[5]),
+		STROLLUT_LIST_XPCT_INIT(10, &nodes[13]),
+		STROLLUT_LIST_XPCT_INIT(11, &nodes[0]),
+		STROLLUT_LIST_XPCT_INIT(12, &nodes[10]),
+		STROLLUT_LIST_XPCT_INIT(13, &nodes[16]),
+		STROLLUT_LIST_XPCT_INIT(14, &nodes[4]),
+		STROLLUT_LIST_XPCT_INIT(15, &nodes[6]),
+		STROLLUT_LIST_XPCT_INIT(16, &nodes[1])
+	};
+
+	strollut_slist_sort_check_num(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_duplicate_num17)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(15),
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(7),
+		STROLLUT_SLIST_NODE_INIT(14),
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(15),
+		STROLLUT_SLIST_NODE_INIT(8),
+		STROLLUT_SLIST_NODE_INIT(3),
+		STROLLUT_SLIST_NODE_INIT(6),
+		STROLLUT_SLIST_NODE_INIT(12),
+		STROLLUT_SLIST_NODE_INIT(2),
+		STROLLUT_SLIST_NODE_INIT(4),
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(4),
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(13)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0,  &nodes[2]),
+		STROLLUT_LIST_XPCT_INIT(0,  &nodes[15]),
+		STROLLUT_LIST_XPCT_INIT(2,  &nodes[11]),
+		STROLLUT_LIST_XPCT_INIT(3,  &nodes[8]),
+		STROLLUT_LIST_XPCT_INIT(4,  &nodes[12]),
+		STROLLUT_LIST_XPCT_INIT(4,  &nodes[14]),
+		STROLLUT_LIST_XPCT_INIT(6,  &nodes[9]),
+		STROLLUT_LIST_XPCT_INIT(7,  &nodes[3]),
+		STROLLUT_LIST_XPCT_INIT(8,  &nodes[7]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[0]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[5]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[13]),
+		STROLLUT_LIST_XPCT_INIT(12, &nodes[10]),
+		STROLLUT_LIST_XPCT_INIT(13, &nodes[16]),
+		STROLLUT_LIST_XPCT_INIT(14, &nodes[4]),
+		STROLLUT_LIST_XPCT_INIT(15, &nodes[1]),
+		STROLLUT_LIST_XPCT_INIT(15, &nodes[6])
+	};
+
+	strollut_slist_sort_check_num(nodes, xpct, stroll_array_nr(xpct));
+}
+
+static inline int
+strollut_slist_compare_min_str(
+	const struct stroll_slist_node * __restrict a,
+	const struct stroll_slist_node * __restrict b,
+	void *                                      data __unused)
+{
+	const struct strollut_slist_node * _a =
+		stroll_slist_entry(a, const struct strollut_slist_node, super);
+	const struct strollut_slist_node * _b =
+		stroll_slist_entry(b, const struct strollut_slist_node, super);
+
+	return (_a->id > _b->id) - (_a->id < _b->id);
+}
+
+static void
+strollut_slist_sort_check_str(struct strollut_slist_node      nodes[],
+	                      const struct strollut_list_xpct expected[],
+	                      unsigned int                    nr)
+{
+	struct stroll_slist list = STROLL_SLIST_INIT(list);
+	unsigned int        n;
+
+	for (n = 0; n < nr; n++)
+		stroll_slist_nqueue_back(&list, &nodes[n].super);
+
+	strollut_slist_sort(&list, nr, strollut_slist_compare_min_str);
+
+	for (n = 0; n < nr; n++) {
+		const struct strollut_list_xpct *  xpct = &expected[n];
+		struct strollut_slist_node *       node;
+
+		cute_check_bool(stroll_slist_empty(&list), is, false);
+
+		node = stroll_slist_entry(stroll_slist_dqueue_front(&list),
+		                          struct strollut_slist_node,
+		                          super);
+
+		cute_check_uint(node->id, equal, xpct->id);
+		cute_check_str(node->str, equal, xpct->str);
+		cute_check_ptr(node, equal, xpct->ptr);
+	}
+
+	cute_check_bool(stroll_slist_empty(&list), is, true);
+}
+
+CUTE_TEST(strollut_slist_sort_str1)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(0)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0, &nodes[0])
+	};
+
+	strollut_slist_sort_check_str(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_inorder_str2)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(1)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0, &nodes[0]),
+		STROLLUT_LIST_XPCT_INIT(1, &nodes[1])
+	};
+
+	strollut_slist_sort_check_str(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_revorder_str2)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(1),
+		STROLLUT_SLIST_NODE_INIT(0)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0, &nodes[1]),
+		STROLLUT_LIST_XPCT_INIT(1, &nodes[0])
+	};
+
+	strollut_slist_sort_check_str(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_duplicate_str2)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(0)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0, &nodes[0]),
+		STROLLUT_LIST_XPCT_INIT(0, &nodes[1])
+	};
+
+	strollut_slist_sort_check_str(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_inorder_str17)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(1),
+		STROLLUT_SLIST_NODE_INIT(2),
+		STROLLUT_SLIST_NODE_INIT(3),
+		STROLLUT_SLIST_NODE_INIT(4),
+		STROLLUT_SLIST_NODE_INIT(5),
+		STROLLUT_SLIST_NODE_INIT(6),
+		STROLLUT_SLIST_NODE_INIT(7),
+		STROLLUT_SLIST_NODE_INIT(8),
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(10),
+		STROLLUT_SLIST_NODE_INIT(11),
+		STROLLUT_SLIST_NODE_INIT(12),
+		STROLLUT_SLIST_NODE_INIT(13),
+		STROLLUT_SLIST_NODE_INIT(14),
+		STROLLUT_SLIST_NODE_INIT(15),
+		STROLLUT_SLIST_NODE_INIT(16)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0,  &nodes[0]),
+		STROLLUT_LIST_XPCT_INIT(1,  &nodes[1]),
+		STROLLUT_LIST_XPCT_INIT(2,  &nodes[2]),
+		STROLLUT_LIST_XPCT_INIT(3,  &nodes[3]),
+		STROLLUT_LIST_XPCT_INIT(4,  &nodes[4]),
+		STROLLUT_LIST_XPCT_INIT(5,  &nodes[5]),
+		STROLLUT_LIST_XPCT_INIT(6,  &nodes[6]),
+		STROLLUT_LIST_XPCT_INIT(7,  &nodes[7]),
+		STROLLUT_LIST_XPCT_INIT(8,  &nodes[8]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[9]),
+		STROLLUT_LIST_XPCT_INIT(10, &nodes[10]),
+		STROLLUT_LIST_XPCT_INIT(11, &nodes[11]),
+		STROLLUT_LIST_XPCT_INIT(12, &nodes[12]),
+		STROLLUT_LIST_XPCT_INIT(13, &nodes[13]),
+		STROLLUT_LIST_XPCT_INIT(14, &nodes[14]),
+		STROLLUT_LIST_XPCT_INIT(15, &nodes[15]),
+		STROLLUT_LIST_XPCT_INIT(16, &nodes[16])
+	};
+
+	strollut_slist_sort_check_str(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_revorder_str17)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(16),
+		STROLLUT_SLIST_NODE_INIT(15),
+		STROLLUT_SLIST_NODE_INIT(14),
+		STROLLUT_SLIST_NODE_INIT(13),
+		STROLLUT_SLIST_NODE_INIT(12),
+		STROLLUT_SLIST_NODE_INIT(11),
+		STROLLUT_SLIST_NODE_INIT(10),
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(8),
+		STROLLUT_SLIST_NODE_INIT(7),
+		STROLLUT_SLIST_NODE_INIT(6),
+		STROLLUT_SLIST_NODE_INIT(5),
+		STROLLUT_SLIST_NODE_INIT(4),
+		STROLLUT_SLIST_NODE_INIT(3),
+		STROLLUT_SLIST_NODE_INIT(2),
+		STROLLUT_SLIST_NODE_INIT(1),
+		STROLLUT_SLIST_NODE_INIT(0)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0,  &nodes[16]),
+		STROLLUT_LIST_XPCT_INIT(1,  &nodes[15]),
+		STROLLUT_LIST_XPCT_INIT(2,  &nodes[14]),
+		STROLLUT_LIST_XPCT_INIT(3,  &nodes[13]),
+		STROLLUT_LIST_XPCT_INIT(4,  &nodes[12]),
+		STROLLUT_LIST_XPCT_INIT(5,  &nodes[11]),
+		STROLLUT_LIST_XPCT_INIT(6,  &nodes[10]),
+		STROLLUT_LIST_XPCT_INIT(7,  &nodes[9]),
+		STROLLUT_LIST_XPCT_INIT(8,  &nodes[8]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[7]),
+		STROLLUT_LIST_XPCT_INIT(10, &nodes[6]),
+		STROLLUT_LIST_XPCT_INIT(11, &nodes[5]),
+		STROLLUT_LIST_XPCT_INIT(12, &nodes[4]),
+		STROLLUT_LIST_XPCT_INIT(13, &nodes[3]),
+		STROLLUT_LIST_XPCT_INIT(14, &nodes[2]),
+		STROLLUT_LIST_XPCT_INIT(15, &nodes[1]),
+		STROLLUT_LIST_XPCT_INIT(16, &nodes[0])
+	};
+
+	strollut_slist_sort_check_str(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_unorder_str17)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(11),
+		STROLLUT_SLIST_NODE_INIT(16),
+		STROLLUT_SLIST_NODE_INIT(1),
+		STROLLUT_SLIST_NODE_INIT(7),
+		STROLLUT_SLIST_NODE_INIT(14),
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(15),
+		STROLLUT_SLIST_NODE_INIT(8),
+		STROLLUT_SLIST_NODE_INIT(3),
+		STROLLUT_SLIST_NODE_INIT(6),
+		STROLLUT_SLIST_NODE_INIT(12),
+		STROLLUT_SLIST_NODE_INIT(2),
+		STROLLUT_SLIST_NODE_INIT(5),
+		STROLLUT_SLIST_NODE_INIT(10),
+		STROLLUT_SLIST_NODE_INIT(4),
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(13)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0,  &nodes[15]),
+		STROLLUT_LIST_XPCT_INIT(1,  &nodes[2]),
+		STROLLUT_LIST_XPCT_INIT(2,  &nodes[11]),
+		STROLLUT_LIST_XPCT_INIT(3,  &nodes[8]),
+		STROLLUT_LIST_XPCT_INIT(4,  &nodes[14]),
+		STROLLUT_LIST_XPCT_INIT(5,  &nodes[12]),
+		STROLLUT_LIST_XPCT_INIT(6,  &nodes[9]),
+		STROLLUT_LIST_XPCT_INIT(7,  &nodes[3]),
+		STROLLUT_LIST_XPCT_INIT(8,  &nodes[7]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[5]),
+		STROLLUT_LIST_XPCT_INIT(10, &nodes[13]),
+		STROLLUT_LIST_XPCT_INIT(11, &nodes[0]),
+		STROLLUT_LIST_XPCT_INIT(12, &nodes[10]),
+		STROLLUT_LIST_XPCT_INIT(13, &nodes[16]),
+		STROLLUT_LIST_XPCT_INIT(14, &nodes[4]),
+		STROLLUT_LIST_XPCT_INIT(15, &nodes[6]),
+		STROLLUT_LIST_XPCT_INIT(16, &nodes[1])
+	};
+
+	strollut_slist_sort_check_str(nodes, xpct, stroll_array_nr(xpct));
+}
+
+CUTE_TEST(strollut_slist_sort_duplicate_str17)
+{
+	struct strollut_slist_node      nodes[] = {
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(15),
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(7),
+		STROLLUT_SLIST_NODE_INIT(14),
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(15),
+		STROLLUT_SLIST_NODE_INIT(8),
+		STROLLUT_SLIST_NODE_INIT(3),
+		STROLLUT_SLIST_NODE_INIT(6),
+		STROLLUT_SLIST_NODE_INIT(12),
+		STROLLUT_SLIST_NODE_INIT(2),
+		STROLLUT_SLIST_NODE_INIT(4),
+		STROLLUT_SLIST_NODE_INIT(9),
+		STROLLUT_SLIST_NODE_INIT(4),
+		STROLLUT_SLIST_NODE_INIT(0),
+		STROLLUT_SLIST_NODE_INIT(13)
+	};
+	const struct strollut_list_xpct xpct[] = {
+		STROLLUT_LIST_XPCT_INIT(0,  &nodes[2]),
+		STROLLUT_LIST_XPCT_INIT(0,  &nodes[15]),
+		STROLLUT_LIST_XPCT_INIT(2,  &nodes[11]),
+		STROLLUT_LIST_XPCT_INIT(3,  &nodes[8]),
+		STROLLUT_LIST_XPCT_INIT(4,  &nodes[12]),
+		STROLLUT_LIST_XPCT_INIT(4,  &nodes[14]),
+		STROLLUT_LIST_XPCT_INIT(6,  &nodes[9]),
+		STROLLUT_LIST_XPCT_INIT(7,  &nodes[3]),
+		STROLLUT_LIST_XPCT_INIT(8,  &nodes[7]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[0]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[5]),
+		STROLLUT_LIST_XPCT_INIT(9,  &nodes[13]),
+		STROLLUT_LIST_XPCT_INIT(12, &nodes[10]),
+		STROLLUT_LIST_XPCT_INIT(13, &nodes[16]),
+		STROLLUT_LIST_XPCT_INIT(14, &nodes[4]),
+		STROLLUT_LIST_XPCT_INIT(15, &nodes[1]),
+		STROLLUT_LIST_XPCT_INIT(15, &nodes[6])
+	};
+
+	strollut_slist_sort_check_str(nodes, xpct, stroll_array_nr(xpct));
+}
+
+#include "array_data.h"
+
+struct strollut_slist_array_node {
+	struct stroll_slist_node                  super;
+	union {
+		const struct strollut_array_num * num;
+		const struct strollut_array_str * str;
+	};
+};
+
+static struct strollut_slist_array_node
+strollut_list_tosort_num[STROLLUT_ARRAY_NUM_NR];
+
+static inline int
+strollut_slist_compare_elem_min_num(
+	const struct stroll_slist_node * __restrict a,
+	const struct stroll_slist_node * __restrict b,
+	void *                                      data __unused)
+{
+	const struct strollut_slist_array_node * _a =
+		stroll_slist_entry(a,
+		                   const struct strollut_slist_array_node,
+		                   super);
+	const struct strollut_slist_array_node * _b =
+		stroll_slist_entry(b,
+		                   const struct strollut_slist_array_node,
+		                   super);
+
+	return (_a->num->key > _b->num->key) - (_a->num->key < _b->num->key);
+}
+
+static inline int
+strollut_slist_compare_elem_max_num(
+	const struct stroll_slist_node * __restrict a,
+	const struct stroll_slist_node * __restrict b,
+	void *                                      data __unused)
+{
+	const struct strollut_slist_array_node * _a =
+		stroll_slist_entry(a,
+		                   const struct strollut_slist_array_node,
+		                   super);
+	const struct strollut_slist_array_node * _b =
+		stroll_slist_entry(b,
+		                   const struct strollut_slist_array_node,
+		                   super);
+
+	return (_b->num->key > _a->num->key) - (_b->num->key < _a->num->key);
+}
+
+static void
+strollut_slist_sort_check_large_num(const struct strollut_array_num * array,
+                                    const struct strollut_array_num * expected,
+                                    stroll_slist_cmp_fn *             cmp)
+{
+	struct stroll_slist list = STROLL_SLIST_INIT(list);
+	unsigned int        e;
+
+	for (e = 0; e < stroll_array_nr(strollut_list_tosort_num); e++) {
+		strollut_list_tosort_num[e].num = &array[e];
+		stroll_slist_nqueue_back(&list,
+		                         &strollut_list_tosort_num[e].super);
+	}
+
+	strollut_slist_sort(&list,
+	                    stroll_array_nr(strollut_list_tosort_num),
+	                    cmp);
+
+	for (e = 0; e < stroll_array_nr(strollut_list_tosort_num); e++) {
+		const struct strollut_array_num *  xpct = &expected[e];
+		struct strollut_slist_array_node * node;
+
+		cute_check_bool(stroll_slist_empty(&list), is, false);
+
+		node = stroll_slist_entry(stroll_slist_dqueue_front(&list),
+		                          struct strollut_slist_array_node,
+		                          super);
+
+		cute_check_sint(node->num->key, equal, xpct->key);
+		cute_check_ptr(node->num, equal, xpct->ptr);
+	}
+
+	cute_check_bool(stroll_slist_empty(&list), is, true);
+}
+
+CUTE_TEST(strollut_slist_sort_inorder_large_num)
+{
+	strollut_slist_sort_check_large_num(
+			strollut_array_num_input,
+			strollut_array_num_inorder,
+			strollut_slist_compare_elem_min_num);
+}
+
+CUTE_TEST(strollut_slist_sort_postorder_large_num)
+{
+	strollut_slist_sort_check_large_num(
+			strollut_array_num_input,
+			strollut_array_num_postorder,
+			strollut_slist_compare_elem_max_num);
+}
+
+static struct strollut_slist_array_node
+strollut_list_tosort_str[STROLLUT_ARRAY_STR_NR];
+
+static inline int
+strollut_slist_compare_elem_min_str(
+	const struct stroll_slist_node * __restrict a,
+	const struct stroll_slist_node * __restrict b,
+	void *                                      data __unused)
+{
+	const struct strollut_slist_array_node * _a =
+		stroll_slist_entry(a,
+		                   const struct strollut_slist_array_node,
+		                   super);
+	const struct strollut_slist_array_node * _b =
+		stroll_slist_entry(b,
+		                   const struct strollut_slist_array_node,
+		                   super);
+
+	return strcmp(_a->str->word, _b->str->word);
+}
+
+static inline int
+strollut_slist_compare_elem_max_str(
+	const struct stroll_slist_node * __restrict a,
+	const struct stroll_slist_node * __restrict b,
+	void *                                      data __unused)
+{
+	const struct strollut_slist_array_node * _a =
+		stroll_slist_entry(a,
+		                   const struct strollut_slist_array_node,
+		                   super);
+	const struct strollut_slist_array_node * _b =
+		stroll_slist_entry(b,
+		                   const struct strollut_slist_array_node,
+		                   super);
+
+	return strcmp(_b->str->word, _a->str->word);
+}
+
+static void
+strollut_slist_sort_check_large_str(const struct strollut_array_str * array,
+                                    const struct strollut_array_str * expected,
+                                    stroll_slist_cmp_fn *             cmp)
+{
+	struct stroll_slist list = STROLL_SLIST_INIT(list);
+	unsigned int        e;
+
+	for (e = 0; e < stroll_array_nr(strollut_list_tosort_str); e++) {
+		strollut_list_tosort_str[e].str = &array[e];
+		stroll_slist_nqueue_back(&list,
+		                         &strollut_list_tosort_str[e].super);
+	}
+
+	strollut_slist_sort(&list,
+	                    stroll_array_nr(strollut_list_tosort_str),
+	                    cmp);
+
+	for (e = 0; e < stroll_array_nr(strollut_list_tosort_str); e++) {
+		const struct strollut_array_str *  xpct = &expected[e];
+		struct strollut_slist_array_node * node;
+
+		cute_check_bool(stroll_slist_empty(&list), is, false);
+
+		node = stroll_slist_entry(stroll_slist_dqueue_front(&list),
+		                          struct strollut_slist_array_node,
+		                          super);
+
+		cute_check_str(node->str->word, equal, xpct->word);
+		cute_check_ptr(node->str, equal, xpct->ptr);
+	}
+
+	cute_check_bool(stroll_slist_empty(&list), is, true);
+}
+
+CUTE_TEST(strollut_slist_sort_inorder_large_str)
+{
+	strollut_slist_sort_check_large_str(
+			strollut_array_str_input,
+			strollut_array_str_inorder,
+			strollut_slist_compare_elem_min_str);
+}
+
+CUTE_TEST(strollut_slist_sort_postorder_large_str)
+{
+	strollut_slist_sort_check_large_str(
+			strollut_array_str_input,
+			strollut_array_str_postorder,
+			strollut_slist_compare_elem_max_str);
+}
+
+CUTE_GROUP(strollut_slist_sort_group) = {
+	CUTE_REF(strollut_slist_sort_num1),
+	CUTE_REF(strollut_slist_sort_inorder_num2),
+	CUTE_REF(strollut_slist_sort_revorder_num2),
+	CUTE_REF(strollut_slist_sort_duplicate_num2),
+	CUTE_REF(strollut_slist_sort_inorder_num17),
+	CUTE_REF(strollut_slist_sort_revorder_num17),
+	CUTE_REF(strollut_slist_sort_unorder_num17),
+	CUTE_REF(strollut_slist_sort_duplicate_num17),
+
+	CUTE_REF(strollut_slist_sort_str1),
+	CUTE_REF(strollut_slist_sort_inorder_str2),
+	CUTE_REF(strollut_slist_sort_revorder_str2),
+	CUTE_REF(strollut_slist_sort_duplicate_str2),
+	CUTE_REF(strollut_slist_sort_inorder_str17),
+	CUTE_REF(strollut_slist_sort_revorder_str17),
+	CUTE_REF(strollut_slist_sort_unorder_str17),
+	CUTE_REF(strollut_slist_sort_duplicate_str17),
+
+	CUTE_REF(strollut_slist_sort_inorder_large_num),
+	CUTE_REF(strollut_slist_sort_postorder_large_num),
+
+	CUTE_REF(strollut_slist_sort_inorder_large_str),
+	CUTE_REF(strollut_slist_sort_postorder_large_str),
+};
+
+#if defined(CONFIG_STROLL_SLIST_BUBBLE_SORT)
+
+static void
+strollut_slist_bubble_sort(struct stroll_slist * __restrict list,
+                           unsigned int                     nr __unused,
+                           stroll_slist_cmp_fn *            compare)
+{
+	stroll_slist_bubble_sort(list, compare, NULL);
+}
+
+STROLLUT_SLIST_SORT_SETUP(strollut_slist_bubble_setup,
+                          strollut_slist_bubble_sort)
+
+#else   /* !defined(CONFIG_STROLL_SLIST_BUBBLE_SORT) */
+STROLLUT_SLIST_UNSUP(strollut_slist_bubble_setup)
+#endif  /* defined(CONFIG_STROLL_SLIST_BUBBLE_SORT) */
+
+CUTE_SUITE_STATIC(strollut_slist_bubble_suite,
+                  strollut_slist_sort_group,
+                  strollut_slist_bubble_setup,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);
+
+#if defined(CONFIG_STROLL_SLIST_SELECT_SORT)
+
+static void
+strollut_slist_select_sort(struct stroll_slist * __restrict list,
+                           unsigned int                     nr __unused,
+                           stroll_slist_cmp_fn *            compare)
+{
+	stroll_slist_select_sort(list, compare, NULL);
+}
+
+STROLLUT_SLIST_SORT_SETUP(strollut_slist_select_setup,
+                          strollut_slist_select_sort)
+
+#else   /* !defined(CONFIG_STROLL_SLIST_SELECT_SORT) */
+STROLLUT_SLIST_UNSUP(strollut_slist_select_setup)
+#endif  /* defined(CONFIG_STROLL_SLIST_SELECT_SORT) */
+
+CUTE_SUITE_STATIC(strollut_slist_select_suite,
+                  strollut_slist_sort_group,
+                  strollut_slist_select_setup,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);
+
+#if defined(CONFIG_STROLL_SLIST_INSERT_SORT)
+
+static void
+strollut_slist_insert_sort(struct stroll_slist * __restrict list,
+                           unsigned int                     nr __unused,
+                           stroll_slist_cmp_fn *            compare)
+{
+	stroll_slist_insert_sort(list, compare, NULL);
+}
+
+STROLLUT_SLIST_SORT_SETUP(strollut_slist_insert_setup,
+                          strollut_slist_insert_sort)
+
+#else   /* !defined(CONFIG_STROLL_SLIST_INSERT_SORT) */
+STROLLUT_SLIST_UNSUP(strollut_slist_insert_setup)
+#endif  /* defined(CONFIG_STROLL_SLIST_INSERT_SORT) */
+
+CUTE_SUITE_STATIC(strollut_slist_insert_suite,
+                  strollut_slist_sort_group,
+                  strollut_slist_insert_setup,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);
+
+#if defined(CONFIG_STROLL_SLIST_MERGE_SORT)
+
+static void
+strollut_slist_merge_sort(struct stroll_slist * __restrict list,
+                          unsigned int                     nr,
+                          stroll_slist_cmp_fn *            compare)
+{
+	stroll_slist_merge_sort(list, nr, compare, NULL);
+}
+
+STROLLUT_SLIST_SORT_SETUP(strollut_slist_merge_setup,
+                          strollut_slist_merge_sort)
+
+#else   /* !defined(CONFIG_STROLL_SLIST_MERGE_SORT) */
+STROLLUT_SLIST_UNSUP(strollut_slist_merge_setup)
+#endif  /* defined(CONFIG_STROLL_SLIST_MERGE_SORT) */
+
+CUTE_SUITE_STATIC(strollut_slist_merge_suite,
+                  strollut_slist_sort_group,
+                  strollut_slist_merge_setup,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);
+
+/******************************************************************************
+ * Top-level suite
+ ******************************************************************************/
+
 CUTE_GROUP(strollut_slist_group) = {
 	CUTE_REF(strollut_slist_empty),
 	CUTE_REF(strollut_slist_init),
@@ -1087,8 +1993,12 @@ CUTE_GROUP(strollut_slist_group) = {
 	CUTE_REF(strollut_slist_splice_lead),
 	CUTE_REF(strollut_slist_splice_mid),
 	CUTE_REF(strollut_slist_splice_trail),
-};
 
+	CUTE_REF(strollut_slist_bubble_suite),
+	CUTE_REF(strollut_slist_select_suite),
+	CUTE_REF(strollut_slist_insert_suite),
+	CUTE_REF(strollut_slist_merge_suite)
+};
 
 CUTE_SUITE_EXTERN(strollut_slist_suite,
                   strollut_slist_group,

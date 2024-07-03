@@ -51,12 +51,15 @@ builtin_utest.a-cflags := $(test-cflags)
 
 checkbins            := stroll-utest
 stroll-utest-objs    := cdefs.o
+ifneq ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST)),)
+stroll-utest-objs    += array_data.o
+endif # ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST)),)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BOPS,bops.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_POW2,pow2.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BMAP,bmap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_FBMAP,fbmap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_LVSTR,lvstr.o)
-stroll-utest-objs    += $(call kconf_enabled,STROLL_ARRAY,array.o array_data.o)
+stroll-utest-objs    += $(call kconf_enabled,STROLL_ARRAY,array.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_HEAP,heap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_SLIST,slist.o)
 stroll-utest-cflags  := $(test-cflags)
