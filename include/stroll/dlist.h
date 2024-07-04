@@ -168,6 +168,9 @@ void
 stroll_dlist_insert(struct stroll_dlist_node * __restrict at,
                     struct stroll_dlist_node * __restrict node)
 {
+	stroll_dlist_assert_api(at);
+	stroll_dlist_assert_api(node);
+
 	stroll_dlist_inject(at->prev, node, at);
 }
 
@@ -255,9 +258,32 @@ static inline __stroll_nonull(1) __stroll_nothrow
 struct stroll_dlist_node *
 stroll_dlist_dqueue_front(struct stroll_dlist_node * __restrict list)
 {
+	stroll_dlist_assert_api(!stroll_dlist_empty(list));
+
 	struct stroll_dlist_node * node = stroll_dlist_next(list);
 
 	stroll_dlist_remove(node);
+
+	return node;
+}
+
+/**
+ * Dequeue then reinitialize a stroll_dlist_node from the head of specified
+ * list.
+ *
+ * @param list Dummy head node designating the list.
+ *
+ * @return Pointer to dequeued node.
+ */
+static inline __stroll_nonull(1) __stroll_nothrow
+struct stroll_dlist_node *
+stroll_dlist_dqueue_front_init(struct stroll_dlist_node * __restrict list)
+{
+	stroll_dlist_assert_api(!stroll_dlist_empty(list));
+
+	struct stroll_dlist_node * node = stroll_dlist_dqueue_front(list);
+
+	stroll_dlist_init(node);
 
 	return node;
 }
@@ -273,9 +299,32 @@ static inline __stroll_nonull(1) __stroll_nothrow
 struct stroll_dlist_node *
 stroll_dlist_dqueue_back(struct stroll_dlist_node * __restrict list)
 {
+	stroll_dlist_assert_api(!stroll_dlist_empty(list));
+
 	struct stroll_dlist_node * node = stroll_dlist_prev(list);
 
 	stroll_dlist_remove(node);
+
+	return node;
+}
+
+/**
+ * Dequeue then reinitialize a stroll_dlist_node from the tail of specified
+ * list.
+ *
+ * @param list Dummy head node designating the list.
+ *
+ * @return Pointer to dequeued node.
+ */
+static inline __stroll_nonull(1) __stroll_nothrow
+struct stroll_dlist_node *
+stroll_dlist_dqueue_back_init(struct stroll_dlist_node * __restrict list)
+{
+	stroll_dlist_assert_api(!stroll_dlist_empty(list));
+
+	struct stroll_dlist_node * node = stroll_dlist_dqueue_back(list);
+
+	stroll_dlist_init(node);
 
 	return node;
 }
@@ -295,6 +344,7 @@ stroll_dlist_replace(struct stroll_dlist_node * __restrict old,
 {
 	stroll_dlist_assert_api(!stroll_dlist_empty(old));
 	stroll_dlist_assert_api(node);
+	stroll_dlist_assert_api(old != node);
 
 	stroll_dlist_inject(old->prev, node, old->next);
 }

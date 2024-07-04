@@ -124,6 +124,42 @@ CUTE_TEST(strollut_dlist_second)
 	cute_check_uint(cnt, equal, 2);
 }
 
+CUTE_TEST(strollut_dlist_insert)
+{
+	struct stroll_dlist_node   list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node   nodes[8];
+	struct stroll_dlist_node * node;
+	unsigned int               c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_insert(&list, &nodes[c]);
+
+	c = 0;
+	stroll_dlist_foreach_node(&list, node) {
+		cute_check_ptr(node, equal, &nodes[c]);
+		c++;
+	}
+
+	cute_check_uint(c, equal, stroll_array_nr(nodes));
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+CUTE_TEST(strollut_dlist_insert_assert)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node node;
+
+	cute_expect_assertion(stroll_dlist_insert(NULL, &node));
+	cute_expect_assertion(stroll_dlist_insert(&list, NULL));
+}
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+STROLLUT_DLIST_NOASSERT(strollut_dlist_insert_assert)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
 CUTE_TEST(strollut_dlist_append)
 {
 	struct stroll_dlist_node   list = STROLL_DLIST_INIT(list);
@@ -158,6 +194,80 @@ CUTE_TEST(strollut_dlist_append_assert)
 #else  /* !defined(CONFIG_STROLL_ASSERT_API) */
 
 STROLLUT_DLIST_NOASSERT(strollut_dlist_append_assert)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
+CUTE_TEST(strollut_dlist_nqueue_front)
+{
+	struct stroll_dlist_node   list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node   nodes[8];
+	struct stroll_dlist_node * node;
+	unsigned int               c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_front(&list, &nodes[c]);
+
+	c = 0;
+	stroll_dlist_foreach_node(&list, node) {
+		cute_check_ptr(node,
+		               equal,
+		               &nodes[stroll_array_nr(nodes) - 1 - c]);
+		c++;
+	}
+
+	cute_check_uint(c, equal, stroll_array_nr(nodes));
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+CUTE_TEST(strollut_dlist_nqueue_front_assert)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node node;
+
+	cute_expect_assertion(stroll_dlist_nqueue_front(NULL, &node));
+	cute_expect_assertion(stroll_dlist_nqueue_front(&list, NULL));
+}
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+STROLLUT_DLIST_NOASSERT(strollut_dlist_nqueue_front_assert)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
+CUTE_TEST(strollut_dlist_nqueue_back)
+{
+	struct stroll_dlist_node   list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node   nodes[8];
+	struct stroll_dlist_node * node;
+	unsigned int               c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_back(&list, &nodes[c]);
+
+	c = 0;
+	stroll_dlist_foreach_node(&list, node) {
+		cute_check_ptr(node, equal, &nodes[c]);
+		c++;
+	}
+
+	cute_check_uint(c, equal, stroll_array_nr(nodes));
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+CUTE_TEST(strollut_dlist_nqueue_back_assert)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node node;
+
+	cute_expect_assertion(stroll_dlist_nqueue_back(NULL, &node));
+	cute_expect_assertion(stroll_dlist_nqueue_back(&list, NULL));
+}
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+STROLLUT_DLIST_NOASSERT(strollut_dlist_nqueue_back_assert)
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
@@ -223,6 +333,195 @@ CUTE_TEST(strollut_dlist_remove_init_assert)
 #else  /* !defined(CONFIG_STROLL_ASSERT_API) */
 
 STROLLUT_DLIST_NOASSERT(strollut_dlist_remove_init_assert)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
+CUTE_TEST(strollut_dlist_dqueue_front)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node nodes[8];
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_back(&list, &nodes[c]);
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		cute_check_ptr(stroll_dlist_dqueue_front(&list),
+		               equal,
+		               &nodes[c]);
+
+	cute_check_bool(stroll_dlist_empty(&list), is, true);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+CUTE_TEST(strollut_dlist_dqueue_front_assert)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+
+	cute_expect_assertion(stroll_dlist_dqueue_front(NULL));
+	cute_expect_assertion(stroll_dlist_dqueue_front(&list));
+}
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+STROLLUT_DLIST_NOASSERT(strollut_dlist_dqueue_front_assert)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
+CUTE_TEST(strollut_dlist_dqueue_front_init)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node nodes[8];
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_back(&list, &nodes[c]);
+
+	for (c = 0; c < stroll_array_nr(nodes); c++) {
+		cute_check_ptr(stroll_dlist_dqueue_front_init(&list),
+		               equal,
+		               &nodes[c]);
+		cute_check_bool(stroll_dlist_empty(&nodes[c]), is, true);
+	}
+
+	cute_check_bool(stroll_dlist_empty(&list), is, true);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+CUTE_TEST(strollut_dlist_dqueue_front_init_assert)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+
+	cute_expect_assertion(stroll_dlist_dqueue_front_init(NULL));
+	cute_expect_assertion(stroll_dlist_dqueue_front_init(&list));
+}
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+STROLLUT_DLIST_NOASSERT(strollut_dlist_dqueue_front_init_assert)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
+CUTE_TEST(strollut_dlist_dqueue_back)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node nodes[8];
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_front(&list, &nodes[c]);
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		cute_check_ptr(stroll_dlist_dqueue_back(&list),
+		               equal,
+		               &nodes[c]);
+
+	cute_check_bool(stroll_dlist_empty(&list), is, true);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+CUTE_TEST(strollut_dlist_dqueue_back_assert)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+
+	cute_expect_assertion(stroll_dlist_dqueue_back(NULL));
+	cute_expect_assertion(stroll_dlist_dqueue_back(&list));
+}
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+STROLLUT_DLIST_NOASSERT(strollut_dlist_dqueue_back_assert)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
+CUTE_TEST(strollut_dlist_dqueue_back_init)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node nodes[8];
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_front(&list, &nodes[c]);
+
+	for (c = 0; c < stroll_array_nr(nodes); c++) {
+		cute_check_ptr(stroll_dlist_dqueue_back_init(&list),
+		               equal,
+		               &nodes[c]);
+		cute_check_bool(stroll_dlist_empty(&nodes[c]), is, true);
+	}
+
+	cute_check_bool(stroll_dlist_empty(&list), is, true);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+CUTE_TEST(strollut_dlist_dqueue_back_init_assert)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+
+	cute_expect_assertion(stroll_dlist_dqueue_back_init(NULL));
+	cute_expect_assertion(stroll_dlist_dqueue_back_init(&list));
+}
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+STROLLUT_DLIST_NOASSERT(strollut_dlist_dqueue_back_init_assert)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
+CUTE_TEST(strollut_dlist_replace)
+{
+	struct stroll_dlist_node list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node nodes[3];
+	struct stroll_dlist_node node;
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_back(&list, &nodes[c]);
+
+	stroll_dlist_replace(&nodes[0], &node);
+	cute_check_ptr(stroll_dlist_next(&list), equal, &node);
+	cute_check_ptr(stroll_dlist_prev(&nodes[1]), equal, &node);
+	stroll_dlist_replace(&node, &nodes[0]);
+	cute_check_ptr(stroll_dlist_next(&list), equal, &nodes[0]);
+	cute_check_ptr(stroll_dlist_prev(&nodes[1]), equal, &nodes[0]);
+
+	stroll_dlist_replace(&nodes[1], &node);
+	cute_check_ptr(stroll_dlist_next(&nodes[0]), equal, &node);
+	cute_check_ptr(stroll_dlist_prev(&nodes[2]), equal, &node);
+	stroll_dlist_replace(&node, &nodes[1]);
+	cute_check_ptr(stroll_dlist_next(&nodes[0]), equal, &nodes[1]);
+	cute_check_ptr(stroll_dlist_prev(&nodes[2]), equal, &nodes[1]);
+
+	stroll_dlist_replace(&nodes[2], &node);
+	cute_check_ptr(stroll_dlist_next(&nodes[1]), equal, &node);
+	cute_check_ptr(stroll_dlist_prev(&list), equal, &node);
+	stroll_dlist_replace(&node, &nodes[2]);
+	cute_check_ptr(stroll_dlist_next(&nodes[1]), equal, &nodes[2]);
+	cute_check_ptr(stroll_dlist_prev(&list), equal, &nodes[2]);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+CUTE_TEST(strollut_dlist_replace_assert)
+{
+	struct stroll_dlist_node node;
+	struct stroll_dlist_node list = {
+		.next = &node,
+		.prev = &node
+	};
+
+	cute_expect_assertion(stroll_dlist_replace(NULL, &node));
+	cute_expect_assertion(stroll_dlist_replace(&list, NULL));
+	cute_expect_assertion(stroll_dlist_replace(&list, &node));
+}
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+STROLLUT_DLIST_NOASSERT(strollut_dlist_replace_assert)
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
@@ -1963,21 +2262,31 @@ CUTE_GROUP(strollut_dlist_group) = {
 	CUTE_REF(strollut_dlist_single),
 	CUTE_REF(strollut_dlist_single_assert),
 	CUTE_REF(strollut_dlist_second),
+	CUTE_REF(strollut_dlist_insert),
+	CUTE_REF(strollut_dlist_insert_assert),
 	CUTE_REF(strollut_dlist_append),
 	CUTE_REF(strollut_dlist_append_assert),
+	CUTE_REF(strollut_dlist_nqueue_front),
+	CUTE_REF(strollut_dlist_nqueue_front_assert),
+	CUTE_REF(strollut_dlist_nqueue_back),
+	CUTE_REF(strollut_dlist_nqueue_back_assert),
 	CUTE_REF(strollut_dlist_remove),
 	CUTE_REF(strollut_dlist_remove_assert),
 	CUTE_REF(strollut_dlist_remove_init),
 	CUTE_REF(strollut_dlist_remove_init_assert),
+	CUTE_REF(strollut_dlist_dqueue_front),
+	CUTE_REF(strollut_dlist_dqueue_front_assert),
+	CUTE_REF(strollut_dlist_dqueue_front_init),
+	CUTE_REF(strollut_dlist_dqueue_front_init_assert),
+	CUTE_REF(strollut_dlist_dqueue_back),
+	CUTE_REF(strollut_dlist_dqueue_back_assert),
+	CUTE_REF(strollut_dlist_dqueue_back_init),
+	CUTE_REF(strollut_dlist_dqueue_back_init_assert),
+	CUTE_REF(strollut_dlist_replace),
+	CUTE_REF(strollut_dlist_replace_assert),
 #if 0
 	CUTE_REF(strollut_slist_move),
 	CUTE_REF(strollut_slist_move_assert),
-	CUTE_REF(strollut_slist_nqueue_back),
-	CUTE_REF(strollut_slist_nqueue_back_assert),
-	CUTE_REF(strollut_slist_nqueue_front),
-	CUTE_REF(strollut_slist_nqueue_front_assert),
-	CUTE_REF(strollut_slist_dqueue_front),
-	CUTE_REF(strollut_slist_dqueue_front_assert),
 	CUTE_REF(strollut_slist_withdraw_assert),
 	CUTE_REF(strollut_slist_withdraw_first),
 	CUTE_REF(strollut_slist_withdraw_lead),

@@ -572,6 +572,7 @@ stroll_slist_merge_sort(struct stroll_slist * __restrict list,
 {
 	stroll_slist_assert_api(nodes_nr);
 
+#if 0
 	unsigned int run_len;
 
 	if (nodes_nr <= 4)
@@ -590,6 +591,9 @@ stroll_slist_merge_sort(struct stroll_slist * __restrict list,
 		run_len = 64;
 	else
 		run_len = 128;
+#else
+	unsigned int run_len = 16;
+#endif
 
 	stroll_slist_hybrid_merge_sort(list, run_len, nodes_nr, compare, data);
 }
