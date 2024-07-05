@@ -14,9 +14,9 @@
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
 void
-stroll_dlist_splice(struct stroll_dlist_node * __restrict at,
-                    struct stroll_dlist_node *            first,
-                    struct stroll_dlist_node *            last)
+stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
+                          struct stroll_dlist_node *            first,
+                          struct stroll_dlist_node *            last)
 {
 	stroll_dlist_assert_api(at);
 	stroll_dlist_assert_api(first);
@@ -25,7 +25,7 @@ stroll_dlist_splice(struct stroll_dlist_node * __restrict at,
 	stroll_dlist_assert_api(at != last);
 
 	stroll_dlist_withdraw(first, last);
-	stroll_dlist_embed(at, first, last);
+	stroll_dlist_embed_after(at, first, last);
 }
 
 /******************************************************************************

@@ -592,7 +592,7 @@ stroll_slist_merge_sort(struct stroll_slist * __restrict list,
 	else
 		run_len = 128;
 #else
-	unsigned int run_len = 16;
+	unsigned int run_len = 64;
 #endif
 
 	stroll_slist_hybrid_merge_sort(list, run_len, nodes_nr, compare, data);

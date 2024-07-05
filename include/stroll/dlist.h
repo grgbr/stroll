@@ -354,8 +354,25 @@ stroll_dlist_replace(struct stroll_dlist_node * __restrict old,
  *
  * @param at   Node after which to append @p node.
  * @param node Node to move.
+ */
+static inline __stroll_nonull(1, 2) __stroll_nothrow
+void
+stroll_dlist_move_before(struct stroll_dlist_node * __restrict at,
+                         struct stroll_dlist_node * __restrict node)
+{
+	stroll_dlist_assert_api(at);
+	stroll_dlist_assert_api(node);
+	stroll_dlist_assert_api(at != node);
+
+	stroll_dlist_remove(node);
+	stroll_dlist_inject(at->prev, node, at);
+}
+
+/**
+ * Move entry from one location to another.
  *
- * @warning Behavior is unpredictable if @p old node is empty.
+ * @param at   Node after which to append @p node.
+ * @param node Node to move.
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
@@ -363,6 +380,8 @@ stroll_dlist_move_after(struct stroll_dlist_node * __restrict at,
                         struct stroll_dlist_node * __restrict node)
 {
 	stroll_dlist_assert_api(at);
+	stroll_dlist_assert_api(node);
+	stroll_dlist_assert_api(at != node);
 
 	stroll_dlist_remove(node);
 	stroll_dlist_inject(at, node, at->next);
@@ -398,9 +417,9 @@ stroll_dlist_withdraw(const struct stroll_dlist_node * first,
  */
 static inline __stroll_nonull(1, 2, 3) __stroll_nothrow
 void
-stroll_dlist_embed(struct stroll_dlist_node * __restrict at,
-                   struct stroll_dlist_node *            first,
-                   struct stroll_dlist_node *            last)
+stroll_dlist_embed_after(struct stroll_dlist_node * __restrict at,
+                         struct stroll_dlist_node *            first,
+                         struct stroll_dlist_node *            last)
 {
 	stroll_dlist_assert_api(at);
 	stroll_dlist_assert_api(first);
@@ -425,9 +444,9 @@ stroll_dlist_embed(struct stroll_dlist_node * __restrict at,
  * @param last  Last node of portion to move.
  */
 extern void
-stroll_dlist_splice(struct stroll_dlist_node * __restrict at,
-                    struct stroll_dlist_node *            first,
-                    struct stroll_dlist_node *            last)
+stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
+                          struct stroll_dlist_node *            first,
+                          struct stroll_dlist_node *            last)
 	__stroll_nonull(1, 2, 3) __stroll_nothrow;
 
 /**
