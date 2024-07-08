@@ -833,7 +833,6 @@ stroll_slist_merge_presort(struct stroll_slist * __restrict result,
  * Sort specified list according to an hybrid merge sort scheme.
  *
  * @param[inout] list     stroll_slist to sort.
- * @param[in]    nodes_nr Number of nodes linked into list.
  * @param[in]    compare  @p list nodes comparison function.
  * @param[inout] data     Optional arbitrary user data.
  *
@@ -859,10 +858,9 @@ stroll_slist_merge_presort(struct stroll_slist * __restrict result,
  */
 extern void
 stroll_slist_merge_sort(struct stroll_slist * __restrict list,
-                        unsigned int                     nodes_nr,
                         stroll_slist_cmp_fn *            compare,
                         void *                           data)
-	__stroll_nonull(1, 3);
+	__stroll_nonull(1, 2);
 
 #endif /* defined(CONFIG_STROLL_SLIST_MERGE_SORT) */
 

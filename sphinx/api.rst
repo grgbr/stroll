@@ -888,14 +888,9 @@ space to store sublist heads.
 
 The algorithm starts by using the `merge`_ sort’s divide and conquer strategy.
 To limit the number of merging passes, it switches to `list insertion sort`_
-when the number of keys to be sorted is lower than a calculated threshold.
-The latter is automatically computed according to an heuristic implemented
-in :c:func:`stroll_slist_merge_sort()` according to the following tradeoffs:
-
-* the lower the value, the better the worst case in terms of computational
-  complexity and the larger the used stack space ;
-* the greater the value, the better the best case in terms of computational
-  complexity and the lower the used stack space.
+when the number of nodes left to sort is below the
+:c:macro:`CONFIG_STROLL_SLIST_MSORT_INSERT_THRESHOLD` threshold which may be
+configured at Stroll_ building time.
 
 .. note::
 

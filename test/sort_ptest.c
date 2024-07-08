@@ -485,9 +485,8 @@ strollpt_sort_measure_array_fwheap(const unsigned int * __restrict elements,
 
 typedef void
         (strollpt_sort_slist_fn)(struct stroll_slist * __restrict,
-                                 unsigned int,
                                  stroll_slist_cmp_fn *)
-	__stroll_nonull(1, 3);
+	__stroll_nonull(1, 2);
 
 struct strollpt_slist_node {
 	struct stroll_slist_node super;
@@ -591,7 +590,7 @@ strollpt_sort_validate_slist(const unsigned int * __restrict elements,
 	if (!list)
 		return EXIT_FAILURE;
 
-	sort(list, nr, strollpt_slist_compare_min);
+	sort(list, strollpt_slist_compare_min);
 
 	stroll_slist_foreach_entry(list, curr, super) {
 		cnt++;
@@ -634,7 +633,7 @@ strollpt_sort_measure_slist(const unsigned int * __restrict elements,
 		return EXIT_FAILURE;
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
-	sort(list, nr, strollpt_slist_compare_min);
+	sort(list, strollpt_slist_compare_min);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
 
 	elapse = strollpt_tspec_sub(&elapse, &start);
@@ -651,7 +650,6 @@ strollpt_sort_measure_slist(const unsigned int * __restrict elements,
 
 static void
 strollpt_sort_slist_bubble(struct stroll_slist * __restrict list,
-                           unsigned int                     nr __unused,
                            stroll_slist_cmp_fn *            compare)
 {
 	stroll_slist_bubble_sort(list, compare, NULL);
@@ -687,7 +685,6 @@ strollpt_sort_measure_slist_bubble(const unsigned int * __restrict elements,
 
 static void
 strollpt_sort_slist_select(struct stroll_slist * __restrict list,
-                           unsigned int                     nr __unused,
                            stroll_slist_cmp_fn *            compare)
 {
 	stroll_slist_select_sort(list, compare, NULL);
@@ -723,7 +720,6 @@ strollpt_sort_measure_slist_select(const unsigned int * __restrict elements,
 
 static void
 strollpt_sort_slist_insert(struct stroll_slist * __restrict list,
-                           unsigned int                     nr __unused,
                            stroll_slist_cmp_fn *            compare)
 {
 	stroll_slist_insert_sort(list, compare, NULL);
@@ -759,10 +755,9 @@ strollpt_sort_measure_slist_insert(const unsigned int * __restrict elements,
 
 static void
 strollpt_sort_slist_merge(struct stroll_slist * __restrict list,
-                          unsigned int                     nr,
                           stroll_slist_cmp_fn *            compare)
 {
-	stroll_slist_merge_sort(list, nr, compare, NULL);
+	stroll_slist_merge_sort(list, compare, NULL);
 }
 
 static int

@@ -1083,7 +1083,6 @@ struct strollut_list_xpct {
 	}
 
 static void (*strollut_slist_sort)(struct stroll_slist * __restrict list,
-                                   unsigned int                     nr,
                                    stroll_slist_cmp_fn *            compare);
 
 #define STROLLUT_SLIST_SORT_SETUP(_setup, _sort) \
@@ -1120,7 +1119,7 @@ strollut_slist_sort_check_num(struct strollut_slist_node      nodes[],
 	for (n = 0; n < nr; n++)
 		stroll_slist_nqueue_back(&list, &nodes[n].super);
 
-	strollut_slist_sort(&list, nr, strollut_slist_compare_min_num);
+	strollut_slist_sort(&list, strollut_slist_compare_min_num);
 
 	for (n = 0; n < nr; n++) {
 		const struct strollut_list_xpct *  xpct = &expected[n];
@@ -1395,7 +1394,7 @@ strollut_slist_sort_check_str(struct strollut_slist_node      nodes[],
 	for (n = 0; n < nr; n++)
 		stroll_slist_nqueue_back(&list, &nodes[n].super);
 
-	strollut_slist_sort(&list, nr, strollut_slist_compare_min_str);
+	strollut_slist_sort(&list, strollut_slist_compare_min_str);
 
 	for (n = 0; n < nr; n++) {
 		const struct strollut_list_xpct *  xpct = &expected[n];
@@ -1708,9 +1707,7 @@ strollut_slist_sort_check_large_num(const struct strollut_array_num * array,
 		                         &strollut_list_tosort_num[e].super);
 	}
 
-	strollut_slist_sort(&list,
-	                    stroll_array_nr(strollut_list_tosort_num),
-	                    cmp);
+	strollut_slist_sort(&list, cmp);
 
 	for (e = 0; e < stroll_array_nr(strollut_list_tosort_num); e++) {
 		const struct strollut_array_num *  xpct = &expected[e];
@@ -1798,9 +1795,7 @@ strollut_slist_sort_check_large_str(const struct strollut_array_str * array,
 		                         &strollut_list_tosort_str[e].super);
 	}
 
-	strollut_slist_sort(&list,
-	                    stroll_array_nr(strollut_list_tosort_str),
-	                    cmp);
+	strollut_slist_sort(&list, cmp);
 
 	for (e = 0; e < stroll_array_nr(strollut_list_tosort_str); e++) {
 		const struct strollut_array_str *  xpct = &expected[e];
@@ -1865,7 +1860,6 @@ CUTE_GROUP(strollut_slist_sort_group) = {
 
 static void
 strollut_slist_bubble_sort(struct stroll_slist * __restrict list,
-                           unsigned int                     nr __unused,
                            stroll_slist_cmp_fn *            compare)
 {
 	stroll_slist_bubble_sort(list, compare, NULL);
@@ -1888,7 +1882,6 @@ CUTE_SUITE_STATIC(strollut_slist_bubble_suite,
 
 static void
 strollut_slist_select_sort(struct stroll_slist * __restrict list,
-                           unsigned int                     nr __unused,
                            stroll_slist_cmp_fn *            compare)
 {
 	stroll_slist_select_sort(list, compare, NULL);
@@ -1911,7 +1904,6 @@ CUTE_SUITE_STATIC(strollut_slist_select_suite,
 
 static void
 strollut_slist_insert_sort(struct stroll_slist * __restrict list,
-                           unsigned int                     nr __unused,
                            stroll_slist_cmp_fn *            compare)
 {
 	stroll_slist_insert_sort(list, compare, NULL);
@@ -1934,10 +1926,9 @@ CUTE_SUITE_STATIC(strollut_slist_insert_suite,
 
 static void
 strollut_slist_merge_sort(struct stroll_slist * __restrict list,
-                          unsigned int                     nr,
                           stroll_slist_cmp_fn *            compare)
 {
-	stroll_slist_merge_sort(list, nr, compare, NULL);
+	stroll_slist_merge_sort(list, compare, NULL);
 }
 
 STROLLUT_SLIST_SORT_SETUP(strollut_slist_merge_setup,

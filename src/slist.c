@@ -303,6 +303,9 @@ stroll_slist_insert_sort(struct stroll_slist * __restrict list,
 
 #if defined(CONFIG_STROLL_SLIST_MERGE_SORT)
 
+#define STROLL_SLIST_MSORT_INSERT_THRESHOLD \
+	STROLL_CONCAT(CONFIG_STROLL_SLIST_MERGE_SORT_INSERT_THRESHOLD, U)
+
 /*
  * Sort a specified number of nodes from a stroll_slist according to the
  * insertion sort scheme and move sorted nodes into a result stroll_slist.
@@ -320,7 +323,6 @@ stroll_slist_insert_sort(struct stroll_slist * __restrict list,
 static void __stroll_nonull(1, 2, 4)
 stroll_slist_counted_insert_sort(struct stroll_slist * __restrict result,
                                  struct stroll_slist * __restrict source,
-                                 unsigned int                     count,
                                  stroll_slist_cmp_fn *            compare,
                                  void *                           data)
 {
@@ -328,10 +330,11 @@ stroll_slist_counted_insert_sort(struct stroll_slist * __restrict result,
 	stroll_slist_assert_intern(!stroll_slist_empty(source));
 	stroll_slist_assert_intern(compare);
 
+	unsigned int               cnt = STROLL_SLIST_MSORT_INSERT_THRESHOLD;
 	struct stroll_slist_node * prev = stroll_slist_first(source);
 	struct stroll_slist_node * curr = stroll_slist_next(prev);
 
-	while (--count && curr) {
+	while (--cnt && curr) {
 		if (compare(curr, prev, data) < 0) {
 			stroll_slist_remove(source, prev, curr);
 			stroll_slist_insert_inorder(source,
@@ -471,47 +474,39 @@ stroll_slist_merge_presort(struct stroll_slist * __restrict result,
 	} while (!stroll_slist_empty(source));
 }
 
-/*
- * Iteratively split list and merge presorted sublists.
- *
- * @param list    stroll_slist to sort.
- * @param run_len Primary sorting run length in number of nodes.
- * @param subs_nr Logarithm base 2 of number of merging pass.
- * @param compare Comparison function used to perform in order merge.
- *
- * @note
- * Merge sorting sublists are allocated onto stack since implementation needs
- * only logarithmic auxiliary space.
- */
-static __stroll_nonull(1, 4)
 void
-stroll_slist_split_merge_sort(struct stroll_slist * __restrict list,
-                              unsigned int                     run_len,
-                              unsigned int                     subs_nr,
-                              stroll_slist_cmp_fn *            compare,
-                              void *                           data)
+stroll_slist_merge_sort(struct stroll_slist * __restrict list,
+                        stroll_slist_cmp_fn *            compare,
+                        void *                           data)
 {
-	stroll_slist_assert_intern(list);
-	stroll_slist_assert_intern(subs_nr);
-	stroll_slist_assert_intern(compare);
+	stroll_slist_assert_api(!stroll_slist_empty(list));
+	stroll_slist_assert_api(compare);
+
+	/*
+	 * Maximum number of sublists that can be merged. Sublist heads are
+	 * allocated onto stack since implementation needs logarithmic auxiliary
+	 * space only.
+	 * Here, a maximum of 2**32 nodes may be merged.
+	 */
+#define STROLL_SLIST_MSORT_SUBS_MAX \
+	((sizeof(unsigned int) * CHAR_BIT) - \
+	 stroll_pow2_up(STROLL_SLIST_MSORT_INSERT_THRESHOLD) \
+	 + 2)
 
 	unsigned int        cnt;
-	struct stroll_slist subs[subs_nr]; /* Space for sublists merging. */
+        unsigned int        nr = 0;
+	struct stroll_slist subs[STROLL_SLIST_MSORT_SUBS_MAX];
 
-	for (cnt = 0; cnt < subs_nr; cnt++)
+	for (cnt = 0; cnt < STROLL_SLIST_MSORT_SUBS_MAX; cnt++)
 		stroll_slist_init(&subs[cnt]);
 
-	subs_nr = 0;
+	/* Iteratively split list and merge presorted sublists. */
 	do {
 		/*
 		 * Sort an initial run using insertion sort and store the result
 		 * in the current sublist.
 		 */
-		stroll_slist_counted_insert_sort(&subs[0],
-		                                 list,
-		                                 run_len,
-		                                 compare,
-		                                 data);
+		stroll_slist_counted_insert_sort(&subs[0], list, compare, data);
 
 		/* Merge up 2 runs / sublists of the same length in a row.*/
 		cnt = 1;
@@ -521,12 +516,14 @@ stroll_slist_split_merge_sort(struct stroll_slist * __restrict list,
 			                           compare,
 			                           data);
 			cnt++;
+			stroll_slist_assert_intern(cnt <
+			                           STROLL_SLIST_MSORT_SUBS_MAX);
 		}
 
 		subs[cnt] = subs[cnt - 1];
 		stroll_slist_init(&subs[cnt - 1]);
 
-		subs_nr = stroll_max(subs_nr, cnt);
+		nr = stroll_max(nr, cnt);
 	} while (!stroll_slist_empty(list));
 
 	/*
@@ -534,68 +531,13 @@ stroll_slist_split_merge_sort(struct stroll_slist * __restrict list,
 	 * stability, iterate over the sublists array in reverse order since
 	 * earlier runs were "pushed" in the upper areas of the array.
 	 */
-	*list = subs[subs_nr];
-	while (subs_nr--)
-		if (!stroll_slist_empty(&subs[subs_nr]))
+	*list = subs[nr];
+	while (nr--)
+		if (!stroll_slist_empty(&subs[nr]))
 			stroll_slist_merge_presort(list,
-			                           &subs[subs_nr],
+			                           &subs[nr],
 			                           compare,
 			                           data);
-}
-
-static void __stroll_nonull(1, 4)
-stroll_slist_hybrid_merge_sort(struct stroll_slist * __restrict list,
-                               unsigned int                     run_len,
-                               unsigned int                     nodes_nr,
-                               stroll_slist_cmp_fn *            compare,
-                               void *                           data)
-{
-	stroll_slist_assert_intern(!stroll_slist_empty(list));
-	stroll_slist_assert_intern(run_len);
-	stroll_slist_assert_intern(nodes_nr);
-	stroll_slist_assert_intern(compare);
-
-	/* Perform the real merge sort. */
-	stroll_slist_split_merge_sort(
-		list,
-		run_len,
-		stroll_pow2_up(stroll_max(nodes_nr / run_len, 2U)) + 2,
-		compare,
-		data);
-}
-
-void
-stroll_slist_merge_sort(struct stroll_slist * __restrict list,
-                        unsigned int                     nodes_nr,
-                        stroll_slist_cmp_fn *            compare,
-                        void *                           data)
-{
-	stroll_slist_assert_api(nodes_nr);
-
-#if 0
-	unsigned int run_len;
-
-	if (nodes_nr <= 4)
-		/* Switch to insertion sorting for trivial cases. */
-		return stroll_slist_insert_sort(list, compare, data);
-
-	if (nodes_nr <= 16)
-		run_len = 4;
-	else if (nodes_nr <= 128)
-		run_len = 8;
-	else if (nodes_nr <= 1024)
-		run_len = 16;
-	else if (nodes_nr <= (8*1024))
-		run_len = 32;
-	else if (nodes_nr <= (64*1024))
-		run_len = 64;
-	else
-		run_len = 128;
-#else
-	unsigned int run_len = 64;
-#endif
-
-	stroll_slist_hybrid_merge_sort(list, run_len, nodes_nr, compare, data);
 }
 
 #endif /* defined(CONFIG_STROLL_SLIST_MERGE_SORT) */
