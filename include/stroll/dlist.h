@@ -185,6 +185,9 @@ void
 stroll_dlist_append(struct stroll_dlist_node * __restrict at,
                     struct stroll_dlist_node * __restrict node)
 {
+	stroll_dlist_assert_api(at);
+	stroll_dlist_assert_api(node);
+
 	stroll_dlist_inject(at, node, at->next);
 }
 
