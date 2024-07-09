@@ -414,6 +414,34 @@ stroll_dlist_withdraw(const struct stroll_dlist_node * first,
 /**
  * Insert a portion of nodes into a dlist.
  *
+ * @param at    Node before which portion is inserted.
+ * @param first First node of portion to insert.
+ * @param last  Last node of portion to insert.
+ */
+static inline __stroll_nonull(1, 2, 3) __stroll_nothrow
+void
+stroll_dlist_embed_before(struct stroll_dlist_node * __restrict at,
+                          struct stroll_dlist_node *            first,
+                          struct stroll_dlist_node *            last)
+{
+	stroll_dlist_assert_api(at);
+	stroll_dlist_assert_api(first);
+	stroll_dlist_assert_api(last);
+	stroll_dlist_assert_api(at != first);
+	stroll_dlist_assert_api(at != last);
+
+	struct stroll_dlist_node * prev = at->prev;
+
+	first->prev = prev;
+	prev->next = first;
+
+	last->next = at;
+	at->prev = last;
+}
+
+/**
+ * Insert a portion of nodes into a dlist.
+ *
  * @param at    Node after which portion is inserted.
  * @param first First node of portion to insert.
  * @param last  Last node of portion to insert.
