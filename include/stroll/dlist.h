@@ -180,6 +180,8 @@ stroll_dlist_prev(const struct stroll_dlist_node * __restrict node)
  * @warning
  * - Result is undefined if @p prev has not been previously initialized.
  * - Result is undefined if @p next has not been previously initialized.
+ *
+ * @see stroll_dlist_init()
  */
 static inline __stroll_nonull(1, 2, 3) __stroll_nothrow
 void
@@ -221,6 +223,7 @@ stroll_dlist_insert(struct stroll_dlist_node * __restrict at,
 {
 	stroll_dlist_assert_api(at);
 	stroll_dlist_assert_api(node);
+	stroll_dlist_assert_api(node != at);
 
 	stroll_dlist_inject(at->prev, node, at);
 }
@@ -245,6 +248,7 @@ stroll_dlist_append(struct stroll_dlist_node * __restrict at,
 {
 	stroll_dlist_assert_api(at);
 	stroll_dlist_assert_api(node);
+	stroll_dlist_assert_api(node != at);
 
 	stroll_dlist_inject(at, node, at->next);
 }
@@ -252,35 +256,64 @@ stroll_dlist_append(struct stroll_dlist_node * __restrict at,
 /**
  * Enqueue a stroll_dlist_node at the head of specified list.
  *
- * @param list Dummy head node designating the list.
- * @param node Node to enqueue.
+ * @param[inout] list Dummy head node designating the list.
+ * @param[out]   node Node to enqueue.
+ *
+ * @warning
+ * Result is undefined if @p list has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_nqueue_back()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
 stroll_dlist_nqueue_front(struct stroll_dlist_node * __restrict list,
                           struct stroll_dlist_node * __restrict node)
 {
+	stroll_dlist_assert_api(list);
+	stroll_dlist_assert_api(node);
+	stroll_dlist_assert_api(node != list);
+
 	stroll_dlist_append(list, node);
 }
 
 /**
  * Enqueue a stroll_dlist_node at the tail of specified list.
  *
- * @param list Dummy head node designating the list.
- * @param node Node to enqueue.
+ * @param[inout] list Dummy head node designating the list.
+ * @param[out]   node Node to enqueue.
+ *
+ * @warning
+ * Result is undefined if @p list has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_nqueue_front()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
 stroll_dlist_nqueue_back(struct stroll_dlist_node * __restrict list,
                          struct stroll_dlist_node * __restrict node)
 {
+	stroll_dlist_assert_api(list);
+	stroll_dlist_assert_api(node);
+	stroll_dlist_assert_api(node != list);
+
 	stroll_dlist_insert(list, node);
 }
 
 /**
  * Remove a stroll_dlist_node from a doubly linked list.
  *
- * @param node Node to remove.
+ * @param[inout] node Node to remove.
+ *
+ * @warning
+ * Result is undefined if @p list has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_remove_init()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 void
@@ -298,12 +331,21 @@ stroll_dlist_remove(const struct stroll_dlist_node * __restrict node)
 /**
  * Remove then reinitialize a stroll_dlist_node from a doubly linked list.
  *
- * @param node Node to remove.
+ * @param[inout] node Node to remove.
+ *
+ * @warning
+ * Result is undefined if @p list has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_remove()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 void
 stroll_dlist_remove_init(struct stroll_dlist_node * __restrict node)
 {
+	stroll_dlist_assert_api(node);
+
 	stroll_dlist_remove(node);
 	stroll_dlist_init(node);
 }
@@ -311,9 +353,18 @@ stroll_dlist_remove_init(struct stroll_dlist_node * __restrict node)
 /**
  * Dequeue a stroll_dlist_node from the head of specified list.
  *
- * @param list Dummy head node designating the list.
+ * @param[inout] list Dummy head node designating the list.
  *
  * @return Pointer to dequeued node.
+ *
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is unpredictable if @p list is empty.
+ *
+ * @see
+ * - stroll_dlist_dqueue_front_init()
+ * - stroll_dlist_dqueue_back()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 struct stroll_dlist_node *
@@ -332,9 +383,18 @@ stroll_dlist_dqueue_front(struct stroll_dlist_node * __restrict list)
  * Dequeue then reinitialize a stroll_dlist_node from the head of specified
  * list.
  *
- * @param list Dummy head node designating the list.
+ * @param[inout] list Dummy head node designating the list.
  *
  * @return Pointer to dequeued node.
+ *
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is unpredictable if @p list is empty.
+ *
+ * @see
+ * - stroll_dlist_dqueue_front()
+ * - stroll_dlist_dqueue_back_init()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 struct stroll_dlist_node *
@@ -352,9 +412,18 @@ stroll_dlist_dqueue_front_init(struct stroll_dlist_node * __restrict list)
 /**
  * Dequeue a stroll_dlist_node from the tail of specified list.
  *
- * @param list Dummy head node designating the list.
+ * @param[inout] list Dummy head node designating the list.
  *
  * @return Pointer to dequeued node.
+ *
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is unpredictable if @p list is empty.
+ *
+ * @see
+ * - stroll_dlist_dqueue_back_init()
+ * - stroll_dlist_dqueue_front()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 struct stroll_dlist_node *
@@ -373,9 +442,18 @@ stroll_dlist_dqueue_back(struct stroll_dlist_node * __restrict list)
  * Dequeue then reinitialize a stroll_dlist_node from the tail of specified
  * list.
  *
- * @param list Dummy head node designating the list.
+ * @param[inout] list Dummy head node designating the list.
  *
  * @return Pointer to dequeued node.
+ *
+ * @warning
+ * - Result is undefined if @p list has not been previously initialized.
+ * - Behavior is unpredictable if @p list is empty.
+ *
+ * @see
+ * - stroll_dlist_dqueue_back()
+ * - stroll_dlist_dqueue_front_init()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 struct stroll_dlist_node *
@@ -391,12 +469,22 @@ stroll_dlist_dqueue_back_init(struct stroll_dlist_node * __restrict list)
 }
 
 /**
- * Replace old entry by new one.
+ * Replace an old stroll_dlist_node entry by a new one.
  *
- * @param old  Node to replace.
- * @param node New node to insert.
+ * @param[in]  old  Node to be replaced.
+ * @param[out] node New node to replace @p old with.
  *
- * @warning Behavior is unpredictable if @p old node is empty.
+ * @warning
+ * - Result is undefined if @p old node has not been previously initialized.
+ * - Behavior is unpredictable if @p old node is empty.
+ * - Behavior is unpredictable when @p old and @p node both point to the same
+ *   node.
+ *
+ * @see
+ * - stroll_dlist_move_after()
+ * - stroll_dlist_move_before()
+ * - stroll_dlist_replace_init()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 void
@@ -411,10 +499,49 @@ stroll_dlist_replace(struct stroll_dlist_node * __restrict old,
 }
 
 /**
- * Move entry from one location to another.
+ * Replace then reinitialize an old stroll_dlist_node entry by a new one.
  *
- * @param at   Node after which to append @p node.
- * @param node Node to move.
+ * @param[inout] old  Node to be replaced.
+ * @param[out]   node New node to replace @p old with.
+ *
+ * @warning
+ * - Result is undefined if @p old node has not been previously initialized.
+ * - Behavior is unpredictable if @p old node is empty.
+ * - Behavior is unpredictable when @p old and @p node both point to the same
+ *   node.
+ *
+ * @see
+ * - stroll_dlist_replace()
+ * - stroll_dlist_init()
+ */
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+stroll_dlist_replace_init(struct stroll_dlist_node * __restrict old,
+                          struct stroll_dlist_node * __restrict node)
+{
+	stroll_dlist_assert_api(!stroll_dlist_empty(old));
+	stroll_dlist_assert_api(node);
+	stroll_dlist_assert_api(old != node);
+
+	stroll_dlist_replace(old, node);
+	stroll_dlist_init(old);
+}
+
+/**
+ * Move a stroll_dlist_node entry from one location before another.
+ *
+ * @param[inout] at   Node before which to insert @p node.
+ * @param[inout] node Node to move.
+ *
+ * @warning
+ * - Result is undefined if @p at node has not been previously initialized.
+ * - Behavior is unpredictable when @p at and @p node both point to the same
+ *   node.
+ *
+ * @see
+ * - stroll_dlist_replace()
+ * - stroll_dlist_move_after()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
@@ -430,10 +557,20 @@ stroll_dlist_move_before(struct stroll_dlist_node * __restrict at,
 }
 
 /**
- * Move entry from one location to another.
+ * Move a stroll_dlist_node entry from one location after another.
  *
- * @param at   Node after which to append @p node.
- * @param node Node to move.
+ * @param[inout] at   Node after which to append @p node.
+ * @param[inout] node Node to move.
+ *
+ * @warning
+ * - Result is undefined if @p at node has not been previously initialized.
+ * - Behavior is unpredictable when @p at and @p node both point to the same
+ *   node.
+ *
+ * @see
+ * - stroll_dlist_replace()
+ * - stroll_dlist_move_after()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
@@ -449,10 +586,24 @@ stroll_dlist_move_after(struct stroll_dlist_node * __restrict at,
 }
 
 /**
- * Extract / remove a portion of nodes from a dlist.
+ * Extract / remove a portion of nodes from a doubly linked list.
  *
- * @param first First node of portion to remove.
- * @param last  Last node of portion to remove.
+ * @param[inout] first First node of portion to remove.
+ * @param[inout] last  Last node of portion to remove.
+ *
+ * The [@p first,@p last] sequence of nodes *MUST* be part of the same doubly
+ * linked list.
+ *
+ * @warning
+ * - Result is undefined if @p first node has not been previously initialized.
+ * - Result is undefined if @p last node has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_embed_after()
+ * - stroll_dlist_embed_before()
+ * - stroll_dlist_splice_after()
+ * - stroll_dlist_splice_before()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
@@ -470,11 +621,24 @@ stroll_dlist_withdraw(const struct stroll_dlist_node * first,
 }
 
 /**
- * Insert a portion of nodes into a dlist.
+ * Insert a portion of nodes into a doubly linked list before specified
+ * location.
  *
- * @param at    Node before which portion is inserted.
- * @param first First node of portion to insert.
- * @param last  Last node of portion to insert.
+ * @param[inout] at    Node before which portion is inserted.
+ * @param[inout] first First node of portion to insert.
+ * @param[inout] last  Last node of portion to insert.
+ *
+ * The doubly linked list within which the [@p first,@p last] sequence of nodes
+ * is contained is not updated to reflect link changes. If required, use
+ * stroll_dlist_splice_before() instead.
+ *
+ * @warning
+ * - Result is undefined if @p at node has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_embed_after()
+ * - stroll_dlist_withdraw()
+ * - stroll_dlist_splice_after()
  */
 static inline __stroll_nonull(1, 2, 3) __stroll_nothrow
 void
@@ -498,11 +662,25 @@ stroll_dlist_embed_before(struct stroll_dlist_node * __restrict at,
 }
 
 /**
- * Insert a portion of nodes into a dlist.
+ * Insert a portion of nodes into a doubly linked list after specified
+ * location.
  *
- * @param at    Node after which portion is inserted.
- * @param first First node of portion to insert.
- * @param last  Last node of portion to insert.
+ * @param[inout] at    Node after which portion is inserted.
+ * @param[inout] first First node of portion to insert.
+ * @param[inout] last  Last node of portion to insert.
+ *
+ * The doubly linked list within which the [@p first,@p last] sequence of nodes
+ * is contained is not updated to reflect link changes. If required, use
+ * stroll_dlist_splice_after() instead.
+ *
+ * @warning
+ * - Result is undefined if @p at node has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_embed_before()
+ * - stroll_dlist_withdraw()
+ * - stroll_dlist_splice_before()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1, 2, 3) __stroll_nothrow
 void
@@ -526,12 +704,26 @@ stroll_dlist_embed_after(struct stroll_dlist_node * __restrict at,
 }
 
 /**
- * Extract source list portion and move it to result list before specified
- * location.
+ * Extract a portion of nodes from a doubly linked list and move it to result
+ * list before specified location.
  *
- * @param at    Node to insert nodes after.
- * @param first First node of portion to move.
- * @param last  Last node of portion to move.
+ * @param[inout] at    Node to insert nodes before.
+ * @param[inout] first First node of portion to move.
+ * @param[inout] last  Last node of portion to move.
+ *
+ * The [@p first,@p last] sequence of nodes *MUST* be part of the same doubly
+ * linked list.
+ *
+ * @warning
+ * - Result is undefined if @p at node has not been previously initialized.
+ * - Result is undefined if @p first node has not been previously initialized.
+ * - Result is undefined if @p last node has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_embed_before()
+ * - stroll_dlist_withdraw()
+ * - stroll_dlist_splice_after()
+ * - stroll_dlist_init()
  */
 extern void
 stroll_dlist_splice_before(struct stroll_dlist_node * __restrict at,
@@ -540,12 +732,26 @@ stroll_dlist_splice_before(struct stroll_dlist_node * __restrict at,
 	__stroll_nonull(1, 2, 3) __stroll_nothrow;
 
 /**
- * Extract source list portion and move it to result list after specified
- * location.
+ * Extract a portion of nodes from a doubly linked list and move it to result
+ * list after specified location.
  *
- * @param at    Node to insert nodes after.
- * @param first First node of portion to move.
- * @param last  Last node of portion to move.
+ * @param[inout] at    Node to insert nodes after.
+ * @param[inout] first First node of portion to move.
+ * @param[inout] last  Last node of portion to move.
+ *
+ * The [@p first,@p last] sequence of nodes *MUST* be part of the same doubly
+ * linked list.
+ *
+ * @warning
+ * - Result is undefined if @p at node has not been previously initialized.
+ * - Result is undefined if @p first node has not been previously initialized.
+ * - Result is undefined if @p last node has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_embed_after()
+ * - stroll_dlist_withdraw()
+ * - stroll_dlist_splice_behore()
+ * - stroll_dlist_init()
  */
 extern void
 stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,

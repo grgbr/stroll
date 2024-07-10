@@ -425,7 +425,7 @@ stroll_slist_dqueue_front(struct stroll_slist * __restrict list)
  * @param[inout] first Node preceding the first node of the portion to remove.
  * @param[inout] last  Last node of portion to remove.
  *
- * @p list **MUST** contain the [@p first,@p last] range of nodes.
+ * @p list **MUST** contain the [@p first,@p last] sequence of nodes.
  *
  * @warning
  * - Result is undefined if @p list has not been previously initialized.
@@ -466,7 +466,7 @@ stroll_slist_withdraw(struct stroll_slist *                       list,
  *
  * @p list **MUST** contain the @p at node.
  *
- * The stroll_list within which the [@p first,@p last] range of nodes is
+ * The stroll_list within which the [@p first,@p last] sequence of nodes is
  * contained is not updated to reflect link changes. If required, use
  * stroll_slist_splice() instead.
  *
@@ -510,7 +510,7 @@ stroll_slist_embed(struct stroll_slist *                 list,
  * @param[inout] first  Node preceding the nodes portion to move.
  * @param[inout] last   Last portions's node to move.
  *
- * @p source **MUST** contain the [@p first,@p last] range of nodes.
+ * @p source **MUST** contain the [@p first,@p last] sequence of nodes.
  *
  * @warning
  * - Result is undefined if @p result and / or @p source have not been previously

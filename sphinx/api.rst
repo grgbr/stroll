@@ -841,7 +841,24 @@ The following API is available:
    * Modifying:
 
       * :c:func:`stroll_dlist_append()`
+      * :c:func:`stroll_dlist_dqueue_back()`
+      * :c:func:`stroll_dlist_dqueue_back_init()`
+      * :c:func:`stroll_dlist_dqueue_front()`
+      * :c:func:`stroll_dlist_dqueue_front_init()`
+      * :c:func:`stroll_dlist_embed_after()`
+      * :c:func:`stroll_dlist_embed_before()`
       * :c:func:`stroll_dlist_insert()`
+      * :c:func:`stroll_dlist_move_after()`
+      * :c:func:`stroll_dlist_move_before()`
+      * :c:func:`stroll_dlist_nqueue_back()`
+      * :c:func:`stroll_dlist_nqueue_front()`
+      * :c:func:`stroll_dlist_remove()`
+      * :c:func:`stroll_dlist_remove_init()`
+      * :c:func:`stroll_dlist_replace()`
+      * :c:func:`stroll_dlist_replace_init()`
+      * :c:func:`stroll_dlist_splice_after()`
+      * :c:func:`stroll_dlist_splice_before()`
+      * :c:func:`stroll_dlist_withdraw()`
 
    * Various:
 
@@ -2221,6 +2238,36 @@ stroll_dlist_append
 
 .. doxygenfunction:: stroll_dlist_append
 
+stroll_dlist_dqueue_back
+************************
+
+.. doxygenfunction:: stroll_dlist_dqueue_back
+
+stroll_dlist_dqueue_back_init
+*****************************
+
+.. doxygenfunction:: stroll_dlist_dqueue_back_init
+
+stroll_dlist_dqueue_front
+*************************
+
+.. doxygenfunction:: stroll_dlist_dqueue_front
+
+stroll_dlist_dqueue_front_init
+******************************
+
+.. doxygenfunction:: stroll_dlist_dqueue_front_init
+
+stroll_dlist_embed_after
+************************
+
+.. doxygenfunction:: stroll_dlist_embed_after
+
+stroll_dlist_embed_before
+*************************
+
+.. doxygenfunction:: stroll_dlist_embed_before
+
 stroll_dlist_empty
 ******************
 
@@ -2236,15 +2283,68 @@ stroll_dlist_insert
 
 .. doxygenfunction:: stroll_dlist_insert
 
+stroll_dlist_move_after
+***********************
+
+.. doxygenfunction:: stroll_dlist_move_after
+
+stroll_dlist_move_before
+************************
+
+.. doxygenfunction:: stroll_dlist_move_before
+
 stroll_dlist_next
 *****************
 
 .. doxygenfunction:: stroll_dlist_next
 
+stroll_dlist_nqueue_back
+************************
+
+.. doxygenfunction:: stroll_dlist_nqueue_back
+
+stroll_dlist_nqueue_front
+*************************
+
+.. doxygenfunction:: stroll_dlist_nqueue_front
+
 stroll_dlist_prev
 *****************
 
 .. doxygenfunction:: stroll_dlist_prev
+
+stroll_dlist_remove
+*******************
+
+.. doxygenfunction:: stroll_dlist_remove
+
+stroll_dlist_remove_init
+************************
+
+.. doxygenfunction:: stroll_dlist_remove_init
+
+stroll_dlist_replace
+********************
+.. doxygenfunction:: stroll_dlist_replace
+
+stroll_dlist_replace_init
+*************************
+.. doxygenfunction:: stroll_dlist_replace_init
+
+stroll_dlist_splice_after
+*************************
+
+.. doxygenfunction:: stroll_dlist_splice_after
+
+stroll_dlist_splice_before
+**************************
+
+.. doxygenfunction:: stroll_dlist_splice_before
+
+stroll_dlist_withdraw
+*********************
+
+.. doxygenfunction:: stroll_dlist_withdraw
 
 stroll_fbmap_clear
 ******************
