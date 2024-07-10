@@ -671,11 +671,10 @@ stroll_slist_splice(struct stroll_slist *      __restrict result,
  * zero if first argument is found, respectively, to be less than, to match, or
  * be greater than the second one.
  */
-typedef int (stroll_slist_cmp_fn)
-            (const struct stroll_slist_node * __restrict,
-             const struct stroll_slist_node * __restrict,
-             void *)
-	__stroll_nonull(1, 2);
+typedef int stroll_slist_cmp_fn(const struct stroll_slist_node * __restrict,
+                                const struct stroll_slist_node * __restrict,
+                                void *)
+	__stroll_nonull(1, 2) __warn_result;
 
 #if defined(CONFIG_STROLL_SLIST_BUBBLE_SORT)
 

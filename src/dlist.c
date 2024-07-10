@@ -1,17 +1,19 @@
 #include "stroll/dlist.h"
 
-#if defined(CONFIG_STROLL_ASSERT_INTERN)
+void
+stroll_dlist_splice_before(struct stroll_dlist_node * __restrict at,
+                           struct stroll_dlist_node *            first,
+                           struct stroll_dlist_node *            last)
+{
+	stroll_dlist_assert_api(at);
+	stroll_dlist_assert_api(first);
+	stroll_dlist_assert_api(last);
+	stroll_dlist_assert_api(at != first);
+	stroll_dlist_assert_api(at != last);
 
-#include <stroll/assert.h>
-
-#define stroll_dlist_assert_intern(_expr) \
-	stroll_assert("stroll:dlist", _expr)
-
-#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
-
-#define stroll_dlist_assert_intern(_expr)
-
-#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+	stroll_dlist_withdraw(first, last);
+	stroll_dlist_embed_before(at, first, last);
+}
 
 void
 stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,

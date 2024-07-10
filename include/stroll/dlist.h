@@ -35,22 +35,35 @@
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
+#if defined(CONFIG_STROLL_ASSERT_INTERN)
+
+#include <stroll/assert.h>
+
+#define stroll_dlist_assert_intern(_expr) \
+	stroll_assert("stroll:dlist", _expr)
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+#define stroll_dlist_assert_intern(_expr)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
 /**
  * Doubly linked list node
  *
- * Describes a single entry linked into a stroll_dlist.
+ * Describes a single entry linked into a doubly linked list.
  */
 struct stroll_dlist_node {
 	/**
 	 * @internal
 	 *
-	 * Node following this node into a dlist.
+	 * Node following this node into this stroll_dlist_node.
 	 */
 	struct stroll_dlist_node * next;
 	/**
 	 * @internal
 	 *
-	 * Node preceding this node into a stroll_dlist.
+	 * Node preceding this node into this stroll_dlist_node.
 	 */
 	struct stroll_dlist_node * prev;
 };
@@ -59,6 +72,8 @@ struct stroll_dlist_node {
  * stroll_dlist_node constant initializer.
  *
  * @param _node stroll_dlist_node variable to initialize.
+ *
+ * @see stroll_dlist_init()
  */
 #define STROLL_DLIST_INIT(_node) \
 	{ \
@@ -70,6 +85,8 @@ struct stroll_dlist_node {
  * Initialize a stroll_dlist_node
  *
  * @param[out] node stroll_dlist_node to initialize.
+ *
+ * @see STROLL_DLIST_INIT()
  */
 static inline __stroll_nonull(1) __stroll_nothrow
 void
@@ -84,10 +101,15 @@ stroll_dlist_init(struct stroll_dlist_node * __restrict node)
 /**
  * Test wether a stroll_dlist_node is empty or not.
  *
- * @param node stroll_dlist_node to test.
+ * @param[in] node stroll_dlist_node to test.
  *
  * @retval true  empty
  * @retval false not empty
+ *
+ * @warning
+ * Result is undefined if @p node has not been previously initialized.
+ *
+ * @see stroll_dlist_init()
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 bool
@@ -101,9 +123,17 @@ stroll_dlist_empty(const struct stroll_dlist_node * __restrict node)
 /**
  * Get node following specified node.
  *
- * @param node Node which to get the follower from.
+ * @param[in] node Node which to get the follower from.
  *
  * @return Pointer to following node.
+ *
+ * @warning
+ * Result is undefined if @p node has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_prev()
+ * - stroll_dlist_next_entry()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 struct stroll_dlist_node *
@@ -117,9 +147,17 @@ stroll_dlist_next(const struct stroll_dlist_node * __restrict node)
 /**
  * Get node preceding specified node.
  *
- * @param node Node which to get the predecessor from.
+ * @param[in] node Node which to get the predecessor from.
  *
  * @return Pointer to preceding node.
+ *
+ * @warning
+ * Result is undefined if @p node has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_next()
+ * - stroll_dlist_prev_entry()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 struct stroll_dlist_node *
@@ -131,11 +169,17 @@ stroll_dlist_prev(const struct stroll_dlist_node * __restrict node)
 }
 
 /**
+ * @internal
+ *
  * Insert a stroll_dlist_node in between specified adjacent nodes.
  *
- * @param prev Node to append @p node after.
- * @param node Node to inject.
- * @param next Node to insert @p node before.
+ * @param[inout] prev Node to append @p node after.
+ * @param[out]   node Node to inject.
+ * @param[inout] next Node to insert @p node before.
+ *
+ * @warning
+ * - Result is undefined if @p prev has not been previously initialized.
+ * - Result is undefined if @p next has not been previously initialized.
  */
 static inline __stroll_nonull(1, 2, 3) __stroll_nothrow
 void
@@ -143,11 +187,11 @@ stroll_dlist_inject(struct stroll_dlist_node * __restrict prev,
                     struct stroll_dlist_node * __restrict node,
                     struct stroll_dlist_node * __restrict next)
 {
-	stroll_dlist_assert_api(node);
-	stroll_dlist_assert_api(prev);
-	stroll_dlist_assert_api(next);
-	stroll_dlist_assert_api(node != prev);
-	stroll_dlist_assert_api(node != next);
+	stroll_dlist_assert_intern(node);
+	stroll_dlist_assert_intern(prev);
+	stroll_dlist_assert_intern(next);
+	stroll_dlist_assert_intern(node != prev);
+	stroll_dlist_assert_intern(node != next);
 
 	prev->next = node;
 
@@ -160,8 +204,15 @@ stroll_dlist_inject(struct stroll_dlist_node * __restrict prev,
 /**
  * Insert a stroll_dlist_node before specified node.
  *
- * @param node Node to insert.
- * @param at   Node to insert @p node before.
+ * @param[inout] at   Node to insert @p node before.
+ * @param[out]   node Node to insert.
+ *
+ * @warning
+ * - Result is undefined if @p at has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_append()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
@@ -177,8 +228,15 @@ stroll_dlist_insert(struct stroll_dlist_node * __restrict at,
 /**
  * Append a stroll_dlist_node after specified node.
  *
- * @param node Node to append.
- * @param at   Node to append @p node after.
+ * @param[inout] at   Node to append @p node after.
+ * @param[out]   node Node to append.
+ *
+ * @warning
+ * - Result is undefined if @p at has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_insert()
+ * - stroll_dlist_init()
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void 
@@ -468,7 +526,22 @@ stroll_dlist_embed_after(struct stroll_dlist_node * __restrict at,
 }
 
 /**
- * Extract source list portion and move it to result list at specified location.
+ * Extract source list portion and move it to result list before specified
+ * location.
+ *
+ * @param at    Node to insert nodes after.
+ * @param first First node of portion to move.
+ * @param last  Last node of portion to move.
+ */
+extern void
+stroll_dlist_splice_before(struct stroll_dlist_node * __restrict at,
+                           struct stroll_dlist_node *            first,
+                           struct stroll_dlist_node *            last)
+	__stroll_nonull(1, 2, 3) __stroll_nothrow;
+
+/**
+ * Extract source list portion and move it to result list after specified
+ * location.
  *
  * @param at    Node to insert nodes after.
  * @param first First node of portion to move.

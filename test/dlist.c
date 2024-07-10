@@ -857,6 +857,185 @@ STROLLUT_DLIST_NOASSERT(strollut_dlist_embed_before_assert)
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
+CUTE_TEST(strollut_dlist_splice_before_lead)
+{
+	struct stroll_dlist_node src = STROLL_DLIST_INIT(src);
+	struct stroll_dlist_node nodes[2];
+	struct stroll_dlist_node dst = STROLL_DLIST_INIT(dst);
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_back(&src, &nodes[c]);
+
+	stroll_dlist_splice_before(&dst, &nodes[0], &nodes[0]);
+	cute_check_ptr(stroll_dlist_next(&dst), equal, &nodes[0]);
+	cute_check_ptr(stroll_dlist_prev(&nodes[0]), equal, &dst);
+	cute_check_ptr(stroll_dlist_next(&nodes[0]), equal, &dst);
+	cute_check_ptr(stroll_dlist_prev(&dst), equal, &nodes[0]);
+
+	cute_check_ptr(stroll_dlist_next(&src), equal, &nodes[1]);
+	cute_check_ptr(stroll_dlist_prev(&nodes[1]), equal, &src);
+	cute_check_ptr(stroll_dlist_next(&nodes[1]), equal, &src);
+	cute_check_ptr(stroll_dlist_prev(&src), equal, &nodes[1]);
+}
+
+CUTE_TEST(strollut_dlist_splice_before_mid)
+{
+	struct stroll_dlist_node src = STROLL_DLIST_INIT(src);
+	struct stroll_dlist_node src_nodes[4];
+	struct stroll_dlist_node dst = STROLL_DLIST_INIT(dst);
+	struct stroll_dlist_node dst_nodes[2];
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(src_nodes); c++)
+		stroll_dlist_nqueue_back(&src, &src_nodes[c]);
+	for (c = 0; c < stroll_array_nr(dst_nodes); c++)
+		stroll_dlist_nqueue_back(&dst, &dst_nodes[c]);
+
+	stroll_dlist_splice_before(&dst_nodes[1], &src_nodes[1], &src_nodes[2]);
+	cute_check_ptr(stroll_dlist_next(&dst_nodes[0]), equal, &src_nodes[1]);
+	cute_check_ptr(stroll_dlist_prev(&src_nodes[1]), equal, &dst_nodes[0]);
+	cute_check_ptr(stroll_dlist_next(&src_nodes[1]), equal, &src_nodes[2]);
+	cute_check_ptr(stroll_dlist_prev(&src_nodes[2]), equal, &src_nodes[1]);
+	cute_check_ptr(stroll_dlist_next(&src_nodes[2]), equal, &dst_nodes[1]);
+	cute_check_ptr(stroll_dlist_prev(&dst_nodes[1]), equal, &src_nodes[2]);
+
+	cute_check_ptr(stroll_dlist_next(&src_nodes[0]), equal, &src_nodes[3]);
+	cute_check_ptr(stroll_dlist_prev(&src_nodes[3]), equal, &src_nodes[0]);
+}
+
+CUTE_TEST(strollut_dlist_splice_before_trail)
+{
+	struct stroll_dlist_node src = STROLL_DLIST_INIT(src);
+	struct stroll_dlist_node nodes[2];
+	struct stroll_dlist_node dst = STROLL_DLIST_INIT(dst);
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_back(&src, &nodes[c]);
+
+	stroll_dlist_splice_before(&dst, &nodes[1], &nodes[1]);
+	cute_check_ptr(stroll_dlist_next(&dst), equal, &nodes[1]);
+	cute_check_ptr(stroll_dlist_prev(&nodes[1]), equal, &dst);
+	cute_check_ptr(stroll_dlist_next(&nodes[1]), equal, &dst);
+	cute_check_ptr(stroll_dlist_prev(&dst), equal, &nodes[1]);
+
+	cute_check_ptr(stroll_dlist_next(&src), equal, &nodes[0]);
+	cute_check_ptr(stroll_dlist_prev(&nodes[0]), equal, &src);
+	cute_check_ptr(stroll_dlist_next(&nodes[0]), equal, &src);
+	cute_check_ptr(stroll_dlist_prev(&src), equal, &nodes[0]);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+CUTE_TEST(strollut_dlist_splice_before_assert)
+{
+	struct stroll_dlist_node   list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node * ptr = &list;
+	struct stroll_dlist_node   node;
+
+	cute_expect_assertion(stroll_dlist_splice_before(NULL, &node, &node));
+	cute_expect_assertion(stroll_dlist_splice_before(&list, NULL, &node));
+	cute_expect_assertion(stroll_dlist_splice_before(&list, &node, NULL));
+	cute_expect_assertion(stroll_dlist_splice_before(&list, ptr, &node));
+	cute_expect_assertion(stroll_dlist_splice_before(&list, &node, ptr));
+}
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+STROLLUT_DLIST_NOASSERT(strollut_dlist_splice_before_assert)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
+CUTE_TEST(strollut_dlist_splice_after_lead)
+{
+	struct stroll_dlist_node src = STROLL_DLIST_INIT(src);
+	struct stroll_dlist_node nodes[2];
+	struct stroll_dlist_node dst = STROLL_DLIST_INIT(dst);
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_back(&src, &nodes[c]);
+
+	stroll_dlist_splice_after(&dst, &nodes[0], &nodes[0]);
+	cute_check_ptr(stroll_dlist_next(&dst), equal, &nodes[0]);
+	cute_check_ptr(stroll_dlist_prev(&nodes[0]), equal, &dst);
+	cute_check_ptr(stroll_dlist_next(&nodes[0]), equal, &dst);
+	cute_check_ptr(stroll_dlist_prev(&dst), equal, &nodes[0]);
+
+	cute_check_ptr(stroll_dlist_next(&src), equal, &nodes[1]);
+	cute_check_ptr(stroll_dlist_prev(&nodes[1]), equal, &src);
+	cute_check_ptr(stroll_dlist_next(&nodes[1]), equal, &src);
+	cute_check_ptr(stroll_dlist_prev(&src), equal, &nodes[1]);
+}
+
+CUTE_TEST(strollut_dlist_splice_after_mid)
+{
+	struct stroll_dlist_node src = STROLL_DLIST_INIT(src);
+	struct stroll_dlist_node src_nodes[4];
+	struct stroll_dlist_node dst = STROLL_DLIST_INIT(dst);
+	struct stroll_dlist_node dst_nodes[2];
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(src_nodes); c++)
+		stroll_dlist_nqueue_back(&src, &src_nodes[c]);
+	for (c = 0; c < stroll_array_nr(dst_nodes); c++)
+		stroll_dlist_nqueue_back(&dst, &dst_nodes[c]);
+
+	stroll_dlist_splice_after(&dst_nodes[0], &src_nodes[1], &src_nodes[2]);
+	cute_check_ptr(stroll_dlist_next(&dst_nodes[0]), equal, &src_nodes[1]);
+	cute_check_ptr(stroll_dlist_prev(&src_nodes[1]), equal, &dst_nodes[0]);
+	cute_check_ptr(stroll_dlist_next(&src_nodes[1]), equal, &src_nodes[2]);
+	cute_check_ptr(stroll_dlist_prev(&src_nodes[2]), equal, &src_nodes[1]);
+	cute_check_ptr(stroll_dlist_next(&src_nodes[2]), equal, &dst_nodes[1]);
+	cute_check_ptr(stroll_dlist_prev(&dst_nodes[1]), equal, &src_nodes[2]);
+
+	cute_check_ptr(stroll_dlist_next(&src_nodes[0]), equal, &src_nodes[3]);
+	cute_check_ptr(stroll_dlist_prev(&src_nodes[3]), equal, &src_nodes[0]);
+}
+
+CUTE_TEST(strollut_dlist_splice_after_trail)
+{
+	struct stroll_dlist_node src = STROLL_DLIST_INIT(src);
+	struct stroll_dlist_node nodes[2];
+	struct stroll_dlist_node dst = STROLL_DLIST_INIT(dst);
+	unsigned int             c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_back(&src, &nodes[c]);
+
+	stroll_dlist_splice_after(&dst, &nodes[1], &nodes[1]);
+	cute_check_ptr(stroll_dlist_next(&dst), equal, &nodes[1]);
+	cute_check_ptr(stroll_dlist_prev(&nodes[1]), equal, &dst);
+	cute_check_ptr(stroll_dlist_next(&nodes[1]), equal, &dst);
+	cute_check_ptr(stroll_dlist_prev(&dst), equal, &nodes[1]);
+
+	cute_check_ptr(stroll_dlist_next(&src), equal, &nodes[0]);
+	cute_check_ptr(stroll_dlist_prev(&nodes[0]), equal, &src);
+	cute_check_ptr(stroll_dlist_next(&nodes[0]), equal, &src);
+	cute_check_ptr(stroll_dlist_prev(&src), equal, &nodes[0]);
+}
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+CUTE_TEST(strollut_dlist_splice_after_assert)
+{
+	struct stroll_dlist_node   list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node * ptr = &list;
+	struct stroll_dlist_node   node;
+
+	cute_expect_assertion(stroll_dlist_splice_after(NULL, &node, &node));
+	cute_expect_assertion(stroll_dlist_splice_after(&list, NULL, &node));
+	cute_expect_assertion(stroll_dlist_splice_after(&list, &node, NULL));
+	cute_expect_assertion(stroll_dlist_splice_after(&list, ptr, &node));
+	cute_expect_assertion(stroll_dlist_splice_after(&list, &node, ptr));
+}
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+STROLLUT_DLIST_NOASSERT(strollut_dlist_splice_after_assert)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
 /******************************************************************************
  * Top-level suite
@@ -909,12 +1088,15 @@ CUTE_GROUP(strollut_dlist_group) = {
 	CUTE_REF(strollut_dlist_embed_before_mid),
 	CUTE_REF(strollut_dlist_embed_before_trail),
 	CUTE_REF(strollut_dlist_embed_before_assert),
+	CUTE_REF(strollut_dlist_splice_before_lead),
+	CUTE_REF(strollut_dlist_splice_before_mid),
+	CUTE_REF(strollut_dlist_splice_before_trail),
+	CUTE_REF(strollut_dlist_splice_before_assert),
+	CUTE_REF(strollut_dlist_splice_after_lead),
+	CUTE_REF(strollut_dlist_splice_after_mid),
+	CUTE_REF(strollut_dlist_splice_after_trail),
+	CUTE_REF(strollut_dlist_splice_after_assert),
 #if 0
-	CUTE_REF(strollut_dlist_splice_lead),
-	CUTE_REF(strollut_dlist_splice_mid),
-	CUTE_REF(strollut_dlist_splice_trail),
-	CUTE_REF(strollut_dlist_splice_assert),
-
 	CUTE_REF(strollut_dlist_bubble_suite),
 	CUTE_REF(strollut_dlist_select_suite),
 	CUTE_REF(strollut_dlist_insert_suite),

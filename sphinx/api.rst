@@ -62,6 +62,7 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_ASSERT_INTERN`
 * :c:macro:`CONFIG_STROLL_BOPS`
 * :c:macro:`CONFIG_STROLL_BMAP`
+* :c:macro:`CONFIG_STROLL_DLIST`
 * :c:macro:`CONFIG_STROLL_FBMAP`
 * :c:macro:`CONFIG_STROLL_LVSTR`
 * :c:macro:`CONFIG_STROLL_POW2`
@@ -813,12 +814,38 @@ The following API is available:
       * :c:func:`stroll_slist_empty()`
       * :c:macro:`stroll_slist_entry()`
 
-.. index:: singly linked list, linked list;singly, list;singly
+.. index:: doubly linked list, linked list;doubly, list;doubly
 
 Doubly linked lists
 -------------------
 
-Document me!
+When compiled with the :c:macro:`CONFIG_STROLL_DLIST` build configuration option
+enabled, the Stroll_ library provides support for doubly linked lists where each
+:c:struct:`stroll_dlist_node` node contains 2 links respectively referencing
+previous and next nodes in the sequence.
+
+The following API is available:
+
+.. hlist::
+
+   * Initialization:
+
+      * :c:macro:`STROLL_DLIST_INIT()`
+      * :c:func:`stroll_dlist_init()`
+
+   * Accessing / iterating over nodes:
+
+      * :c:func:`stroll_dlist_next()`
+      * :c:func:`stroll_dlist_prev()`
+
+   * Modifying:
+
+      * :c:func:`stroll_dlist_append()`
+      * :c:func:`stroll_dlist_insert()`
+
+   * Various:
+
+      * :c:func:`stroll_dlist_empty()`
 
 Sorting lists
 -------------
@@ -1270,6 +1297,11 @@ STROLL_CONST_MIN
 
 .. doxygendefine:: STROLL_CONST_MIN
 
+STROLL_DLIST_INIT
+*****************
+
+.. doxygendefine:: STROLL_DLIST_INIT
+
 STROLL_LVSTR_INIT
 *****************
 
@@ -1493,10 +1525,23 @@ stroll_unlikely
 Typedefs
 --------
 
+stroll_array_cmp_fn
+*******************
+
 .. doxygentypedef:: stroll_array_cmp_fn
+
+stroll_slist_cmp_fn
+*******************
+
+.. doxygentypedef:: stroll_slist_cmp_fn
 
 Structures
 ----------
+
+stroll_dlist_node
+*****************
+
+.. doxygenstruct:: stroll_dlist_node
 
 stroll_fbmap
 ************
@@ -2170,6 +2215,36 @@ stroll_bops_hweightul
 *********************
 
 .. doxygenfunction:: stroll_bops_hweightul
+
+stroll_dlist_append
+*******************
+
+.. doxygenfunction:: stroll_dlist_append
+
+stroll_dlist_empty
+******************
+
+.. doxygenfunction:: stroll_dlist_empty
+
+stroll_dlist_init
+*****************
+
+.. doxygenfunction:: stroll_dlist_init
+
+stroll_dlist_insert
+*******************
+
+.. doxygenfunction:: stroll_dlist_insert
+
+stroll_dlist_next
+*****************
+
+.. doxygenfunction:: stroll_dlist_next
+
+stroll_dlist_prev
+*****************
+
+.. doxygenfunction:: stroll_dlist_prev
 
 stroll_fbmap_clear
 ******************
