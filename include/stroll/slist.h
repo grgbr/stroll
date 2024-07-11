@@ -616,7 +616,7 @@ stroll_slist_splice(struct stroll_slist *      __restrict result,
  *
  * @warning
  * - Result is undefined if @p _list has not been previously initialized.
- * - Behavior is undefined when @p _node is removed while iterating over
+ * - Behavior is undefined when @p _node is modified while iterating over
  *   @p _list.
  *
  * @see
@@ -637,7 +637,7 @@ stroll_slist_splice(struct stroll_slist *      __restrict result,
  *
  * @warning
  * - Result is undefined if @p _list has not been previously initialized.
- * - Behavior is undefined when @p _entry is removed while iterating over
+ * - Behavior is undefined when @p _entry is modified while iterating over
  *   @p _list.
  * - Behavior is undefined when called on an empty stroll_slist.
  *

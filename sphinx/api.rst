@@ -835,8 +835,12 @@ The following API is available:
 
    * Accessing / iterating over nodes:
 
+      * :c:macro:`stroll_dlist_foreach_entry()`
+      * :c:macro:`stroll_dlist_foreach_node()`
       * :c:func:`stroll_dlist_next()`
+      * :c:macro:`stroll_dlist_next_entry()`
       * :c:func:`stroll_dlist_prev()`
+      * :c:macro:`stroll_dlist_prev_entry()`
 
    * Modifying:
 
@@ -863,6 +867,7 @@ The following API is available:
    * Various:
 
       * :c:func:`stroll_dlist_empty()`
+      * :c:macro:`stroll_dlist_entry()`
 
 Sorting lists
 -------------
@@ -1469,18 +1474,43 @@ stroll_fbmap_foreach_clear()
 
 .. doxygendefine:: stroll_fbmap_foreach_clear
 
-stroll_fbmap_foreach_range_clear()
-**********************************
+stroll_dlist_entry
+******************
+
+.. doxygendefine:: stroll_dlist_entry
+
+stroll_dlist_foreach_entry
+**************************
+
+.. doxygendefine:: stroll_dlist_foreach_entry
+
+stroll_dlist_foreach_node
+*************************
+
+.. doxygendefine:: stroll_dlist_foreach_node
+
+stroll_dlist_next_entry
+***********************
+
+.. doxygendefine:: stroll_dlist_next_entry
+
+stroll_dlist_prev_entry
+***********************
+
+.. doxygendefine:: stroll_dlist_prev_entry
+
+stroll_fbmap_foreach_range_clear
+********************************
 
 .. doxygendefine:: stroll_fbmap_foreach_range_clear
 
-stroll_fbmap_foreach_range_set()
-********************************
+stroll_fbmap_foreach_range_set
+******************************
 
 .. doxygendefine:: stroll_fbmap_foreach_range_set
 
-stroll_fbmap_foreach_set()
-**************************
+stroll_fbmap_foreach_set
+************************
 
 .. doxygendefine:: stroll_fbmap_foreach_set
 

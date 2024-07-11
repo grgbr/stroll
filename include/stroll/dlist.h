@@ -760,22 +760,12 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
 	__stroll_nonull(1, 2, 3) __stroll_nothrow;
 
 /**
- * Iterate over a stroll_dlist_node based list .
- *
- * @param _list Dummy head node designating the list to iterate over.
- * @param _node Pointer to current node.
- */
-#define stroll_dlist_foreach_node(_list, _node) \
-	for (_node = stroll_dlist_next(_list);  \
-	     _node != (_list);           \
-	     _node = stroll_dlist_next(_node))
-
-/**
  * Return type casted pointer to entry containing specified node.
  *
- * @param _node   stroll_dlist_node to retrieve container from.
- * @param _type   Type of container
- * @param _member Member field of container structure pointing to _node.
+ * @param[in] _node   stroll_dlist_node to retrieve container from.
+ * @param     _type   Type of container
+ * @param     _member Member field of container structure holding the
+ *                    stroll_dlist_node @p _node.
  *
  * @return Pointer to type casted entry.
  */
@@ -785,10 +775,20 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
 /**
  * Return type casted pointer to entry following specified entry.
  *
- * @param _entry  Entry containing dlist node.
- * @param _member Member field of container structure pointing to dlist node.
+ * @param[in] _entry  Entry containing stroll_dlist_node.
+ * @param     _member Member field of container structure holding the
+ *                    stroll_dlist_node @p _node.
  *
  * @return Pointer to following entry.
+ *
+ * @warning
+ * Result is undefined if `(_entry)->_member` has not been previously
+ * initialized.
+ *
+ * @see
+ * - stroll_dlist_next()
+ * - stroll_dlist_prev_entry()
+ * - stroll_dlist_init()
  */
 #define stroll_dlist_next_entry(_entry, _member) \
 	stroll_dlist_entry(stroll_dlist_next(&(_entry)->_member), \
@@ -798,10 +798,20 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
 /**
  * Return type casted pointer to entry preceding specified entry.
  *
- * @param _entry  Entry containing dlist node.
- * @param _member Member field of container structure pointing to dlist node.
+ * @param[in] _entry  Entry containing stroll_dlist_node.
+ * @param     _member Member field of container structure holding the
+ *                    stroll_dlist_node @p _node.
  *
  * @return Pointer to preceding entry.
+ *
+ * @warning
+ * Result is undefined if `(_entry)->_member` has not been previously
+ * initialized.
+ *
+ * @see
+ * - stroll_dlist_prev()
+ * - stroll_dlist_next_entry()
+ * - stroll_dlist_init()
  */
 #define stroll_dlist_prev_entry(_entry, _member) \
 	dlist_entry(stroll_dlist_prev(&(_entry)->_member), \
@@ -809,11 +819,43 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
 	            _member)
 
 /**
- * Iterate over dlist node container entries.
+ * Iterate over doubly linked list nodes.
  *
- * @param _list   dlist to iterate over.
- * @param _entry  Pointer to entry containing @p _list's current node.
- * @param _member Member field of container structure pointing to dlist node.
+ * @param[in]  _list Dummy head stroll_dlist_node designating the list to
+ *                   iterate over.
+ * @param[out] _node Pointer to current node.
+ *
+ * @warning
+ * - Result is undefined if @p _list has not been previously initialized.
+ * - Behavior is undefined when @p _node is modified while iterating over
+ *   @p _list.
+ *
+ * @see
+ * - stroll_dlist_foreach_entry()
+ * - stroll_dlist_init()
+ */
+#define stroll_dlist_foreach_node(_list, _node) \
+	for (_node = stroll_dlist_next(_list);  \
+	     _node != (_list);           \
+	     _node = stroll_dlist_next(_node))
+
+/**
+ * Iterate over doubly linked list entries.
+ *
+ * @param[in]  _list  Dummy head stroll_dlist_node designating the list to
+ *                    iterate over.
+ * @param[out] _entry Pointer to entry containing @p _list's current node.
+ * @param     _member Member field of container structure holding the
+ *                    stroll_dlist_node @p _node.
+ *
+ * @warning
+ * - Result is undefined if @p _list has not been previously initialized.
+ * - Behavior is undefined when @p _node is modified while iterating over
+ *   @p _list.
+ *
+ * @see
+ * - stroll_dlist_foreach_node()
+ * - stroll_dlist_init()
  */
 #define stroll_dlist_foreach_entry(_list, _entry, _member) \
 	for (_entry = stroll_dlist_entry((_list)->next, \
