@@ -786,6 +786,208 @@ strollpt_sort_measure_slist_merge(const unsigned int * __restrict elements,
 
 #endif /* defined(CONFIG_STROLL_SLIST_MERGE_SORT) */
 
+#if defined(CONFIG_STROLL_DLIST)
+
+#include "stroll/dlist.h"
+
+typedef void
+        (strollpt_sort_dlist_fn)(struct stroll_dlist_node * __restrict,
+                                 stroll_dlist_cmp_fn *)
+	__stroll_nonull(1, 2);
+
+struct strollpt_dlist_node {
+	struct stroll_dlist_node super;
+	unsigned int             id;
+	char                     data[0];
+};
+
+static inline int
+strollpt_dlist_compare_min(
+	const struct stroll_dlist_node * __restrict a,
+	const struct stroll_dlist_node * __restrict b,
+	void *                                      data __unused)
+{
+	const struct strollpt_dlist_node * _a =
+		stroll_dlist_entry(a, const struct strollpt_dlist_node, super);
+	const struct strollpt_dlist_node * _b =
+		stroll_dlist_entry(b, const struct strollpt_dlist_node, super);
+
+	return (_a->id > _b->id) - (_a->id < _b->id);
+}
+
+static void
+strollpt_sort_destroy_dlist(struct stroll_dlist_node * __restrict list)
+{
+	assert(list);
+
+	while (!stroll_dlist_empty(list)) {
+		struct strollpt_dlist_node * node;
+
+		node = stroll_dlist_entry(stroll_dlist_dqueue_front(list),
+		                          struct strollpt_dlist_node,
+		                          super);
+		free(node);
+	}
+
+	free(list);
+}
+
+static struct stroll_dlist_node *
+strollpt_sort_create_dlist(const unsigned int * __restrict elements,
+                           unsigned int                    nr,
+                           size_t                          size)
+{
+	assert(elements);
+	assert(nr);
+	assert(size);
+	assert(size >= sizeof_member(struct strollpt_dlist_node, id));
+
+	struct stroll_dlist_node * list;
+	unsigned int               n;
+
+	list = malloc(sizeof(*list));
+	if (!list)
+		return NULL;
+	stroll_dlist_init(list);
+
+	for (n = 0; n < nr; n++) {
+		struct strollpt_dlist_node * node;
+
+		node = malloc(sizeof(node->super) + size);
+		if (!node)
+			goto destroy;
+
+		node->id = elements[n];
+		stroll_dlist_nqueue_back(list, &node->super);
+	}
+
+	return list;
+
+destroy:
+	strollpt_sort_destroy_dlist(list);
+
+	return NULL;
+}
+
+static int
+strollpt_sort_validate_dlist(const unsigned int * __restrict elements,
+                             unsigned int                    nr,
+                             size_t                          size,
+                             strollpt_sort_dlist_fn *        sort)
+{
+	assert(elements);
+	assert(nr);
+	assert(sort);
+
+	struct stroll_dlist_node *         list;
+	const struct strollpt_dlist_node * prev = NULL;
+	const struct strollpt_dlist_node * curr;
+	unsigned int                       cnt = 0;
+	int                                ret = EXIT_FAILURE;
+
+	if (size % sizeof_member(struct strollpt_dlist_node, id)) {
+		strollpt_err("invalid data element size %zu specified: "
+		             "multiple of %zu expected.\n",
+		             size,
+		             sizeof_member(struct strollpt_dlist_node, id));
+		return EXIT_FAILURE;
+	}
+
+	list = strollpt_sort_create_dlist(elements, nr, size);
+	if (!list)
+		return EXIT_FAILURE;
+
+	sort(list, strollpt_dlist_compare_min);
+
+	stroll_dlist_foreach_entry(list, curr, super) {
+		cnt++;
+		if (prev) {
+			if (prev->id > curr->id) {
+				strollpt_err("bogus sorting scheme: "
+				             "node out of order.\n");
+				goto free;
+			}
+		}
+		prev = curr;
+	}
+
+	if (cnt != nr) {
+		strollpt_err("bogus sorting scheme: "
+		             "unexpected number of nodes.\n");
+		goto free;
+	}
+
+	ret = EXIT_SUCCESS;
+
+free:
+	strollpt_sort_destroy_dlist(list);
+
+	return ret;
+}
+
+static int
+strollpt_sort_measure_dlist(const unsigned int * __restrict elements,
+                            unsigned int                    nr,
+                            size_t                          size,
+                            unsigned long long * __restrict nsecs,
+                            strollpt_sort_dlist_fn *        sort)
+{
+	struct timespec            start, elapse;
+	struct stroll_dlist_node * list;
+
+	list = strollpt_sort_create_dlist(elements, nr, size);
+	if (!list)
+		return EXIT_FAILURE;
+
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
+	sort(list, strollpt_dlist_compare_min);
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
+
+	elapse = strollpt_tspec_sub(&elapse, &start);
+	*nsecs = strollpt_tspec2ns(&elapse);
+
+	strollpt_sort_destroy_dlist(list);
+
+	return EXIT_SUCCESS;
+}
+
+#endif /* defined(CONFIG_STROLL_DLIST) */
+
+#if defined(CONFIG_STROLL_DLIST_BUBBLE_SORT)
+
+static void
+strollpt_sort_dlist_bubble(struct stroll_dlist_node * __restrict list,
+                           stroll_dlist_cmp_fn *                 compare)
+{
+	stroll_dlist_bubble_sort(list, compare, NULL);
+}
+
+static int
+strollpt_sort_validate_dlist_bubble(const unsigned int * __restrict elements,
+                                    unsigned int                    nr,
+                                    size_t                          size)
+{
+	return strollpt_sort_validate_dlist(elements,
+	                                    nr,
+	                                    size,
+	                                    strollpt_sort_dlist_bubble);
+}
+
+static int
+strollpt_sort_measure_dlist_bubble(const unsigned int * __restrict elements,
+                                   unsigned int                    nr,
+                                   size_t                          size,
+                                   unsigned long long * __restrict nsecs)
+{
+	return strollpt_sort_measure_dlist(elements,
+	                                   nr,
+	                                   size,
+	                                   nsecs,
+	                                   strollpt_sort_dlist_bubble);
+}
+
+#endif /* defined(CONFIG_STROLL_DLIST_BUBBLE_SORT) */
+
 static const struct strollpt_sort_algo strollpt_sort_algos[] = {
 #if defined(CONFIG_STROLL_ARRAY)
 	{
@@ -878,6 +1080,13 @@ static const struct strollpt_sort_algo strollpt_sort_algos[] = {
 		.measure  = strollpt_sort_measure_slist_merge
 	},
 #endif /* defined(CONFIG_STROLL_SLIST_MERGE_SORT) */
+#if defined(CONFIG_STROLL_DLIST_BUBBLE_SORT)
+	{
+		.name     = "dlist_bubble",
+		.validate = strollpt_sort_validate_dlist_bubble,
+		.measure  = strollpt_sort_measure_dlist_bubble
+	},
+#endif /* defined(CONFIG_STROLL_DLIST_BUBBLE_SORT) */
 };
 
 static const struct strollpt_sort_algo *

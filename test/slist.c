@@ -1110,8 +1110,8 @@ strollut_slist_compare_min_num(
 
 static void
 strollut_slist_sort_check_num(struct strollut_slist_node      nodes[],
-	                      const struct strollut_list_xpct expected[],
-	                      unsigned int                    nr)
+                              const struct strollut_list_xpct expected[],
+                              unsigned int                    nr)
 {
 	struct stroll_slist list = STROLL_SLIST_INIT(list);
 	unsigned int        n;

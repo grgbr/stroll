@@ -51,9 +51,9 @@ builtin_utest.a-cflags := $(test-cflags)
 
 checkbins            := stroll-utest
 stroll-utest-objs    := cdefs.o
-ifneq ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST)),)
+ifneq ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST) $(CONFIG_STROLL_DLIST)),)
 stroll-utest-objs    += array_data.o
-endif # ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST)),)
+endif # ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST) $(CONFIG_STROLL_DLIST)),)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BOPS,bops.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_POW2,pow2.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BMAP,bmap.o)
@@ -73,14 +73,14 @@ builtins                  += builtin_ptest.a
 builtin_ptest.a-objs      := ptest.o
 builtin_ptest.a-cflags    := $(test-cflags)
 
-ifneq ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST)),)
+ifneq ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST) $(CONFIG_STROLL_DLIST)),)
 
 checkbins                 += stroll-sort-ptest
 stroll-sort-ptest-objs    := sort_ptest.o
 stroll-sort-ptest-cflags  := $(test-cflags)
 stroll-sort-ptest-ldflags := $(ptest-ldflags) -lm
 
-endif # ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST)),)
+endif # ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST) $(CONFIG_STROLL_DLIST)),)
 
 checkbins                 += $(call kconf_enabled,STROLL_HEAP,stroll-heap-ptest)
 stroll-heap-ptest-objs    := heap_ptest.o
