@@ -70,6 +70,7 @@ stroll_slist_splice(struct stroll_slist * __restrict      result,
 
 #if defined(CONFIG_STROLL_SLIST_BUBBLE_SORT)
 
+#if 0
 /* Implementation is always stable */
 void
 stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
@@ -79,7 +80,7 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
 	stroll_slist_assert_api(!stroll_slist_empty(list));
 	stroll_slist_assert_api(compare);
 
-	struct stroll_slist_node * head = NULL;
+	struct stroll_slist_node * sort = NULL;
 	struct stroll_slist_node * swap;
 
 	do {
@@ -98,7 +99,7 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
 				prev = curr;
 				curr = stroll_slist_next(curr);
 				nxt = stroll_slist_next(curr);
-				if (nxt == head)
+				if (nxt == sort)
 					nxt = NULL;
 
 				if (!nxt)
@@ -112,7 +113,7 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
 
 			if (!nxt) {
 				/* End of current pass. */
-				head = curr;
+				sort = curr;
 				break;
 			}
 
@@ -124,7 +125,7 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
 			do {
 				prev = curr;
 				curr = stroll_slist_next(curr);
-				if (curr == head)
+				if (curr == sort)
 					curr = NULL;
 
 				if (!curr)
@@ -140,7 +141,7 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
 
 			if (!curr) {
 				/* End of current pass. */
-				head = swap;
+				sort = swap;
 				break;
 			}
 
@@ -148,6 +149,76 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
 		}
 	} while (swap);
 }
+#else
+void
+stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
+                         stroll_slist_cmp_fn *            compare,
+                         void *                           data)
+{
+	stroll_slist_assert_api(!stroll_slist_empty(list));
+	stroll_slist_assert_api(compare);
+
+	struct stroll_slist_node * sort = NULL;
+
+	do {
+		struct stroll_slist_node * curr = stroll_slist_head(list);
+		struct stroll_slist_node * swap = NULL;
+
+		/* For each node in the list... */
+		do {
+			struct stroll_slist_node * prev;
+			struct stroll_slist_node * next;
+
+			/* Find next out-of-order node. */
+			while (true) {
+				prev = curr;
+				curr = stroll_slist_next(prev);
+				next = stroll_slist_next(curr);
+				if (!next || (next == sort))
+					break;
+
+				if (compare(curr, next, data) > 0)
+					break;
+			}
+
+			if (!next || (next == sort))
+				/*
+				 * No more out-of-order node: current pass is
+				 * over.
+				 */
+				break;
+
+			/* Remove current out-of-order node. */
+			stroll_slist_remove(list, prev, curr);
+			/* Keep a pointer to it for later insertion. */
+			swap = curr;
+
+			/* Find in order location for out-of-order node. */
+			while (true) {
+				prev = curr;
+				curr = stroll_slist_next(curr);
+				if (!curr || (curr == sort))
+					break;
+
+				if (compare(curr, swap, data) >= 0)
+					break;
+			}
+
+			/* Insert it in order. */
+			stroll_slist_append(list, prev, swap);
+		} while (curr && (curr != sort));
+
+		/*
+		 * `swap' now points to the last node inserted in order for the
+		 * current pass, i.e., points to the first node of the final
+		 * sorted list.
+		 */
+		sort = swap;
+
+		/* Do this as long as current pass swapped at least one node. */
+	} while (sort);
+}
+#endif
 
 #endif /* defined(CONFIG_STROLL_SLIST_BUBBLE_SORT) */
 
@@ -307,12 +378,11 @@ stroll_slist_insert_sort(struct stroll_slist * __restrict list,
 	STROLL_CONCAT(CONFIG_STROLL_SLIST_MERGE_SORT_INSERT_THRESHOLD, U)
 
 /*
- * Sort a specified number of nodes from a stroll_slist according to the
+ * Sort a fixed number of nodes from a stroll_slist according to the
  * insertion sort scheme and move sorted nodes into a result stroll_slist.
  *
  * @param[inout] result  Result stroll_slist where sorted nodes are moved.
  * @param[inout] source  Source stroll_slist to sort.
- * @param[in]    count   Maximum number of source nodes to sort.
  * @param[in]    compare stroll_list nodes comparison function.
  * @param[inout] data    Optional arbitrary user data.
  *
@@ -321,10 +391,10 @@ stroll_slist_insert_sort(struct stroll_slist * __restrict list,
  * - Behavior is undefined when called on an empty @p source stroll_slist.
  */
 static void __stroll_nonull(1, 2, 4)
-stroll_slist_counted_insert_sort(struct stroll_slist * __restrict result,
-                                 struct stroll_slist * __restrict source,
-                                 stroll_slist_cmp_fn *            compare,
-                                 void *                           data)
+stroll_slist_merge_insert_sort(struct stroll_slist * __restrict result,
+                               struct stroll_slist * __restrict source,
+                               stroll_slist_cmp_fn *            compare,
+                               void *                           data)
 {
 	stroll_slist_assert_intern(stroll_slist_empty(result));
 	stroll_slist_assert_intern(!stroll_slist_empty(source));
@@ -506,7 +576,7 @@ stroll_slist_merge_sort(struct stroll_slist * __restrict list,
 		 * Sort an initial run using insertion sort and store the result
 		 * in the current sublist.
 		 */
-		stroll_slist_counted_insert_sort(&subs[0], list, compare, data);
+		stroll_slist_merge_insert_sort(&subs[0], list, compare, data);
 
 		/* Merge up 2 runs / sublists of the same length in a row.*/
 		cnt = 1;

@@ -290,6 +290,7 @@ stroll_slist_remove(struct stroll_slist *                       list,
 	stroll_slist_assert_api(!stroll_slist_empty(list));
 	stroll_slist_assert_api(previous);
 	stroll_slist_assert_api(node);
+	stroll_slist_assert_api(node != previous);
 	stroll_slist_assert_api(previous->next == node);
 
 	if (!node->next)
