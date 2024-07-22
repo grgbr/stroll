@@ -925,4 +925,43 @@ stroll_dlist_bubble_sort(struct stroll_dlist_node * __restrict head,
 
 #endif /* defined(CONFIG_STROLL_SLIST_BUBBLE_SORT) */
 
+#if defined(CONFIG_STROLL_DLIST_SELECT_SORT)
+
+/**
+ * Sort specified list according to the selection sort scheme.
+ *
+ * @param[inout] head    head of list to sort.
+ * @param[in]    compare @p list nodes comparison function.
+ * @param[inout] data    Optional arbitrary user data.
+ *
+ * Sort the @p list using the @p compare comparison function according to
+ * the @rstlnk{List selection sort} algorithm.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p list elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting lists} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * - Behavior is undefined when called on an empty stroll_slist.
+ * - Implemented for reference only: **DO NOT USE IT**. Refer to
+ *   @rstlnk{Sorting lists} for more informations related to algorithm
+ *   selection.
+ */
+extern void
+stroll_dlist_select_sort(struct stroll_dlist_node * __restrict head,
+                         stroll_dlist_cmp_fn *                 compare,
+                         void *                                data)
+	__stroll_nonull(1, 2);
+
+#endif /* defined(CONFIG_STROLL_DLIST_SELECT_SORT) */
+
 #endif /* _STROLL_DLIST_H */

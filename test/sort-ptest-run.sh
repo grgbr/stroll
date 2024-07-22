@@ -55,6 +55,7 @@ slist_bubble     4096
 slist_select     4096
 slist_insert     4096
 dlist_bubble     4096
+dlist_select     4096
 array_qsort   1048576
 array_quick   1048576
 array_3wquick 1048576

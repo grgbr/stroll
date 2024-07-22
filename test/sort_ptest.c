@@ -988,6 +988,41 @@ strollpt_sort_measure_dlist_bubble(const unsigned int * __restrict elements,
 
 #endif /* defined(CONFIG_STROLL_DLIST_BUBBLE_SORT) */
 
+#if defined(CONFIG_STROLL_DLIST_SELECT_SORT)
+
+static void
+strollpt_sort_dlist_select(struct stroll_dlist_node * __restrict list,
+                           stroll_dlist_cmp_fn *                 compare)
+{
+	stroll_dlist_select_sort(list, compare, NULL);
+}
+
+static int
+strollpt_sort_validate_dlist_select(const unsigned int * __restrict elements,
+                                    unsigned int                    nr,
+                                    size_t                          size)
+{
+	return strollpt_sort_validate_dlist(elements,
+	                                    nr,
+	                                    size,
+	                                    strollpt_sort_dlist_select);
+}
+
+static int
+strollpt_sort_measure_dlist_select(const unsigned int * __restrict elements,
+                                   unsigned int                    nr,
+                                   size_t                          size,
+                                   unsigned long long * __restrict nsecs)
+{
+	return strollpt_sort_measure_dlist(elements,
+	                                   nr,
+	                                   size,
+	                                   nsecs,
+	                                   strollpt_sort_dlist_select);
+}
+
+#endif /* defined(CONFIG_STROLL_DLIST_SELECT_SORT) */
+
 static const struct strollpt_sort_algo strollpt_sort_algos[] = {
 #if defined(CONFIG_STROLL_ARRAY)
 	{
@@ -1087,6 +1122,13 @@ static const struct strollpt_sort_algo strollpt_sort_algos[] = {
 		.measure  = strollpt_sort_measure_dlist_bubble
 	},
 #endif /* defined(CONFIG_STROLL_DLIST_BUBBLE_SORT) */
+#if defined(CONFIG_STROLL_DLIST_SELECT_SORT)
+	{
+		.name     = "dlist_select",
+		.validate = strollpt_sort_validate_dlist_select,
+		.measure  = strollpt_sort_measure_dlist_select
+	},
+#endif /* defined(CONFIG_STROLL_DLIST_SELECT_SORT) */
 };
 
 static const struct strollpt_sort_algo *
