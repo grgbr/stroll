@@ -1908,6 +1908,28 @@ CUTE_SUITE_STATIC(strollut_dlist_insert_suite,
                   CUTE_NULL_TEARDOWN,
                   CUTE_DFLT_TMOUT);
 
+#if defined(CONFIG_STROLL_DLIST_MERGE_SORT)
+
+static void
+strollut_dlist_merge_sort(struct stroll_dlist_node * __restrict list,
+                          stroll_dlist_cmp_fn *                 compare)
+{
+	stroll_dlist_merge_sort(list, compare, NULL);
+}
+
+STROLLUT_DLIST_SORT_SETUP(strollut_dlist_merge_setup,
+                          strollut_dlist_merge_sort)
+
+#else   /* !defined(CONFIG_STROLL_DLIST_MERGE_SORT) */
+STROLLUT_DLIST_UNSUP(strollut_dlist_merge_setup)
+#endif  /* defined(CONFIG_STROLL_DLIST_MERGE_SORT) */
+
+CUTE_SUITE_STATIC(strollut_dlist_merge_suite,
+                  strollut_dlist_sort_group,
+                  strollut_dlist_merge_setup,
+                  CUTE_NULL_TEARDOWN,
+                  CUTE_DFLT_TMOUT);
+
 /******************************************************************************
  * Top-level suite
  ******************************************************************************/
@@ -1971,9 +1993,7 @@ CUTE_GROUP(strollut_dlist_group) = {
 	CUTE_REF(strollut_dlist_bubble_suite),
 	CUTE_REF(strollut_dlist_select_suite),
 	CUTE_REF(strollut_dlist_insert_suite),
-#if 0
 	CUTE_REF(strollut_dlist_merge_suite)
-#endif
 };
 
 CUTE_SUITE_EXTERN(strollut_dlist_suite,

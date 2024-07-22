@@ -439,6 +439,25 @@ config STROLL_DLIST_INSERT_SORT
 	  over doubly linked list.
 	  See <stroll/dlist.h>.
 
+config STROLL_DLIST_MERGE_SORT
+	bool "Merge sort"
+	depends on STROLL_DLIST
+	select STROLL_DLIST_INSERT_SORT_UTILS
+	default y
+	help
+	  Build Stroll library with support for an optimized hybrid version of
+	  the merge sort algorithm over doubly linked lists.
+	  See <stroll/dlist.h>.
+
+config STROLL_DLIST_MERGE_SORT_INSERT_THRESHOLD
+	int "Merge sort insertion threshold"
+	depends on STROLL_DLIST_MERGE_SORT
+	range 2 128
+	default 16
+	help
+	  Threshold that configures the switch of (sub-)lists merge sort to
+	  insertion sort to minize the number of merging passes.
+
 endif # STROLL_LIST
 
 # ex: ft=kconfig:

@@ -64,6 +64,7 @@ array_merge   1048576
 array_fbheap  1048576
 array_fwheap  1048576
 slist_merge   1048576
+dlist_merge   1048576
 '
 
 sort_list_algos()

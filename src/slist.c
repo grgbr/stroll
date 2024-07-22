@@ -7,7 +7,6 @@
 
 #include "stroll/slist.h"
 #include "stroll/pow2.h"
-#include <errno.h>
 
 #if defined(CONFIG_STROLL_ASSERT_INTERN)
 
@@ -307,6 +306,8 @@ stroll_slist_insert_sort(struct stroll_slist * __restrict list,
 	STROLL_CONCAT(CONFIG_STROLL_SLIST_MERGE_SORT_INSERT_THRESHOLD, U)
 
 /*
+ * @internal
+ *
  * Sort a fixed number of nodes from a stroll_slist according to the
  * insertion sort scheme and move sorted nodes into a result stroll_slist.
  *
@@ -319,7 +320,8 @@ stroll_slist_insert_sort(struct stroll_slist * __restrict list,
  * - Behavior is undefined when called on a non empty @p result stroll_slist.
  * - Behavior is undefined when called on an empty @p source stroll_slist.
  */
-static void __stroll_nonull(1, 2, 4)
+static __stroll_nonull(1, 2, 4)
+void
 stroll_slist_merge_insert_sort(struct stroll_slist * __restrict result,
                                struct stroll_slist * __restrict source,
                                stroll_slist_cmp_fn *            compare,
@@ -357,12 +359,14 @@ stroll_slist_merge_insert_sort(struct stroll_slist * __restrict result,
 }
 
 /*
+ * @internal
+ *
  * Merge 2 sorted (sub)lists segments.
  *
  * @param[inout] result  stroll_slist within which both stroll_slist will be
  *                       sorted into.
  * @param[inout] at      First node of result's segment.
- * @param[inout] source  Source stroll_slist to sort within result.
+ * @param[inout] source  Source stroll_slist to sort within @p result.
  * @param[in]    compare comparison function used to perform in order merge.
  *
  * @return Last sorted node merged into result.
@@ -425,7 +429,7 @@ stroll_slist_merge_sorted_subs(struct stroll_slist *      result,
 
 	/*
 	 * Search for the longest source nodes segment that may be inserted
-	 * befor current result's node.
+	 * before current result's node.
 	 */
 	src_cur = stroll_slist_head(source);
 	src_nxt = src_cur;

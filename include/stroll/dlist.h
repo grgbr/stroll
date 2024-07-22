@@ -1000,4 +1000,78 @@ stroll_dlist_insert_sort(struct stroll_dlist_node * __restrict list,
 
 #endif /* defined(CONFIG_STROLL_DLIST_INSERT_SORT) */
 
+#if defined(CONFIG_STROLL_DLIST_MERGE_SORT)
+
+/**
+ * Sort 2 presorted stroll_dlist_node doubly linked lists into a single one.
+ *
+ * @param[inout] result  Head of list within which both lists will be sorted
+ *                       into.
+ * @param[inout] source  Head of list to sort within @p result.
+ * @param[in]    compare stroll_dlist_node nodes comparison function.
+ * @param[inout] data    Optional arbitrary user data.
+ *
+ * Merge the already sorted @p result and @p source lists using the @p compare
+ * comparison function. Sorted result is stored into the @p result list.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p list elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting lists} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * - Behavior is undefined when called on an empty @p result stroll_dlist_node
+ *   head.
+ * - Behavior is undefined when called on an empty @p source stroll_dlist_node
+ *   head.
+ */
+extern void
+stroll_dlist_merge_presort(struct stroll_dlist_node * __restrict result,
+                           struct stroll_dlist_node * __restrict source,
+                           stroll_dlist_cmp_fn *                 compare,
+                           void *                                data)
+	__stroll_nonull(1, 2, 3);
+
+/**
+ * Sort specified doubly linked list according to an hybrid merge sort scheme.
+ *
+ * @param[inout] head     Head of list to sort.
+ * @param[in]    compare  @p head list nodes comparison function.
+ * @param[inout] data     Optional arbitrary user data.
+ *
+ * Sort the @p list using the @p compare comparison function according to
+ * the @rstlnk{List merge sort} algorithm.
+ *
+ * The first 2 arguments passed to the @p compare routine both points to
+ * distinct @p list elements.
+ * @p compare *MUST* return an integer less than, equal to, or greater than zero
+ * if first argument is found, respectively, to be less than, to match, or be
+ * greater than the second one.
+ *
+ * The @p compare routine is given @p data as an optional *third* argument
+ * as-is. It may point to arbitrary user data for comparison purposes.
+ *
+ * @note
+ * Refer to @rstlnk{Sorting lists} for more informations related to algorithm
+ * selection.
+ *
+ * @warning
+ * - Behavior is undefined when called on an empty stroll_dlist_node head.
+ */
+extern void
+stroll_dlist_merge_sort(struct stroll_dlist_node * __restrict head,
+                        stroll_dlist_cmp_fn *                 compare,
+                        void *                                data)
+	__stroll_nonull(1, 2);
+
+#endif /* defined(CONFIG_STROLL_DLIST_MERGE_SORT) */
+
 #endif /* _STROLL_DLIST_H */
