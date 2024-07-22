@@ -45,15 +45,17 @@ stroll_dlist_bubble_sort(struct stroll_dlist_node * __restrict head,
 	stroll_dlist_assert_api(compare);
 
 	struct stroll_dlist_node * sort = head;
+	struct stroll_dlist_node * swap;
 
 	do {
 		stroll_dlist_assert_intern(!stroll_dlist_empty(sort));
 
 		struct stroll_dlist_node * curr = stroll_dlist_next(head);
-		struct stroll_dlist_node * swap = NULL;
+
+		swap = NULL;
 
 		/* For each node in the list... */
-		do {
+		while (true) {
 			struct stroll_dlist_node * next;
 
 			/* Find next out-of-order node. */
@@ -68,19 +70,28 @@ stroll_dlist_bubble_sort(struct stroll_dlist_node * __restrict head,
 				curr = next;
 			}
 
-			if (next == sort)
+			if (next == sort) {
 				/*
 				 * No more out-of-order node: current pass is
 				 * over.
 				 */
+				sort = curr;
 				break;
+			}
 
 			/* Remove current out-of-order node. */
 			stroll_dlist_remove(curr);
-			/* Keep a pointer to it for later insertion. */
+
+			/*
+			 * Keep a pointer to it for later insertion.  `swap' now
+			 * points to the last node inserted in order for the
+			 * current pass, i.e., points to the first node of the
+			 * final sorted list.
+			 */
 			swap = curr;
 
 			/* Find in order location for out-of-order node. */
+			curr = next;
 			while (true) {
 				curr = stroll_dlist_next(curr);
 				if (curr == sort)
@@ -92,17 +103,15 @@ stroll_dlist_bubble_sort(struct stroll_dlist_node * __restrict head,
 
 			/* Insert it in order. */
 			stroll_dlist_insert(curr, swap);
-		} while (curr != sort);
 
-		/*
-		 * `swap' now points to the last node inserted in order for the
-		 * current pass, i.e., points to the first node of the final
-		 * sorted list.
-		 */
-		sort = swap;
+			if (curr == sort) {
+				sort = swap;
+				break;
+			}
+		}
 
 		/* Do this as long as current pass swapped at least one node. */
-	} while (sort);
+	} while (swap);
 }
 
 #endif /* defined(CONFIG_STROLL_DLIST_BUBBLE_SORT) */

@@ -70,8 +70,6 @@ stroll_slist_splice(struct stroll_slist * __restrict      result,
 
 #if defined(CONFIG_STROLL_SLIST_BUBBLE_SORT)
 
-#if 0
-/* Implementation is always stable */
 void
 stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
                          stroll_slist_cmp_fn *            compare,
@@ -84,94 +82,17 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
 	struct stroll_slist_node * swap;
 
 	do {
-		struct stroll_slist_node * curr = stroll_slist_head(list);
-		struct stroll_slist_node * prev;
-		struct stroll_slist_node * nxt;
+		struct stroll_slist_node * prev = stroll_slist_head(list);
+		struct stroll_slist_node * curr;
 
 		swap = NULL;
 
-		while (true) {
-			/*
-			 * Find the next swap location by progressing along the
-			 * list untill end of list.
-			 */
-			do {
-				prev = curr;
-				curr = stroll_slist_next(curr);
-				nxt = stroll_slist_next(curr);
-				if (nxt == sort)
-					nxt = NULL;
-
-				if (!nxt)
-					/* End of sublist. */
-					break;
-
-				if (compare(curr, nxt, data) > 0)
-					/* Swap required. */
-					break;
-			} while (true);
-
-			if (!nxt) {
-				/* End of current pass. */
-				sort = curr;
-				break;
-			}
-
-			/* Extract out of order element. */
-			stroll_slist_remove(list, prev, curr);
-
-			swap = curr;
-			curr = nxt;
-			do {
-				prev = curr;
-				curr = stroll_slist_next(curr);
-				if (curr == sort)
-					curr = NULL;
-
-				if (!curr)
-					/* End of sublist. */
-					break;
-
-				if (compare(swap, curr, data) <= 0)
-					/* Swap location found. */
-					break;
-			} while (true);
-
-			stroll_slist_append(list, prev, swap);
-
-			if (!curr) {
-				/* End of current pass. */
-				sort = swap;
-				break;
-			}
-
-			curr = swap;
-		}
-	} while (swap);
-}
-#else
-void
-stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
-                         stroll_slist_cmp_fn *            compare,
-                         void *                           data)
-{
-	stroll_slist_assert_api(!stroll_slist_empty(list));
-	stroll_slist_assert_api(compare);
-
-	struct stroll_slist_node * sort = NULL;
-
-	do {
-		struct stroll_slist_node * curr = stroll_slist_head(list);
-		struct stroll_slist_node * swap = NULL;
-
 		/* For each node in the list... */
-		do {
-			struct stroll_slist_node * prev;
+		while (true) {
 			struct stroll_slist_node * next;
 
 			/* Find next out-of-order node. */
 			while (true) {
-				prev = curr;
 				curr = stroll_slist_next(prev);
 				next = stroll_slist_next(curr);
 				if (!next || (next == sort))
@@ -179,25 +100,38 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
 
 				if (compare(curr, next, data) > 0)
 					break;
+
+				prev = curr;
 			}
 
-			if (!next || (next == sort))
+			if (!next || (next == sort)) {
 				/*
 				 * No more out-of-order node: current pass is
 				 * over.
 				 */
+				sort = curr;
 				break;
+			}
 
 			/* Remove current out-of-order node. */
 			stroll_slist_remove(list, prev, curr);
-			/* Keep a pointer to it for later insertion. */
+
+			/*
+			 * Keep a pointer to it for later insertion.  `swap' now
+			 * points to the last node inserted in order for the
+			 * current pass, i.e., points to the first node of the
+			 * final sorted list.
+			 */
 			swap = curr;
 
 			/* Find in order location for out-of-order node. */
+			curr = next;
 			while (true) {
 				prev = curr;
 				curr = stroll_slist_next(curr);
-				if (!curr || (curr == sort))
+				if (curr == sort)
+					curr = NULL;
+				if (!curr)
 					break;
 
 				if (compare(curr, swap, data) >= 0)
@@ -206,19 +140,18 @@ stroll_slist_bubble_sort(struct stroll_slist * __restrict list,
 
 			/* Insert it in order. */
 			stroll_slist_append(list, prev, swap);
-		} while (curr && (curr != sort));
 
-		/*
-		 * `swap' now points to the last node inserted in order for the
-		 * current pass, i.e., points to the first node of the final
-		 * sorted list.
-		 */
-		sort = swap;
+			if (!curr) {
+				sort = swap;
+				break;
+			}
+
+			prev = swap;
+		}
 
 		/* Do this as long as current pass swapped at least one node. */
-	} while (sort);
+	} while (swap);
 }
-#endif
 
 #endif /* defined(CONFIG_STROLL_SLIST_BUBBLE_SORT) */
 
