@@ -153,4 +153,88 @@ stroll_dlist_select_sort(struct stroll_dlist_node * __restrict head,
 	} while (!stroll_dlist_empty(&unsort));
 }
 
-#endif /* defined(CONFIG_STROLL_SLIST_SELECT_SORT) */
+#endif /* defined(CONFIG_STROLL_DLIST_SELECT_SORT) */
+
+/******************************************************************************
+ * Doubly linked list insertion sorting
+ ******************************************************************************/
+
+#if defined(CONFIG_STROLL_DLIST_INSERT_SORT_UTILS)
+
+/*
+ * Insert node into stroll_dlist_node list in order.
+ *
+ * @param head    head of list to insert @p node into
+ * @param node    node to insert
+ * @param compare comparison function used to perform in order insertion
+ */
+static __stroll_nonull(1, 2, 3)
+void
+stroll_dlist_insert_inorder(struct stroll_dlist_node * __restrict head,
+                            struct stroll_dlist_node * __restrict node,
+                            stroll_dlist_cmp_fn *                 compare,
+                            void *                                data)
+{
+	stroll_dlist_assert_intern(head);
+	stroll_dlist_assert_intern(node);
+	stroll_dlist_assert_intern(compare);
+
+	struct stroll_dlist_node * curr = stroll_dlist_next(head);
+
+	/*
+	 * No need to check for end of list since curr must be inserted before
+	 * current sorted list tail, i.e., curr will always be inserted before
+	 * an existing node.
+	 */
+	while (compare(node, curr, data) >= 0) {
+		stroll_dlist_assert_intern(curr != head);
+
+		/*
+		 * Although it seems a pretty good place to perform some
+		 * prefetching, performance measurement doesn't show significant
+		 * improvements... For most data sets, prefetching enhance
+		 * processing time by an amount < 4/5%. In the worst case, this
+		 * incurs a 3/4% penalty.  Measurements were done onto amd64
+		 * platform with moderate read-only prefetching scheme (giving
+		 * the best results), i.e. :
+		 *   stroll_prefetch(stroll_dlist_next(curr),
+		 *                   STROLL_PREFETCH_ACCESS_RO,
+		 *                   STROLL_PREFETCH_LOCALITY_LOW)
+		 *
+		 * Additional code and complexity don't really worth it...
+		 */
+		curr = stroll_dlist_next(curr);
+	}
+
+	stroll_dlist_insert(curr, node);
+}
+
+#endif /* defined(CONFIG_STROLL_DLIST_INSERT_SORT_UTILS) */
+
+#if defined(CONFIG_STROLL_DLIST_INSERT_SORT)
+
+void
+stroll_dlist_insert_sort(struct stroll_dlist_node * __restrict head,
+                         stroll_dlist_cmp_fn *                 compare,
+                         void *                                data)
+{
+	stroll_dlist_assert_api(!stroll_dlist_empty(head));
+	stroll_dlist_assert_api(compare);
+
+	struct stroll_dlist_node * prev = stroll_dlist_next(head);
+	struct stroll_dlist_node * curr = stroll_dlist_next(prev);
+
+	while (curr != head) {
+		struct stroll_dlist_node * next = stroll_dlist_next(curr);
+
+		if (compare(curr, prev, data) < 0) {
+			stroll_dlist_remove(curr);
+			stroll_dlist_insert_inorder(head, curr, compare, data);
+		}
+		else
+			prev = curr;
+		curr = next;
+	}
+}
+
+#endif /* defined(CONFIG_STROLL_DLIST_INSERT_SORT) */

@@ -1023,6 +1023,41 @@ strollpt_sort_measure_dlist_select(const unsigned int * __restrict elements,
 
 #endif /* defined(CONFIG_STROLL_DLIST_SELECT_SORT) */
 
+#if defined(CONFIG_STROLL_DLIST_INSERT_SORT)
+
+static void
+strollpt_sort_dlist_insert(struct stroll_dlist_node * __restrict list,
+                           stroll_dlist_cmp_fn *                 compare)
+{
+	stroll_dlist_insert_sort(list, compare, NULL);
+}
+
+static int
+strollpt_sort_validate_dlist_insert(const unsigned int * __restrict elements,
+                                    unsigned int                    nr,
+                                    size_t                          size)
+{
+	return strollpt_sort_validate_dlist(elements,
+	                                    nr,
+	                                    size,
+	                                    strollpt_sort_dlist_insert);
+}
+
+static int
+strollpt_sort_measure_dlist_insert(const unsigned int * __restrict elements,
+                                   unsigned int                    nr,
+                                   size_t                          size,
+                                   unsigned long long * __restrict nsecs)
+{
+	return strollpt_sort_measure_dlist(elements,
+	                                   nr,
+	                                   size,
+	                                   nsecs,
+	                                   strollpt_sort_dlist_insert);
+}
+
+#endif /* defined(CONFIG_STROLL_DLIST_INSERT_SORT) */
+
 static const struct strollpt_sort_algo strollpt_sort_algos[] = {
 #if defined(CONFIG_STROLL_ARRAY)
 	{
@@ -1129,6 +1164,13 @@ static const struct strollpt_sort_algo strollpt_sort_algos[] = {
 		.measure  = strollpt_sort_measure_dlist_select
 	},
 #endif /* defined(CONFIG_STROLL_DLIST_SELECT_SORT) */
+#if defined(CONFIG_STROLL_DLIST_INSERT_SORT)
+	{
+		.name     = "dlist_insert",
+		.validate = strollpt_sort_validate_dlist_insert,
+		.measure  = strollpt_sort_measure_dlist_insert
+	},
+#endif /* defined(CONFIG_STROLL_DLIST_INSERT_SORT) */
 };
 
 static const struct strollpt_sort_algo *

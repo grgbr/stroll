@@ -242,7 +242,7 @@ stroll_slist_insert_inorder(struct stroll_slist * __restrict      list,
 	 * current sorted list tail, i.e., curr will always be inserted before
 	 * an existing node.
 	 */
-	while (true) {
+	while (compare(node, curr, data) >= 0) {
 		stroll_slist_assert_intern(curr);
 
 		/*
@@ -259,10 +259,6 @@ stroll_slist_insert_inorder(struct stroll_slist * __restrict      list,
 		 *
 		 * Additional code and complexity don't really worth it...
 		 */
-
-		if (compare(node, curr, data) < 0)
-			break;
-
 		prev = curr;
 		curr = stroll_slist_next(curr);
 	}

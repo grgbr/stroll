@@ -421,6 +421,24 @@ config STROLL_DLIST_SELECT_SORT
 	  See <stroll/dlist.h>.
 	  Implemented for reference only: **DO NOT USE IT**.
 
+config STROLL_DLIST_INSERT_SORT_UTILS
+	bool
+	depends on STROLL_DLIST
+	default n
+	help
+	  Build Stroll library with support for internal utilities to sort
+	  doubly linked list according to the insertion sort scheme.
+
+config STROLL_DLIST_INSERT_SORT
+	bool "Insertion sort"
+	depends on STROLL_DLIST
+	select STROLL_DLIST_INSERT_SORT_UTILS
+	default y
+	help
+	  Build Stroll library with support for the insertion sort algorithm
+	  over doubly linked list.
+	  See <stroll/dlist.h>.
+
 endif # STROLL_LIST
 
 # ex: ft=kconfig:
