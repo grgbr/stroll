@@ -993,7 +993,7 @@ stroll_dlist_select_sort(struct stroll_dlist_node * __restrict head,
  * Behavior is undefined when called on an empty stroll_dlist_node.
  */
 extern void
-stroll_dlist_insert_sort(struct stroll_dlist_node * __restrict list,
+stroll_dlist_insert_sort(struct stroll_dlist_node * __restrict head,
                          stroll_dlist_cmp_fn *                 compare,
                          void *                                data)
 	__stroll_nonull(1, 2);

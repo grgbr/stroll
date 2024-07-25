@@ -63,6 +63,11 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_BOPS`
 * :c:macro:`CONFIG_STROLL_BMAP`
 * :c:macro:`CONFIG_STROLL_DLIST`
+* :c:macro:`CONFIG_STROLL_DLIST_BUBBLE_SORT`
+* :c:macro:`CONFIG_STROLL_DLIST_INSERT_SORT`
+* :c:macro:`CONFIG_STROLL_DLIST_MERGE_SORT`
+* :c:macro:`CONFIG_STROLL_DLIST_MERGE_SORT_INSERT_THRESHOLD`
+* :c:macro:`CONFIG_STROLL_DLIST_SELECT_SORT`
 * :c:macro:`CONFIG_STROLL_FBMAP`
 * :c:macro:`CONFIG_STROLL_LVSTR`
 * :c:macro:`CONFIG_STROLL_POW2`
@@ -70,6 +75,7 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_SLIST_BUBBLE_SORT`
 * :c:macro:`CONFIG_STROLL_SLIST_INSERT_SORT`
 * :c:macro:`CONFIG_STROLL_SLIST_MERGE_SORT`
+* :c:macro:`CONFIG_STROLL_SLIST_MERGE_SORT_INSERT_THRESHOLD`
 * :c:macro:`CONFIG_STROLL_SLIST_SELECT_SORT`
 * :c:macro:`CONFIG_STROLL_UTEST`
 * :c:macro:`CONFIG_STROLL_VALGRIND`
@@ -922,10 +928,17 @@ List merge sort
 
 When compiled with the :c:macro:`CONFIG_STROLL_SLIST_MERGE_SORT` build
 configuration option enabled, the Stroll_ library provides support for
-`Merge`_ sort algorithm over :term:`linked lists` thanks to:
+`Merge`_ sort algorithm over `singly linked lists`_ thanks to:
 
 * :c:func:`stroll_slist_merge_presort`,
 * :c:func:`stroll_slist_merge_sort`
+
+In addition, when compiled with the :c:macro:`CONFIG_STROLL_DLIST_MERGE_SORT`
+build configuration option enabled, the Stroll_ library provides support for
+`Merge`_ sort algorithm over `doubly linked lists`_ thanks to:
+
+* :c:func:`stroll_dlist_merge_presort`,
+* :c:func:`stroll_dlist_merge_sort`
 
 Algorithm is implemented according to an iterative bottom-up implementation
 based upon an original idea attributed to Jon McCarthy and described
@@ -938,8 +951,9 @@ space to store sublist heads.
 The algorithm starts by using the `merge`_ sort’s divide and conquer strategy.
 To limit the number of merging passes, it switches to `list insertion sort`_
 when the number of nodes left to sort is below the
-:c:macro:`CONFIG_STROLL_SLIST_MSORT_INSERT_THRESHOLD` threshold which may be
-configured at Stroll_ building time.
+:c:macro:`CONFIG_STROLL_SLIST_MERGE_SORT_INSERT_THRESHOLD` or
+:c:macro:`CONFIG_STROLL_DLIST_MERGE_SORT_INSERT_THRESHOLD` thresholds which may
+be configured at Stroll_ building time.
 
 .. note::
 
@@ -959,8 +973,13 @@ List insertion sort
 
 When compiled with the :c:macro:`CONFIG_STROLL_SLIST_INSERT_SORT` build
 configuration option enabled, the Stroll_ library provides support for
-`Insertion`_ sort algorithm over :term:`linked lists` thanks to
+`Insertion`_ sort algorithm over `singly linked lists`_ thanks to
 :c:func:`stroll_slist_insert_sort`.
+
+In addition, when compiled with the :c:macro:`CONFIG_STROLL_DLIST_INSERT_SORT`
+build configuration option enabled, the Stroll_ library provides support for
+`Insertion`_ sort algorithm over `doubly linked lists`_ thanks to
+:c:func:`stroll_dlist_insert_sort`.
 
 .. note::
 
@@ -980,8 +999,13 @@ List selection sort
 
 When compiled with the :c:macro:`CONFIG_STROLL_SLIST_SELECT_SORT` build
 configuration option enabled, the Stroll_ library provides support for
-`Selection`_ sort algorithm over :term:`linked lists` thanks to
+`Selection`_ sort algorithm over `singly linked lists`_ thanks to
 :c:func:`stroll_slist_select_sort`.
+
+In addition, when compiled with the :c:macro:`CONFIG_STROLL_DLIST_SELECT_SORT`
+build configuration option enabled, the Stroll_ library provides support for
+`Selection`_ sort algorithm over `doubly linked lists`_ thanks to
+:c:func:`stroll_dlist_select_sort`.
 
 .. note::
 
@@ -1001,8 +1025,13 @@ List bubble sort
 
 When compiled with the :c:macro:`CONFIG_STROLL_SLIST_BUBBLE_SORT` build
 configuration option enabled, the Stroll_ library provides support for
-`Bubble`_ sort algorithm over :term:`linked lists` thanks to
+`Bubble`_ sort algorithm over `singly linked lists`_ thanks to
 :c:func:`stroll_slist_bubble_sort`.
+
+In addition, when compiled with the :c:macro:`CONFIG_STROLL_DLIST_BUBBLE_SORT`
+build configuration option enabled, the Stroll_ library provides support for
+`Bubble`_ sort algorithm over `doubly linked lists`_ thanks to
+:c:func:`stroll_dlist_bubble_sort`.
 
 .. note::
 
@@ -1114,6 +1143,36 @@ CONFIG_STROLL_BMAP
 
 .. doxygendefine:: CONFIG_STROLL_BMAP
 
+CONFIG_STROLL_DLIST
+*******************
+
+.. doxygendefine:: CONFIG_STROLL_DLIST
+
+CONFIG_STROLL_DLIST_BUBBLE_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_DLIST_BUBBLE_SORT
+
+CONFIG_STROLL_DLIST_INSERT_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_DLIST_INSERT_SORT
+
+CONFIG_STROLL_DLIST_MERGE_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_DLIST_MERGE_SORT
+
+CONFIG_STROLL_DLIST_MERGE_SORT_INSERT_THRESHOLD
+***********************************************
+
+.. doxygendefine:: CONFIG_STROLL_DLIST_MERGE_SORT_INSERT_THRESHOLD
+
+CONFIG_STROLL_DLIST_SELECT_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_DLIST_SELECT_SORT
+
 CONFIG_STROLL_FBMAP
 *******************
 
@@ -1150,6 +1209,11 @@ CONFIG_STROLL_SLIST_MERGE_SORT
 ******************************
 
 .. doxygendefine:: CONFIG_STROLL_SLIST_MERGE_SORT
+
+CONFIG_STROLL_SLIST_MERGE_SORT_INSERT_THRESHOLD
+***********************************************
+
+.. doxygendefine:: CONFIG_STROLL_SLIST_MERGE_SORT_INSERT_THRESHOLD
 
 CONFIG_STROLL_SLIST_SELECT_SORT
 *******************************
@@ -2268,6 +2332,11 @@ stroll_dlist_append
 
 .. doxygenfunction:: stroll_dlist_append
 
+stroll_dlist_bubble_sort
+************************
+
+.. doxygenfunction:: stroll_dlist_bubble_sort
+
 stroll_dlist_dqueue_back
 ************************
 
@@ -2312,6 +2381,21 @@ stroll_dlist_insert
 *******************
 
 .. doxygenfunction:: stroll_dlist_insert
+
+stroll_dlist_insert_sort
+************************
+
+.. doxygenfunction:: stroll_dlist_insert_sort
+
+stroll_dlist_merge_sort
+***********************
+
+.. doxygenfunction:: stroll_dlist_merge_sort
+
+stroll_dlist_merge_presort
+**************************
+
+.. doxygenfunction:: stroll_dlist_merge_presort
 
 stroll_dlist_move_after
 ***********************
@@ -2360,6 +2444,11 @@ stroll_dlist_replace
 stroll_dlist_replace_init
 *************************
 .. doxygenfunction:: stroll_dlist_replace_init
+
+stroll_dlist_select_sort
+************************
+
+.. doxygenfunction:: stroll_dlist_select_sort
 
 stroll_dlist_splice_after
 *************************
