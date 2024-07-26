@@ -842,7 +842,13 @@ The following API is available:
    * Accessing / iterating over nodes:
 
       * :c:macro:`stroll_dlist_foreach_entry()`
+      * :c:macro:`stroll_dlist_foreach_entry_safe()`
       * :c:macro:`stroll_dlist_foreach_node()`
+      * :c:macro:`stroll_dlist_foreach_node_safe()`
+      * :c:macro:`stroll_dlist_foreach_prev_entry()`
+      * :c:macro:`stroll_dlist_foreach_prev_entry_safe()`
+      * :c:macro:`stroll_dlist_foreach_prev_node()`
+      * :c:macro:`stroll_dlist_foreach_prev_node_safe()`
       * :c:func:`stroll_dlist_next()`
       * :c:macro:`stroll_dlist_next_entry()`
       * :c:func:`stroll_dlist_prev()`
@@ -1548,10 +1554,40 @@ stroll_dlist_foreach_entry
 
 .. doxygendefine:: stroll_dlist_foreach_entry
 
+stroll_dlist_foreach_entry_safe
+*******************************
+
+.. doxygendefine:: stroll_dlist_foreach_entry_safe
+
 stroll_dlist_foreach_node
 *************************
 
 .. doxygendefine:: stroll_dlist_foreach_node
+
+stroll_dlist_foreach_node_safe
+******************************
+
+.. doxygendefine:: stroll_dlist_foreach_node_safe
+
+stroll_dlist_foreach_prev_entry
+*******************************
+
+.. doxygendefine:: stroll_dlist_foreach_prev_entry
+
+stroll_dlist_foreach_prev_entry_safe
+************************************
+
+.. doxygendefine:: stroll_dlist_foreach_prev_entry_safe
+
+stroll_dlist_foreach_prev_node
+******************************
+
+.. doxygendefine:: stroll_dlist_foreach_prev_node
+
+stroll_dlist_foreach_prev_node_safe
+***********************************
+
+.. doxygendefine:: stroll_dlist_foreach_prev_node_safe
 
 stroll_dlist_next_entry
 ***********************

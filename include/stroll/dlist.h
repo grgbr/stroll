@@ -821,47 +821,210 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
 /**
  * Iterate over doubly linked list nodes.
  *
- * @param[in]  _list Dummy head stroll_dlist_node designating the list to
+ * @param[in]  _head Dummy head stroll_dlist_node designating the list to
  *                   iterate over.
  * @param[out] _node Pointer to current node.
  *
  * @warning
- * - Result is undefined if @p _list has not been previously initialized.
+ * - Result is undefined if @p _head has not been previously initialized.
  * - Behavior is undefined when @p _node is modified while iterating over
- *   @p _list.
+ *   @p _head.
  *
  * @see
+ * - stroll_dlist_foreach_node_safe()
+ * - stroll_dlist_foreach_prev_node()
  * - stroll_dlist_foreach_entry()
  * - stroll_dlist_init()
  */
-#define stroll_dlist_foreach_node(_list, _node) \
-	for (_node = stroll_dlist_next(_list);  \
-	     _node != (_list);           \
+#define stroll_dlist_foreach_node(_head, _node) \
+	for (_node = stroll_dlist_next(_head);  \
+	     _node != (_head); \
 	     _node = stroll_dlist_next(_node))
+
+/**
+ * Iterate over doubly linked list nodes safely.
+ *
+ * @param[in]  _head Dummy head stroll_dlist_node designating the list to
+ *                   iterate over.
+ * @param[out] _node Pointer to current node.
+ * @param[out] _tmp  Pointer to another stroll_dlist_node used for temporary
+ *                   storage.
+ *
+ * Allows to iterate over a stroll_dlist_node based list safely against
+ * @p node removal.
+ * 
+ * @warning
+ * Result is undefined if @p _head has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_foreach_node()
+ * - stroll_dlist_foreach_entry_safe()
+ * - stroll_dlist_init()
+ */
+#define stroll_dlist_foreach_node_safe(_head, _node, _tmp) \
+	for (_node = stroll_dlist_next(_head), \
+	     _tmp = _stroll_dlist_next(_node);  \
+	     _node != (_head); \
+	     _node = _tmp, \
+	     _tmp = _stroll_dlist_next(_tmp))
+
+/**
+ * Iterate backward over doubly linked list nodes.
+ *
+ * @param[in]  _head Dummy head stroll_dlist_node designating the list to
+ *                   iterate over.
+ * @param[out] _node Pointer to current node.
+ *
+ * @warning
+ * - Result is undefined if @p _head has not been previously initialized.
+ * - Behavior is undefined when @p _node is modified while iterating over
+ *   @p _head.
+ *
+ * @see
+ * - stroll_dlist_foreach_node()
+ * - stroll_dlist_foreach_prev_entry()
+ * - stroll_dlist_init()
+ */
+#define stroll_dlist_foreach_prev_node(_head, _node) \
+	for (_node = stroll_dlist_prev(_head); \
+	     _node != (_head); \
+	     _node = stroll_dlist_prev(_node))
+
+/**
+ * Iterate backward over doubly linked list nodes safely.
+ *
+ * @param[in]  _head Dummy head stroll_dlist_node designating the list to
+ *                   iterate over.
+ * @param[out] _node Pointer to current node.
+ * @param[out] _tmp  Pointer to another stroll_dlist_node used for temporary
+ *                   storage.
+ *
+ * Allows to iterate backward over a stroll_dlist_node based list safely against
+ * @p node removal.
+ *
+ * @warning
+ * Result is undefined if @p _head has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_foreach_prev_node()
+ * - stroll_dlist_foreach_prev_entry_safe()
+ * - stroll_dlist_init()
+ */
+#define stroll_dlist_foreach_prev_node_safe(_head, _node, _tmp) \
+	for (_node = stroll_dlist_prev(_head), \
+	     _tmp = stroll_dlist_prev(_node); \
+	     _node != (_head); \
+	     _node = _tmp, \
+	     _tmp = stroll_dlist_prev(_tmp))
 
 /**
  * Iterate over doubly linked list entries.
  *
- * @param[in]  _list  Dummy head stroll_dlist_node designating the list to
- *                    iterate over.
- * @param[out] _entry Pointer to entry containing @p _list's current node.
- * @param     _member Member field of container structure holding the
- *                    stroll_dlist_node @p _node.
+ * @param[in]  _head   Dummy head stroll_dlist_node designating the list to
+ *                     iterate over.
+ * @param[out] _entry  Pointer to entry containing @p _head's current node.
+ * @param      _member Member field of container structure holding the
+ *                     stroll_dlist_node @p _node.
  *
  * @warning
- * - Result is undefined if @p _list has not been previously initialized.
+ * - Result is undefined if @p _head has not been previously initialized.
  * - Behavior is undefined when @p _node is modified while iterating over
- *   @p _list.
+ *   @p _head.
  *
  * @see
  * - stroll_dlist_foreach_node()
  * - stroll_dlist_init()
  */
-#define stroll_dlist_foreach_entry(_list, _entry, _member) \
-	for (_entry = stroll_dlist_entry((_list)->next, \
+#define stroll_dlist_foreach_entry(_head, _entry, _member) \
+	for (_entry = stroll_dlist_entry((_head)->next, \
 	                                 typeof(*(_entry)), _member); \
-	     &(_entry)->_member != (_list); \
+	     &(_entry)->_member != (_head); \
 	     _entry = stroll_dlist_next_entry(_entry, _member))
+
+/**
+ * Iterate over doubly linked list entries safely.
+ *
+ * @param[in]  _head   Dummy head stroll_dlist_node designating the list to
+ *                     iterate over.
+ * @param[out] _entry  Pointer to entry containing @p _head's current node.
+ * @param      _member Member field of container structure holding the
+ *                     stroll_dlist_node @p _node.
+ * @param[out] _tmp    Pointer to same type as @p _entry used for temporary
+ *                     storage.
+ *
+ * Allows to iterate over stroll_dlist_node based list entries safely against
+ * @p node removal.
+ *
+ * @warning
+ * Result is undefined if @p _head has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_foreach_entry()
+ * - stroll_dlist_foreach_node_safe()
+ * - stroll_dlist_init()
+ */
+#define stroll_dlist_foreach_entry_safe(_head, _entry, _member, _tmp) \
+	for (_entry = stroll_dlist_entry((_head)->next, \
+	                                 typeof(*(_entry)), _member), \
+	     _tmp = stroll_dlist_next_entry(_entry); \
+	     &(_entry)->_member != (_head); \
+	     _entry = _tmp, \
+	     _tmp = stroll_dlist_next_entry(_tmp, _member))
+
+/**
+ * Iterate backward over doubly linked list entries.
+ *
+ * @param[in]  _head   Dummy head stroll_dlist_node designating the list to
+ *                     iterate over.
+ * @param[out] _entry  Pointer to entry containing @p _head's current node.
+ * @param      _member Member field of container structure holding the
+ *                     stroll_dlist_node @p _node.
+ *
+ * @warning
+ * - Result is undefined if @p _head has not been previously initialized.
+ * - Behavior is undefined when @p _node is modified while iterating over
+ *   @p _head.
+ *
+ * @see
+ * - stroll_dlist_foreach_entry()
+ * - stroll_dlist_foreach_prev_node()
+ * - stroll_dlist_init()
+ */
+#define stroll_dlist_foreach_prev_entry(_head, _entry, _member) \
+	for (_entry = stroll_dlist_entry((_head)->prev, \
+	                                 typeof(*(_entry)), _member); \
+	     &(_entry)->_member != (_head); \
+	     _entry = stroll_dlist_prev_entry(_entry, _member))
+
+/**
+ * Iterate backward over doubly linked list entries safely.
+ *
+ * @param[in]  _head   Dummy head stroll_dlist_node designating the list to
+ *                     iterate over.
+ * @param[out] _entry  Pointer to entry containing @p _head's current node.
+ * @param      _member Member field of container structure holding the
+ *                     stroll_dlist_node @p _node.
+ * @param[out] _tmp    Pointer to same type as @p _entry used for temporary
+ *                     storage.
+ *
+ * Allows to iterate backward over stroll_dlist_node based list entries safely
+ * against @p node removal.
+ *
+ * @warning
+ * Result is undefined if @p _head has not been previously initialized.
+ *
+ * @see
+ * - stroll_dlist_foreach_prev_entry()
+ * - stroll_dlist_foreach_prev_node_safe()
+ * - stroll_dlist_init()
+ */
+#define stroll_dlist_foreach_prev_entry_safe(_head, _entry, _member, _tmp) \
+	for (_entry = stroll_dlist_entry((_head)->prev, \
+	                                 typeof(*(_entry)), _member), \
+	     _tmp = _entry; \
+	     &(_entry)->_member != (_head); \
+	     _entry = _tmp, \
+	     _tmp = stroll_dlist_prev_entry(_tmp, _member))
 
 /******************************************************************************
  * Stroll doubly linked list sorting
