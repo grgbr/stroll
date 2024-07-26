@@ -55,6 +55,16 @@ CUTE_TEST(strollut_dlist_iterate_empty)
 		cute_fail("iterable empty dlist !");
 }
 
+CUTE_TEST(strollut_dlist_iterate_safe_empty)
+{
+	struct stroll_dlist_node   lst = STROLL_DLIST_INIT(lst);
+	struct stroll_dlist_node * node;
+	struct stroll_dlist_node * tmp;
+
+	stroll_dlist_foreach_node_safe(&lst, node, tmp)
+		cute_fail("safely iterable empty dlist !");
+}
+
 CUTE_TEST(strollut_dlist_single)
 {
 	struct stroll_dlist_node   first;
@@ -63,6 +73,7 @@ CUTE_TEST(strollut_dlist_single)
 		.prev = &first
 	};
 	struct stroll_dlist_node * node;
+	struct stroll_dlist_node * tmp;
 	unsigned int               cnt;
 
 	first.next = &list;
@@ -75,6 +86,13 @@ CUTE_TEST(strollut_dlist_single)
 
 	cnt = 0;
 	stroll_dlist_foreach_node(&list, node) {
+		cute_check_ptr(node, equal, &first);
+		cnt++;
+	}
+	cute_check_uint(cnt, equal, 1);
+
+	cnt = 0;
+	stroll_dlist_foreach_node_safe(&list, node, tmp) {
 		cute_check_ptr(node, equal, &first);
 		cnt++;
 	}
@@ -104,6 +122,7 @@ CUTE_TEST(strollut_dlist_second)
 		.prev = &second
 	};
 	struct stroll_dlist_node * node;
+	struct stroll_dlist_node * tmp;
 	unsigned int               cnt;
 
 	first.next = &second;
@@ -120,6 +139,11 @@ CUTE_TEST(strollut_dlist_second)
 
 	cnt = 0;
 	stroll_dlist_foreach_node(&list, node)
+		cnt++;
+	cute_check_uint(cnt, equal, 2);
+
+	cnt = 0;
+	stroll_dlist_foreach_node_safe(&list, node, tmp)
 		cnt++;
 	cute_check_uint(cnt, equal, 2);
 }
@@ -1037,6 +1061,72 @@ STROLLUT_DLIST_NOASSERT(strollut_dlist_splice_after_assert)
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
+CUTE_TEST(strollut_dlist_iterate_safe)
+{
+	struct stroll_dlist_node   nodes[3];
+	struct stroll_dlist_node   list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node * node;
+	struct stroll_dlist_node * tmp;
+	unsigned int               c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_back(&list, &nodes[c]);
+
+	c = 0;
+	stroll_dlist_foreach_node_safe(&list, node, tmp) {
+		cute_check_ptr(node, equal, &nodes[c]);
+		c++;
+	}
+	cute_check_uint(c, equal, stroll_array_nr(nodes));
+}
+
+CUTE_TEST(strollut_dlist_iterate_prev_empty)
+{
+	struct stroll_dlist_node   list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node * node;
+
+	stroll_dlist_foreach_prev_node(&list, node)
+		cute_fail("reversely iterable empty dlist !");
+}
+
+
+CUTE_TEST(strollut_dlist_iterate_prev)
+{
+	struct stroll_dlist_node   nodes[3];
+	struct stroll_dlist_node   list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node * node;
+	unsigned int               c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_front(&list, &nodes[c]);
+
+	c = 0;
+	stroll_dlist_foreach_prev_node(&list, node) {
+		cute_check_ptr(node, equal, &nodes[c]);
+		c++;
+	}
+	cute_check_uint(c, equal, stroll_array_nr(nodes));
+}
+
+CUTE_TEST(strollut_dlist_iterate_prev_safe)
+{
+	struct stroll_dlist_node   nodes[3];
+	struct stroll_dlist_node   list = STROLL_DLIST_INIT(list);
+	struct stroll_dlist_node * node;
+	struct stroll_dlist_node * tmp;
+	unsigned int               c;
+
+	for (c = 0; c < stroll_array_nr(nodes); c++)
+		stroll_dlist_nqueue_front(&list, &nodes[c]);
+
+	c = 0;
+	stroll_dlist_foreach_prev_node_safe(&list, node, tmp) {
+		cute_check_ptr(node, equal, &nodes[c]);
+		c++;
+	}
+	cute_check_uint(c, equal, stroll_array_nr(nodes));
+}
+
 /******************************************************************************
  * Sorting tests
  ******************************************************************************/
@@ -1939,6 +2029,7 @@ CUTE_GROUP(strollut_dlist_group) = {
 	CUTE_REF(strollut_dlist_empty_assert),
 	CUTE_REF(strollut_dlist_init),
 	CUTE_REF(strollut_dlist_iterate_empty),
+	CUTE_REF(strollut_dlist_iterate_safe_empty),
 	CUTE_REF(strollut_dlist_single),
 	CUTE_REF(strollut_dlist_single_assert),
 	CUTE_REF(strollut_dlist_second),
@@ -1989,6 +2080,10 @@ CUTE_GROUP(strollut_dlist_group) = {
 	CUTE_REF(strollut_dlist_splice_after_mid),
 	CUTE_REF(strollut_dlist_splice_after_trail),
 	CUTE_REF(strollut_dlist_splice_after_assert),
+	CUTE_REF(strollut_dlist_iterate_safe),
+	CUTE_REF(strollut_dlist_iterate_prev),
+	CUTE_REF(strollut_dlist_iterate_prev_empty),
+	CUTE_REF(strollut_dlist_iterate_prev_safe),
 
 	CUTE_REF(strollut_dlist_bubble_suite),
 	CUTE_REF(strollut_dlist_select_suite),

@@ -863,10 +863,10 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
  */
 #define stroll_dlist_foreach_node_safe(_head, _node, _tmp) \
 	for (_node = stroll_dlist_next(_head), \
-	     _tmp = _stroll_dlist_next(_node);  \
+	     _tmp = stroll_dlist_next(_node);  \
 	     _node != (_head); \
 	     _node = _tmp, \
-	     _tmp = _stroll_dlist_next(_tmp))
+	     _tmp = stroll_dlist_next(_tmp))
 
 /**
  * Iterate backward over doubly linked list nodes.
