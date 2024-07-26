@@ -387,7 +387,7 @@ config STROLL_SLIST_MERGE_SORT_INSERT_THRESHOLD
 	int "Merge sort insertion threshold"
 	depends on STROLL_SLIST_MERGE_SORT
 	range 2 128
-	default 16
+	default 8
 	help
 	  Threshold that configures the switch of (sub-)lists merge sort to
 	  insertion sort to minize the number of merging passes.
@@ -453,7 +453,7 @@ config STROLL_DLIST_MERGE_SORT_INSERT_THRESHOLD
 	int "Merge sort insertion threshold"
 	depends on STROLL_DLIST_MERGE_SORT
 	range 2 128
-	default 16
+	default 8
 	help
 	  Threshold that configures the switch of (sub-)lists merge sort to
 	  insertion sort to minize the number of merging passes.
