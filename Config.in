@@ -116,6 +116,14 @@ config STROLL_LVSTR
 	  the life-cycle of C strings.
 	  See <stroll/lvstr.h>.
 
+config STROLL_LCRS
+	bool
+	select STROLL_PROVIDES_LIBS
+	default n
+	help
+	  Left-child right-siblings multi-way tree representation support.
+	  See <stroll/priv/lcrs.h>.
+
 menuconfig STROLL_HEAP
 	bool "Heaps"
 	select STROLL_PROVIDES_LIBS
@@ -131,6 +139,13 @@ config STROLL_FBHEAP
 
 config STROLL_FWHEAP
 	bool "Weak heap"
+	default n
+	help
+	  Document me!
+
+config STROLL_PRHEAP
+	bool "Pairing heap"
+	select STROLL_LCRS
 	default STROLL_HEAP
 	help
 	  Document me!
