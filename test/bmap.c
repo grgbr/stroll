@@ -3074,16 +3074,20 @@ CUTE_TEST(strollut_bmap_word_toggle_all)
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_set_iter_assert)
 {
-	unsigned long iter;
-	unsigned long bmp = 0;
 	unsigned int  b;
 
 #if __WORDSIZE == 64
+	uint64_t iter;
+	uint64_t bmp = 0;
+
 	cute_expect_assertion(_stroll_bmap_setup_set_iter64(NULL, bmp, &b));
 	cute_expect_assertion(_stroll_bmap_setup_set_iter64(&iter, bmp, NULL));
 	cute_expect_assertion(_stroll_bmap_step_iter64(NULL, &b));
 	cute_expect_assertion(_stroll_bmap_step_iter64(&iter, NULL));
 #elif __WORDSIZE == 32
+	uint32_t iter;
+	uint32_t bmp = 0;
+
 	cute_expect_assertion(_stroll_bmap_setup_set_iter32(NULL, bmp, &b));
 	cute_expect_assertion(_stroll_bmap_setup_set_iter32(&iter, bmp, NULL));
 	cute_expect_assertion(_stroll_bmap_step_iter32(NULL, &b));
@@ -3131,16 +3135,20 @@ CUTE_TEST(strollut_bmap_word_set_iter)
 #if defined(CONFIG_STROLL_ASSERT_API)
 CUTE_TEST(strollut_bmap_word_clear_iter_assert)
 {
-	unsigned long iter;
-	unsigned long bmp = 0;
 	unsigned int  b;
 
 #if __WORDSIZE == 64
+	uint64_t iter;
+	uint64_t bmp = 0;
+
 	cute_expect_assertion(_stroll_bmap_setup_clear_iter64(NULL, bmp, &b));
 	cute_expect_assertion(_stroll_bmap_setup_clear_iter64(&iter, bmp, NULL));
 	cute_expect_assertion(_stroll_bmap_step_iter64(NULL, &b));
 	cute_expect_assertion(_stroll_bmap_step_iter64(&iter, NULL));
 #elif __WORDSIZE == 32
+	uint32_t iter;
+	uint32_t bmp = 0;
+
 	cute_expect_assertion(_stroll_bmap_setup_clear_iter32(NULL, bmp, &b));
 	cute_expect_assertion(_stroll_bmap_setup_clear_iter32(&iter, bmp, NULL));
 	cute_expect_assertion(_stroll_bmap_step_iter32(NULL, &b));

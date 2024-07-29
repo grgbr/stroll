@@ -2690,12 +2690,12 @@ _stroll_bmap_setup_set_iter64(uint64_t * __restrict     iter,
 #if __WORDSIZE == 64
 
 #define stroll_bmap_foreach_setul(_iter, _bmap, _bit_no) \
-	stroll_bmap_foreach_set64(_iter, _bmap, _bit_no)
+	stroll_bmap_foreach_set64((uint64_t *)(_iter), _bmap, _bit_no)
 
 #elif __WORDSIZE == 32
 
 #define stroll_bmap_foreach_setul(_iter, _bmap, _bit_no) \
-	stroll_bmap_foreach_set32(_iter, _bmap, _bit_no)
+	stroll_bmap_foreach_set32((uint32_t *)(_iter), _bmap, _bit_no)
 
 #endif
 
@@ -2781,12 +2781,12 @@ _stroll_bmap_setup_clear_iter64(uint64_t * __restrict     iter,
 #if __WORDSIZE == 64
 
 #define stroll_bmap_foreach_clearul(_iter, _bmap, _bit_no) \
-	stroll_bmap_foreach_clear64(_iter, _bmap, _bit_no)
+	stroll_bmap_foreach_clear64((uint64_t *)(_iter), _bmap, _bit_no)
 
 #elif __WORDSIZE == 32
 
 #define stroll_bmap_foreach_clearul(_iter, _bmap, _bit_no) \
-	stroll_bmap_foreach_clear32(_iter, _bmap, _bit_no)
+	stroll_bmap_foreach_clear32((uint32_t *)(_iter), _bmap, _bit_no)
 
 #endif
 

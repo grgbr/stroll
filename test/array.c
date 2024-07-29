@@ -251,7 +251,10 @@ strollut_array_check_sort(void *       array,
 	strollut_array_sort(array, nr, size, strollut_array_compare_min, NULL);
 
 	while (val < end) {
-		cute_check_sint(*(const int *)val, equal, *(const int *)exp);
+		int v = *(const int *)((const void *)val);
+		int e = *(const int *)((const void *)exp);
+
+		cute_check_sint(v, equal, e);
 		val += size;
 		exp += size;
 	}

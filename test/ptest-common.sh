@@ -5,7 +5,7 @@ error()
 	$ECHOE "$arg0: $*" >&2
 }
 
-sort_ptest_parse_loops()
+ptest_parse_loops()
 {
 	local arg="$1"
 	local val
@@ -25,7 +25,7 @@ sort_ptest_parse_loops()
 	echo $arg
 }
 
-sort_ptest_parse_nr()
+ptest_parse_nr()
 {
 	local args="$1"
 	local a
@@ -52,7 +52,7 @@ sort_ptest_parse_nr()
 	echo $args
 }
 
-sort_ptest_parse_orders()
+ptest_parse_orders()
 {
 	local args="$1"
 	local a
@@ -78,7 +78,7 @@ sort_ptest_parse_orders()
 	echo $args
 }
 
-sort_ptest_parse_singles()
+ptest_parse_singles()
 {
 	local args="$1"
 	local a
@@ -105,7 +105,7 @@ sort_ptest_parse_singles()
 	echo $args
 }
 
-sort_ptest_parse_prio()
+ptest_parse_prio()
 {
 	local arg="$1"
 	local val
@@ -124,7 +124,7 @@ sort_ptest_parse_prio()
 	echo $arg
 }
 
-sort_ptest_parse_sizes()
+ptest_parse_sizes()
 {
 	local args="$1"
 
@@ -149,28 +149,28 @@ sort_ptest_parse_sizes()
 	echo $args
 }
 
-sort_ptest_probe_nr()
+ptest_probe_nr()
 {
 	local expr="s@${ptest_data_base}_n\([0-9]\+\)_s[0-9]\+_o[0-9]\+\.dat@\1\n@gp"
 
 	echo -n $@ | sed --silent $expr | sort -b -u -n | xargs
 }
 
-sort_ptest_probe_orders()
+ptest_probe_orders()
 {
 	local expr="s@${ptest_data_base}_n[0-9]\+_s[0-9]\+_o\([0-9]\+\)\.dat@\1\n@gp"
 
 	echo -n $@ | sed --silent $expr | sort -b -u -n | xargs
 }
 
-sort_ptest_probe_singles()
+ptest_probe_singles()
 {
 	local expr="s@${ptest_data_base}_n[0-9]\+_s\([0-9]\+\)_o[0-9]\+\.dat@\1\n@gp"
 
 	echo -n $@ | sed --silent $expr | sort -b -u -n | xargs
 }
 
-sort_ptest_data_path()
+ptest_data_path()
 {
 	local base="$1"
 	local nr=$2
@@ -221,7 +221,7 @@ req_ord=
 req_sngl=
 req_sz=
 output="/dev/stdout"
-ptest_data_base="$SORT_PTEST_DATA/stroll_ptest"
+ptest_data_base="$PTEST_DATA/stroll_ptest"
 eval set -- "$cmdln"
 while true; do
 	case "$1" in
@@ -229,7 +229,7 @@ while true; do
 		ptest_data_base="$2/stroll_ptest"
 		shift 2;;
 	-c|--loops)
-		if ! loops=$(sort_ptest_parse_loops "$2"); then
+		if ! loops=$(ptest_parse_loops "$2"); then
 			usage
 			exit 1
 		fi
@@ -237,7 +237,7 @@ while true; do
 	-l|--list)
 		show=1; shift;;
 	-n|--number)
-		if ! req_nr=$(sort_ptest_parse_nr "$2"); then
+		if ! req_nr=$(ptest_parse_nr "$2"); then
 			usage
 			exit 1
 		fi
@@ -248,7 +248,7 @@ while true; do
 		fi
 		shift 2;;
 	-p|--prio)
-		if ! prio=$(sort_ptest_parse_prio "$2"); then
+		if ! prio=$(ptest_parse_prio "$2"); then
 			usage
 			exit 1
 		fi
@@ -258,19 +258,19 @@ while true; do
 		fi
 		shift 2;;
 	-r|--order-ratio)
-		if ! req_ord=$(sort_ptest_parse_orders "$2"); then
+		if ! req_ord=$(ptest_parse_orders "$2"); then
 			usage
 			exit 1
 		fi
 		shift 2;;
 	-i|--distinct-ratio)
-		if ! req_sngl=$(sort_ptest_parse_singles "$2"); then
+		if ! req_sngl=$(ptest_parse_singles "$2"); then
 			usage
 			exit 1
 		fi
 		shift 2;;
 	-s|--size)
-		if ! req_sz=$(sort_ptest_parse_sizes "$2"); then
+		if ! req_sz=$(ptest_parse_sizes "$2"); then
 			usage
 			exit 1
 		fi
@@ -292,10 +292,10 @@ if [ ! -d $(dirname "$ptest_data_base") ] || \
 	exit 1
 fi
 
-sort_ptest_data_files="${ptest_data_base}_*"
-nr=$(sort_ptest_probe_nr $sort_ptest_data_files)
-orders=$(sort_ptest_probe_orders $sort_ptest_data_files)
-singles=$(sort_ptest_probe_singles $sort_ptest_data_files)
+ptest_data_files="${ptest_data_base}_*"
+nr=$(ptest_probe_nr $ptest_data_files)
+orders=$(ptest_probe_orders $ptest_data_files)
+singles=$(ptest_probe_singles $ptest_data_files)
 sizes="4 8 16 32 64 128 256"
 
 if [ -z "$nr" ] || [ -z "$singles" ] || [ -z "$orders" ]; then

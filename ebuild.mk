@@ -21,6 +21,11 @@ headers   += $(call kconf_enabled,STROLL_ARRAY,stroll/array.h)
 headers   += $(call kconf_enabled,STROLL_FBHEAP,stroll/fbheap.h)
 headers   += $(call kconf_enabled,STROLL_FWHEAP,stroll/fwheap.h)
 headers   += $(call kconf_enabled,STROLL_SLIST,stroll/slist.h)
+headers   += $(call kconf_enabled,STROLL_HPRHEAP,stroll/hprheap.h)
+headers   += $(call kconf_enabled,STROLL_DRPHEAP,stroll/drpheap.h)
+headers   += $(call kconf_enabled,STROLL_DPRHEAP,stroll/dprheap.h)
+headers   += $(call kconf_enabled,STROLL_PPRHEAP,stroll/pprheap.h)
+headers   += $(call kconf_enabled,STROLL_DBNHEAP,stroll/dbnheap.h)
 
 subdirs   := src
 

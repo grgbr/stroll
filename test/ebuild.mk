@@ -45,15 +45,23 @@ utest-ldflags := $(filter-out -DNDEBUG,$(utest-ldflags))
 ptest-ldflags := $(filter-out -DNDEBUG,$(ptest-ldflags))
 endif # ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
 
+list_kconf    := $(CONFIG_STROLL_SLIST) \
+                 $(CONFIG_STROLL_DLIST)
+prheap_kconf  := $(CONFIG_STROLL_HPRHEAP) \
+                 $(CONFIG_STROLL_DRPHEAP) \
+                 $(CONFIG_STROLL_PPRHEAP) \
+                 $(CONFIG_STROLL_DPRHEAP) \
+                 $(CONFIG_STROLL_DBNHEAP)
+
 builtins               := builtin_utest.a
 builtin_utest.a-objs   := utest.o $(config-obj)
 builtin_utest.a-cflags := $(test-cflags)
 
 checkbins            := stroll-utest
 stroll-utest-objs    := cdefs.o
-ifneq ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST) $(CONFIG_STROLL_DLIST)),)
+ifneq ($(filter y,$(CONFIG_STROLL_ARRAY) $(list_kconf)),)
 stroll-utest-objs    += array_data.o
-endif # ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST) $(CONFIG_STROLL_DLIST)),)
+endif # ($(filter y,$(CONFIG_STROLL_ARRAY) $(list_kconf)),)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BOPS,bops.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_POW2,pow2.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_BMAP,bmap.o)
@@ -63,6 +71,9 @@ stroll-utest-objs    += $(call kconf_enabled,STROLL_ARRAY,array.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_HEAP,heap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_SLIST,slist.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_DLIST,dlist.o)
+ifneq ($(filter y,$(prheap_kconf)),)
+stroll-utest-objs    += theap.o
+endif # ($(filter y,$(prheap_kconf)),)
 stroll-utest-cflags  := $(test-cflags)
 stroll-utest-ldflags := $(utest-ldflags)
 stroll-utest-pkgconf := libcute
@@ -73,14 +84,14 @@ builtins                  += builtin_ptest.a
 builtin_ptest.a-objs      := ptest.o
 builtin_ptest.a-cflags    := $(test-cflags)
 
-ifneq ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST) $(CONFIG_STROLL_DLIST)),)
+ifneq ($(filter y,$(CONFIG_STROLL_ARRAY) $(list_kconf)),)
 
 checkbins                 += stroll-sort-ptest
 stroll-sort-ptest-objs    := sort_ptest.o
 stroll-sort-ptest-cflags  := $(test-cflags)
 stroll-sort-ptest-ldflags := $(ptest-ldflags) -lm
 
-endif # ($(filter y,$(CONFIG_STROLL_ARRAY) $(CONFIG_STROLL_SLIST) $(CONFIG_STROLL_DLIST)),)
+endif # ($(filter y,$(CONFIG_STROLL_ARRAY) $(list_kconf)),)
 
 checkbins                 += $(call kconf_enabled,STROLL_HEAP,stroll-heap-ptest)
 stroll-heap-ptest-objs    := heap_ptest.o

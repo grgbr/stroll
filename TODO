@@ -1,1 +1,5 @@
 move libraries using old fbmp Utils API to Stroll's fbmap
+pairing heap:
+* low level API (without count / nr)
+* high level API (with count / nr)
+* build / make heap: implement Tarjan logic

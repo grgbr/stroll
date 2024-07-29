@@ -1051,6 +1051,55 @@ build configuration option enabled, the Stroll_ library provides support for
    `Sorting lists`_ for more informations related to algorithm selection.
 
 
+.. index:: heap
+
+Heaps
+=====
+
+Stroll_ provides support for several kinds of :term:`heap`: 
+
+Algorithm selection rationales:
+
+Insert:
+* hprheap
+* pprheap, dprheap
+* rpheap
+* dbnheap
+
+Extract:
+hprheap
+pprheap
+dprheap
+rpheap
+dbnheap
+
+Remove:  in order  / out of order
+dprheap
+            rpheap / pprheap
+           pprheap / rpheap
+dbnheap
+
+Promote:
+rpheap
+dprheap
+pprheap
+dbnheap
+
+Demote:
+dprheap
+pprheap
+rpheap
+dbnheap
+
+Conclusion:
+
+Insert/Extract only: hprheap
+Promote intensive (Dijkstra): rpheap
+Promote, demote, remove intensive: dprheap
+All round usage: dprheap (better promote/demote/remove), then pprheap (better extract and smaller footprint)
+
+.. todo:: complete documentation
+
 .. index:: API reference, reference
 
 Reference

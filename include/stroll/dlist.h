@@ -185,9 +185,9 @@ stroll_dlist_prev(const struct stroll_dlist_node * __restrict node)
  */
 static inline __stroll_nonull(1, 2, 3) __stroll_nothrow
 void
-stroll_dlist_inject(struct stroll_dlist_node * __restrict prev,
+stroll_dlist_inject(struct stroll_dlist_node *            prev,
                     struct stroll_dlist_node * __restrict node,
-                    struct stroll_dlist_node * __restrict next)
+                    struct stroll_dlist_node *            next)
 {
 	stroll_dlist_assert_intern(node);
 	stroll_dlist_assert_intern(prev);
@@ -633,7 +633,7 @@ stroll_dlist_withdraw(const struct stroll_dlist_node * first,
  * stroll_dlist_splice_before() instead.
  *
  * @warning
- * - Result is undefined if @p at node has not been previously initialized.
+ * Result is undefined if @p at node has not been previously initialized.
  *
  * @see
  * - stroll_dlist_embed_after()
@@ -674,7 +674,7 @@ stroll_dlist_embed_before(struct stroll_dlist_node * __restrict at,
  * stroll_dlist_splice_after() instead.
  *
  * @warning
- * - Result is undefined if @p at node has not been previously initialized.
+ * Result is undefined if @p at node has not been previously initialized.
  *
  * @see
  * - stroll_dlist_embed_before()
@@ -716,8 +716,8 @@ stroll_dlist_embed_after(struct stroll_dlist_node * __restrict at,
  *
  * @warning
  * - Result is undefined if @p at node has not been previously initialized.
- * - Result is undefined if @p first node has not been previously initialized.
- * - Result is undefined if @p last node has not been previously initialized.
+ * - Result is undefined if @p first node is empty or has not been initialized.
+ * - Result is undefined if @p last node is empty or has not been initialized.
  *
  * @see
  * - stroll_dlist_embed_before()
@@ -744,8 +744,8 @@ stroll_dlist_splice_before(struct stroll_dlist_node * __restrict at,
  *
  * @warning
  * - Result is undefined if @p at node has not been previously initialized.
- * - Result is undefined if @p first node has not been previously initialized.
- * - Result is undefined if @p last node has not been previously initialized.
+ * - Result is undefined if @p first node is empty or has not been initialized.
+ * - Result is undefined if @p last node is empty or has not been initialized.
  *
  * @see
  * - stroll_dlist_embed_after()
@@ -841,6 +841,11 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
 	     _node != (_head); \
 	     _node = stroll_dlist_next(_node))
 
+#define stroll_dlist_continue_node(_head, _node) \
+	for (_node = stroll_dlist_next(_node); \
+	     _node != (_head); \
+	     _node = stroll_dlist_next(_node))
+
 /**
  * Iterate over doubly linked list nodes safely.
  *
@@ -863,6 +868,13 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
  */
 #define stroll_dlist_foreach_node_safe(_head, _node, _tmp) \
 	for (_node = stroll_dlist_next(_head), \
+	     _tmp = stroll_dlist_next(_node);  \
+	     _node != (_head); \
+	     _node = _tmp, \
+	     _tmp = stroll_dlist_next(_tmp))
+
+#define stroll_dlist_continue_node_safe(_head, _node, _tmp) \
+	for (_node = stroll_dlist_next(_node), \
 	     _tmp = stroll_dlist_next(_node);  \
 	     _node != (_head); \
 	     _node = _tmp, \
@@ -941,6 +953,11 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
 	     &(_entry)->_member != (_head); \
 	     _entry = stroll_dlist_next_entry(_entry, _member))
 
+#define stroll_dlist_continue_entry(_head, _entry, _member) \
+	for (_entry = stroll_dlist_next_entry(_entry, _member); \
+	     &(_entry)->_member != (_head); \
+	     _entry = stroll_dlist_next_entry(_entry, _member))
+
 /**
  * Iterate over doubly linked list entries safely.
  *
@@ -965,8 +982,16 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
  */
 #define stroll_dlist_foreach_entry_safe(_head, _entry, _member, _tmp) \
 	for (_entry = stroll_dlist_entry((_head)->next, \
-	                                 typeof(*(_entry)), _member), \
-	     _tmp = stroll_dlist_next_entry(_entry); \
+	                                 typeof(*(_entry)), \
+	                                 _member), \
+	     _tmp = stroll_dlist_next_entry(_entry, _member); \
+	     &(_entry)->_member != (_head); \
+	     _entry = _tmp, \
+	     _tmp = stroll_dlist_next_entry(_tmp, _member))
+
+#define stroll_dlist_continue_entry_safe(_head, _entry, _member, _tmp) \
+	for (_entry = stroll_dlist_next_entry(_entry, _member), \
+	     _tmp = stroll_dlist_next_entry(_entry, _member); \
 	     &(_entry)->_member != (_head); \
 	     _entry = _tmp, \
 	     _tmp = stroll_dlist_next_entry(_tmp, _member))

@@ -975,9 +975,7 @@
 
 #define containerof(_ptr, _type, _member) \
 	({ \
-		STROLL_IGNORE_WARN("-Wcast-qual") \
-		((_type *)((const char *)(_ptr) - offsetof(_type, _member))); \
-		STROLL_RESTORE_WARN \
+		((_type *)((unsigned long)(_ptr) - offsetof(_type, _member))); \
 	 })
 
 #define stroll_align_mask(_value, _align) \

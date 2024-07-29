@@ -1,28 +1,33 @@
 #!/bin/sh -e
 
 HEAP_PTEST_BIN="${BINDIR:-@@BINDIR@@}/stroll-heap-ptest"
-ARRAY_PTEST_DATA="${DATADIR:-@@DATADIR@@}/stroll"
-ARRAY_PTEST_COMMON="${LIBEXECDIR:-@@LIBEXECDIR@@}/stroll/ptest-common.sh"
+PTEST_DATA="${DATADIR:-@@DATADIR@@}/stroll"
+PTEST_COMMON="${LIBEXECDIR:-@@LIBEXECDIR@@}/stroll/ptest-common.sh"
 
-if [ ! -r "$ARRAY_PTEST_COMMON" ]; then
-	echo "$(basename $0): '$ARRAY_PTEST_COMMON'" \
+if [ ! -r "$PTEST_COMMON" ]; then
+	echo "$(basename $0): '$PTEST_COMMON'" \
 	     "Stroll common performance test definitions not found !" >&2
 	exit 1
 fi
 
-. $ARRAY_PTEST_COMMON
+. $PTEST_COMMON
 
 
 ptest_parse_awk='
-BEGIN               { op=""; imean=-1; emean=-1; hmean=-1 }
+BEGIN               {
+	op=""; imean=-1; emean=-1; hmean=-1; rmean=-1; pmean=-1; dmean=-1
+}
 /^Algorithm/        { algo=$2 }
 /^#Samples/         { nr=$2 }
 /^Distinct ratio/   { single=$2 }
 /^Order ratio/      { order=$2 }
 /^Data size/        { size=$2 }
-/^Heapify/          { op="heapify" }
-/^Insert/           { op="insert" }
-/^Extract/          { op="extract" }
+/^heapify/          { op="heapify" }
+/^insert/           { op="insert" }
+/^extract/          { op="extract" }
+/^remove/           { op="remove" }
+/^promote/          { op="promote" }
+/^demote/           { op="demote" }
 /^[[:blank:]]+Mean/ {
 	if (op == "heapify")
 		hmean=$2
@@ -30,34 +35,53 @@ BEGIN               { op=""; imean=-1; emean=-1; hmean=-1 }
 		imean=$2
 	else if (op == "extract")
 		emean=$2
+	else if (op == "remove")
+		rmean=$2
+	else if (op == "promote")
+		pmean=$2
+	else if (op == "demote")
+		dmean=$2
 }
 END                 {
 	if (hmean > 0)
-		printf("%-8s %10u         %3u      %3u    %4u Heapify   %10u\n", algo, nr, single, order, size, hmean)
+		printf("%-8s %10u         %3u      %3u    %4u heapify   %10u\n", algo, nr, single, order, size, hmean)
 	if (imean > 0)
-		printf("%-8s %10u         %3u      %3u    %4u Insert    %10u\n", algo, nr, single, order, size, imean)
+		printf("%-8s %10u         %3u      %3u    %4u insert    %10u\n", algo, nr, single, order, size, imean)
 	if (emean > 0)
-		printf("%-8s %10u         %3u      %3u    %4u Extract   %10u\n", algo, nr, single, order, size, emean)
+		printf("%-8s %10u         %3u      %3u    %4u extract   %10u\n", algo, nr, single, order, size, emean)
+	if (rmean > 0)
+		printf("%-8s %10u         %3u      %3u    %4u remove    %10u\n", algo, nr, single, order, size, rmean)
+	if (pmean > 0)
+		printf("%-8s %10u         %3u      %3u    %4u promote   %10u\n", algo, nr, single, order, size, pmean)
+	if (dmean > 0)
+		printf("%-8s %10u         %3u      %3u    %4u demote    %10u\n", algo, nr, single, order, size, dmean)
 }
 '
 
-stroll_array_ptest_run()
+heap_ptest_run()
 {
 	local algo="$1"
 	local path="$2"
 	local size=$3
 	local prio=""
 	local loops=$5
+	local out
 
 	if [ $4 -gt 0 ]; then
 		prio="--prio $4"
 	fi
 
-	$HEAP_PTEST_BIN $prio "$path" "$algo" $size $loops | \
-	awk -F': *' "$ptest_parse_awk"
+	if ! out=$($HEAP_PTEST_BIN $prio "$path" "$algo" $size $loops); then
+		return 1
+	fi
+	if ! echo -n "$out" | awk -F': *' "$ptest_parse_awk"; then
+		return 1
+	fi
+
+	return 0
 }
 
-algos="fbheap fwheap"
+algos="fbheap fwheap hprheap drpheap dprheap pprheap dbnheap"
 
 if [ $show -eq 1 ]; then
 	echo "#Samples:        $nr"
@@ -96,22 +120,10 @@ echo "Algorithm  #Samples Distinct(%) Order(%) Size(B) Operation   Mean(ns)" >>$
 
 #set -o pipefail
 for a in $algos; do
-	# When not explicitly required, restrict number of test data samples to
-	# 8192 since these may take quite a long time to complete (up to several
-	# tenth of minutes...).
-	maxnr=$(echo $nr | awk '{print $NF}')
-	if [ -z "$req_nr" ]; then
-		if echo "$simple_algos" | grep -qw "$a"; then
-			maxnr=4096
-		fi
-	fi
 	for n in $nr; do
-		if [ $n -gt $maxnr ]; then
-			continue
-		fi
 		for o in $orders; do
 			for i in $singles; do
-				path=$(stroll_array_ptest_data_path \
+				path=$(ptest_data_path \
 				       "$ptest_data_base" \
 				       $n \
 				       $i \
@@ -120,7 +132,12 @@ for a in $algos; do
 					continue
 				fi
 				for s in $sizes; do
-					stroll_array_ptest_run "$a" "$path" $s $prio $loops >>$output
+					heap_ptest_run "$a" \
+						       "$path" \
+						       "$s" \
+						       "$prio" \
+						       "$loops" \
+						       >>$output
 				done
 			done
 		done

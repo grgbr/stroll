@@ -131,9 +131,78 @@ config STROLL_FBHEAP
 
 config STROLL_FWHEAP
 	bool "Weak heap"
-	default STROLL_HEAP
+	default n
 	help
 	  Document me!
+
+config STROLL_HPRHEAP
+	bool "Paring heap (half-ordered)"
+	default y
+	help
+	  An implementation of a Pairing Heap based on a half-ordered binary
+	  tree structure.
+	  The following operations are supported: peek, insert, merge, extract.
+	  The pairing heap is a type of self-adjusting binomial heap data
+	  structure that has fast amortized performance.
+	  See https://en.wikipedia.org/wiki/Pairing_heap
+
+config STROLL_DPRHEAP
+	bool "Pairing heap (heap-ordered with parent)"
+	select STROLL_DLIST
+	default y
+	help
+	  An implementation of a Pairing Heap based on a heap-ordered multi-way
+	  tree structure where each node contains a pointer to its parent. The
+	  multi-way tree is implemented using a doubly-linked list based left
+	  child right sibling representation.
+	  The following operations are supported: peek, insert, merge, extract,
+	  remove, promote, demote.
+	  The pairing heap is a type of self-adjusting binomial heap data
+	  structure that has fast amortized performance.
+	  See https://en.wikipedia.org/wiki/Pairing_heap
+
+config STROLL_PPRHEAP
+	bool "Paring heap (half-ordered with parent)"
+	default y
+	help
+	  An implementation of a Pairing Heap based on a half-ordered binary
+	  tree structure where each node contains a pointer to its parent.
+	  The following operations are supported: peek, insert, merge, extract,
+	  remove, promote, demote.
+	  The pairing heap is a type of self-adjusting binomial heap data
+	  structure that has fast amortized performance.
+	  See https://en.wikipedia.org/wiki/Pairing_heap
+
+config STROLL_DRPHEAP
+	bool "Rank pairing heap (doubly linked half-ordered trees)"
+	select STROLL_BOPS
+	default n
+	help
+	  An implementation of a Rank pairing Heap based on a doubly linked list
+	  of half-ordered binary trees where each node contains a pointer to its
+	  parent.
+	  The following operations are supported: peek, insert, merge, extract,
+	  remove, promote, demote.
+	  The rank pairing heap is a kind of self-adjusting heap data structure
+	  that combines the asymptotic efficiency of Fibonacci heaps with much
+	  of the simplicity of pairing heaps.
+	  See https://www.cs.princeton.edu/courses/archive/spr10/cos423/handouts/rankpairingheaps.pdf
+
+config STROLL_DBNHEAP
+	bool "Binomial heap (doubly linked multi-way trees)"
+	select STROLL_DLIST
+	default n
+	help
+	  An implementation of a Binomial Heap based on a heap-ordered multi-way
+	  tree structure where each node contains a pointer to its parent. The
+	  multi-way tree is implemented using a doubly-linked list based left
+	  child right sibling representation.
+	  The following operations are supported: peek, insert, merge, extract,
+	  remove, promote, demote.
+	  A binomial heap is a collections of binomial trees linked together
+	  where each tree is an ordered heap and allowing for efficient merging
+	  of heaps.
+	  See https://en.wikipedia.org/wiki/Binomial_heap
 
 endif # STROLL_HEAP
 

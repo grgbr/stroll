@@ -82,7 +82,7 @@ struct stroll_fbheap {
 #define stroll_fbheap_assert_heap_api(_heap) \
 	stroll_fbheap_assert_api(_heap); \
 	stroll_fbheap_assert_api((_heap)->nr); \
-	stroll_fbheap_assert_api((_heap)->cnt <= heap->nr); \
+	stroll_fbheap_assert_api((_heap)->cnt <= (_heap)->nr); \
 	stroll_fbheap_assert_api((_heap)->size); \
 	stroll_fbheap_assert_api((_heap)->elems); \
 	stroll_fbheap_assert_api((_heap)->compare)

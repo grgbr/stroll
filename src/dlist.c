@@ -15,7 +15,9 @@ stroll_dlist_splice_before(struct stroll_dlist_node * __restrict at,
 {
 	stroll_dlist_assert_api(at);
 	stroll_dlist_assert_api(first);
+	stroll_dlist_assert_api(!stroll_dlist_empty(first));
 	stroll_dlist_assert_api(last);
+	stroll_dlist_assert_api(!stroll_dlist_empty(last));
 	stroll_dlist_assert_api(at != first);
 	stroll_dlist_assert_api(at != last);
 

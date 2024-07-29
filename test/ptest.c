@@ -44,8 +44,8 @@ strollpt_update_mean(double mean, double value, unsigned int iter)
 }
 
 static double
-strollpt_calc_mean(unsigned long long * __restrict    values,
-                   unsigned int                       nr)
+strollpt_calc_mean(const unsigned long long * __restrict values,
+                   unsigned int                          nr)
 {
 	assert(values);
 	assert(nr > 0);
@@ -60,9 +60,9 @@ strollpt_calc_mean(unsigned long long * __restrict    values,
 }
 
 static double
-strollpt_calc_stdev(double                          mean,
-                    unsigned long long * __restrict values,
-                    unsigned int                    nr)
+strollpt_calc_stdev(double                                mean,
+                    const unsigned long long * __restrict values,
+                    unsigned int                          nr)
 {
 	assert(values);
 	assert(nr > 0);
@@ -132,30 +132,48 @@ strollpt_probe_outliers(const unsigned long long * __restrict values,
 	*high = v - 1;
 }
 
-void
+int
 strollpt_calc_stats(struct strollpt_stats * __restrict stats,
                     unsigned long long * __restrict    values,
+                    unsigned int                       step,
                     unsigned int                       nr)
 {
 	assert(stats);
 	assert(values);
-	assert(nr > 0);
+	assert(step);
+	assert(nr);
 
-	unsigned int low;   /* index of lowest inlier */
-	unsigned int high;  /* index of highest inlier */
+	unsigned long long * vals = values;
+	unsigned int         v;
+	unsigned int         low;  /* index of lowest inlier */
+	unsigned int         high; /* index of highest inlier */
 
-	qsort(values, nr, sizeof(*values), strollpt_compare_sample);
+	if (step > 1) {
+		vals = malloc(nr * sizeof(vals[0]));
+		if (!vals)
+			return EXIT_FAILURE;
 
-	strollpt_probe_outliers(values, nr, &low, &high);
+		for (v = 0; v < nr; v++, values += step)
+			vals[v] = *values;
+	}
 
-	stats->min = values[low];
-	stats->max = values[high];
-	stats->med = values[(high + 1 + low) / 2];
+	qsort(vals, nr, sizeof(vals[0]), strollpt_compare_sample);
+
+	strollpt_probe_outliers(vals, nr, &low, &high);
+
+	stats->min = vals[low];
+	stats->max = vals[high];
+	stats->med = vals[(high + 1 + low) / 2];
 	stats->count = high + 1 - low;
-	stats->mean = strollpt_calc_mean(&values[low], stats->count);
+	stats->mean = strollpt_calc_mean(&vals[low], stats->count);
 	stats->stdev = strollpt_calc_stdev(stats->mean,
-	                                   &values[low],
+	                                   &vals[low],
 	                                   stats->count);
+
+	if (step > 1)
+		free(vals);
+
+	return EXIT_SUCCESS;
 }
 
 struct timespec
@@ -178,25 +196,7 @@ strollpt_tspec_sub(const struct timespec * __restrict a,
 	return res;
 }
 
-static int
-strollpt_parse_algo_name(const char * __restrict  arg,
-                         const char ** __restrict algo)
-{
-	size_t len;
-
-#define STROLLPT_ALGO_NAME_MAX (128U)
-	len = strnlen(arg, STROLLPT_ALGO_NAME_MAX);
-	if (!len || (len == STROLLPT_ALGO_NAME_MAX)) {
-		strollpt_err("invalid algorithm name.\n");
-		return EXIT_FAILURE;
-	}
-
-	*algo = arg;
-
-	return EXIT_SUCCESS;
-}
-
-static int
+int
 strollpt_parse_data_size(const char * __restrict arg,
                          size_t * __restrict     data_size)
 {
@@ -231,7 +231,7 @@ strollpt_parse_data_size(const char * __restrict arg,
 	return EXIT_SUCCESS;
 }
 
-static int
+int
 strollpt_parse_loop_nr(const char * __restrict   arg,
                        unsigned int * __restrict loop_nr)
 {
@@ -262,7 +262,7 @@ strollpt_parse_loop_nr(const char * __restrict   arg,
 	return EXIT_SUCCESS;
 }
 
-static int
+int
 strollpt_parse_sched_prio(const char * __restrict arg,
                           int * __restrict        priority)
 {
@@ -327,14 +327,24 @@ strollpt_step_data_iter(const struct strollpt_data * __restrict data,
 	if (fread(&elem, sizeof(elem), 1, data->file) == 1) {
 		switch (data->endian) {
 		case STROLLPT_NATIVE_ENDIAN:
-			*element = elem;
 			break;
 		case STROLLPT_LITTLE_ENDIAN:
-			*element = le32toh(elem);
+			elem = le32toh(elem);
 			break;
 		case STROLLPT_BIG_ENDIAN:
-			*element = be32toh(elem);
+			elem = be32toh(elem);
+			break;
+		default:
+			strollpt_err("invalid data element endianness.\n");
+			return -EPROTO;
 		}
+
+		if (elem > (unsigned int)INT_MAX) {
+			strollpt_err("out of range data element.\n");
+			return -ERANGE;
+		}
+
+		*element = elem;
 
 		return 0;
 	}
@@ -440,7 +450,9 @@ strollpt_open_data(struct strollpt_data * __restrict data,
 	}
 
 #define STROLLPT_SAMPLES_MIN (8U)
-	if (data->nr < STROLLPT_SAMPLES_MIN) {
+#define STROLLPT_SAMPLES_MAX ((unsigned int)INT_MAX)
+	if ((data->nr < STROLLPT_SAMPLES_MIN) ||
+	    (data->nr > STROLLPT_SAMPLES_MAX)) {
 		strollpt_err("invalid number of data samples '%u'.\n",
 		             data->nr);
 		goto close;
@@ -512,7 +524,7 @@ strollpt_close_data(const struct strollpt_data * __restrict data)
 	fclose(data->file);
 }
 
-static unsigned int *
+unsigned int *
 strollpt_load_data(struct strollpt_data * __restrict data,
                    const char * __restrict           pathname)
 {
@@ -553,91 +565,4 @@ close:
 	strollpt_err("failed to load data elements.\n");
 
 	return NULL;
-}
-
-static void
-strollpt_usage(FILE * __restrict stdio)
-{
-	fprintf(stdio,
-	        "Usage: %s [OPTIONS] FILE ALGORITHM SIZE LOOPS\n"
-	        "where OPTIONS:\n"
-	        "    -p|--prio  PRIORITY\n"
-	        "    -h|--help\n",
-	        program_invocation_short_name);
-}
-
-int
-strollpt_init(struct strollpt * ptest, int argc, char * const argv[])
-{
-	assert(ptest);
-	assert(argc);
-	assert(argv);
-
-	memset(ptest, 0, sizeof(*ptest));
-
-	while (true) {
-		int                        opt;
-		static const struct option lopts[] = {
-			{"help",    0, NULL, 'h'},
-			{"prio",    1, NULL, 'p'},
-			{0,         0, 0,    0}
-		};
-
-		opt = getopt_long(argc, argv, "hp:", lopts, NULL);
-		if (opt < 0)
-			/* No more options: go parsing positional arguments. */
-			break;
-
-		switch (opt) {
-		case 'p': /* priority */
-			if (strollpt_parse_sched_prio(optarg,
-			                              &ptest->sched_prio)) {
-				strollpt_usage(stderr);
-				return EXIT_FAILURE;
-			}
-
-			break;
-
-		case 'h': /* Help message. */
-			strollpt_usage(stdout);
-			exit(EXIT_SUCCESS);
-
-		case '?': /* Unknown option. */
-		default:
-			strollpt_usage(stderr);
-			return EXIT_FAILURE;
-		}
-	}
-
-	/*
-	 * Check positional arguments are properly specified on command
-	 * line.
-	 */
-	argc -= optind;
-	if (argc != 4) {
-		strollpt_err("invalid number of arguments.\n");
-		strollpt_usage(stderr);
-		return EXIT_FAILURE;
-	}
-
-	if (strollpt_parse_algo_name(argv[optind + 1], &ptest->algo_name))
-		return EXIT_FAILURE;
-
-	if (strollpt_parse_data_size(argv[optind + 2], &ptest->data_size))
-		return EXIT_FAILURE;
-
-	if (strollpt_parse_loop_nr(argv[optind + 3], &ptest->loops_nr))
-		return EXIT_FAILURE;
-
-	ptest->data_elems = strollpt_load_data(&ptest->data_desc, argv[optind]);
-	if (!ptest->data_elems)
-		return EXIT_FAILURE;
-
-	return  EXIT_SUCCESS;
-}
-
-void
-strollpt_fini(const struct strollpt * ptest)
-{
-	free(ptest->data_elems);
 }

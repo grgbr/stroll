@@ -52,6 +52,11 @@ libstroll.so-objs    += shared/fwheap.o
 endif
 libstroll.so-objs    += $(call kconf_enabled,STROLL_SLIST,shared/slist.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_DLIST,shared/dlist.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_HPRHEAP,shared/hprheap.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_DRPHEAP,shared/drpheap.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_DPRHEAP,shared/dprheap.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_PPRHEAP,shared/pprheap.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_DBNHEAP,shared/dbnheap.o)
 libstroll.so-cflags  := $(filter-out -fpie -fPIE,$(common-cflags)) -fpic
 libstroll.so-ldflags := $(filter-out -pie -fpie -fPIE,$(common-ldflags)) \
                         -shared -Bsymbolic -fpic -Wl,-soname,libstroll.so
@@ -70,6 +75,11 @@ libstroll.a-objs     += static/fwheap.o
 endif
 libstroll.a-objs     += $(call kconf_enabled,STROLL_SLIST,static/slist.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_DLIST,static/dlist.o)
+libstroll.a-objs     += $(call kconf_enabled,STROLL_HPRHEAP,static/hprheap.o)
+libstroll.a-objs     += $(call kconf_enabled,STROLL_DRPHEAP,static/drpheap.o)
+libstroll.a-objs     += $(call kconf_enabled,STROLL_DPRHEAP,static/dprheap.o)
+libstroll.a-objs     += $(call kconf_enabled,STROLL_PPRHEAP,static/pprheap.o)
+libstroll.a-objs     += $(call kconf_enabled,STROLL_DBNHEAP,static/dbnheap.o)
 libstroll.a-cflags   := $(common-cflags)
 endif # ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
 

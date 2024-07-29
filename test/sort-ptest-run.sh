@@ -1,16 +1,16 @@
 #!/bin/sh -e
 
 SORT_PTEST_BIN="${BINDIR:-@@BINDIR@@}/stroll-sort-ptest"
-SORT_PTEST_DATA="${DATADIR:-@@DATADIR@@}/stroll"
-SORT_PTEST_COMMON="${LIBEXECDIR:-@@LIBEXECDIR@@}/stroll/ptest-common.sh"
+PTEST_DATA="${DATADIR:-@@DATADIR@@}/stroll"
+PTEST_COMMON="${LIBEXECDIR:-@@LIBEXECDIR@@}/stroll/ptest-common.sh"
 
-if [ ! -r "$SORT_PTEST_COMMON" ]; then
-	echo "$(basename $0): '$SORT_PTEST_COMMON'" \
+if [ ! -r "$PTEST_COMMON" ]; then
+	echo "$(basename $0): '$PTEST_COMMON'" \
 	     "Stroll common performance test definitions not found !" >&2
 	exit 1
 fi
 
-. $SORT_PTEST_COMMON
+. $PTEST_COMMON
 
 ptest_parse_awk='
 /^Algorithm/      { algo=$2 }
@@ -72,7 +72,7 @@ sort_list_algos()
 	local name
 	local dummy
 
-	echo "$sort_algos" | awk '{ printf(" %s", $1) }' | tail -c +2
+	echo "$sort_algos" | awk '{ printf(" %s", $1) }' | tail -c +3
 }
 
 sort_algo_exists()
@@ -155,7 +155,7 @@ for a in $algos; do
 		fi
 		for o in $orders; do
 			for i in $singles; do
-				path=$(sort_ptest_data_path \
+				path=$(ptest_data_path \
 				       "$ptest_data_base" \
 				       "$n" \
 				       "$i" \

@@ -1215,57 +1215,123 @@ static const struct strollpt_sort_algo strollpt_sort_algos[] = {
 #endif /* defined(CONFIG_STROLL_DLIST_MERGE_SORT) */
 };
 
-static const struct strollpt_sort_algo *
-strollpt_sort_setup_algo(const char * __restrict name)
+static int
+strollpt_sort_parse_algo(const char * __restrict                       name,
+                         const struct strollpt_sort_algo ** __restrict algo)
 {
 	unsigned int a;
 
-	for (a = 0; a < stroll_array_nr(strollpt_sort_algos); a++)
-		if (!strcmp(name, strollpt_sort_algos[a].name))
-			return &strollpt_sort_algos[a];
+	for (a = 0; a < stroll_array_nr(strollpt_sort_algos); a++) {
+		if (!strcmp(name, strollpt_sort_algos[a].name)) {
+			*algo = &strollpt_sort_algos[a];
+			return EXIT_SUCCESS;
+		}
+	}
 
 	strollpt_err("invalid '%s' sort algorithm.\n", name);
 
-	return NULL;
+	return EXIT_FAILURE;
+}
+
+static void
+strollpt_sort_usage(FILE * __restrict stdio)
+{
+	fprintf(stdio,
+	        "Usage: %s [OPTIONS] FILE ALGORITHM SIZE LOOPS\n"
+	        "where OPTIONS:\n"
+	        "    -p|--prio  PRIORITY\n"
+	        "    -h|--help\n",
+	        program_invocation_short_name);
 }
 
 int main(int argc, char *argv[])
 {
-	struct strollpt                   ptest;
 	const struct strollpt_sort_algo * algo;
+	size_t                            dsize;
+	unsigned int                      loops;
+	int                               prio = 0;
+	struct strollpt_data              data;
+	unsigned int *                    elms;
 	unsigned long long *              nsecs;
 	unsigned int                      l;
 	struct strollpt_stats             stats;
 	int                               ret = EXIT_FAILURE;
 
-	if (strollpt_init(&ptest, argc, argv))
-		return EXIT_FAILURE;
+	while (true) {
+		int                        opt;
+		static const struct option lopts[] = {
+			{"help",    0, NULL, 'h'},
+			{"prio",    1, NULL, 'p'},
+			{0,         0, 0,    0}
+		};
 
-	algo = strollpt_sort_setup_algo(argv[optind + 1]);
-	if (!algo)
-		goto fini;
+		opt = getopt_long(argc, argv, "hp:", lopts, NULL);
+		if (opt < 0)
+			/* No more options: go parsing positional arguments. */
+			break;
 
-	if (algo->validate(ptest.data_elems,
-	                   ptest.data_desc.nr,
-	                   ptest.data_size))
-		goto fini;
+		switch (opt) {
+		case 'p': /* priority */
+			if (strollpt_parse_sched_prio(optarg, &prio)) {
+				strollpt_sort_usage(stderr);
+				return EXIT_FAILURE;
+			}
 
-	nsecs = malloc(ptest.loops_nr * sizeof(*nsecs));
-	if (!nsecs)
-		goto fini;
+			break;
 
-	if (strollpt_setup_sched_prio(ptest.sched_prio))
-		goto free;
+		case 'h': /* Help message. */
+			strollpt_sort_usage(stdout);
+			exit(EXIT_SUCCESS);
 
-	for (l = 0; l < ptest.loops_nr; l++) {
-		if (algo->measure(ptest.data_elems,
-		                  ptest.data_desc.nr,
-		                  ptest.data_size,
-		                  &nsecs[l]))
-			goto free;
+		case '?': /* Unknown option. */
+		default:
+			strollpt_sort_usage(stderr);
+			return EXIT_FAILURE;
+		}
 	}
 
-	strollpt_calc_stats(&stats, nsecs, ptest.loops_nr);
+	/*
+	 * Check positional arguments are properly specified on command
+	 * line.
+	 */
+	argc -= optind;
+	if (argc != 4) {
+		strollpt_err("invalid number of arguments.\n");
+		strollpt_sort_usage(stderr);
+		return EXIT_FAILURE;
+	}
+
+	if (strollpt_sort_parse_algo(argv[optind + 1], &algo))
+		return EXIT_FAILURE;
+
+	if (strollpt_parse_data_size(argv[optind + 2], &dsize))
+		return EXIT_FAILURE;
+
+	if (strollpt_parse_loop_nr(argv[optind + 3], &loops))
+		return EXIT_FAILURE;
+
+	elms = strollpt_load_data(&data, argv[optind]);
+	if (!elms)
+		return EXIT_FAILURE;
+
+	if (algo->validate(elms, data.nr, dsize))
+		goto free_data;
+
+	nsecs = malloc(loops * sizeof(*nsecs));
+	if (!nsecs)
+		goto free_data;
+
+	if (strollpt_setup_sched_prio(prio))
+		goto free_nsecs;
+
+	for (l = 0; l < loops; l++) {
+		if (algo->measure(elms, data.nr, dsize, &nsecs[l]))
+			goto free_nsecs;
+	}
+
+	if (strollpt_calc_stats(&stats, nsecs, 1, loops))
+		goto free_nsecs;
+
 	printf("#Samples:       %u\n"
 	       "Order ratio:    %hu\n"
 	       "Distinct ratio: %hu\n"
@@ -1278,14 +1344,14 @@ int main(int argc, char *argv[])
 	       "Deviation:      %llu nSec\n"
 	       "Median:         %llu nSec\n"
 	       "Mean:           %llu nSec\n",
-	       ptest.data_desc.nr,
-	       ptest.data_desc.order,
-	       ptest.data_desc.singles,
+	       data.nr,
+	       data.order,
+	       data.singles,
 	       algo->name,
-	       ptest.data_size,
-	       ptest.loops_nr,
+	       dsize,
+	       loops,
 	       stats.count,
-	       ((double)stats.count * 100.0) / (double)ptest.loops_nr,
+	       ((double)stats.count * 100.0) / (double)loops,
 	       stats.min,
 	       stats.max,
 	       (unsigned long long)round(stats.stdev),
@@ -1294,10 +1360,10 @@ int main(int argc, char *argv[])
 
 	ret = EXIT_SUCCESS;
 
-free:
+free_nsecs:
 	free(nsecs);
-fini:
-	strollpt_fini(&ptest);
+free_data:
+	free(elms);
 
 	return ret;
 }
