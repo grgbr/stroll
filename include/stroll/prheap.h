@@ -34,17 +34,27 @@
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
+#define STROLL_PRHEAP_NODE_INIT(_node) \
+	STROLL_LCRS_INIT(_node)
+
 #define stroll_prheap_entry(_node, _type, _member) \
 	stroll_lcrs_entry(_node, _type, _member)
+
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+stroll_prheap_init_node(struct stroll_lcrs_node * __restrict node)
+{
+	stroll_lcrs_init(node);
+}
 
 struct stroll_prheap {
 	struct stroll_lcrs_node * root;
 };
 
-#define STROLL_PRHEAP_INIT(_heap) \
+#define STROLL_PRHEAP_INIT \
 	{ .root = NULL }
 
-static inline
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 bool
 stroll_prheap_empty(const struct stroll_prheap * __restrict heap)
 {
@@ -97,10 +107,16 @@ stroll_prheap_demote(struct stroll_prheap * __restrict    heap,
                      stroll_lcrs_cmp_fn *                 compare,
                      void *                               data);
 
-extern void
-stroll_prheap_init(struct stroll_prheap * __restrict heap);
+static inline __stroll_nonull(1) __stroll_nothrow
+void
+stroll_prheap_init(struct stroll_prheap * __restrict heap)
+{
+	stroll_prheap_assert_api(heap);
 
-static inline
+	heap->root = NULL;
+}
+
+static inline __stroll_nonull(1) __stroll_nothrow
 void
 stroll_prheap_fini(struct stroll_prheap * __restrict heap __unused)
 {

@@ -261,9 +261,3 @@ stroll_prheap_demote(struct stroll_prheap * __restrict    heap,
 #endif
 	stroll_prheap_update_key(heap, key, key == heap->root, compare, data);
 }
-
-void
-stroll_prheap_init(struct stroll_prheap * __restrict heap)
-{
-	heap->root = NULL;
-}

@@ -70,8 +70,6 @@ static inline
 struct stroll_lcrs_node *
 stroll_lcrs_mktail(const struct stroll_lcrs_node * __restrict node)
 {
-	stroll_lcrs_assert_intern(node);
-
 	return (struct stroll_lcrs_node *)((uintptr_t)node | STROLL_LCRS_TAIL);
 }
 
@@ -79,8 +77,6 @@ static inline
 struct stroll_lcrs_node *
 stroll_lcrs_untail(struct stroll_lcrs_node * __restrict node)
 {
-	stroll_lcrs_assert_intern(node);
-
 	return (struct stroll_lcrs_node *)((uintptr_t)node & ~STROLL_LCRS_TAIL);
 }
 
@@ -270,7 +266,7 @@ stroll_lcrs_swap_down(struct stroll_lcrs_node * __restrict node,
 #define stroll_lcrs_foreach_child_safe(_node, _child, _tmp) \
 	lcrs_foreach_sibling_safe((_node)->youngest, _child, _tmp)
 
-static inline
+static inline __stroll_nonull(1) __stroll_nothrow
 void
 stroll_lcrs_init(struct stroll_lcrs_node * __restrict node)
 {

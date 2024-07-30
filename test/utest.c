@@ -164,6 +164,9 @@ extern CUTE_SUITE_DECL(strollut_slist_suite);
 #if defined(CONFIG_STROLL_DLIST)
 extern CUTE_SUITE_DECL(strollut_dlist_suite);
 #endif
+#if defined(CONFIG_STROLL_PRHEAP)
+extern CUTE_SUITE_DECL(strollut_prheap_suite);
+#endif
 
 CUTE_GROUP(strollut_group) = {
 	CUTE_REF(strollut_cdefs_suite),
@@ -193,6 +196,9 @@ CUTE_GROUP(strollut_group) = {
 #endif
 #if defined(CONFIG_STROLL_DLIST)
 	CUTE_REF(strollut_dlist_suite),
+#endif
+#if defined(CONFIG_STROLL_PRHEAP)
+	CUTE_REF(strollut_prheap_suite),
 #endif
 };
 
