@@ -68,6 +68,7 @@ struct stroll_lcrs_node *
 stroll_prheap_peek(const struct stroll_prheap * __restrict heap)
 {
 	stroll_prheap_assert_api(heap);
+	stroll_prheap_assert_api(heap->root);
 
 	return heap->root;
 }

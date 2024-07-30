@@ -52,9 +52,9 @@ typedef int (stroll_lcrs_cmp_fn)(const struct stroll_lcrs_node * __restrict,
 
 #define STROLL_LCRS_INIT(_node) \
 	{ \
-		.sibling  = (struct lcrs_node *)(STROLL_LCRS_TAIL), \
-		.youngest = (struct lcrs_node *)((uintptr_t)(_node) | \
-		                                 STROLL_LCRS_TAIL) \
+		.sibling  = (struct stroll_lcrs_node *)(STROLL_LCRS_TAIL), \
+		.youngest = (struct stroll_lcrs_node *)((uintptr_t)&(_node) | \
+		                                        STROLL_LCRS_TAIL) \
 	}
 
 static inline

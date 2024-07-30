@@ -63,7 +63,9 @@ stroll-utest-objs    += $(call kconf_enabled,STROLL_ARRAY,array.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_HEAP,heap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_SLIST,slist.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_DLIST,dlist.o)
-stroll-utest-objs    += $(call kconf_enabled,STROLL_PRHEAP,prheap.o)
+ifneq ($(filter y,$(CONFIG_STROLL_PRHEAP)),)
+stroll-utest-objs    += theap.o
+endif # ($(filter y,$(CONFIG_STROLL_PRHEAP)),)
 stroll-utest-cflags  := $(test-cflags)
 stroll-utest-ldflags := $(utest-ldflags)
 stroll-utest-pkgconf := libcute

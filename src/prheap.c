@@ -7,6 +7,19 @@
 
 #include "stroll/prheap.h"
 
+#if defined(CONFIG_STROLL_ASSERT_INTERN)
+
+#include <stroll/assert.h>
+
+#define stroll_prheap_assert_intern(_expr) \
+	stroll_assert("stroll:prheap", _expr)
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+#define stroll_prheap_assert_intern(_expr)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
 static
 struct stroll_lcrs_node *
 stroll_prheap_join(struct stroll_lcrs_node * __restrict first,
@@ -14,9 +27,9 @@ stroll_prheap_join(struct stroll_lcrs_node * __restrict first,
                    stroll_lcrs_cmp_fn  *                compare,
                    void *                               data)
 {
-	stroll_prheap_assert_api(first);
-	stroll_prheap_assert_api(second);
-	stroll_prheap_assert_api(compare);
+	stroll_prheap_assert_intern(first);
+	stroll_prheap_assert_intern(second);
+	stroll_prheap_assert_intern(compare);
 
 	if (compare(first, second, data) <= 0) {
 		stroll_lcrs_join(second, first);
@@ -89,9 +102,9 @@ stroll_prheap_remove_key(struct stroll_lcrs_node * __restrict root,
                          stroll_lcrs_cmp_fn *                 compare,
                          void *                               data)
 {
-	stroll_prheap_assert_api(root);
-	stroll_prheap_assert_api(key);
-	stroll_prheap_assert_api(compare);
+	stroll_prheap_assert_intern(root);
+	stroll_prheap_assert_intern(key);
+	stroll_prheap_assert_intern(compare);
 
 	if (!stroll_lcrs_has_child(key)) {
 		if (!isroot) {
