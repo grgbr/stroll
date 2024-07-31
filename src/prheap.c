@@ -160,10 +160,16 @@ stroll_prheap_merge(struct stroll_prheap * __restrict result,
                     void *                            data)
 {
 	stroll_prheap_assert_api(result);
-	stroll_prheap_assert_api(result->root);
 	stroll_prheap_assert_api(source);
-	stroll_prheap_assert_api(source->root);
 	stroll_prheap_assert_api(compare);
+
+	if (!source->root)
+		return;
+
+	if (!result->root) {
+		result->root = source->root;
+		return;
+	}
 
 	result->root = stroll_prheap_join(result->root,
 	                                  source->root,
@@ -245,15 +251,13 @@ stroll_prheap_promote(struct stroll_prheap * __restrict    heap,
 	stroll_prheap_assert_api(key);
 	stroll_prheap_assert_api(compare);
 
-	bool isroot = (key == heap->root);
-
-	if (isroot)
+	if (key == heap->root)
 		return;
 
 	if (compare(stroll_lcrs_parent(key), key, data) <= 0)
 		return;
 
-	stroll_prheap_update_key(heap, key, isroot, compare, data);
+	stroll_prheap_update_key(heap, key, false, compare, data);
 }
 
 void
@@ -267,10 +271,10 @@ stroll_prheap_demote(struct stroll_prheap * __restrict    heap,
 	stroll_prheap_assert_api(key);
 	stroll_prheap_assert_api(compare);
 
-#warning REMOVE ME!
-#if 0
-	if (heap->count == 1)
-		return;
-#endif
-	stroll_prheap_update_key(heap, key, key == heap->root, compare, data);
+	if (stroll_lcrs_has_child(heap->root))
+		stroll_prheap_update_key(heap,
+		                         key,
+		                         key == heap->root,
+		                         compare,
+		                         data);
 }

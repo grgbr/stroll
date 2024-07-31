@@ -256,7 +256,7 @@ stroll_lcrs_swap_down(struct stroll_lcrs_node * __restrict node,
 	     (_sibling) = (_sibling)->sibling)
 
 #define stroll_lcrs_foreach_child(_node, _child) \
-	lcrs_foreach_sibling((_node)->youngest, _child)
+	stroll_lcrs_foreach_sibling((_node)->youngest, _child)
 
 #define stroll_lcrs_foreach_sibling_safe(_youngest, _sibling, _tmp) \
 	for ((_sibling) = (_youngest), (_tmp) = (_sibling)->sibling; \
@@ -264,7 +264,7 @@ stroll_lcrs_swap_down(struct stroll_lcrs_node * __restrict node,
 	     (_sibling) = (_tmp), (_tmp) = (_sibling)->sibling)
 
 #define stroll_lcrs_foreach_child_safe(_node, _child, _tmp) \
-	lcrs_foreach_sibling_safe((_node)->youngest, _child, _tmp)
+	stroll_lcrs_foreach_sibling_safe((_node)->youngest, _child, _tmp)
 
 static inline __stroll_nonull(1) __stroll_nothrow
 void
