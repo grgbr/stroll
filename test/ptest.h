@@ -63,6 +63,18 @@ strollpt_tspec2ns(const struct timespec * __restrict tspec)
 	       (unsigned long long)tspec->tv_nsec;
 }
 
+extern int
+strollpt_parse_data_size(const char * __restrict arg,
+                         size_t * __restrict     data_size);
+
+extern int
+strollpt_parse_loop_nr(const char * __restrict   arg,
+                       unsigned int * __restrict loop_nr);
+
+extern int
+strollpt_parse_sched_prio(const char * __restrict arg,
+                          int * __restrict        priority);
+
 extern int strollpt_setup_sched_prio(int priority);
 
 enum strollpt_endian {
@@ -81,19 +93,8 @@ struct strollpt_data {
 	char *               cmd;
 };
 
-struct strollpt {
-	const char *         algo_name;
-	size_t               data_size;
-	unsigned int         loops_nr;
-	int                  sched_prio;
-	struct strollpt_data data_desc;
-	unsigned int *       data_elems;
-};
-
-extern int
-strollpt_init(struct strollpt * ptest, int argc, char * const argv[]);
-
-extern void
-strollpt_fini(const struct strollpt * ptest);
+extern unsigned int *
+strollpt_load_data(struct strollpt_data * __restrict data,
+                   const char * __restrict           pathname);
 
 #endif /* _STROLL_PTEST_H */
