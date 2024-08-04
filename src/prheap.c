@@ -139,63 +139,173 @@ stroll_prheap_remove_key(struct stroll_lcrs_node * __restrict root,
 }
 
 static void
-stroll_prheap_update_key(struct stroll_prheap * __restrict    heap,
-                         struct stroll_lcrs_node * __restrict key,
-                         bool                                 isroot,
-                         stroll_lcrs_cmp_fn *                 compare,
-                         void *                               data)
+stroll_prheap_update_key(struct stroll_lcrs_node ** __restrict root,
+                         struct stroll_lcrs_node * __restrict  key,
+                         bool                                  isroot,
+                         stroll_lcrs_cmp_fn *                  compare,
+                         void *                                data)
 {
 	struct stroll_lcrs_node * node;
 
-	node = stroll_prheap_remove_key(heap->root, key, isroot, compare, data);
+	node = stroll_prheap_remove_key(*root, key, isroot, compare, data);
 
 	stroll_lcrs_init(key);
-	heap->root = stroll_prheap_join(node, key, compare, data);
+	*root = stroll_prheap_join(node, key, compare, data);
 }
 
 void
-stroll_prheap_merge(struct stroll_prheap * __restrict result,
-                    struct stroll_prheap * __restrict source,
-                    stroll_lcrs_cmp_fn *              compare,
-                    void *                            data)
+_stroll_prheap_insert(struct stroll_lcrs_node ** __restrict root,
+                      struct stroll_lcrs_node * __restrict  node,
+                      stroll_lcrs_cmp_fn *                  compare,
+                      void *                                data)
+{
+	stroll_prheap_assert_api(root);
+	stroll_prheap_assert_api(node);
+	stroll_prheap_assert_api(node != *root);
+	stroll_prheap_assert_api(compare);
+
+	stroll_lcrs_init(node);
+
+	if (!*root) {
+		*root = node;
+
+		return;
+	}
+
+	*root = stroll_prheap_join(*root, node, compare, data);
+}
+
+void
+_stroll_prheap_merge(struct stroll_lcrs_node ** __restrict        result,
+                     struct stroll_lcrs_node * const * __restrict source,
+                     stroll_lcrs_cmp_fn *                         compare,
+                     void *                                       data)
 {
 	stroll_prheap_assert_api(result);
 	stroll_prheap_assert_api(source);
 	stroll_prheap_assert_api(compare);
 
-	if (!source->root)
+	if (!*source)
 		return;
 
-	if (!result->root) {
-		result->root = source->root;
+	if (!*result) {
+		*result = *source;
+
 		return;
 	}
 
-	result->root = stroll_prheap_join(result->root,
-	                                  source->root,
+	*result = stroll_prheap_join(*result, *source, compare, data);
+}
+
+struct stroll_lcrs_node *
+_stroll_prheap_extract(struct stroll_lcrs_node ** __restrict root,
+                       stroll_lcrs_cmp_fn *                  compare,
+                       void *                                data)
+{
+	stroll_prheap_assert_api(root);
+	stroll_prheap_assert_api(*root);
+	stroll_prheap_assert_api(compare);
+
+	struct stroll_lcrs_node * node = *root;
+
+	if (!stroll_lcrs_has_child(node)) {
+		*root = NULL;
+
+		return node;
+	}
+
+	*root = stroll_prheap_merge_roots(stroll_lcrs_youngest(node),
 	                                  compare,
 	                                  data);
+
+	return node;
+}
+
+void
+_stroll_prheap_remove(struct stroll_lcrs_node ** __restrict root,
+                     struct stroll_lcrs_node * __restrict   node,
+                     stroll_lcrs_cmp_fn *                   compare,
+                     void *                                 data)
+{
+	stroll_prheap_assert_api(root);
+	stroll_prheap_assert_api(*root);
+	stroll_prheap_assert_api(node);
+	stroll_prheap_assert_api(compare);
+
+	*root = stroll_prheap_remove_key(*root,
+	                                 node,
+	                                 node == *root,
+	                                 compare,
+	                                 data);
+}
+
+void
+_stroll_prheap_promote(struct stroll_lcrs_node ** __restrict root,
+                       struct stroll_lcrs_node * __restrict  node,
+                       stroll_lcrs_cmp_fn *                  compare,
+                       void *                                data)
+{
+	stroll_prheap_assert_api(root);
+	stroll_prheap_assert_api(*root);
+	stroll_prheap_assert_api(node);
+	stroll_prheap_assert_api(compare);
+
+	if (node == *root)
+		return;
+
+	if (compare(stroll_lcrs_parent(node), node, data) <= 0)
+		return;
+
+	stroll_prheap_update_key(root, node, false, compare, data);
+}
+
+void
+_stroll_prheap_demote(struct stroll_lcrs_node ** __restrict root,
+                      struct stroll_lcrs_node * __restrict  node,
+                      stroll_lcrs_cmp_fn *                  compare,
+                      void *                                data)
+{
+	stroll_prheap_assert_api(root);
+	stroll_prheap_assert_api(*root);
+	stroll_prheap_assert_api(node);
+	stroll_prheap_assert_api(compare);
+
+	if (stroll_lcrs_has_child(*root))
+		stroll_prheap_update_key(root,
+		                         node,
+		                         node == *root,
+		                         compare,
+		                         data);
 }
 
 void
 stroll_prheap_insert(struct stroll_prheap * __restrict    heap,
-                     struct stroll_lcrs_node * __restrict key,
+                     struct stroll_lcrs_node * __restrict node,
                      stroll_lcrs_cmp_fn *                 compare,
                      void *                               data)
 {
-	stroll_prheap_assert_api(heap);
-	stroll_prheap_assert_api(key);
-	stroll_prheap_assert_api(compare);
+	stroll_prheap_assert_heap_api(heap);
+	stroll_prheap_assert_api(heap->cnt < heap->nr);
 
-	stroll_lcrs_init(key);
+	_stroll_prheap_insert(&heap->root, node, compare, data);
 
-	if (!heap->root) {
-		heap->root = key;
+	heap->cnt++;
+}
 
-		return;
-	}
+void
+stroll_prheap_merge(struct stroll_prheap * __restrict       result,
+                    const struct stroll_prheap * __restrict source,
+                    stroll_lcrs_cmp_fn *                    compare,
+                    void *                                  data)
+{
+	stroll_prheap_assert_heap_api(result);
+	stroll_prheap_assert_heap_api(source);
+	stroll_prheap_assert_api(result != source);
+	stroll_prheap_assert_api((result->cnt + source->cnt) <= result->nr);
 
-	heap->root = stroll_prheap_join(heap->root, key, compare, data);
+	_stroll_prheap_merge(&result->root, &source->root, compare, data);
+
+	result->cnt += source->cnt;
 }
 
 struct stroll_lcrs_node *
@@ -203,78 +313,59 @@ stroll_prheap_extract(struct stroll_prheap * __restrict heap,
                       stroll_lcrs_cmp_fn *              compare,
                       void *                            data)
 {
-	stroll_prheap_assert_api(heap);
-	stroll_prheap_assert_api(heap->root);
-	stroll_prheap_assert_api(compare);
+	stroll_prheap_assert_heap_api(heap);
 
-	struct stroll_lcrs_node * root = heap->root;
+	struct stroll_lcrs_node * node;
 
-	if (!stroll_lcrs_has_child(root)) {
-		heap->root = NULL;
+	node = _stroll_prheap_extract(&heap->root, compare, data);
 
-		return root;
-	}
+	heap->cnt--;
 
-	heap->root = stroll_prheap_merge_roots(stroll_lcrs_youngest(root),
-	                                       compare,
-	                                       data);
-
-	return root;
+	return node;
 }
 
 void
 stroll_prheap_remove(struct stroll_prheap * __restrict    heap,
-                     struct stroll_lcrs_node * __restrict key,
+                     struct stroll_lcrs_node * __restrict node,
                      stroll_lcrs_cmp_fn *                 compare,
                      void *                               data)
 {
-	stroll_prheap_assert_api(heap);
-	stroll_prheap_assert_api(heap->root);
-	stroll_prheap_assert_api(key);
-	stroll_prheap_assert_api(compare);
+	stroll_prheap_assert_heap_api(heap);
+	stroll_prheap_assert_api(heap->cnt);
 
-	heap->root = stroll_prheap_remove_key(heap->root,
-	                                      key,
-	                                      key == heap->root,
-	                                      compare,
-	                                      data);
+	_stroll_prheap_remove(&heap->root, node, compare, data);
+
+	heap->cnt--;
 }
 
 void
-stroll_prheap_promote(struct stroll_prheap * __restrict    heap,
-                      struct stroll_lcrs_node * __restrict key,
-                      stroll_lcrs_cmp_fn *                 compare,
-                      void *                               data)
+stroll_prheap_setup(struct stroll_prheap * __restrict heap,
+                    unsigned int                      nr,
+                    stroll_lcrs_cmp_fn *              compare)
 {
 	stroll_prheap_assert_api(heap);
-	stroll_prheap_assert_api(heap->root);
-	stroll_prheap_assert_api(key);
+	stroll_prheap_assert_api(nr);
 	stroll_prheap_assert_api(compare);
 
-	if (key == heap->root)
-		return;
-
-	if (compare(stroll_lcrs_parent(key), key, data) <= 0)
-		return;
-
-	stroll_prheap_update_key(heap, key, false, compare, data);
+	heap->cnt = 0;
+	heap->nr = nr;
+	heap->root = NULL;
+	heap->compare = compare;
 }
 
-void
-stroll_prheap_demote(struct stroll_prheap * __restrict    heap,
-                     struct stroll_lcrs_node * __restrict key,
-                     stroll_lcrs_cmp_fn *                 compare,
-                     void *                               data)
+struct stroll_prheap *
+stroll_prheap_create(unsigned int nr, stroll_lcrs_cmp_fn * compare)
 {
-	stroll_prheap_assert_api(heap);
-	stroll_prheap_assert_api(heap->root);
-	stroll_prheap_assert_api(key);
+	stroll_prheap_assert_api(nr);
 	stroll_prheap_assert_api(compare);
 
-	if (stroll_lcrs_has_child(heap->root))
-		stroll_prheap_update_key(heap,
-		                         key,
-		                         key == heap->root,
-		                         compare,
-		                         data);
+	struct stroll_prheap * heap;
+
+	heap = malloc(sizeof(*heap));
+	if (!heap)
+		return NULL;
+
+	stroll_prheap_setup(heap, nr, compare);
+
+	return heap;
 }

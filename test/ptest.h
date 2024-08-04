@@ -47,9 +47,10 @@ struct strollpt_stats {
 	double             stdev;
 };
 
-extern void
+extern int
 strollpt_calc_stats(struct strollpt_stats * __restrict stats,
                     unsigned long long * __restrict    values,
+                    unsigned int                       step,
                     unsigned int                       nr);
 
 extern struct timespec

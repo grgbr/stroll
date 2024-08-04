@@ -129,31 +129,30 @@ strollut_theap_compare_min(
  * Pairing heap tests
  ******************************************************************************/
 
-static struct stroll_prheap strollut_prheap_main;
-static struct stroll_prheap strollut_prheap_alt;
+static struct stroll_lcrs_node * strollut_prheap_main;
+static struct stroll_lcrs_node * strollut_prheap_alt;
 
 static void
 strollut_theap_init_prheap(void * __restrict heap)
 {
-	stroll_prheap_init(heap);
+	_stroll_prheap_setup(heap);
 }
 
 static void
-strollut_theap_fini_prheap(void * __restrict heap)
+strollut_theap_fini_prheap(void * __restrict heap __unused)
 {
-	stroll_prheap_fini(heap);
 }
 
 static bool
 strollut_theap_prheap_empty(const void * __restrict heap)
 {
-	return stroll_prheap_empty(heap);
+	return _stroll_prheap_isempty(heap);
 }
 
 static struct stroll_lcrs_node *
 strollut_theap_peek_prheap(const void * __restrict heap)
 {
-	return stroll_prheap_peek(heap);
+	return _stroll_prheap_peek(heap);
 }
 
 static void
@@ -162,7 +161,7 @@ strollut_theap_insert_prheap(void * __restrict                    heap,
                              stroll_lcrs_cmp_fn *                 compare,
                              void *                               data)
 {
-	stroll_prheap_insert(heap, node, compare, data);
+	_stroll_prheap_insert(heap, node, compare, data);
 }
 
 static struct stroll_lcrs_node *
@@ -170,7 +169,7 @@ strollut_theap_extract_prheap(void * __restrict    heap,
                               stroll_lcrs_cmp_fn * compare,
                               void *               data)
 {
-	return stroll_prheap_extract(heap, compare, data);
+	return _stroll_prheap_extract(heap, compare, data);
 }
 
 static void
@@ -179,7 +178,7 @@ strollut_theap_remove_prheap(void * __restrict                    heap,
                              stroll_lcrs_cmp_fn *                 compare,
                              void *                               data)
 {
-	stroll_prheap_remove(heap, node, compare, data);
+	_stroll_prheap_remove(heap, node, compare, data);
 }
 
 static void
@@ -188,7 +187,7 @@ strollut_theap_promote_prheap(void * __restrict                    heap,
                               stroll_lcrs_cmp_fn *                 compare,
                               void *                               data)
 {
-	stroll_prheap_promote(heap, node, compare, data);
+	_stroll_prheap_promote(heap, node, compare, data);
 }
 
 static void
@@ -197,7 +196,7 @@ strollut_theap_demote_prheap(void * __restrict                    heap,
                              stroll_lcrs_cmp_fn *                 compare,
                              void *                               data)
 {
-	stroll_prheap_demote(heap, node, compare, data);
+	_stroll_prheap_demote(heap, node, compare, data);
 }
 
 static void
@@ -206,7 +205,7 @@ strollut_theap_merge_prheap(void * __restrict    first,
                             stroll_lcrs_cmp_fn * compare,
                             void *               data)
 {
-	stroll_prheap_merge(first, second, compare, data);
+	_stroll_prheap_merge(first, second, compare, data);
 }
 
 static void
@@ -252,12 +251,12 @@ strollut_theap_validate_prheap(void *                       heap,
                                stroll_lcrs_cmp_fn *         compare,
                                void *                       data)
 {
-	const struct stroll_prheap * hp = heap;
-	struct strollut_theap_xpct   xpct[nr];
-	unsigned int                 n;
+	const struct stroll_lcrs_node * const * hp = heap;
+	struct strollut_theap_xpct              xpct[nr];
+	unsigned int                            n;
 
 	if (!nr) {
-		cute_check_ptr(hp->root, equal, NULL);
+		cute_check_ptr(*hp, equal, NULL);
 		return;
 	}
 
@@ -267,7 +266,7 @@ strollut_theap_validate_prheap(void *                       heap,
 		xpct[n].node = &nodes[n];
 	}
 
-	strollut_theap_check_prheap_props(hp->root, xpct, nr, compare, data);
+	strollut_theap_check_prheap_props(*hp, xpct, nr, compare, data);
 
 	for (n = 0; n < nr; n++)
 		cute_check_uint(xpct[n].seen, equal, 1);

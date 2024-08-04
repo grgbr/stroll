@@ -1329,7 +1329,9 @@ int main(int argc, char *argv[])
 			goto free_nsecs;
 	}
 
-	strollpt_calc_stats(&stats, nsecs, loops);
+	if (strollpt_calc_stats(&stats, nsecs, 1, loops))
+		goto free_nsecs;
+
 	printf("#Samples:       %u\n"
 	       "Order ratio:    %hu\n"
 	       "Distinct ratio: %hu\n"

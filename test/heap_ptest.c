@@ -373,7 +373,7 @@ strollpt_heap_measure_array(
 
 	memset(nsecs, 0, STROLLPT_HEAP_OP_NR * sizeof(nsecs[0]));
 
-	for (op = 0; ret && (op < STROLLPT_HEAP_OP_NR); op++) {
+	for (op = 0; !ret && (op < STROLLPT_HEAP_OP_NR); op++) {
 		if (!(operations & (1U << op)))
 			continue;
 
@@ -698,6 +698,126 @@ strollpt_heap_measure_fwheap(
 
 #endif /* defined(CONFIG_STROLL_FWHEAP) */
 
+#if 0
+#if defined(CONFIG_STROLL_PRHEAP)
+
+#include "stroll/prheap.h"
+
+static bool
+strollpt_prheap_validate_rec(unsigned int index,
+                             const void * heap,
+                             unsigned int nr)
+{
+	assert(heap);
+	assert(nr);
+
+	const struct stroll_prheap * hp = heap;
+	size_t                       sz = hp->size;
+
+	if (index >= nr)
+		return true;
+
+	if (index) {
+		const char * elms = (const char *)hp->elems;
+		unsigned int parent = (index - 1) / 2;
+
+		if (strollpt_array_compare_min(&elms[parent * sz],
+		                               &elms[index * sz],
+		                               NULL) > 0)
+			return false;
+	}
+
+	if (!strollpt_prheap_validate_rec((2 * index) + 1, heap, nr))
+		return false;
+
+	return strollpt_prheap_validate_rec((2 * index) + 2, heap, nr);
+}
+
+static bool
+strollpt_prheap_validate(const void * __restrict heap, unsigned int nr)
+{
+	return strollpt_prheap_validate_rec(0, heap, nr);
+}
+
+static void *
+strollpt_prheap_create(void * __restrict     array,
+                       unsigned int          nr,
+                       size_t                size,
+                       stroll_array_cmp_fn * compare)
+{
+	return stroll_prheap_create(array, nr, size, compare);
+}
+
+static void
+strollpt_prheap_destroy(void * __restrict heap)
+{
+	stroll_prheap_destroy(heap);
+}
+
+static void
+strollpt_prheap_build(void * __restrict heap)
+{
+	stroll_prheap_build(heap, stroll_prheap_nr(heap), NULL);
+}
+
+static void
+strollpt_prheap_insert(void * __restrict heap, const void * __restrict elem)
+{
+	stroll_prheap_insert(heap, elem, NULL);
+}
+
+static void
+strollpt_prheap_extract(void * __restrict heap, void * __restrict elem)
+{
+	stroll_prheap_extract(heap, elem, NULL);
+}
+
+static unsigned int
+strollpt_prheap_count(void * __restrict heap)
+{
+	return stroll_prheap_count(heap);
+}
+
+static const struct strollpt_heap_iface strollpt_prheap_iface = {
+	.create   = strollpt_prheap_create,
+	.destroy  = strollpt_prheap_destroy,
+	.build    = strollpt_prheap_build,
+	.insert   = strollpt_prheap_insert,
+	.extract  = strollpt_prheap_extract,
+	.count    = strollpt_prheap_count,
+	.validate = strollpt_prheap_validate
+};
+
+static int
+strollpt_heap_prepare_prheap(const unsigned int * __restrict elements,
+                             unsigned int                    nr,
+                             size_t                          size)
+{
+	return strollpt_heap_prepare_array(elements,
+	                                   nr,
+	                                   size,
+	                                   &strollpt_prheap_iface);
+}
+
+static int
+strollpt_heap_measure_prheap(
+	const unsigned int * __restrict elements,
+	unsigned int                    nr,
+	size_t                          size,
+	unsigned int                    operations,
+	unsigned long long              nsecs[__restrict_arr STROLLPT_HEAP_OP_NR])
+{
+	return strollpt_heap_measure_array(elements,
+	                                   nr,
+	                                   size,
+	                                   operations,
+	                                   nsecs,
+	                                   &strollpt_prheap_iface);
+}
+
+#endif /* defined(CONFIG_STROLL_PRHEAP) */
+#endif
+
 static const struct strollpt_heap_algo strollpt_heap_algos[] = {
 #if defined(CONFIG_STROLL_FBHEAP)
 	{
@@ -712,6 +832,15 @@ static const struct strollpt_heap_algo strollpt_heap_algos[] = {
 		.prepare = strollpt_heap_prepare_fwheap,
 		.measure = strollpt_heap_measure_fwheap
 	},
+#endif
+#if 0
+#if defined(CONFIG_STROLL_PRHEAP)
+	{
+		.name    = "prheap",
+		.prepare = strollpt_heap_prepare_prheap,
+		.measure = strollpt_heap_measure_prheap
+	},
+#endif
 #endif
 };
 
@@ -737,25 +866,21 @@ static int
 strollpt_heap_parse_opers(char *                    arg,
                           unsigned int * __restrict operations)
 {
-	bool end = false;
-
-	operations = 0;
+	*operations = 0;
 
 	do {
 		const char * name;
 		unsigned int o;
 
+		assert(arg);
 		name = strsep(&arg, ",");
-		if (!name) {
-			end = true;
-			name = arg;
-		}
+		assert(name);
 
 		for (o = 0;
 		     o < stroll_array_nr(strollpt_heap_operations);
 		     o++) {
 			if (!strcmp(name, strollpt_heap_operations[o])) {
-				*operations |= o;
+				*operations |= 1U << o;
 				break;
 			}
 		}
@@ -764,19 +889,22 @@ strollpt_heap_parse_opers(char *                    arg,
 			strollpt_err("invalid '%s' operation.\n", name);
 			return EXIT_FAILURE;
 		}
-	} while (!end);
+	} while (arg);
 
 	return EXIT_SUCCESS;
 }
 
 static void
-strollpt_heap_show_stats(const char *         title,
-                         unsigned long long * nsecs,
-                         unsigned int         loops)
+strollpt_heap_show_stats(enum strollpt_heap_op operation,
+                         unsigned long long *  nsecs,
+                         unsigned int          loops)
 {
 	struct strollpt_stats stats;
 
-	strollpt_calc_stats(&stats, nsecs, loops);
+	strollpt_calc_stats(&stats,
+	                    &nsecs[operation],
+	                    STROLLPT_HEAP_OP_NR,
+	                    loops);
 	printf("%s:\n"
 	       "    #Inliers:   %u (%.2lf%%)\n"
 	       "    Mininum:    %llu nSec\n"
@@ -784,7 +912,7 @@ strollpt_heap_show_stats(const char *         title,
 	       "    Deviation:  %llu nSec\n"
 	       "    Median:     %llu nSec\n"
 	       "    Mean:       %llu nSec\n",
-	       title,
+	       strollpt_heap_operations[operation],
 	       stats.count, ((double)stats.count * 100.0) / (double)loops,
 	       stats.min,
 	       stats.max,
@@ -816,7 +944,7 @@ int main(int argc, char *argv[])
 	struct strollpt_data              data;
 	unsigned int *                    elms;
 	unsigned long long *              nsecs;
-	unsigned int                      l;
+	unsigned int                      i;
 	int                               ret = EXIT_FAILURE;
 
 	while (true) {
@@ -895,12 +1023,12 @@ int main(int argc, char *argv[])
 	if (strollpt_setup_sched_prio(prio))
 		goto free_nsecs;
 
-	for (l = 0; l < loops; l++) {
+	for (i = 0; i < loops; i++) {
 		if (algo->measure(elms,
 		                  data.nr,
 		                  dsize,
 		                  opers,
-		                  &nsecs[l * STROLLPT_HEAP_OP_NR]))
+		                  &nsecs[i * STROLLPT_HEAP_OP_NR]))
 		    goto free_nsecs;
 	}
 
@@ -916,9 +1044,10 @@ int main(int argc, char *argv[])
 	       algo->name,
 	       dsize,
 	       loops);
-	strollpt_heap_show_stats("Heapify", nsecs, loops);
-	strollpt_heap_show_stats("Extract", &nsecs[loops], loops);
-	strollpt_heap_show_stats("Insert", &nsecs[2 * loops], loops);
+	for (i = 0; i < STROLLPT_HEAP_OP_NR; i++) {
+		if (opers & (1U << i))
+			strollpt_heap_show_stats(i, nsecs, loops);
+	}
 
 	ret = EXIT_SUCCESS;
 

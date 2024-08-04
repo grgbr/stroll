@@ -44,8 +44,8 @@ strollpt_update_mean(double mean, double value, unsigned int iter)
 }
 
 static double
-strollpt_calc_mean(unsigned long long * __restrict    values,
-                   unsigned int                       nr)
+strollpt_calc_mean(const unsigned long long * __restrict values,
+                   unsigned int                          nr)
 {
 	assert(values);
 	assert(nr > 0);
@@ -60,9 +60,9 @@ strollpt_calc_mean(unsigned long long * __restrict    values,
 }
 
 static double
-strollpt_calc_stdev(double                          mean,
-                    unsigned long long * __restrict values,
-                    unsigned int                    nr)
+strollpt_calc_stdev(double                                mean,
+                    const unsigned long long * __restrict values,
+                    unsigned int                          nr)
 {
 	assert(values);
 	assert(nr > 0);
@@ -132,30 +132,48 @@ strollpt_probe_outliers(const unsigned long long * __restrict values,
 	*high = v - 1;
 }
 
-void
+int
 strollpt_calc_stats(struct strollpt_stats * __restrict stats,
                     unsigned long long * __restrict    values,
+                    unsigned int                       step,
                     unsigned int                       nr)
 {
 	assert(stats);
 	assert(values);
-	assert(nr > 0);
+	assert(step);
+	assert(nr);
 
-	unsigned int low;   /* index of lowest inlier */
-	unsigned int high;  /* index of highest inlier */
+	unsigned long long * vals = values;
+	unsigned int         v;
+	unsigned int         low;  /* index of lowest inlier */
+	unsigned int         high; /* index of highest inlier */
 
-	qsort(values, nr, sizeof(*values), strollpt_compare_sample);
+	if (step > 1) {
+		vals = malloc(nr * sizeof(vals[0]));
+		if (!vals)
+			return EXIT_FAILURE;
 
-	strollpt_probe_outliers(values, nr, &low, &high);
+		for (v = 0; v < nr; v++, values += step)
+			vals[v] = *values;
+	}
 
-	stats->min = values[low];
-	stats->max = values[high];
-	stats->med = values[(high + 1 + low) / 2];
+	qsort(vals, nr, sizeof(vals[0]), strollpt_compare_sample);
+
+	strollpt_probe_outliers(vals, nr, &low, &high);
+
+	stats->min = vals[low];
+	stats->max = vals[high];
+	stats->med = vals[(high + 1 + low) / 2];
 	stats->count = high + 1 - low;
-	stats->mean = strollpt_calc_mean(&values[low], stats->count);
+	stats->mean = strollpt_calc_mean(&vals[low], stats->count);
 	stats->stdev = strollpt_calc_stdev(stats->mean,
-	                                   &values[low],
+	                                   &vals[low],
 	                                   stats->count);
+
+	if (step > 1)
+		free(vals);
+
+	return EXIT_SUCCESS;
 }
 
 struct timespec
