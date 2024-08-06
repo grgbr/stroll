@@ -178,52 +178,45 @@ stroll_prheap_peek(const struct stroll_prheap * __restrict heap)
 extern void
 stroll_prheap_insert(struct stroll_prheap * __restrict    heap,
                      struct stroll_lcrs_node * __restrict node,
-                     stroll_lcrs_cmp_fn   *               compare,
                      void *                               data)
-	__stroll_nonull(1, 2, 3);
+	__stroll_nonull(1, 2);
 
 extern void
 stroll_prheap_merge(struct stroll_prheap * __restrict       result,
                     const struct stroll_prheap * __restrict source,
-                    stroll_lcrs_cmp_fn *                    compare,
                     void *                                  data)
-	__stroll_nonull(1, 2, 3);
+	__stroll_nonull(1, 2);
 
 extern struct stroll_lcrs_node *
-stroll_prheap_extract(struct stroll_prheap * __restrict heap,
-                      stroll_lcrs_cmp_fn *              compare,
-                      void *                            data)
+stroll_prheap_extract(struct stroll_prheap * __restrict heap, void * data)
 	__stroll_nonull(1, 2);
 
 extern void
 stroll_prheap_remove(struct stroll_prheap * __restrict    heap,
                      struct stroll_lcrs_node * __restrict node,
-                     stroll_lcrs_cmp_fn *                 compare,
                      void *                               data)
-	__stroll_nonull(1, 2, 3);
+	__stroll_nonull(1, 2);
 
-static inline __stroll_nonull(1, 2, 3)
+static inline __stroll_nonull(1, 2)
 void
 stroll_prheap_promote(struct stroll_prheap * __restrict    heap,
                       struct stroll_lcrs_node * __restrict node,
-                      stroll_lcrs_cmp_fn *                 compare,
                       void *                               data)
 {
 	stroll_prheap_assert_heap_api(heap);
 
-	_stroll_prheap_promote(&heap->root, node, compare, data);
+	_stroll_prheap_promote(&heap->root, node, heap->compare, data);
 }
 
 static inline __stroll_nonull(1, 2, 3)
 void
 stroll_prheap_demote(struct stroll_prheap * __restrict    heap,
                      struct stroll_lcrs_node * __restrict node,
-                     stroll_lcrs_cmp_fn *                 compare,
                      void *                               data)
 {
 	stroll_prheap_assert_heap_api(heap);
 
-	_stroll_prheap_demote(&heap->root, node, compare, data);
+	_stroll_prheap_demote(&heap->root, node, heap->compare, data);
 }
 
 extern void
