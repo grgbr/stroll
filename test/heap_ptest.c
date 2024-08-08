@@ -18,7 +18,7 @@ typedef int
                                    size_t,
                                    unsigned int,
                                    unsigned long long * __restrict)
-	__stroll_nonull(1, 4);
+	__stroll_nonull(1, 5);
 
 struct strollpt_heap_algo {
 	const char *               name;
@@ -28,16 +28,18 @@ struct strollpt_heap_algo {
 
 typedef void * (strollpt_heap_create_fn)(void * __restrict,
                                          unsigned int,
-                                         size_t,
-                                         stroll_array_cmp_fn *)
-	__stroll_nonull(1, 4) __warn_result;
+                                         size_t)
+	__stroll_nonull(1) __warn_result;
 
 typedef void (strollpt_heap_destroy_fn)(void * __restrict) __stroll_nonull(1);
 
-typedef void (strollpt_heap_build_fn)(void * __restrict) __stroll_nonull(1);
+typedef void (strollpt_heap_build_fn)(void * __restrict,
+                                      void * __restrict,
+                                      unsigned int,
+                                      size_t)
+	__stroll_nonull(1);
 
-typedef void (strollpt_heap_insert_fn)(void * __restrict,
-                                       const void * __restrict)
+typedef void (strollpt_heap_insert_fn)(void * __restrict, void * __restrict)
 	__stroll_nonull(1, 2);
 
 typedef void (strollpt_heap_extract_fn)(void * __restrict, void * __restrict)
@@ -144,7 +146,7 @@ strollpt_heap_prepare_array(const unsigned int * __restrict    elements,
 	assert(elements);
 	assert(nr);
 	assert(size);
-	assert(size >= sizeof(struct strollpt_heap_elem));
+	assert(size <= UINT_MAX);
 	assert(iface);
 
 	struct strollpt_heap_elem * elms;
@@ -153,11 +155,11 @@ strollpt_heap_prepare_array(const unsigned int * __restrict    elements,
 	unsigned int                e;
 	int                         ret = EXIT_FAILURE;
 
-	if (size % sizeof(struct strollpt_heap_elem)) {
+	if (size % sizeof_member(struct strollpt_heap_elem, id)) {
 		strollpt_err("invalid data element size %zu specified: "
 		             "multiple of %zu expected.\n",
 		             size,
-		             sizeof(struct strollpt_heap_elem));
+		             sizeof_member(struct strollpt_heap_elem, id));
 		return EXIT_FAILURE;
 	}
 
@@ -171,11 +173,11 @@ strollpt_heap_prepare_array(const unsigned int * __restrict    elements,
 	memcpy(sort, elements, nr * sizeof(elements[0]));
 	qsort_r(sort, nr, sizeof(sort[0]), strollpt_array_compare_min, NULL);
 
-	heap = iface->create(elms, nr, size, strollpt_array_compare_min);
+	heap = iface->create(elms, nr, size);
 	if (!heap)
 		goto free_sort;
 
-	iface->build(heap);
+	iface->build(heap, elms, nr, size);
 	if (!iface->validate(heap, nr)) {
 		strollpt_err("Bogus heapify scheme.\n");
 		goto free_heap;
@@ -245,12 +247,12 @@ strollpt_heap_measure_array_build(
 	elms = strollpt_heap_create_array(elements, nr, size);
 	if (!elms)
 		return EXIT_FAILURE;
-	heap = iface->create(elms, nr, size, strollpt_array_compare_min);
+	heap = iface->create(elms, nr, size);
 	if (!heap)
 		goto destroy_array;
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
-	iface->build(heap);
+	iface->build(heap, elms, nr, size);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
 
 	elapse = strollpt_tspec_sub(&elapse, &start);
@@ -283,7 +285,7 @@ strollpt_heap_measure_array_insert(
 	elms = strollpt_heap_alloc_array(nr, size);
 	if (!elms)
 		return EXIT_FAILURE;
-	heap = iface->create(elms, nr, size, strollpt_array_compare_min);
+	heap = iface->create(elms, nr, size);
 	if (!heap)
 		goto destroy_array;
 
@@ -326,10 +328,10 @@ strollpt_heap_measure_array_extract(
 	elms = strollpt_heap_create_array(elements, nr, size);
 	if (!elms)
 		return EXIT_FAILURE;
-	heap = iface->create(elms, nr, size, strollpt_array_compare_min);
+	heap = iface->create(elms, nr, size);
 	if (!heap)
 		goto destroy_array;
-	iface->build(heap);
+	iface->build(heap, elms, nr, size);
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
 	for (e = 0; e < nr; e++) {
@@ -459,10 +461,12 @@ strollpt_fbheap_validate(const void * __restrict heap, unsigned int nr)
 static void *
 strollpt_fbheap_create(void * __restrict     array,
                        unsigned int          nr,
-                       size_t                size,
-                       stroll_array_cmp_fn * compare)
+                       size_t                size)
 {
-	return stroll_fbheap_create(array, nr, size, compare);
+	return stroll_fbheap_create(array,
+	                            nr,
+	                            size,
+	                            strollpt_array_compare_min);
 }
 
 static void
@@ -472,13 +476,16 @@ strollpt_fbheap_destroy(void * __restrict heap)
 }
 
 static void
-strollpt_fbheap_build(void * __restrict heap)
+strollpt_fbheap_build(void * __restrict heap,
+                      void * __restrict array __unused,
+                      unsigned int      nr __unused,
+                      size_t            size  __unused)
 {
 	stroll_fbheap_build(heap, stroll_fbheap_nr(heap), NULL);
 }
 
 static void
-strollpt_fbheap_insert(void * __restrict heap, const void * __restrict elem)
+strollpt_fbheap_insert(void * __restrict heap, void * __restrict elem)
 {
 	stroll_fbheap_insert(heap, elem, NULL);
 }
@@ -623,10 +630,12 @@ strollpt_fwheap_validate(const void * __restrict heap, unsigned int nr)
 static void *
 strollpt_fwheap_create(void * __restrict     array,
                        unsigned int          nr,
-                       size_t                size,
-                       stroll_array_cmp_fn * compare)
+                       size_t                size)
 {
-	return stroll_fwheap_create(array, nr, size, compare);
+	return stroll_fwheap_create(array,
+	                            nr,
+	                            size,
+	                            strollpt_array_compare_min);
 }
 
 static void
@@ -636,13 +645,16 @@ strollpt_fwheap_destroy(void * __restrict heap)
 }
 
 static void
-strollpt_fwheap_build(void * __restrict heap)
+strollpt_fwheap_build(void * __restrict heap,
+                      void * __restrict array __unused,
+                      unsigned int      nr __unused,
+                      size_t            size  __unused)
 {
 	stroll_fwheap_build(heap, stroll_fwheap_nr(heap), NULL);
 }
 
 static void
-strollpt_fwheap_insert(void * __restrict heap, const void * __restrict elem)
+strollpt_fwheap_insert(void * __restrict heap, void * __restrict elem)
 {
 	stroll_fwheap_insert(heap, elem, NULL);
 }
@@ -700,8 +712,10 @@ strollpt_heap_measure_fwheap(
 
 #if defined(CONFIG_STROLL_PRHEAP) || defined(CONFIG_STROLL_BNHEAP)
 
+#include "stroll/priv/lcrs.h"
+
 struct strollpt_heap_node {
-	struct stroll_lcrs_node node;
+	struct stroll_lcrs_node super;
 	unsigned int            id;
 	const char              data[0];
 };
@@ -713,32 +727,11 @@ strollpt_heap_compare_min(
 	void *                                     data __unused)
 {
 	const struct strollpt_heap_node * _a =
-		stroll_lcrs_entry(a, const struct strollpt_heap_node, node);
+		stroll_lcrs_entry(a, const struct strollpt_heap_node, super);
 	const struct strollpt_heap_node * _b =
-		stroll_lcrs_entry(b, const struct strollpt_heap_node, node);
+		stroll_lcrs_entry(b, const struct strollpt_heap_node, super);
 
 	return (_a->id > _b->id) - (_a->id < _b->id);
-}
-
-static void
-strollpt_heap_setup_nodes(struct strollpt_heap_node * nodes,
-                          const unsigned int *        from,
-                          unsigned int                nr,
-                          size_t                      size)
-{
-	assert(nodes);
-	assert(from);
-	assert(nr);
-	assert(size >= sizeof(nodes[0]));
-	assert(!(size % sizeof(nodes[0])));
-
-	struct strollpt_heap_node * ptr;
-	unsigned int                n;
-
-	for (n = 0, ptr = nodes;
-	     n < nr;
-	     n++, ptr = (struct strollpt_heap_node *)((char *)ptr + size))
-		ptr->id = from[n];
 }
 
 static struct strollpt_heap_node *
@@ -747,7 +740,8 @@ strollpt_heap_alloc_nodes(unsigned int nr, size_t size)
 	assert(nr);
 	assert(size);
 
-	return malloc(nr * size);
+	return malloc(nr *
+	              (sizeof_member(struct strollpt_heap_node, super) + size));
 }
 
 static struct strollpt_heap_node *
@@ -759,13 +753,21 @@ strollpt_heap_create_nodes(const unsigned int * elements,
 	assert(size >= sizeof(elements[0]));
 	assert(!(size % sizeof(elements[0])));
 
-	struct strollpt_heap_node * node;
+	struct strollpt_heap_node * nodes;
+	struct strollpt_heap_node * ptr;
+	unsigned int                n;
 
 	nodes = strollpt_heap_alloc_nodes(nr, size);
 	if (!nodes)
 		return NULL;
 
-	strollpt_heap_setup_nodes(nodes, elements, nr, size);
+	for (n = 0,
+	     ptr = nodes;
+	     n < nr;
+	     n++,
+	     ptr = (struct strollpt_heap_node *)
+	           ((char *)ptr + sizeof(nodes->super) + size))
+		ptr->id = elements[n];
 
 	return nodes;
 }
@@ -776,39 +778,141 @@ strollpt_heap_destroy_nodes(struct strollpt_heap_node * nodes)
 	free(nodes);
 }
 
+static int
+strollpt_heap_prepare_nodes(const unsigned int * __restrict    elements,
+                            unsigned int                       nr,
+                            size_t                             size,
+                            const struct strollpt_heap_iface * iface)
+{
+	assert(elements);
+	assert(nr);
+	assert(size);
+	assert(size <= UINT_MAX);
+	assert(iface);
+
+	struct strollpt_heap_node * nodes;
+	unsigned int *              sort;
+	void *                      heap;
+	unsigned int                e;
+	int                         ret = EXIT_FAILURE;
+
+	if (size % sizeof_member(struct strollpt_heap_node, id)) {
+		strollpt_err("invalid data element size %zu specified: "
+		             "multiple of %zu expected.\n",
+		             size,
+		             sizeof_member(struct strollpt_heap_node, id));
+		return EXIT_FAILURE;
+	}
 
 
+	nodes = strollpt_heap_create_nodes(elements, nr, size);
+	if (!nodes)
+		return EXIT_FAILURE;
 
+	sort = malloc(nr * sizeof(elements[0]));
+	if (!sort)
+		goto destroy_nodes;
+	memcpy(sort, elements, nr * sizeof(elements[0]));
+	qsort_r(sort, nr, sizeof(sort[0]), strollpt_array_compare_min, NULL);
 
+	heap = iface->create(nodes, nr, size);
+	if (!heap)
+		goto free_sort;
 
+	iface->build(heap, nodes, nr, size);
+	if (!iface->validate(heap, nr)) {
+		strollpt_err("Bogus heapify scheme.\n");
+		goto free_heap;
+	}
 
+	for (e = 0; e < nr; e++) {
+		struct stroll_lcrs_node * lcrs = (struct stroll_lcrs_node *)
+		                                 0xdeadbeef;
 
+		iface->extract(heap, &lcrs);
+		if (stroll_lcrs_entry(lcrs,
+		                      struct strollpt_heap_node,
+		                      super)->id != sort[e]) {
+			strollpt_err("Bogus heap extraction scheme.\n");
+			goto free_heap;
+		}
 
+		if (iface->count(heap) != (nr - e - 1)) {
+			strollpt_err("Bogus heap extraction count.\n");
+			goto free_heap;
+		}
+	}
 
+	memset(nodes,
+	       0xa5,
+	       nr * (sizeof(nodes->super) + size));
+	for (e = 0; e < nr; e++) {
+		struct strollpt_heap_node * node;
 
+		node = (struct strollpt_heap_node *)
+		       ((char *)nodes + (e * (sizeof(nodes->super) + size)));
 
+		node->id = elements[e];
+		iface->insert(heap, node);
 
+		if (iface->count(heap) != (e + 1)) {
+			strollpt_err("Bogus heap insertion count.\n");
+			goto free_heap;
+		}
+	}
+	if (!iface->validate(heap, nr)) {
+		strollpt_err("Bogus heap insertion scheme.\n");
+		goto free_heap;
+	}
 
+	ret = EXIT_SUCCESS;
 
+free_heap:
+	iface->destroy(heap);
+free_sort:
+	free(sort);
+destroy_nodes:
+	strollpt_heap_destroy_nodes(nodes);
 
+	return ret;
+}
 
+static int
+strollpt_heap_measure_node_build(
+	const unsigned int * __restrict               elements,
+	unsigned int                                  nr,
+	size_t                                        size,
+	unsigned long long * __restrict               nsecs,
+	const struct strollpt_heap_iface * __restrict iface)
+{
+	struct timespec             start, elapse;
+	struct strollpt_heap_node * nodes;
+	void *                      heap;
+	int                         ret = EXIT_FAILURE;
 
+	nodes = strollpt_heap_create_nodes(elements, nr, size);
+	if (!nodes)
+		return EXIT_FAILURE;
+	heap = iface->create(nodes, nr, size);
+	if (!heap)
+		goto destroy_nodes;
 
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
+	iface->build(heap, nodes, nr, size);
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
 
+	elapse = strollpt_tspec_sub(&elapse, &start);
+	*nsecs = strollpt_tspec2ns(&elapse);
 
+	ret = EXIT_SUCCESS;
 
+	iface->destroy(heap);
 
+destroy_nodes:
+	strollpt_heap_destroy_nodes(nodes);
 
-
-
-
-
-
-
-
-
-
-
+	return ret;
+}
 
 static int
 strollpt_heap_measure_node_insert(
@@ -827,16 +931,18 @@ strollpt_heap_measure_node_insert(
 	nodes = strollpt_heap_alloc_nodes(nr, size);
 	if (!nodes)
 		return EXIT_FAILURE;
-	heap = iface->create(nodes, nr, size, strollpt_heap_compare_min);
+	heap = iface->create(nodes, nr, size);
 	if (!heap)
 		goto destroy_nodes;
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
 	for (e = 0; e < nr; e++) {
-		char node[size];
+		struct strollpt_heap_node * node;
 
-		((struct strollpt_heap_node *)node)->id = elements[e];
-		iface->insert(heap, node);
+		node = (struct strollpt_heap_node *)
+		       ((char *)nodes + (e * (sizeof(nodes->super) + size)));
+		node->id = elements[e];
+		iface->insert(heap, &node->super);
 	}
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
 
@@ -870,14 +976,14 @@ strollpt_heap_measure_node_extract(
 	nodes = strollpt_heap_create_nodes(elements, nr, size);
 	if (!nodes)
 		return EXIT_FAILURE;
-	heap = iface->create(nodes, nr, size, strollpt_heap_compare_min);
+	heap = iface->create(nodes, nr, size);
 	if (!heap)
 		goto destroy_nodes;
-	iface->build(heap);
+	iface->build(heap, nodes, nr, size);
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
 	for (e = 0; e < nr; e++) {
-		char node[size];
+		struct stroll_lcrs_node * node;
 
 		iface->extract(heap, &node);
 	}
@@ -896,16 +1002,8 @@ destroy_nodes:
 	return ret;
 }
 
-
-
-
-
-
-
-
-
 static int
-strollpt_heap_measure_tree(
+strollpt_heap_measure_nodes(
 	const unsigned int * __restrict    elements,
 	unsigned int                       nr,
 	size_t                             size,
@@ -978,12 +1076,12 @@ strollpt_prheap_validate_rec(const struct stroll_lcrs_node * __restrict node,
 {
 	const struct stroll_lcrs_node * child;
 
-	*nr++;
+	*nr += 1;
 
 	stroll_lcrs_foreach_child(node, child) {
 		if (strollpt_heap_compare_min(node, child, NULL) > 0)
 			return false;
-		strollpt_prheap_validate_rec(child);
+		strollpt_prheap_validate_rec(child, nr);
 	}
 
 	return true;
@@ -992,8 +1090,8 @@ strollpt_prheap_validate_rec(const struct stroll_lcrs_node * __restrict node,
 static bool
 strollpt_prheap_validate(const void * __restrict heap, unsigned int nr)
 {
-	struct stroll_prheap * hp = heap;
-	unsigned int           cnt = 0;
+	const struct stroll_prheap * hp = heap;
+	unsigned int                 cnt = 0;
 
 	if (!strollpt_prheap_validate_rec(hp->root, &cnt))
 		return false;
@@ -1008,10 +1106,9 @@ strollpt_prheap_validate(const void * __restrict heap, unsigned int nr)
 static void *
 strollpt_prheap_create(void * __restrict     array __unused,
                        unsigned int          nr,
-                       size_t                size __unused,
-                       stroll_array_cmp_fn * compare)
+                       size_t                size __unused)
 {
-	return stroll_prheap_create(nr, compare);
+	return stroll_prheap_create(nr, strollpt_heap_compare_min);
 }
 
 static void
@@ -1021,24 +1118,39 @@ strollpt_prheap_destroy(void * __restrict heap)
 }
 
 static void
-strollpt_prheap_build(void * __restrict heap)
+strollpt_prheap_build(void * __restrict heap,
+                      void * __restrict array,
+                      unsigned int      nr,
+                      size_t            size  __unused)
 {
-#warning implement me!
-	//stroll_prheap_build(heap, stroll_prheap_nr(heap), NULL);
+	unsigned int n;
+
+	for (n = 0; n < nr; n++) {
+		struct strollpt_heap_node * node;
+
+		node = (struct strollpt_heap_node *)
+		       ((char *)array + (n * (sizeof(node->super) + size)));
+		stroll_prheap_insert(heap, &node->super, NULL);
+	}
 }
 
 static void
-strollpt_prheap_insert(void * __restrict heap, const void * __restrict node)
+strollpt_prheap_insert(void * __restrict heap, void * __restrict node)
 {
-	stroll_prheap_insert(heap, node, NULL);
+	stroll_prheap_insert(heap,
+	                     &((struct strollpt_heap_node *)node)->super,
+	                     NULL);
 }
 
 static void
 strollpt_prheap_extract(void * __restrict heap, void * __restrict node)
 {
-	struct stroll_lcrs_node ** lcrs = node;
+	struct stroll_lcrs_node *    lcrs;
+	struct strollpt_heap_node ** ptnode = node;
 
-	*lcrs = stroll_prheap_extract(heap, NULL);
+	lcrs = stroll_prheap_extract(heap, NULL);
+
+	*ptnode = stroll_lcrs_entry(lcrs, struct strollpt_heap_node, super);
 }
 
 static unsigned int
@@ -1062,10 +1174,10 @@ strollpt_heap_prepare_prheap(const unsigned int * __restrict elements,
                              unsigned int                    nr,
                              size_t                          size)
 {
-	return strollpt_heap_prepare_tree(elements,
-	                                  nr,
-	                                  size,
-	                                  &strollpt_prheap_iface);
+	return strollpt_heap_prepare_nodes(elements,
+	                                   nr,
+	                                   size,
+	                                   &strollpt_prheap_iface);
 }
 
 static int
@@ -1076,12 +1188,12 @@ strollpt_heap_measure_prheap(
 	unsigned int                    operations,
 	unsigned long long              nsecs[__restrict_arr STROLLPT_HEAP_OP_NR])
 {
-	return strollpt_heap_measure_tree(elements,
-	                                  nr,
-	                                  size,
-	                                  operations,
-	                                  nsecs,
-	                                  &strollpt_prheap_iface);
+	return strollpt_heap_measure_nodes(elements,
+	                                   nr,
+	                                   size,
+	                                   operations,
+	                                   nsecs,
+	                                   &strollpt_prheap_iface);
 }
 
 #endif /* defined(CONFIG_STROLL_PRHEAP) */
@@ -1160,17 +1272,19 @@ strollpt_heap_parse_opers(char *                    arg,
 	return EXIT_SUCCESS;
 }
 
-static void
+static int
 strollpt_heap_show_stats(enum strollpt_heap_op operation,
                          unsigned long long *  nsecs,
                          unsigned int          loops)
 {
 	struct strollpt_stats stats;
 
-	strollpt_calc_stats(&stats,
-	                    &nsecs[operation],
-	                    STROLLPT_HEAP_OP_NR,
-	                    loops);
+	if (strollpt_calc_stats(&stats,
+	                        &nsecs[operation],
+	                        STROLLPT_HEAP_OP_NR,
+	                        loops))
+		return EXIT_FAILURE;
+
 	printf("%s:\n"
 	       "    #Inliers:   %u (%.2lf%%)\n"
 	       "    Mininum:    %llu nSec\n"
@@ -1185,6 +1299,8 @@ strollpt_heap_show_stats(enum strollpt_heap_op operation,
 	       (unsigned long long)round(stats.stdev),
 	       stats.med,
 	       (unsigned long long)round(stats.mean));
+
+	return EXIT_SUCCESS;
 }
 
 static void
@@ -1312,7 +1428,8 @@ int main(int argc, char *argv[])
 	       loops);
 	for (i = 0; i < STROLLPT_HEAP_OP_NR; i++) {
 		if (opers & (1U << i))
-			strollpt_heap_show_stats(i, nsecs, loops);
+			if (strollpt_heap_show_stats(i, nsecs, loops))
+				goto free_nsecs;
 	}
 
 	ret = EXIT_SUCCESS;

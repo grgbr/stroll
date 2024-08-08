@@ -189,7 +189,7 @@ stroll_prheap_merge(struct stroll_prheap * __restrict       result,
 
 extern struct stroll_lcrs_node *
 stroll_prheap_extract(struct stroll_prheap * __restrict heap, void * data)
-	__stroll_nonull(1, 2);
+	__stroll_nonull(1);
 
 extern void
 stroll_prheap_remove(struct stroll_prheap * __restrict    heap,

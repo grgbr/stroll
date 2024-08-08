@@ -48,16 +48,23 @@ heap_ptest_run()
 	local size=$3
 	local prio=""
 	local loops=$5
+	local out
 
 	if [ $4 -gt 0 ]; then
 		prio="--prio $4"
 	fi
 
-	$HEAP_PTEST_BIN $prio "$path" "$algo" $size $loops | \
-	awk -F': *' "$ptest_parse_awk"
+	if ! out=$($HEAP_PTEST_BIN $prio "$path" "$algo" $size $loops); then
+		return 1
+	fi
+	if ! echo -n "$out" | awk -F': *' "$ptest_parse_awk"; then
+		return 1
+	fi
+
+	return 0
 }
 
-algos="fbheap fwheap"
+algos="fbheap fwheap prheap"
 
 if [ $show -eq 1 ]; then
 	echo "#Samples:        $nr"

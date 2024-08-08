@@ -313,7 +313,7 @@ CUTE_TEST(strollut_theap_check_empty_assert)
 
 #else  /* !defined(CONFIG_STROLL_ASSERT_API) */
 
-STROLLUT_THEAP_NOASSERT(strollut_theap_empty_assert)
+STROLLUT_THEAP_NOASSERT(strollut_theap_check_empty_assert)
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
