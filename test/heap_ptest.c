@@ -45,6 +45,9 @@ typedef void (strollpt_heap_insert_fn)(void * __restrict, void * __restrict)
 typedef void (strollpt_heap_extract_fn)(void * __restrict, void * __restrict)
 	__stroll_nonull(1, 2);
 
+typedef void (strollpt_heap_remove_fn)(void * __restrict, void * __restrict)
+	__stroll_nonull(1, 2);
+
 typedef unsigned int (strollpt_heap_count_fn)(void * __restrict)
 	__stroll_nonull(1);
 
@@ -57,6 +60,7 @@ struct strollpt_heap_iface {
 	strollpt_heap_build_fn *    build;
 	strollpt_heap_insert_fn *   insert;
 	strollpt_heap_extract_fn *  extract;
+	strollpt_heap_remove_fn *   remove;
 	strollpt_heap_count_fn *    count;
 	strollpt_heap_validate_fn * validate;
 };
@@ -65,13 +69,15 @@ enum strollpt_heap_op {
 	STROLLPT_HEAP_BUILD_OP   = 0,
 	STROLLPT_HEAP_INSERT_OP  = 1,
 	STROLLPT_HEAP_EXTRACT_OP = 2,
+	STROLLPT_HEAP_REMOVE_OP  = 3,
 	STROLLPT_HEAP_OP_NR
 };
 
 static const char * strollpt_heap_operations[] = {
 	[STROLLPT_HEAP_BUILD_OP]   = "heapify",
 	[STROLLPT_HEAP_INSERT_OP]  = "insert",
-	[STROLLPT_HEAP_EXTRACT_OP] = "extract"
+	[STROLLPT_HEAP_EXTRACT_OP] = "extract",
+	[STROLLPT_HEAP_REMOVE_OP]  = "remove"
 };
 
 #if defined(CONFIG_STROLL_FBHEAP) || defined(CONFIG_STROLL_FWHEAP)
@@ -198,6 +204,16 @@ strollpt_heap_prepare_array(const unsigned int * __restrict    elements,
 			strollpt_err("Bogus heap extraction count.\n");
 			goto free_heap;
 		}
+
+		if (((struct strollpt_heap_elem *)elm)->id != sort[e]) {
+			strollpt_err("Bogus heap extraction key.\n");
+			goto free_heap;
+		}
+
+		if (!iface->validate(heap, nr - e - 1)) {
+			strollpt_err("Bogus heap extraction scheme.\n");
+			goto free_heap;
+		}
 	}
 
 	memset(elms, 0xa5, nr * size);
@@ -213,10 +229,11 @@ strollpt_heap_prepare_array(const unsigned int * __restrict    elements,
 			strollpt_err("Bogus heap insertion count.\n");
 			goto free_heap;
 		}
-	}
-	if (!iface->validate(heap, nr)) {
-		strollpt_err("Bogus heap insertion scheme.\n");
-		goto free_heap;
+
+		if (!iface->validate(heap, e + 1)) {
+			strollpt_err("Bogus heap insertion scheme.\n");
+			goto free_heap;
+		}
 	}
 
 	ret = EXIT_SUCCESS;
@@ -455,6 +472,8 @@ strollpt_fbheap_validate_rec(unsigned int index,
 static bool
 strollpt_fbheap_validate(const void * __restrict heap, unsigned int nr)
 {
+	if (!nr)
+		return true;
 	return strollpt_fbheap_validate_rec(0, heap, nr);
 }
 
@@ -624,6 +643,8 @@ strollpt_fwheap_validate_rec(unsigned int index,
 static bool
 strollpt_fwheap_validate(const void * __restrict heap, unsigned int nr)
 {
+	if (!nr)
+		return true;
 	return strollpt_fwheap_validate_rec(0, heap, nr);
 }
 
@@ -830,15 +851,21 @@ strollpt_heap_prepare_nodes(const unsigned int * __restrict    elements,
 		                                 0xdeadbeef;
 
 		iface->extract(heap, &lcrs);
-		if (stroll_lcrs_entry(lcrs,
-		                      struct strollpt_heap_node,
-		                      super)->id != sort[e]) {
-			strollpt_err("Bogus heap extraction scheme.\n");
-			goto free_heap;
-		}
 
 		if (iface->count(heap) != (nr - e - 1)) {
 			strollpt_err("Bogus heap extraction count.\n");
+			goto free_heap;
+		}
+
+		if (stroll_lcrs_entry(lcrs,
+		                      struct strollpt_heap_node,
+		                      super)->id != sort[e]) {
+			strollpt_err("Bogus heap extraction key.\n");
+			goto free_heap;
+		}
+
+		if (!iface->validate(heap, nr - e - 1)) {
+			strollpt_err("Bogus heap extraction scheme.\n");
 			goto free_heap;
 		}
 	}
@@ -859,10 +886,30 @@ strollpt_heap_prepare_nodes(const unsigned int * __restrict    elements,
 			strollpt_err("Bogus heap insertion count.\n");
 			goto free_heap;
 		}
+
+		if (!iface->validate(heap, e + 1)) {
+			strollpt_err("Bogus heap insertion scheme.\n");
+			goto free_heap;
+		}
 	}
-	if (!iface->validate(heap, nr)) {
-		strollpt_err("Bogus heap insertion scheme.\n");
-		goto free_heap;
+
+	for (e = 0; e < nr; e++) {
+		struct strollpt_heap_node * node;
+
+		node = (struct strollpt_heap_node *)
+		       ((char *)nodes + (e * (sizeof(nodes->super) + size)));
+
+		iface->remove(heap, node);
+
+		if (iface->count(heap) != (nr - e - 1)) {
+			strollpt_err("Bogus heap removal count.\n");
+			goto free_heap;
+		}
+
+		if (!iface->validate(heap, nr - e - 1)) {
+			strollpt_err("Bogus heap removal scheme.\n");
+			goto free_heap;
+		}
 	}
 
 	ret = EXIT_SUCCESS;
@@ -1003,6 +1050,52 @@ destroy_nodes:
 }
 
 static int
+strollpt_heap_measure_node_remove(
+	const unsigned int * __restrict    elements,
+	unsigned int                       nr,
+	size_t                             size,
+	unsigned long long * __restrict    nsecs,
+	const struct strollpt_heap_iface * iface)
+{
+	struct timespec             start, elapse;
+	struct strollpt_heap_node * nodes;
+	void *                      heap;
+	unsigned int                e;
+	int                         ret = EXIT_FAILURE;
+
+	nodes = strollpt_heap_create_nodes(elements, nr, size);
+	if (!nodes)
+		return EXIT_FAILURE;
+	heap = iface->create(nodes, nr, size);
+	if (!heap)
+		goto destroy_nodes;
+	iface->build(heap, nodes, nr, size);
+
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
+	for (e = 0; e < nr; e++) {
+		struct strollpt_heap_node * node;
+
+		node = (struct strollpt_heap_node *)
+		       ((char *)nodes + (e * (sizeof(nodes->super) + size)));
+
+		iface->remove(heap, node);
+	}
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
+
+	elapse = strollpt_tspec_sub(&elapse, &start);
+	*nsecs = strollpt_tspec2ns(&elapse);
+
+	ret = EXIT_SUCCESS;
+
+	iface->destroy(heap);
+
+destroy_nodes:
+	strollpt_heap_destroy_nodes(nodes);
+
+	return ret;
+}
+
+static int
 strollpt_heap_measure_nodes(
 	const unsigned int * __restrict    elements,
 	unsigned int                       nr,
@@ -1055,6 +1148,15 @@ strollpt_heap_measure_nodes(
 				iface);
 			break;
 
+		case STROLLPT_HEAP_REMOVE_OP:
+			ret = strollpt_heap_measure_node_remove(
+				elements,
+				nr,
+				size,
+				&nsecs[STROLLPT_HEAP_REMOVE_OP],
+				iface);
+			break;
+
 		default:
 			ret = EXIT_SUCCESS;
 			break;
@@ -1092,6 +1194,9 @@ strollpt_prheap_validate(const void * __restrict heap, unsigned int nr)
 {
 	const struct stroll_prheap * hp = heap;
 	unsigned int                 cnt = 0;
+
+	if (!nr)
+		return hp->root == NULL;
 
 	if (!strollpt_prheap_validate_rec(hp->root, &cnt))
 		return false;
@@ -1153,6 +1258,14 @@ strollpt_prheap_extract(void * __restrict heap, void * __restrict node)
 	*ptnode = stroll_lcrs_entry(lcrs, struct strollpt_heap_node, super);
 }
 
+static void
+strollpt_prheap_remove(void * __restrict heap, void * __restrict node)
+{
+	struct strollpt_heap_node * ptnode = node;
+
+	stroll_prheap_remove(heap, &ptnode->super, NULL);
+}
+
 static unsigned int
 strollpt_prheap_count(void * __restrict heap)
 {
@@ -1165,6 +1278,7 @@ static const struct strollpt_heap_iface strollpt_prheap_iface = {
 	.build    = strollpt_prheap_build,
 	.insert   = strollpt_prheap_insert,
 	.extract  = strollpt_prheap_extract,
+	.remove   = strollpt_prheap_remove,
 	.count    = strollpt_prheap_count,
 	.validate = strollpt_prheap_validate
 };

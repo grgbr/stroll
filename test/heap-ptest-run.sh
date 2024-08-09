@@ -14,7 +14,7 @@ fi
 
 
 ptest_parse_awk='
-BEGIN               { op=""; imean=-1; emean=-1; hmean=-1 }
+BEGIN               { op=""; imean=-1; emean=-1; hmean=-1; rmean=-1 }
 /^Algorithm/        { algo=$2 }
 /^#Samples/         { nr=$2 }
 /^Distinct ratio/   { single=$2 }
@@ -23,6 +23,7 @@ BEGIN               { op=""; imean=-1; emean=-1; hmean=-1 }
 /^heapify/          { op="heapify" }
 /^insert/           { op="insert" }
 /^extract/          { op="extract" }
+/^remove/           { op="remove" }
 /^[[:blank:]]+Mean/ {
 	if (op == "heapify")
 		hmean=$2
@@ -30,6 +31,8 @@ BEGIN               { op=""; imean=-1; emean=-1; hmean=-1 }
 		imean=$2
 	else if (op == "extract")
 		emean=$2
+	else if (op == "remove")
+		rmean=$2
 }
 END                 {
 	if (hmean > 0)
@@ -38,6 +41,8 @@ END                 {
 		printf("%-8s %10u         %3u      %3u    %4u insert    %10u\n", algo, nr, single, order, size, imean)
 	if (emean > 0)
 		printf("%-8s %10u         %3u      %3u    %4u extract   %10u\n", algo, nr, single, order, size, emean)
+	if (rmean > 0)
+		printf("%-8s %10u         %3u      %3u    %4u remove    %10u\n", algo, nr, single, order, size, rmean)
 }
 '
 
