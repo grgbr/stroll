@@ -208,7 +208,7 @@ stroll_prheap_promote(struct stroll_prheap * __restrict    heap,
 	_stroll_prheap_promote(&heap->root, node, heap->compare, data);
 }
 
-static inline __stroll_nonull(1, 2, 3)
+static inline __stroll_nonull(1, 2)
 void
 stroll_prheap_demote(struct stroll_prheap * __restrict    heap,
                      struct stroll_lcrs_node * __restrict node,

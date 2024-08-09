@@ -14,7 +14,9 @@ fi
 
 
 ptest_parse_awk='
-BEGIN               { op=""; imean=-1; emean=-1; hmean=-1; rmean=-1 }
+BEGIN               {
+	op=""; imean=-1; emean=-1; hmean=-1; rmean=-1; pmean=-1; dmean=-1
+}
 /^Algorithm/        { algo=$2 }
 /^#Samples/         { nr=$2 }
 /^Distinct ratio/   { single=$2 }
@@ -24,6 +26,8 @@ BEGIN               { op=""; imean=-1; emean=-1; hmean=-1; rmean=-1 }
 /^insert/           { op="insert" }
 /^extract/          { op="extract" }
 /^remove/           { op="remove" }
+/^promote/          { op="promote" }
+/^demote/           { op="demote" }
 /^[[:blank:]]+Mean/ {
 	if (op == "heapify")
 		hmean=$2
@@ -33,6 +37,10 @@ BEGIN               { op=""; imean=-1; emean=-1; hmean=-1; rmean=-1 }
 		emean=$2
 	else if (op == "remove")
 		rmean=$2
+	else if (op == "promote")
+		pmean=$2
+	else if (op == "demote")
+		dmean=$2
 }
 END                 {
 	if (hmean > 0)
@@ -43,6 +51,10 @@ END                 {
 		printf("%-8s %10u         %3u      %3u    %4u extract   %10u\n", algo, nr, single, order, size, emean)
 	if (rmean > 0)
 		printf("%-8s %10u         %3u      %3u    %4u remove    %10u\n", algo, nr, single, order, size, rmean)
+	if (pmean > 0)
+		printf("%-8s %10u         %3u      %3u    %4u promote   %10u\n", algo, nr, single, order, size, pmean)
+	if (dmean > 0)
+		printf("%-8s %10u         %3u      %3u    %4u demote    %10u\n", algo, nr, single, order, size, dmean)
 }
 '
 

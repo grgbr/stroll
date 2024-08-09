@@ -327,14 +327,24 @@ strollpt_step_data_iter(const struct strollpt_data * __restrict data,
 	if (fread(&elem, sizeof(elem), 1, data->file) == 1) {
 		switch (data->endian) {
 		case STROLLPT_NATIVE_ENDIAN:
-			*element = elem;
 			break;
 		case STROLLPT_LITTLE_ENDIAN:
-			*element = le32toh(elem);
+			elem = le32toh(elem);
 			break;
 		case STROLLPT_BIG_ENDIAN:
-			*element = be32toh(elem);
+			elem = be32toh(elem);
+			break;
+		default:
+			strollpt_err("invalid data element endianness.\n");
+			return -EPROTO;
 		}
+
+		if (elem > (unsigned int)INT_MAX) {
+			strollpt_err("out of range data element.\n");
+			return -ERANGE;
+		}
+
+		*element = elem;
 
 		return 0;
 	}
@@ -440,7 +450,9 @@ strollpt_open_data(struct strollpt_data * __restrict data,
 	}
 
 #define STROLLPT_SAMPLES_MIN (8U)
-	if (data->nr < STROLLPT_SAMPLES_MIN) {
+#define STROLLPT_SAMPLES_MAX ((unsigned int)INT_MAX)
+	if ((data->nr < STROLLPT_SAMPLES_MIN) ||
+	    (data->nr > STROLLPT_SAMPLES_MAX)) {
 		strollpt_err("invalid number of data samples '%u'.\n",
 		             data->nr);
 		goto close;

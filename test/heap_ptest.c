@@ -48,6 +48,12 @@ typedef void (strollpt_heap_extract_fn)(void * __restrict, void * __restrict)
 typedef void (strollpt_heap_remove_fn)(void * __restrict, void * __restrict)
 	__stroll_nonull(1, 2);
 
+typedef void (strollpt_heap_promote_fn)(void * __restrict, void * __restrict)
+	__stroll_nonull(1, 2);
+
+typedef void (strollpt_heap_demote_fn)(void * __restrict, void * __restrict)
+	__stroll_nonull(1, 2);
+
 typedef unsigned int (strollpt_heap_count_fn)(void * __restrict)
 	__stroll_nonull(1);
 
@@ -61,6 +67,8 @@ struct strollpt_heap_iface {
 	strollpt_heap_insert_fn *   insert;
 	strollpt_heap_extract_fn *  extract;
 	strollpt_heap_remove_fn *   remove;
+	strollpt_heap_promote_fn *  promote;
+	strollpt_heap_demote_fn *   demote;
 	strollpt_heap_count_fn *    count;
 	strollpt_heap_validate_fn * validate;
 };
@@ -70,6 +78,8 @@ enum strollpt_heap_op {
 	STROLLPT_HEAP_INSERT_OP  = 1,
 	STROLLPT_HEAP_EXTRACT_OP = 2,
 	STROLLPT_HEAP_REMOVE_OP  = 3,
+	STROLLPT_HEAP_PROMOTE_OP = 4,
+	STROLLPT_HEAP_DEMOTE_OP  = 5,
 	STROLLPT_HEAP_OP_NR
 };
 
@@ -77,14 +87,16 @@ static const char * strollpt_heap_operations[] = {
 	[STROLLPT_HEAP_BUILD_OP]   = "heapify",
 	[STROLLPT_HEAP_INSERT_OP]  = "insert",
 	[STROLLPT_HEAP_EXTRACT_OP] = "extract",
-	[STROLLPT_HEAP_REMOVE_OP]  = "remove"
+	[STROLLPT_HEAP_REMOVE_OP]  = "remove",
+	[STROLLPT_HEAP_PROMOTE_OP] = "promote",
+	[STROLLPT_HEAP_DEMOTE_OP]  = "demote"
 };
 
 #if defined(CONFIG_STROLL_FBHEAP) || defined(CONFIG_STROLL_FWHEAP)
 
 struct strollpt_heap_elem {
-	unsigned int id;
-	const char   data[0];
+	int        id;
+	const char data[0];
 };
 
 static void
@@ -105,7 +117,7 @@ strollpt_heap_setup_array(struct strollpt_heap_elem * elements,
 	for (n = 0, ptr = elements;
 	     n < nr;
 	     n++, ptr = (struct strollpt_heap_elem *)((char *)ptr + size))
-		ptr->id = from[n];
+		ptr->id = (int)from[n];
 }
 
 static struct strollpt_heap_elem *
@@ -195,7 +207,7 @@ strollpt_heap_prepare_array(const unsigned int * __restrict    elements,
 		memset(elm, 0xa5, size);
 
 		iface->extract(heap, elm);
-		if (((struct strollpt_heap_elem *)elm)->id != sort[e]) {
+		if (((struct strollpt_heap_elem *)elm)->id != (int)sort[e]) {
 			strollpt_err("Bogus heap extraction scheme.\n");
 			goto free_heap;
 		}
@@ -205,7 +217,7 @@ strollpt_heap_prepare_array(const unsigned int * __restrict    elements,
 			goto free_heap;
 		}
 
-		if (((struct strollpt_heap_elem *)elm)->id != sort[e]) {
+		if (((struct strollpt_heap_elem *)elm)->id != (int)sort[e]) {
 			strollpt_err("Bogus heap extraction key.\n");
 			goto free_heap;
 		}
@@ -222,7 +234,7 @@ strollpt_heap_prepare_array(const unsigned int * __restrict    elements,
 
 		memset(elm, 0, size);
 
-		((struct strollpt_heap_elem *)elm)->id = elements[e];
+		((struct strollpt_heap_elem *)elm)->id = (int)elements[e];
 		iface->insert(heap, elm);
 
 		if (iface->count(heap) != (e + 1)) {
@@ -310,7 +322,7 @@ strollpt_heap_measure_array_insert(
 	for (e = 0; e < nr; e++) {
 		char elm[size];
 
-		((struct strollpt_heap_elem *)elm)->id = elements[e];
+		((struct strollpt_heap_elem *)elm)->id = (int)elements[e];
 		iface->insert(heap, elm);
 	}
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
@@ -737,7 +749,7 @@ strollpt_heap_measure_fwheap(
 
 struct strollpt_heap_node {
 	struct stroll_lcrs_node super;
-	unsigned int            id;
+	int                     id;
 	const char              data[0];
 };
 
@@ -788,7 +800,7 @@ strollpt_heap_create_nodes(const unsigned int * elements,
 	     n++,
 	     ptr = (struct strollpt_heap_node *)
 	           ((char *)ptr + sizeof(nodes->super) + size))
-		ptr->id = elements[n];
+		ptr->id = (int)elements[n];
 
 	return nodes;
 }
@@ -859,7 +871,7 @@ strollpt_heap_prepare_nodes(const unsigned int * __restrict    elements,
 
 		if (stroll_lcrs_entry(lcrs,
 		                      struct strollpt_heap_node,
-		                      super)->id != sort[e]) {
+		                      super)->id != (int)sort[e]) {
 			strollpt_err("Bogus heap extraction key.\n");
 			goto free_heap;
 		}
@@ -879,7 +891,7 @@ strollpt_heap_prepare_nodes(const unsigned int * __restrict    elements,
 		node = (struct strollpt_heap_node *)
 		       ((char *)nodes + (e * (sizeof(nodes->super) + size)));
 
-		node->id = elements[e];
+		node->id = (int)elements[e];
 		iface->insert(heap, node);
 
 		if (iface->count(heap) != (e + 1)) {
@@ -889,6 +901,46 @@ strollpt_heap_prepare_nodes(const unsigned int * __restrict    elements,
 
 		if (!iface->validate(heap, e + 1)) {
 			strollpt_err("Bogus heap insertion scheme.\n");
+			goto free_heap;
+		}
+	}
+
+	for (e = 0; e < nr; e++) {
+		struct strollpt_heap_node * node;
+
+		node = (struct strollpt_heap_node *)
+		       ((char *)nodes + (e * (sizeof(nodes->super) + size)));
+
+		node->id -= (int)nr / 4;
+		iface->promote(heap, node);
+
+		if (iface->count(heap) != nr) {
+			strollpt_err("Bogus heap promote count.\n");
+			goto free_heap;
+		}
+
+		if (!iface->validate(heap, nr)) {
+			strollpt_err("Bogus heap promote scheme.\n");
+			goto free_heap;
+		}
+	}
+
+	for (e = 0; e < nr; e++) {
+		struct strollpt_heap_node * node;
+
+		node = (struct strollpt_heap_node *)
+		       ((char *)nodes + (e * (sizeof(nodes->super) + size)));
+
+		node->id += (int)nr / 2;
+		iface->demote(heap, node);
+
+		if (iface->count(heap) != nr) {
+			strollpt_err("Bogus heap demote count.\n");
+			goto free_heap;
+		}
+
+		if (!iface->validate(heap, nr)) {
+			strollpt_err("Bogus heap demote scheme.\n");
 			goto free_heap;
 		}
 	}
@@ -988,7 +1040,7 @@ strollpt_heap_measure_node_insert(
 
 		node = (struct strollpt_heap_node *)
 		       ((char *)nodes + (e * (sizeof(nodes->super) + size)));
-		node->id = elements[e];
+		node->id = (int)elements[e];
 		iface->insert(heap, &node->super);
 	}
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
@@ -1096,6 +1148,100 @@ destroy_nodes:
 }
 
 static int
+strollpt_heap_measure_node_promote(
+	const unsigned int * __restrict    elements,
+	unsigned int                       nr,
+	size_t                             size,
+	unsigned long long * __restrict    nsecs,
+	const struct strollpt_heap_iface * iface)
+{
+	struct timespec             start, elapse;
+	struct strollpt_heap_node * nodes;
+	void *                      heap;
+	unsigned int                e;
+	int                         ret = EXIT_FAILURE;
+
+	nodes = strollpt_heap_create_nodes(elements, nr, size);
+	if (!nodes)
+		return EXIT_FAILURE;
+	heap = iface->create(nodes, nr, size);
+	if (!heap)
+		goto destroy_nodes;
+	iface->build(heap, nodes, nr, size);
+
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
+	for (e = 0; e < nr; e++) {
+		struct strollpt_heap_node * node;
+
+		node = (struct strollpt_heap_node *)
+		       ((char *)nodes + (e * (sizeof(nodes->super) + size)));
+
+		node->id -= (int)nr / 4;
+		iface->promote(heap, node);
+	}
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
+
+	elapse = strollpt_tspec_sub(&elapse, &start);
+	*nsecs = strollpt_tspec2ns(&elapse);
+
+	ret = EXIT_SUCCESS;
+
+	iface->destroy(heap);
+
+destroy_nodes:
+	strollpt_heap_destroy_nodes(nodes);
+
+	return ret;
+}
+
+static int
+strollpt_heap_measure_node_demote(
+	const unsigned int * __restrict    elements,
+	unsigned int                       nr,
+	size_t                             size,
+	unsigned long long * __restrict    nsecs,
+	const struct strollpt_heap_iface * iface)
+{
+	struct timespec             start, elapse;
+	struct strollpt_heap_node * nodes;
+	void *                      heap;
+	unsigned int                e;
+	int                         ret = EXIT_FAILURE;
+
+	nodes = strollpt_heap_create_nodes(elements, nr, size);
+	if (!nodes)
+		return EXIT_FAILURE;
+	heap = iface->create(nodes, nr, size);
+	if (!heap)
+		goto destroy_nodes;
+	iface->build(heap, nodes, nr, size);
+
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
+	for (e = 0; e < nr; e++) {
+		struct strollpt_heap_node * node;
+
+		node = (struct strollpt_heap_node *)
+		       ((char *)nodes + (e * (sizeof(nodes->super) + size)));
+
+		node->id += (int)nr / 4;
+		iface->demote(heap, node);
+	}
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &elapse);
+
+	elapse = strollpt_tspec_sub(&elapse, &start);
+	*nsecs = strollpt_tspec2ns(&elapse);
+
+	ret = EXIT_SUCCESS;
+
+	iface->destroy(heap);
+
+destroy_nodes:
+	strollpt_heap_destroy_nodes(nodes);
+
+	return ret;
+}
+
+static int
 strollpt_heap_measure_nodes(
 	const unsigned int * __restrict    elements,
 	unsigned int                       nr,
@@ -1154,6 +1300,24 @@ strollpt_heap_measure_nodes(
 				nr,
 				size,
 				&nsecs[STROLLPT_HEAP_REMOVE_OP],
+				iface);
+			break;
+
+		case STROLLPT_HEAP_PROMOTE_OP:
+			ret = strollpt_heap_measure_node_promote(
+				elements,
+				nr,
+				size,
+				&nsecs[STROLLPT_HEAP_PROMOTE_OP],
+				iface);
+			break;
+
+		case STROLLPT_HEAP_DEMOTE_OP:
+			ret = strollpt_heap_measure_node_demote(
+				elements,
+				nr,
+				size,
+				&nsecs[STROLLPT_HEAP_DEMOTE_OP],
 				iface);
 			break;
 
@@ -1266,6 +1430,22 @@ strollpt_prheap_remove(void * __restrict heap, void * __restrict node)
 	stroll_prheap_remove(heap, &ptnode->super, NULL);
 }
 
+static void
+strollpt_prheap_promote(void * __restrict heap, void * __restrict node)
+{
+	struct strollpt_heap_node * ptnode = node;
+
+	stroll_prheap_promote(heap, &ptnode->super, NULL);
+}
+
+static void
+strollpt_prheap_demote(void * __restrict heap, void * __restrict node)
+{
+	struct strollpt_heap_node * ptnode = node;
+
+	stroll_prheap_demote(heap, &ptnode->super, NULL);
+}
+
 static unsigned int
 strollpt_prheap_count(void * __restrict heap)
 {
@@ -1279,6 +1459,8 @@ static const struct strollpt_heap_iface strollpt_prheap_iface = {
 	.insert   = strollpt_prheap_insert,
 	.extract  = strollpt_prheap_extract,
 	.remove   = strollpt_prheap_remove,
+	.promote  = strollpt_prheap_promote,
+	.demote   = strollpt_prheap_demote,
 	.count    = strollpt_prheap_count,
 	.validate = strollpt_prheap_validate
 };
