@@ -1079,7 +1079,7 @@ typedef int (stroll_dlist_cmp_fn)
 /**
  * Sort specified list according to the bubble sort scheme.
  *
- * @param[inout] head    head of list to sort.
+ * @param[inout] head    Head of list to sort.
  * @param[in]    compare @p list nodes comparison function.
  * @param[inout] data    Optional arbitrary user data.
  *
@@ -1118,7 +1118,7 @@ stroll_dlist_bubble_sort(struct stroll_dlist_node * __restrict head,
 /**
  * Sort specified list according to the selection sort scheme.
  *
- * @param[inout] head    head of list to sort.
+ * @param[inout] head    Head of list to sort.
  * @param[in]    compare @p list nodes comparison function.
  * @param[inout] data    Optional arbitrary user data.
  *
@@ -1155,9 +1155,29 @@ stroll_dlist_select_sort(struct stroll_dlist_node * __restrict head,
 #if defined(CONFIG_STROLL_DLIST_INSERT_SORT)
 
 /**
+ * DOCUMENT ME
+ */
+extern void
+stroll_dlist_insert_inorder_front(struct stroll_dlist_node * __restrict head,
+                                  struct stroll_dlist_node * __restrict node,
+                                  stroll_dlist_cmp_fn *                 compare,
+                                  void *                                data)
+	__stroll_nonull(1, 2, 3);
+
+/**
+ * DOCUMENT ME
+ */
+extern void
+stroll_dlist_insert_inorder_back(struct stroll_dlist_node * __restrict head,
+                                 struct stroll_dlist_node * __restrict node,
+                                 stroll_dlist_cmp_fn *                 compare,
+                                 void *                                data)
+	__stroll_nonull(1, 2, 3);
+
+/**
  * Sort specified list according to the insertion sort scheme.
  *
- * @param[inout] head    head of list to sort.
+ * @param[inout] head    Head of list to sort.
  * @param[in]    compare @p list nodes comparison function.
  * @param[inout] data    Optional arbitrary user data.
  *
