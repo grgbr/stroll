@@ -176,7 +176,6 @@ stroll_slist_next(const struct stroll_slist_node * __restrict node)
  * @param[in] list stroll_slist to get the first node from.
  *
  * @retval Pointer to first list's node.
- * @retval NULL means list is empty.
  *
  * @warning
  * - Result is undefined if @p list has not been previously initialized.
@@ -189,7 +188,7 @@ stroll_slist_next(const struct stroll_slist_node * __restrict node)
  * - stroll_slist_head()
  * - stroll_slist_first_entry()
  */
-static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __returns_nonull
 struct stroll_slist_node *
 stroll_slist_first(const struct stroll_slist * __restrict list)
 {
@@ -217,7 +216,7 @@ stroll_slist_first(const struct stroll_slist * __restrict list)
  * - stroll_slist_first()
  * - stroll_slist_last_entry()
  */
-static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __returns_nonull
 struct stroll_slist_node *
 stroll_slist_last(const struct stroll_slist * __restrict list)
 {
@@ -402,7 +401,7 @@ stroll_slist_nqueue_back(struct stroll_slist *                 list,
  * - stroll_slist_nqueue_front()
  * - stroll_slist_nqueue_back()
  */
-static inline __stroll_nonull(1) __stroll_nothrow
+static inline __stroll_nonull(1) __stroll_nothrow __returns_nonull
 struct stroll_slist_node *
 stroll_slist_dqueue_front(struct stroll_slist * __restrict list)
 {

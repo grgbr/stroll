@@ -366,7 +366,7 @@ stroll_dlist_remove_init(struct stroll_dlist_node * __restrict node)
  * - stroll_dlist_dqueue_back()
  * - stroll_dlist_init()
  */
-static inline __stroll_nonull(1) __stroll_nothrow
+static inline __stroll_nonull(1) __stroll_nothrow __returns_nonull
 struct stroll_dlist_node *
 stroll_dlist_dqueue_front(struct stroll_dlist_node * __restrict list)
 {
@@ -396,7 +396,7 @@ stroll_dlist_dqueue_front(struct stroll_dlist_node * __restrict list)
  * - stroll_dlist_dqueue_back_init()
  * - stroll_dlist_init()
  */
-static inline __stroll_nonull(1) __stroll_nothrow
+static inline __stroll_nonull(1) __stroll_nothrow __returns_nonull
 struct stroll_dlist_node *
 stroll_dlist_dqueue_front_init(struct stroll_dlist_node * __restrict list)
 {
@@ -425,7 +425,7 @@ stroll_dlist_dqueue_front_init(struct stroll_dlist_node * __restrict list)
  * - stroll_dlist_dqueue_front()
  * - stroll_dlist_init()
  */
-static inline __stroll_nonull(1) __stroll_nothrow
+static inline __stroll_nonull(1) __stroll_nothrow __returns_nonull
 struct stroll_dlist_node *
 stroll_dlist_dqueue_back(struct stroll_dlist_node * __restrict list)
 {
@@ -455,7 +455,7 @@ stroll_dlist_dqueue_back(struct stroll_dlist_node * __restrict list)
  * - stroll_dlist_dqueue_front_init()
  * - stroll_dlist_init()
  */
-static inline __stroll_nonull(1) __stroll_nothrow
+static inline __stroll_nonull(1) __stroll_nothrow __returns_nonull
 struct stroll_dlist_node *
 stroll_dlist_dqueue_back_init(struct stroll_dlist_node * __restrict list)
 {
