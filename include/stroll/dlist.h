@@ -814,9 +814,9 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
  * - stroll_dlist_init()
  */
 #define stroll_dlist_prev_entry(_entry, _member) \
-	dlist_entry(stroll_dlist_prev(&(_entry)->_member), \
-	            typeof(*(_entry)), \
-	            _member)
+	stroll_dlist_entry(stroll_dlist_prev(&(_entry)->_member), \
+	                   typeof(*(_entry)), \
+	                   _member)
 
 /**
  * Iterate over doubly linked list nodes.
@@ -1046,7 +1046,7 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
 #define stroll_dlist_foreach_prev_entry_safe(_head, _entry, _member, _tmp) \
 	for (_entry = stroll_dlist_entry((_head)->prev, \
 	                                 typeof(*(_entry)), _member), \
-	     _tmp = _entry; \
+	     _tmp = stroll_dlist_prev_entry(_entry, _member); \
 	     &(_entry)->_member != (_head); \
 	     _entry = _tmp, \
 	     _tmp = stroll_dlist_prev_entry(_tmp, _member))
