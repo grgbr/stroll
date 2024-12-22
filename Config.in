@@ -463,6 +463,7 @@ config STROLL_SLIST_MERGE_SORT_INSERT_THRESHOLD
 
 config STROLL_DLIST
 	bool "Doubly linked list"
+	select STROLL_PROVIDES_LIBS
 	default y
 	help
 	  Build Stroll library with support for doubly linked lists where
