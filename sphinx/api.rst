@@ -1063,24 +1063,24 @@ Algorithm selection rationales:
 Insert:
 * hprheap
 * pprheap, dprheap
-* rpheap
+* drpheap
 * dbnheap
 
 Extract:
 hprheap
 pprheap
 dprheap
-rpheap
+drpheap
 dbnheap
 
 Remove:  in order  / out of order
 dprheap
-            rpheap / pprheap
-           pprheap / rpheap
+           drpheap / pprheap
+           pprheap / drpheap
 dbnheap
 
 Promote:
-rpheap
+drpheap
 dprheap
 pprheap
 dbnheap
@@ -1088,13 +1088,13 @@ dbnheap
 Demote:
 dprheap
 pprheap
-rpheap
+drpheap
 dbnheap
 
 Conclusion:
 
 Insert/Extract only: hprheap
-Promote intensive (Dijkstra): rpheap
+Promote intensive (Dijkstra): drpheap
 Promote, demote, remove intensive: dprheap
 All round usage: dprheap (better promote/demote/remove), then pprheap (better extract and smaller footprint)
 

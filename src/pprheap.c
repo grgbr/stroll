@@ -107,6 +107,7 @@ stroll_pprheap_base_insert(struct stroll_pprheap_base * __restrict heap,
 
 	node->parent = NULL;
 	node->children[0] = &stroll_pprheap_plug;
+	node->children[1] = &stroll_pprheap_plug;
 
 	if (heap->root) {
 		stroll_pprheap_assert_root(heap->root);

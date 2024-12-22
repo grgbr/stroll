@@ -48,7 +48,7 @@ struct stroll_dprheap_base {
 	struct stroll_dprheap_node * root;
 };
 
-#define STROLL_DPRHEAP_BASE_INIT(_heap) \
+#define STROLL_DPRHEAP_BASE_INIT \
 	{ .root = NULL }
 
 struct stroll_dprheap_node {
@@ -148,7 +148,7 @@ struct stroll_dprheap {
 	{ \
 		.cnt     = 0, \
 		.nr      = _nr, \
-		.base    = STROLL_DPRHEAP_BASE_INIT((_heap).base), \
+		.base    = STROLL_DPRHEAP_BASE_INIT, \
 		.compare = _compare \
 	}
 
