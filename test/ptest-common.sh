@@ -1,3 +1,10 @@
+################################################################################
+# SPDX-License-Identifier: LGPL-3.0-only
+#
+# This file is part of Stroll.
+# Copyright (C) 2017-2024 Grégor Boirie <gregor.boirie@free.fr>
+################################################################################
+
 ECHOE="/bin/echo -e"
 
 error()

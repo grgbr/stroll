@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 #
 # This file is part of Stroll.
-# Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
+# Copyright (C) 2017-2024 Grégor Boirie <gregor.boirie@free.fr>
 ################################################################################
 
 test-cflags  := -Wall \
@@ -25,19 +25,21 @@ test-cflags  := -Wall \
 # This is required since we want stroll_assert_fail() defined into utest.c to
 # override stroll_assert_fail() defined into libstroll.so for assertions testing
 # purposes.
-utest-ldflags := $(test-cflags) \
-                 -L$(BUILDDIR)/../src \
-                 $(EXTRA_LDFLAGS) \
-                 -Wl,-z,start-stop-visibility=hidden \
-                 -Wl,-whole-archive $(BUILDDIR)/builtin_utest.a -Wl,-no-whole-archive \
-                 -lstroll
+utest-ldflags := \
+	$(test-cflags) \
+	-L$(BUILDDIR)/../src \
+	$(EXTRA_LDFLAGS) \
+	-Wl,-z,start-stop-visibility=hidden \
+	-Wl,-whole-archive $(BUILDDIR)/builtin_utest.a -Wl,-no-whole-archive \
+	-lstroll
 
-ptest-ldflags := $(test-cflags) \
-                 -L$(BUILDDIR)/../src \
-                 $(EXTRA_LDFLAGS) \
-                 -Wl,-whole-archive $(BUILDDIR)/builtin_ptest.a -Wl,-no-whole-archive \
-                 -Wl,-z,start-stop-visibility=hidden \
-                 -lstroll
+ptest-ldflags := \
+	$(test-cflags) \
+	-L$(BUILDDIR)/../src \
+	$(EXTRA_LDFLAGS) \
+	-Wl,-whole-archive $(BUILDDIR)/builtin_ptest.a -Wl,-no-whole-archive \
+	-Wl,-z,start-stop-visibility=hidden \
+	-lstroll
 
 ifneq ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
 test-cflags   := $(filter-out -DNDEBUG,$(test-cflags))

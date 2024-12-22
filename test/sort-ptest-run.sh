@@ -1,4 +1,10 @@
 #!/bin/sh -e
+################################################################################
+# SPDX-License-Identifier: LGPL-3.0-only
+#
+# This file is part of Stroll.
+# Copyright (C) 2017-2024 Grégor Boirie <gregor.boirie@free.fr>
+################################################################################
 
 SORT_PTEST_BIN="${BINDIR:-@@BINDIR@@}/stroll-sort-ptest"
 PTEST_DATA="${DATADIR:-@@DATADIR@@}/stroll"
