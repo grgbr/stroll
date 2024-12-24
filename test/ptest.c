@@ -435,6 +435,7 @@ strollpt_open_data(struct strollpt_data * __restrict data,
 		data->singles = be16toh(data->singles);
 		data->nr = be32toh(data->nr);
 		len = be16toh(len);
+		break;
 	}
 
 	if (data->order > 100) {
