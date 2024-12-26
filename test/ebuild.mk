@@ -133,7 +133,7 @@ build-check: $(BUILDDIR)/stroll-sort-ptest-run.sh \
              $(addprefix $(ptest_data_builddir)/,$(ptest-data-files))
 
 $(BUILDDIR)/stroll-sort-ptest-run.sh: $(SRCDIR)/sort-ptest-run.sh \
-                                       | $(BUILDDIR)/
+                                      | $(BUILDDIR)/
 	sed -e 's;@@BINDIR@@;$(BINDIR);g' \
 	    -e 's;@@DATADIR@@;$(DATADIR);g' \
 	    -e 's;@@LIBEXECDIR@@;$(LIBEXECDIR);g' \
