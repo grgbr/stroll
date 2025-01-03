@@ -528,6 +528,16 @@ config STROLL_DLIST_MERGE_SORT_INSERT_THRESHOLD
 	  Threshold that configures the switch of (sub-)lists merge sort to
 	  insertion sort to minize the number of merging passes.
 
+config STROLL_DLIST_KWMERGE_SORT
+	bool "K-way Merge sort"
+	depends on STROLL_DLIST
+	select STROLL_DLIST_MERGE_SORT
+	default y
+	help
+	  Build Stroll library with support for an optimized hybrid version of
+	  the k-way merge sort algorithm over doubly linked lists.
+	  See <stroll/dlist.h>.
+
 endif # STROLL_LIST
 
 # ex: ft=kconfig:

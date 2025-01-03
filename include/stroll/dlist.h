@@ -1282,4 +1282,24 @@ stroll_dlist_merge_sort(struct stroll_dlist_node * __restrict head,
 
 #endif /* defined(CONFIG_STROLL_DLIST_MERGE_SORT) */
 
+#if defined(CONFIG_STROLL_DLIST_KWMERGE_SORT)
+
+extern void
+stroll_dlist_kwmerge_presort(
+	struct stroll_dlist_node * const presort[__restrict_arr],
+	unsigned int                     nr,
+	stroll_dlist_cmp_fn *            compare,
+	void *                           data)
+	__stroll_nonull(1, 3);
+
+extern void
+stroll_dlist_kwmerge_sort(
+	struct stroll_dlist_node * const heads[__restrict_arr],
+	unsigned int                     nr,
+	stroll_dlist_cmp_fn *            compare,
+	void *                           data)
+	__stroll_nonull(1, 3);
+
+#endif /* defined(CONFIG_STROLL_DLIST_KWMERGE_SORT) */
+
 #endif /* _STROLL_DLIST_H */
