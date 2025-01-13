@@ -65,6 +65,7 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_DLIST`
 * :c:macro:`CONFIG_STROLL_DLIST_BUBBLE_SORT`
 * :c:macro:`CONFIG_STROLL_DLIST_INSERT_SORT`
+* :c:macro:`CONFIG_STROLL_DLIST_KMERGE_SORT`
 * :c:macro:`CONFIG_STROLL_DLIST_MERGE_SORT`
 * :c:macro:`CONFIG_STROLL_DLIST_MERGE_SORT_INSERT_THRESHOLD`
 * :c:macro:`CONFIG_STROLL_DLIST_SELECT_SORT`
@@ -1050,6 +1051,27 @@ build configuration option enabled, the Stroll_ library provides support for
    Implemented for reference only: **DO NOT USE IT**. Refer to
    `Sorting lists`_ for more informations related to algorithm selection.
 
+   
+.. index:: sort;list k-way merge sort,
+           k-way merge sort;list,
+           list;k-way merge sort
+
+List k-way merge sort
+*********************
+
+The Stroll_ library provides support for sorting multiple :term:`linked lists`
+thanks to a `K-way merge`_ strategy.
+
+When compiled with the :c:macro:`CONFIG_STROLL_DLIST_KWMERGE_SORT` build
+configuration option enabled, the Stroll_ library provides support for
+`K-way merge`_ sort algorithm over `doubly linked lists`_ thanks to:
+
+* :c:func:`stroll_dlist_kwmerge_presort`,
+* :c:func:`stroll_dlist_kwmerge_sort`.
+
+Lists are merged in sorting order by pairs to maximize the chances of merging
+lists of similar length to minimize the number of performed comparisons.
+List nodes are merged according to the `list merge sort`_ algorithm.
 
 .. index:: heap
 
@@ -1212,6 +1234,11 @@ CONFIG_STROLL_DLIST_INSERT_SORT
 *******************************
 
 .. doxygendefine:: CONFIG_STROLL_DLIST_INSERT_SORT
+
+CONFIG_STROLL_DLIST_KWMERGE_SORT
+*******************************
+
+.. doxygendefine:: CONFIG_STROLL_DLIST_KWMERGE_SORT
 
 CONFIG_STROLL_DLIST_MERGE_SORT
 *******************************
@@ -2472,15 +2499,25 @@ stroll_dlist_insert_sort
 
 .. doxygenfunction:: stroll_dlist_insert_sort
 
-stroll_dlist_merge_sort
-***********************
+stroll_dlist_kwmerge_presort
+****************************
 
-.. doxygenfunction:: stroll_dlist_merge_sort
+.. doxygenfunction:: stroll_dlist_kwmerge_presort
+
+stroll_dlist_kwmerge_sort
+*************************
+
+.. doxygenfunction:: stroll_dlist_kwmerge_sort
 
 stroll_dlist_merge_presort
 **************************
 
 .. doxygenfunction:: stroll_dlist_merge_presort
+
+stroll_dlist_merge_sort
+***********************
+
+.. doxygenfunction:: stroll_dlist_merge_sort
 
 stroll_dlist_move_after
 ***********************
@@ -2804,15 +2841,15 @@ stroll_slist_last
 
 .. doxygenfunction:: stroll_slist_last
 
-stroll_slist_merge_sort
-***********************
-
-.. doxygenfunction:: stroll_slist_merge_sort
-
 stroll_slist_merge_presort
 **************************
 
 .. doxygenfunction:: stroll_slist_merge_presort
+
+stroll_slist_merge_sort
+***********************
+
+.. doxygenfunction:: stroll_slist_merge_sort
 
 stroll_slist_move
 *****************
