@@ -1251,9 +1251,9 @@ stroll_dlist_merge_presort(struct stroll_dlist_node * __restrict result,
 /**
  * Sort specified doubly linked list according to an hybrid merge sort scheme.
  *
- * @param[inout] head     Head of list to sort.
- * @param[in]    compare  @p head list nodes comparison function.
- * @param[inout] data     Optional arbitrary user data.
+ * @param[inout] head    Head of list to sort.
+ * @param[in]    compare @p head list nodes comparison function.
+ * @param[inout] data    Optional arbitrary user data.
  *
  * Sort the @p list using the @p compare comparison function according to
  * the @rstlnk{List merge sort} algorithm.
@@ -1288,10 +1288,10 @@ stroll_dlist_merge_sort(struct stroll_dlist_node * __restrict head,
  * K-way sort specified pre-sorted doubly linked lists according to an hybrid
  * merge sort scheme.
  *
- * @param[in]    presort  Array of pre-sorted lists to sort.
- * @param[in]    nr       @p presort number of elements.
- * @param[in]    compare  @p head list nodes comparison function.
- * @param[inout] data     Optional arbitrary user data.
+ * @param[in]    presort Array of pre-sorted lists to sort.
+ * @param[in]    nr      @p presort number of elements.
+ * @param[in]    compare @p head list nodes comparison function.
+ * @param[inout] data    Optional arbitrary user data.
  *
  * Merge and sort all pre-sorted stroll_dlist_node lists found into @p presort
  * and store the result into the list located at `presort[0]` using the @p
@@ -1300,6 +1300,10 @@ stroll_dlist_merge_sort(struct stroll_dlist_node * __restrict head,
  *
  * @p presort *MUST* contain non empty stroll_dlist_node lists already in sorted
  * order !
+ *
+ * Upon return, all stroll_dlist_node lists found into @p presort but the first
+ * one (located at `presort[0]`) are left in an undefined state. Caller should
+ * initialize them again by calling stroll_dlist_init() before further usage.
  *
  * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p list elements.
@@ -1333,16 +1337,20 @@ stroll_dlist_kwmerge_presort(
  * K-way sort specified unsorted doubly linked lists according to an hybrid
  * merge sort scheme.
  *
- * @param[in]    heads    Array of unsorted lists to sort.
- * @param[in]    nr       @p heads number of elements.
- * @param[in]    compare  @p head list nodes comparison function.
- * @param[inout] data     Optional arbitrary user data.
+ * @param[in]    heads   Array of unsorted lists to sort.
+ * @param[in]    nr      @p heads number of elements.
+ * @param[in]    compare @p head list nodes comparison function.
+ * @param[inout] data    Optional arbitrary user data.
  *
  * Merge and sort all stroll_dlist_node lists found into @p heads and store the
  * result into the list located at `heads[0]` using the @p compare comparison
  * function according to a @rstlnk{List k-way merge sort} strategy.
  *
  * @p heads *MUST* contain non empty stroll_dlist_node lists !
+ *
+ * Upon return, all stroll_dlist_node lists found into @p heads but the first
+ * one (located at `heads[0]`) are left in an undefined state. Caller should
+ * initialize them again by calling stroll_dlist_init() before further usage.
  *
  * The first 2 arguments passed to the @p compare routine both points to
  * distinct @p list elements.
