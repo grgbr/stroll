@@ -75,6 +75,7 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_SLIST`
 * :c:macro:`CONFIG_STROLL_SLIST_BUBBLE_SORT`
 * :c:macro:`CONFIG_STROLL_SLIST_INSERT_SORT`
+* :c:macro:`CONFIG_STROLL_SLIST_KWMERGE_SORT`
 * :c:macro:`CONFIG_STROLL_SLIST_MERGE_SORT`
 * :c:macro:`CONFIG_STROLL_SLIST_MERGE_SORT_INSERT_THRESHOLD`
 * :c:macro:`CONFIG_STROLL_SLIST_SELECT_SORT`
@@ -1062,8 +1063,15 @@ List k-way merge sort
 The Stroll_ library provides support for sorting multiple :term:`linked lists`
 thanks to a `K-way merge`_ strategy.
 
-When compiled with the :c:macro:`CONFIG_STROLL_DLIST_KWMERGE_SORT` build
+When compiled with the :c:macro:`CONFIG_STROLL_SLIST_KWMERGE_SORT` build
 configuration option enabled, the Stroll_ library provides support for
+`K-way merge`_ sort algorithm over `singly linked lists`_ thanks to:
+
+* :c:func:`stroll_slist_kwmerge_presort`,
+* :c:func:`stroll_slist_kwmerge_sort`.
+
+In addition, when compiled with the :c:macro:`CONFIG_STROLL_DLIST_KWMERGE_SORT`
+build configuration option enabled, the Stroll_ library provides support for
 `K-way merge`_ sort algorithm over `doubly linked lists`_ thanks to:
 
 * :c:func:`stroll_dlist_kwmerge_presort`,
@@ -1286,6 +1294,11 @@ CONFIG_STROLL_SLIST_INSERT_SORT
 *******************************
 
 .. doxygendefine:: CONFIG_STROLL_SLIST_INSERT_SORT
+
+CONFIG_STROLL_SLIST_KWMERGE_SORT
+********************************
+
+.. doxygendefine:: CONFIG_STROLL_SLIST_KWMERGE_SORT
 
 CONFIG_STROLL_SLIST_MERGE_SORT
 ******************************
@@ -2835,6 +2848,16 @@ stroll_slist_insert_sort
 ************************
 
 .. doxygenfunction:: stroll_slist_insert_sort
+
+stroll_slist_kwmerge_presort
+****************************
+
+.. doxygenfunction:: stroll_slist_kwmerge_presort
+
+stroll_slist_kwmerge_sort
+*************************
+
+.. doxygenfunction:: stroll_slist_kwmerge_sort
 
 stroll_slist_last
 *****************

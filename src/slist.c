@@ -544,3 +544,61 @@ stroll_slist_merge_sort(struct stroll_slist * __restrict list,
 }
 
 #endif /* defined(CONFIG_STROLL_SLIST_MERGE_SORT) */
+
+#if defined(CONFIG_STROLL_SLIST_KWMERGE_SORT)
+
+void
+stroll_slist_kwmerge_presort(
+	struct stroll_slist * const presorts[__restrict_arr],
+	unsigned int                nr,
+	stroll_slist_cmp_fn *       compare,
+	void *                      data)
+{
+	stroll_slist_assert_api(presorts);
+	stroll_slist_assert_api(nr);
+	stroll_slist_assert_api(compare);
+
+	unsigned int p;
+
+#if defined(CONFIG_STROLL_ASSERT_API)
+	for (p = 0; p < nr; p++) {
+		stroll_slist_assert_api(presorts[p]);
+		stroll_slist_assert_api(!stroll_slist_empty(presorts[p]));
+	}
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
+	for (p = 1; p < nr; p <<= 1) {
+		unsigned int h;
+
+		for (h = 0; (h + p) < nr; h += p << 1)
+			stroll_slist_merge_presort(presorts[h],
+			                           presorts[h + p],
+			                           compare,
+			                           data);
+	}
+}
+
+void
+stroll_slist_kwmerge_sort(
+	struct stroll_slist * const heads[__restrict_arr],
+	unsigned int                nr,
+	stroll_slist_cmp_fn *       compare,
+	void *                      data)
+{
+	stroll_slist_assert_api(heads);
+	stroll_slist_assert_api(nr);
+	stroll_slist_assert_api(compare);
+
+	unsigned int h;
+
+	for (h = 0; h < nr; h++) {
+		stroll_slist_assert_api(heads[h]);
+		stroll_slist_assert_api(!stroll_slist_empty(heads[h]));
+
+		stroll_slist_merge_sort(heads[h], compare, data);
+	}
+
+	stroll_slist_kwmerge_presort(heads, nr, compare, data);
+}
+
+#endif /* defined(CONFIG_STROLL_SLIST_KWMERGE_SORT) */
