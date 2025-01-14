@@ -1324,6 +1324,10 @@ stroll_dlist_merge_sort(struct stroll_dlist_node * __restrict head,
  *   more empty stroll_dlist_node head(s).
  * - Behavior is undefined when called with a @p presort array refering to
  *   unsorted stroll_dlist_node head(s).
+ *
+ * @see
+ * - stroll_dlist_kwmerge_sort()
+ * - stroll_dlist_merge_presort()
  */
 extern void
 stroll_dlist_kwmerge_presort(
@@ -1369,6 +1373,10 @@ stroll_dlist_kwmerge_presort(
  * - Behavior is undefined when called with a zero @p nr.
  * - Behavior is undefined when called with a @p heads array refering to 1 or
  *   more empty stroll_dlist_node head(s).
+ *
+ * @see
+ * - stroll_dlist_kwmerge_presort()
+ * - stroll_dlist_merge_sort()
  */
 extern void
 stroll_dlist_kwmerge_sort(

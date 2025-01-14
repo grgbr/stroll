@@ -904,6 +904,10 @@ stroll_slist_merge_sort(struct stroll_slist * __restrict list,
  *   more empty stroll_slist head(s).
  * - Behavior is undefined when called with a @p presort array refering to
  *   unsorted stroll_slist head(s).
+ *
+ * @see
+ * - stroll_slist_kwmerge_sort()
+ * - stroll_slist_merge_presort()
  */
 extern void
 stroll_slist_kwmerge_presort(
@@ -949,6 +953,10 @@ stroll_slist_kwmerge_presort(
  * - Behavior is undefined when called with a zero @p nr.
  * - Behavior is undefined when called with a @p heads array refering to 1 or
  *   more empty stroll_slist head(s).
+ *
+ * @see
+ * - stroll_slist_kwmerge_presort()
+ * - stroll_slist_merge_sort()
  */
 extern void
 stroll_slist_kwmerge_sort(

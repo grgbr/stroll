@@ -14,6 +14,13 @@ Glossary
       computational and space (i.e., memory) *complexity* using the usual
       `Big O`_ notation. See `Sorting algorithms`_.
 
+   heap
+      A tree based data structure satisfying the heap property, stating that
+      every element of the tree is larger (max-heap) / smaller (min-heap) than
+      any of its descendants if they exists. These are commonly used to
+      implement priority queues, heap sort, Dijkstra's shortest path
+      algorithm...
+
    in-place
       Sorting algorithms known to be *in-place* only require a constant amount
       of additional memory space to operate. See `Sorting algorithms`_.

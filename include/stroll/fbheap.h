@@ -71,11 +71,43 @@ _stroll_fbheap_build(void * __restrict     array,
                      void *                data)
 	__stroll_nonull(1, 4);
 
+/**
+ * Fixed sized array based binary heap.
+ *
+ * An opaque structure holding a conventional array based binary heap which
+ * holds a maximum number of constant sized elements fixed at instantiation
+ * time.
+ */
 struct stroll_fbheap {
+	/**
+	 * @internal
+	 *
+	 * Count of elements stored into the heap array.
+	 */
 	unsigned int          cnt;
+	/**
+	 * @internal
+	 *
+	 * Maximum number of elements this heap array may hold.
+	 */
 	unsigned int          nr;
+	/**
+	 * @internal
+	 *
+	 * Size of a single heap array element in bytes.
+	 */
 	size_t                size;
+	/**
+	 * @internal
+	 *
+	 * Memory area where heap array elements are stored.
+	 */
 	void *                elems;
+	/**
+	 * @internal
+	 *
+	 * Heap array element comparison function hook.
+	 */
 	stroll_array_cmp_fn * compare;
 };
 
@@ -87,6 +119,20 @@ struct stroll_fbheap {
 	stroll_fbheap_assert_api((_heap)->elems); \
 	stroll_fbheap_assert_api((_heap)->compare)
 
+/**
+ * stroll_fbheap constant initializer.
+ *
+ * @param _array   Memory area where heap array elements are to be stored.
+ * @param _nr      Maximum number of elements this heap array may hold.
+ * @param _size    Size of a single heap array element in bytes.
+ * @param _compare Heap array element comparison function.
+ *
+ * Initialize a stroll_fbheap at compile time.
+ *
+ * @see
+ * - stroll_fbheap_setup()
+ * - stroll_fbheap_create()
+ */
 #define STROLL_FBHEAP_INIT(_array, _nr, _size, _compare) \
 	{ \
 		.cnt     = 0, \
@@ -96,6 +142,18 @@ struct stroll_fbheap {
 		.compare = _compare \
 	}
 
+/**
+ * Return current count of elements stored in a stroll_fbheap.
+ *
+ * @param[in] heap stroll_fbheap.
+ *
+ * @return Count of present elements.
+ *
+ * @see
+ * - stroll_fbheap_nr()
+ * - stroll_fbheap_isempty()
+ * - stroll_fbheap_isfull()
+ */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 unsigned int
 stroll_fbheap_count(const struct stroll_fbheap * __restrict heap)
@@ -105,6 +163,18 @@ stroll_fbheap_count(const struct stroll_fbheap * __restrict heap)
 	return heap->cnt;
 }
 
+/**
+ * Return maximum number of elements that a stroll_fbheap may hold.
+ *
+ * @param[in] heap stroll_fbheap.
+ *
+ * @return Maximum number of elements that may be stored.
+ *
+ * @see
+ * - stroll_fbheap_count()
+ * - stroll_fbheap_isempty()
+ * - stroll_fbheap_isfull()
+ */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 unsigned int
 stroll_fbheap_nr(const struct stroll_fbheap * __restrict heap)
@@ -114,6 +184,19 @@ stroll_fbheap_nr(const struct stroll_fbheap * __restrict heap)
 	return heap->nr;
 }
 
+/**
+ * Return wether a stroll_fbheap contains elements or not.
+ *
+ * @param[in] heap stroll_fbheap.
+ *
+ * @retval true  Empty
+ * @retval false Not empty
+ *
+ * @see
+ * - stroll_fbheap_count()
+ * - stroll_fbheap_nr()
+ * - stroll_fbheap_isfull()
+ */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 bool
 stroll_fbheap_isempty(const struct stroll_fbheap * __restrict heap)
@@ -123,6 +206,19 @@ stroll_fbheap_isempty(const struct stroll_fbheap * __restrict heap)
 	return !heap->cnt;
 }
 
+/**
+ * Return wether a stroll_fbheap is full or not.
+ *
+ * @param[in] heap stroll_fbheap.
+ *
+ * @retval true  Full
+ * @retval false Not full
+ *
+ * @see
+ * - stroll_fbheap_count()
+ * - stroll_fbheap_nr()
+ * - stroll_fbheap_isempty()
+ */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 bool
 stroll_fbheap_isfull(const struct stroll_fbheap * __restrict heap)
@@ -132,6 +228,14 @@ stroll_fbheap_isfull(const struct stroll_fbheap * __restrict heap)
 	return heap->cnt == heap->nr;
 }
 
+/**
+ * Remove all elements a stroll_fbheap.
+ *
+ * @param[in] heap stroll_fbheap.
+ *
+ * @see
+ * - stroll_fbheap_build()
+ */
 static inline __stroll_nonull(1) __stroll_nothrow
 void
 stroll_fbheap_clear(struct stroll_fbheap * __restrict heap)

@@ -18,6 +18,8 @@
 .. _bentley-mcilroy:    https://sedgewick.io/wp-content/uploads/2022/03/2002QuicksortIsOptimal.pdf
 .. _median-of-three:    https://en.wikipedia.org/wiki/Quicksort#Choice_of_pivot
 .. _linked lists:       https://en.wikipedia.org/wiki/Linked_list
+.. _binary heap:        https://en.wikipedia.org/wiki/Binary_heap
+.. _weak heap:          https://en.wikipedia.org/wiki/Weak_heap
    
 .. |adaptive|           replace:: :term:`adaptive`
 .. |stable|             replace:: :term:`stable`

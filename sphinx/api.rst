@@ -69,7 +69,9 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_DLIST_MERGE_SORT`
 * :c:macro:`CONFIG_STROLL_DLIST_MERGE_SORT_INSERT_THRESHOLD`
 * :c:macro:`CONFIG_STROLL_DLIST_SELECT_SORT`
+* :c:macro:`CONFIG_STROLL_FBHEAP`
 * :c:macro:`CONFIG_STROLL_FBMAP`
+* :c:macro:`CONFIG_STROLL_FWHEAP`
 * :c:macro:`CONFIG_STROLL_LVSTR`
 * :c:macro:`CONFIG_STROLL_POW2`
 * :c:macro:`CONFIG_STROLL_SLIST`
@@ -1088,6 +1090,9 @@ Heaps
 
 Stroll_ provides support for several kinds of :term:`heap`: 
 
+* `Array binary heap`_,
+* `Array weak heap`_.
+
 Algorithm selection rationales:
 
 Insert:
@@ -1128,7 +1133,55 @@ Promote intensive (Dijkstra): drpheap
 Promote, demote, remove intensive: dprheap
 All round usage: dprheap (better promote/demote/remove), then pprheap (better extract and smaller footprint)
 
-.. todo:: complete documentation
+Array binary heap
+-----------------
+
+When compiled with the :c:macro:`CONFIG_STROLL_FBHEAP` build configuration
+option enabled, the Stroll_ library provides support for the array based
+representation of a `Binary heap`_ data structure.
+
+Thanks to :c:struct:`stroll_fbheap`, keys may be stored in a contiguous array
+that satisfies the :term:`heap` property. The array may hold a maximum number
+of constant sized elements fixed at instantiation time.
+
+The following API is available:
+
+.. hlist::
+
+   * Initialization:
+
+      * :c:macro:`STROLL_FBHEAP_INIT()`
+      * :c:func:`stroll_fbheap_setup()`
+      * :c:func:`stroll_fbheap_create()`
+
+   * Accessing / Modifying content:
+     
+      * :c:func:`stroll_fbheap_build()`
+      * :c:func:`stroll_fbheap_clear()`
+      * :c:func:`stroll_fbheap_extract()`
+      * :c:func:`stroll_fbheap_insert()`
+      * :c:func:`stroll_fbheap_peek()`
+
+   * Capacity :
+     
+      * :c:func:`stroll_fbheap_count()`
+      * :c:func:`stroll_fbheap_isempty()`
+      * :c:func:`stroll_fbheap_isfull()`
+      * :c:func:`stroll_fbheap_nr()`
+        
+   * Finalization:
+
+      * :c:func:`stroll_fbheap_destroy()`
+
+Array Weak heap
+---------------
+
+When compiled with the :c:macro:`CONFIG_STROLL_FWHEAP` build configuration
+option enabled, the Stroll_ library provides support for the array based
+representation of a `Weak heap`_ thanks to the :c:struct:`stroll_fwheap`
+data structure.
+
+.. todo:: Complete me!!
 
 .. index:: API reference, reference
 
@@ -1263,10 +1316,20 @@ CONFIG_STROLL_DLIST_SELECT_SORT
 
 .. doxygendefine:: CONFIG_STROLL_DLIST_SELECT_SORT
 
+CONFIG_STROLL_FBHEAP
+********************
+
+.. doxygendefine:: CONFIG_STROLL_FBHEAP
+
 CONFIG_STROLL_FBMAP
 *******************
 
 .. doxygendefine:: CONFIG_STROLL_FBMAP
+
+CONFIG_STROLL_FWHEAP
+********************
+
+.. doxygendefine:: CONFIG_STROLL_FWHEAP
 
 CONFIG_STROLL_LVSTR
 *******************
@@ -1482,6 +1545,11 @@ STROLL_DLIST_INIT
 *****************
 
 .. doxygendefine:: STROLL_DLIST_INIT
+
+STROLL_FBHEAP_INIT
+******************
+
+.. doxygendefine:: STROLL_FBHEAP_INIT
 
 STROLL_LVSTR_INIT
 *****************
@@ -1779,6 +1847,11 @@ stroll_dlist_node
 
 .. doxygenstruct:: stroll_dlist_node
 
+stroll_fbheap
+*************
+
+.. doxygenstruct:: stroll_fbheap
+
 stroll_fbmap
 ************
 
@@ -1788,6 +1861,11 @@ stroll_fbmap_iter
 *****************
 
 .. doxygenstruct:: stroll_fbmap_iter
+
+stroll_fwheap
+*************
+
+.. doxygenstruct:: stroll_fwheap
 
 stroll_lvstr
 ************
@@ -2599,6 +2677,66 @@ stroll_dlist_withdraw
 *********************
 
 .. doxygenfunction:: stroll_dlist_withdraw
+
+stroll_fbheap_build
+*******************
+
+.. doxygenfunction:: stroll_fbheap_build
+
+stroll_fbheap_clear
+*******************
+
+.. doxygenfunction:: stroll_fbheap_clear
+
+stroll_fbheap_count
+*******************
+
+.. doxygenfunction:: stroll_fbheap_count
+
+stroll_fbheap_create
+********************
+
+.. doxygenfunction:: stroll_fbheap_create
+
+stroll_fbheap_destroy
+*********************
+
+.. doxygenfunction:: stroll_fbheap_destroy
+
+stroll_fbheap_extract
+*********************
+
+.. doxygenfunction:: stroll_fbheap_extract
+
+stroll_fbheap_insert
+********************
+
+.. doxygenfunction:: stroll_fbheap_insert
+
+stroll_fbheap_isempty
+*********************
+
+.. doxygenfunction:: stroll_fbheap_isempty
+
+stroll_fbheap_isfull
+********************
+
+.. doxygenfunction:: stroll_fbheap_isfull
+
+stroll_fbheap_nr
+****************
+
+.. doxygenfunction:: stroll_fbheap_nr
+
+stroll_fbheap_peek
+******************
+
+.. doxygenfunction:: stroll_fbheap_peek
+
+stroll_fbheap_setup
+*******************
+
+.. doxygenfunction:: stroll_fbheap_setup
 
 stroll_fbmap_clear
 ******************

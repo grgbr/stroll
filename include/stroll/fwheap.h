@@ -96,12 +96,49 @@ _stroll_fwheap_free_rbits(unsigned long * rbits)
 	free(rbits);
 }
 
+/**
+ * Fixed sized array based weak heap.
+ *
+ * An opaque structure holding an array based weak heap which maximum size is
+ * fixed at instantiation time.
+ */
 struct stroll_fwheap {
+	/**
+	 * @internal
+	 *
+	 * Count of elements stored into the heap array.
+	 */
 	unsigned int          cnt;
+	/**
+	 * @internal
+	 *
+	 * Maximum number of elements this heap array may hold.
+	 */
 	unsigned int          nr;
+	/**
+	 * @internal
+	 *
+	 * Size of a single heap array element in bytes.
+	 */
 	size_t                size;
+	/**
+	 * @internal
+	 *
+	 * Internal array of "reverse bits" used to find so-called
+	 * "distinguished ancestors" during weak heap operations.
+	 */
 	void *                rbits;
+	/**
+	 * @internal
+	 *
+	 * Memory area where heap array elements are stored.
+	 */
 	void *                elems;
+	/**
+	 * @internal
+	 *
+	 * Heap array element comparison function hook.
+	 */
 	stroll_array_cmp_fn * compare;
 };
 
