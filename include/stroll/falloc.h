@@ -74,6 +74,7 @@ union stroll_falloc_chunk;
 
 extern void *
 stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
+	__stroll_nonull(1)
 	__malloc(stroll_falloc_free, 2)
 	__assume_align(sizeof(union stroll_falloc_chunk *))
 	__stroll_nothrow

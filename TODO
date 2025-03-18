@@ -1,8 +1,17 @@
-move libraries using old fbmp Utils API to Stroll's fbmap
-pairing heap:
-* low level API (without count / nr)
-* high level API (with count / nr)
-* build / make heap: implement Tarjan logic
+Implementation
+==============
 
-document:
-stroll_dlist_kwmerge_sort(), stroll_dlist_kwmerge_presort
+* hash list
+* move hwheel timer to using hash list instead of dlist
+* avl tree
+* red-black tree
+* tournament trees (win and loose)
+* k-way sorting using tournament trees
+* array k-way merge algos
+
+Documentation
+=============
+
+* stroll_dlist_kwmerge_sort(), stroll_dlist_kwmerge_presort ??
+* falloc
+* heaps

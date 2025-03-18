@@ -188,34 +188,39 @@ stroll_falloc_free(struct stroll_falloc * __restrict alloc,
 {
 	stroll_falloc_assert_alloc_api(alloc);
 
-	struct stroll_falloc_block * blk;
-	union stroll_falloc_chunk *  chnk;
+	if (chunk) {
+		struct stroll_falloc_block * blk;
+		union stroll_falloc_chunk *  chnk;
 
-	blk = (struct stroll_falloc_block *)
-	      stroll_align_lower((unsigned long)chunk, alloc->block_al);
-	chnk = (union stroll_falloc_chunk *)chunk;
+		blk = (struct stroll_falloc_block *)
+		      stroll_align_lower((unsigned long)chunk, alloc->block_al);
+		chnk = (union stroll_falloc_chunk *)chunk;
 
-	/*
-	 * Insert chunk to free at the head of free chunk list.
-	 */
-	chnk->next_free = blk->next_free;
-	blk->next_free = chnk;
-
-	/*
-	 * TODO:
-	 * - implement an hysteresis logic ??
-	 * - an alternate free block list ??
-	 */
-	blk->busy_cnt--;
-	if ((blk->busy_cnt + 1) == alloc->chunk_nr)
 		/*
-		 * Block is not full: move it to block list head to maximize the
-		 * its fill ratio.
+		 * Insert chunk to free at the head of free chunk list.
 		 */
-		stroll_dlist_move_after(&alloc->blocks, &blk->node);
-	else if (!blk->busy_cnt)
-		/* This block contains no more allocated chunks: free it. */
-		stroll_falloc_free_block(blk);
+		chnk->next_free = blk->next_free;
+		blk->next_free = chnk;
+
+		/*
+		 * TODO:
+		 * - implement an hysteresis logic ??
+		 * - an alternate free block list ??
+		 */
+		blk->busy_cnt--;
+		if ((blk->busy_cnt + 1) == alloc->chunk_nr)
+			/*
+			 * Block is not full: move it to block list head to
+			 * maximize the its fill ratio.
+			 */
+			stroll_dlist_move_after(&alloc->blocks, &blk->node);
+		else if (!blk->busy_cnt)
+			/*
+			 * This block contains no more allocated chunks: free
+			 * it.
+			 */
+			stroll_falloc_free_block(blk);
+	}
 }
 
 void
