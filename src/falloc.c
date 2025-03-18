@@ -33,105 +33,104 @@
 	stroll_falloc_assert_api(_alloc); \
 	stroll_falloc_assert_api( \
 		stroll_aligned((_alloc)->chunk_sz, \
-		               sizeof_member(struct stroll_falloc_block, \
+		               sizeof_member(union stroll_falloc_chunk, \
 		                             next_free))); \
+	stroll_falloc_assert_api((_alloc)->chunk_nr > 1); \
 	stroll_falloc_assert_api( \
 		(_alloc)->block_sz == \
-		(1UL << stroll_pow2_upul((_alloc)->chunk_nr * \
-		                         (_alloc)->chunk_sz)))
+		(sizeof(struct stroll_falloc_block) + \
+		 ((_alloc)->chunk_nr * (_alloc)->chunk_sz))); \
+	stroll_falloc_assert_api( \
+		(_alloc)->block_al == \
+		(1UL << stroll_pow2_upul((_alloc)->block_sz)))
 
 #define stroll_falloc_assert_alloc_intern(_alloc) \
 	stroll_falloc_assert_intern(_alloc); \
 	stroll_falloc_assert_intern( \
 		stroll_aligned((_alloc)->chunk_sz, \
-		               sizeof_member(struct stroll_falloc_block, \
+		               sizeof_member(union stroll_falloc_chunk, \
 		                             next_free))); \
+	stroll_falloc_assert_intern((_alloc)->chunk_nr > 1); \
 	stroll_falloc_assert_intern( \
 		(_alloc)->block_sz == \
-		(1UL << stroll_pow2_upul((_alloc)->chunk_nr * \
-		                         (_alloc)->chunk_sz)))
+		(sizeof(struct stroll_falloc_block) + \
+		 ((_alloc)->chunk_nr * (_alloc)->chunk_sz))); \
+	stroll_falloc_assert_intern( \
+		(_alloc)->block_al == \
+		(1UL << stroll_pow2_upul((_alloc)->block_sz)))
+
+union stroll_falloc_chunk {
+	union stroll_falloc_chunk * next_free;
+	char                        data[0];
+};
 
 struct stroll_falloc_block {
-	unsigned int             busy_cnt;  /* Count of allocated chunks */
-	void **                  next_free; /* Pointer to next free chunk */
-	struct stroll_dlist_node node;
+	unsigned int                busy_cnt;  /* Count of allocated chunks */
+	union stroll_falloc_chunk * next_free; /* Pointer to next free chunk */
+	struct stroll_dlist_node    node;
+	union stroll_falloc_chunk   chunks[0];
 };
 
 #define stroll_falloc_assert_block(_block, _alloc) \
 	stroll_falloc_assert_intern(_block); \
 	stroll_falloc_assert_alloc_intern(alloc); \
-	stroll_falloc_assert_intern((void *)(_block) >= \
-	                            (void *)alloc->block_sz); \
 	stroll_falloc_assert_intern( \
-		stroll_aligned((unsigned long)(_block), \
-		               (unsigned long)(_alloc)->block_sz)); \
+		stroll_aligned((unsigned long)(_block), (_alloc)->block_al)); \
+	stroll_falloc_assert_intern((_block)->busy_cnt); \
 	stroll_falloc_assert_intern((_block)->busy_cnt <= (_alloc)->chunk_nr); \
 	stroll_falloc_assert_intern( \
 		!(_block)->next_free || \
-		(((const void *)(_block)->next_free >= \
-		  stroll_falloc_chunks_from_block(_block, _alloc)) && \
-		  ((const void *)(_block)->next_free < \
-		   (const void *)(_block))))
+		((_block)->next_free >= (_block)->chunks)); \
+	stroll_falloc_assert_intern( \
+		!(_block)->next_free || \
+		((const void *)(_block)->next_free < \
+		 ((const void *)(_block)->chunks + \
+		  ((_alloc)->chunk_nr * (_alloc)->chunk_sz))))
 
-static
-void *
-stroll_falloc_chunks_from_block(
-	const struct stroll_falloc_block * __restrict block,
-	const struct stroll_falloc * __restrict       alloc)
-{
-	stroll_falloc_assert_intern(alloc);
-	stroll_falloc_assert_intern((const void *)block >=
-	                            (const void *)alloc->block_sz);
-	stroll_falloc_assert_intern(stroll_aligned((unsigned long)block,
-	                                           (unsigned long)
-	                                           alloc->block_sz));
-
-STROLL_IGNORE_WARN("-Wcast-qual")
-	return (void *)block - alloc->block_sz;
-STROLL_RESTORE_WARN
-}
-
-static
+static __stroll_nonull(1)
+       __malloc(stroll_falloc_free, 2)
+       __assume_align(sizeof(union stroll_falloc_chunk *))
+       __stroll_nothrow
+       __warn_result
 void *
 stroll_falloc_alloc_blockn_chunk(struct stroll_falloc * __restrict alloc)
 {
 	stroll_falloc_assert_alloc_intern(alloc);
 
-	void *                       chunks;
 	struct stroll_falloc_block * blk;
 	int                          err;
 
-	err = posix_memalign(&chunks,
-	                     alloc->block_sz,
-	                     alloc->block_sz + sizeof(*blk));
+	err = posix_memalign((void **)&blk, alloc->block_al, alloc->block_sz);
 	if (err) {
 		stroll_falloc_assert_intern(err == ENOMEM);
 		errno = err;
 		return NULL;
 	}
 
-	blk = (struct stroll_falloc_block *)(chunks + alloc->block_sz);
 	blk->busy_cnt = 1;
 	blk->next_free = NULL;
 	stroll_dlist_append(&alloc->blocks, &blk->node);
 
-	return chunks;
+	return blk->chunks;
 }
 
-static
+static __stroll_nonull(1) __stroll_nothrow
 void
-stroll_falloc_free_block(struct stroll_falloc_block * __restrict block,
-                         const struct stroll_falloc * __restrict alloc)
+stroll_falloc_free_block(struct stroll_falloc_block * __restrict block)
 {
-	stroll_falloc_assert_block(block, alloc);
+	stroll_falloc_assert_intern(block);
 
 	stroll_dlist_remove(&block->node);
-	free(stroll_falloc_chunks_from_block(block, alloc));
+	free(block);
 }
 
-static
+static __stroll_nonull(1, 2)
+       __malloc(stroll_falloc_free, 2)
+       __assume_align(sizeof(union stroll_falloc_chunk *))
+       __stroll_nothrow
+       __warn_result
 void *
-stroll_falloc_next_free_block_chunk(
+stroll_falloc_next_free_chunk(
 	struct stroll_falloc_block * __restrict block,
 	const struct stroll_falloc * __restrict alloc)
 {
@@ -142,11 +141,16 @@ stroll_falloc_next_free_block_chunk(
 
 	if (block->next_free) {
 		chunk = block->next_free;
-		block->next_free = *block->next_free;
+		block->next_free = block->next_free->next_free;
 	}
 	else
-		chunk = stroll_falloc_chunks_from_block(block, alloc) +
+		chunk = (void *)block->chunks +
 		        (block->busy_cnt * alloc->chunk_sz);
+
+	/*
+	 * TODO: prefetch chunk for write ?
+	 * stroll_prefetch(chunk, STROLL_PREFETCH_ACCESS_RW);
+	 */
 
 	return chunk;
 }
@@ -164,7 +168,7 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
 		                         struct stroll_falloc_block,
 		                         node);
 		if (blk->busy_cnt < alloc->chunk_nr) {
-			chunk = stroll_falloc_next_free_block_chunk(blk, alloc);
+			chunk = stroll_falloc_next_free_chunk(blk, alloc);
 
 			if (++blk->busy_cnt == alloc->chunk_nr)
 				/* Block is full: move it to block list tail. */
@@ -179,18 +183,23 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
 }
 
 void
-stroll_falloc_free(struct stroll_falloc * __restrict alloc, void * chunk)
+stroll_falloc_free(struct stroll_falloc * __restrict alloc,
+                   void * __restrict                 chunk)
 {
 	stroll_falloc_assert_alloc_api(alloc);
 
 	struct stroll_falloc_block * blk;
+	union stroll_falloc_chunk *  chnk;
 
 	blk = (struct stroll_falloc_block *)
-	      (stroll_align_lower((size_t)chunk,
-	                          (size_t)alloc->block_sz) + alloc->block_sz);
+	      stroll_align_lower((unsigned long)chunk, alloc->block_al);
+	chnk = (union stroll_falloc_chunk *)chunk;
 
-	*((void **)chunk) = blk->next_free;
-	blk->next_free = chunk;
+	/*
+	 * Insert chunk to free at the head of free chunk list.
+	 */
+	chnk->next_free = blk->next_free;
+	blk->next_free = chnk;
 
 	/*
 	 * TODO:
@@ -198,7 +207,7 @@ stroll_falloc_free(struct stroll_falloc * __restrict alloc, void * chunk)
 	 * - an alternate free block list ??
 	 */
 	blk->busy_cnt--;
-	if (blk->busy_cnt == (alloc->chunk_nr - 1))
+	if ((blk->busy_cnt + 1) == alloc->chunk_nr)
 		/*
 		 * Block is not full: move it to block list head to maximize the
 		 * its fill ratio.
@@ -206,7 +215,7 @@ stroll_falloc_free(struct stroll_falloc * __restrict alloc, void * chunk)
 		stroll_dlist_move_after(&alloc->blocks, &blk->node);
 	else if (!blk->busy_cnt)
 		/* This block contains no more allocated chunks: free it. */
-		stroll_falloc_free_block(blk, alloc);
+		stroll_falloc_free_block(blk);
 }
 
 void
@@ -222,13 +231,14 @@ stroll_falloc_init(struct stroll_falloc * __restrict alloc,
 
 	chunk_size = stroll_align_upper(
 		chunk_size,
-		sizeof_member(struct stroll_falloc_block, next_free));
-	blk_sz = 1UL << stroll_pow2_upul(chunk_size * chunk_nr);
+		sizeof_member(union stroll_falloc_chunk, next_free));
+	blk_sz = sizeof(struct stroll_falloc_block) + (chunk_nr * chunk_size);
 
 	stroll_dlist_init(&alloc->blocks);
-	alloc->block_sz = blk_sz;
-	alloc->chunk_nr = (unsigned int)(blk_sz / chunk_size);
+	alloc->block_al = 1UL << stroll_pow2_upul(blk_sz);
+	alloc->chunk_nr = chunk_nr;
 	alloc->chunk_sz = chunk_size;
+	alloc->block_sz = blk_sz;
 }
 
 void
@@ -244,7 +254,6 @@ stroll_falloc_fini(struct stroll_falloc * __restrict alloc)
 		stroll_falloc_free_block(
 			stroll_dlist_entry(node,
 			                   struct stroll_falloc_block,
-			                   node),
-			alloc);
+			                   node));
 	}
 }

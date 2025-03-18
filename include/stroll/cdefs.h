@@ -302,6 +302,65 @@
 	__attribute__((aligned(_size)))
 
 /**
+ * Declare a function to the compiler as returning a pointer to a memory area of
+ * a given size.
+ *
+ * @param[in] _size index of function argument specifying memory size
+ * @param[in] ...   optional index of function argument specifying a
+ *                  multiplicative factor
+ *
+ * Tell the compiler that the returned pointer points to memory whose size is
+ * given by the function argument @p _size, or by the product of the 2 function
+ * arguments.
+ *
+ * @see [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
+ */
+#define __alloc_size(_size, ...) \
+	__attribute__((alloc_size(_size, ## __VA_ARGS__)))
+
+/**
+ * Declare a function to the compiler as returning a pointer that is aligned.
+ *
+ * @param[in] _size alignment size in bytes
+ * @param[in] ...   optional misalignment offset
+ *
+ * Tell the compiler that a function returns a pointer that is aligned on the
+ * boundary given by @p _size argument.
+ *
+ * This may be given a second optional argument, interpreted as the misalignment
+ * offset. Meaningful values of alignment are powers of 2 greater than one.
+ * Meaningful values of offset are greater than zero and less than alignment.
+ *
+ * @see [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
+ */
+#define __assume_align(__size, ...) \
+	__attribute__((assume_aligned(__size, ## __VA_ARGS__)))
+
+/**
+ * Declare a function to the compiler as behaving like malloc(3).
+ *
+ * Tell the compiler that a function is malloc-like, i.e., that the pointer P
+ * returned by the function cannot alias any other pointer valid when the
+ * function returns, and moreover no pointers to valid objects occur in any
+ * storage addressed by P. In addition, GCC predicts that a function with the
+ * attribute returns non-null in most cases.
+ *
+ * This may take up to 2 optional arguments according to the following syntax:
+ * `__malloc(_deallocator, _ptr_index)`.
+ *
+ * The @p _deallocator argument associates a suitable deallocation function for
+ * pointers returned from the malloc-like function.
+ *
+ * Whereas the @p _ptr_index argument denotes the positional argument to which
+ * when the pointer is passed in calls to @p _deallocator has the effect of
+ * deallocating it.
+ *
+ * @see [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
+ */
+#define __malloc(...) \
+	__attribute__((malloc(__VA_ARGS__)))
+
+/**
  * Declare a function to the compiler as a constructor.
  *
  * @param[in] _prio constructor invocation order
