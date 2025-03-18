@@ -57,6 +57,7 @@ libstroll.so-objs    += $(call kconf_enabled,STROLL_DRPHEAP,shared/drpheap.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_DPRHEAP,shared/dprheap.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_PPRHEAP,shared/pprheap.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_DBNHEAP,shared/dbnheap.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_FALLOC,shared/falloc.o)
 libstroll.so-cflags  := $(filter-out -fpie -fPIE,$(common-cflags)) -fpic
 libstroll.so-ldflags := $(filter-out -pie -fpie -fPIE,$(common-ldflags)) \
                         -shared -Bsymbolic -fpic -Wl,-soname,libstroll.so
@@ -80,6 +81,7 @@ libstroll.a-objs     += $(call kconf_enabled,STROLL_DRPHEAP,static/drpheap.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_DPRHEAP,static/dprheap.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_PPRHEAP,static/pprheap.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_DBNHEAP,static/dbnheap.o)
+libstroll.a-objs     += $(call kconf_enabled,STROLL_FALLOC,static/falloc.o)
 libstroll.a-cflags   := $(common-cflags)
 endif # ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
 

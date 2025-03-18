@@ -550,4 +550,14 @@ config STROLL_DLIST_KWMERGE_SORT
 
 endif # STROLL_LIST
 
+config STROLL_FALLOC
+	bool "Fixed sized object allocator"
+	select STROLL_DLIST
+	select STROLL_POW2
+	default y
+	help
+	  Build Stroll library with support for a simple allocator allowing to
+	  to allocate objects of constant size.
+	  See <stroll/falloc.h>.
+
 # ex: ft=kconfig:
