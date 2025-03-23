@@ -9,6 +9,11 @@ Implementation
 * k-way sorting using tournament trees
 * array k-way merge algos
 
+Testing
+=======
+
+* falloc
+
 Documentation
 =============
 

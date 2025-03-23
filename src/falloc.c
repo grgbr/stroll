@@ -121,6 +121,7 @@ stroll_falloc_free_block(struct stroll_falloc_block * __restrict block)
 	stroll_falloc_assert_intern(block);
 
 	stroll_dlist_remove(&block->node);
+
 	free(block);
 }
 
@@ -146,11 +147,6 @@ stroll_falloc_next_free_chunk(
 	else
 		chunk = (void *)block->chunks +
 		        (block->busy_cnt * alloc->chunk_sz);
-
-	/*
-	 * TODO: prefetch chunk for write ?
-	 * stroll_prefetch(chunk, STROLL_PREFETCH_ACCESS_RW);
-	 */
 
 	return chunk;
 }
@@ -208,17 +204,11 @@ stroll_falloc_free(struct stroll_falloc * __restrict alloc,
 		 * - an alternate free block list ??
 		 */
 		blk->busy_cnt--;
-		if ((blk->busy_cnt + 1) == alloc->chunk_nr)
-			/*
-			 * Block is not full: move it to block list head to
-			 * maximize the its fill ratio.
-			 */
+		if (blk->busy_cnt)
+			/* Block not empty: move it to block list head. */
 			stroll_dlist_move_after(&alloc->blocks, &blk->node);
-		else if (!blk->busy_cnt)
-			/*
-			 * This block contains no more allocated chunks: free
-			 * it.
-			 */
+		else
+			/* Block is empty: free it. */
 			stroll_falloc_free_block(blk);
 	}
 }
@@ -256,9 +246,8 @@ stroll_falloc_fini(struct stroll_falloc * __restrict alloc)
 
 		node  = stroll_dlist_dqueue_front(&alloc->blocks);
 
-		stroll_falloc_free_block(
-			stroll_dlist_entry(node,
-			                   struct stroll_falloc_block,
-			                   node));
+		free(stroll_dlist_entry(node,
+		                        struct stroll_falloc_block,
+		                        node));
 	}
 }

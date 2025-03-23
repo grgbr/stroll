@@ -31,6 +31,8 @@
  * - mitigate conventional memory heap fragmentation ;
  * - perform allocation in a more deterministic way.
  */
+struct stroll_falloc_block;
+
 struct stroll_falloc {
 	/**
 	 * @internal
@@ -63,7 +65,6 @@ struct stroll_falloc {
 	 */
 	size_t                   block_sz;
 };
-
 
 extern void
 stroll_falloc_free(struct stroll_falloc * __restrict alloc,
