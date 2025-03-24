@@ -2379,6 +2379,8 @@ PREDEFINED             = __restrict= \
 			 __stroll_pure= \
 			 __const= \
 			 __stroll_const= \
+			 __malloc(...)= \
+			 __assume_align(...)= \
 			 __warn_result= \
 			 __leaf= \
                          __WORDSIZE=64 \

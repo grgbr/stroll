@@ -333,8 +333,8 @@
  *
  * @see [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
  */
-#define __assume_align(__size, ...) \
-	__attribute__((assume_aligned(__size, ## __VA_ARGS__)))
+#define __assume_align(_size, ...) \
+	__attribute__((assume_aligned(_size, ## __VA_ARGS__)))
 
 /**
  * Declare a function to the compiler as behaving like malloc(3).

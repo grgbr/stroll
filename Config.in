@@ -557,7 +557,7 @@ config STROLL_FALLOC
 	default y
 	help
 	  Build Stroll library with support for a simple allocator allowing to
-	  to allocate objects of constant size.
+	  allocate objects of constant size.
 	  See <stroll/falloc.h>.
 
 # ex: ft=kconfig:

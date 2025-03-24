@@ -29,7 +29,8 @@ you can refer to for further details :
 * `Length-value strings`_,
 * `Searching arrays`_,
 * `Sorting arrays`_,
-* `Linked lists`_.
+* `Linked lists`_,
+* `Object allocator`_.
 
 Stroll_ sources are distributed under the :ref:`GNU Lesser General Public
 License <lgpl>` whereas documentation manuals are distributed under the
@@ -69,6 +70,7 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_DLIST_MERGE_SORT`
 * :c:macro:`CONFIG_STROLL_DLIST_MERGE_SORT_INSERT_THRESHOLD`
 * :c:macro:`CONFIG_STROLL_DLIST_SELECT_SORT`
+* :c:macro:`CONFIG_STROLL_FALLOC`
 * :c:macro:`CONFIG_STROLL_FBHEAP`
 * :c:macro:`CONFIG_STROLL_FBMAP`
 * :c:macro:`CONFIG_STROLL_FWHEAP`
@@ -1186,6 +1188,24 @@ data structure.
 
 .. todo:: Complete me!!
 
+.. index:: allocation, allocator, memory
+
+Object allocator
+================
+
+When compiled with the :c:macro:`CONFIG_STROLL_FALLOC` build configuration
+option enabled, the Stroll_ library provides support for a fixed sized object
+*allocator* that may be used as a building block for implementing custom
+allocators.
+
+The :c:struct:`stroll_falloc` structure describes a fixed sized object
+allocator and may be used as argument to the following functions:
+
+* :c:func:`stroll_falloc_init`
+* :c:func:`stroll_falloc_fini`
+* :c:func:`stroll_falloc_alloc`
+* :c:func:`stroll_falloc_free`
+
 .. index:: API reference, reference
 
 Reference
@@ -1318,6 +1338,11 @@ CONFIG_STROLL_DLIST_SELECT_SORT
 *******************************
 
 .. doxygendefine:: CONFIG_STROLL_DLIST_SELECT_SORT
+
+CONFIG_STROLL_FALLOC
+********************
+
+.. doxygendefine:: CONFIG_STROLL_FALLOC
 
 CONFIG_STROLL_FBHEAP
 ********************
@@ -1864,6 +1889,11 @@ stroll_dlist_node
 *****************
 
 .. doxygenstruct:: stroll_dlist_node
+
+stroll_falloc
+*************
+
+.. doxygenstruct:: stroll_falloc
 
 stroll_fbheap
 *************
@@ -2695,6 +2725,26 @@ stroll_dlist_withdraw
 *********************
 
 .. doxygenfunction:: stroll_dlist_withdraw
+
+stroll_falloc_init
+******************
+
+.. doxygenfunction:: stroll_falloc_init
+
+stroll_falloc_fini
+******************
+
+.. doxygenfunction:: stroll_falloc_fini
+
+stroll_falloc_alloc
+*******************
+
+.. doxygenfunction:: stroll_falloc_alloc
+
+stroll_falloc_free
+******************
+
+.. doxygenfunction:: stroll_falloc_free
 
 stroll_fbheap_build
 *******************
