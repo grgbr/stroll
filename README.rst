@@ -18,7 +18,11 @@ C/C++ applicative tasks.
 * assertions,
 * bit operations,
 * bitmaps,
-* length-value strings.
+* length-value strings,
+* linked lists,
+* heaps,
+* sorting,
+* and custom allocators.
 
 .. rubric:: Limitations
 
