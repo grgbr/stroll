@@ -423,7 +423,7 @@ stroll_array_3wquick_sort(void * __restrict     array,
  * @param[in]    compare @p array elements comparison function
  * @param[inout] data    Optional arbitrary user data
  *
- * @return `0` when successful, an errno-like return code otherwise.
+ * @return `0` when successful, a negative errno-like return code otherwise.
  * @retval 0       Success
  * @retval -ENOMEM Memory allocation failure
  *
