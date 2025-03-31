@@ -30,6 +30,32 @@
 #include <assert.h>
 
 /**
+ * Build a full GCC version number out of release numbers given in argument.
+ *
+ * @param[in] _maj   GCC major release number
+ * @param[in] _min   GCC minor release number
+ * @param[in] _patch GCC patchlevel release number
+ *
+ * @return A full GCC release number.
+ *
+ * @see
+ * - [GCC Common Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html)
+ */
+#define STROLL_GCC_MAKE_VERSION(_maj, _min, _patch) \
+	(((_maj) * 10000) + ((_min) * 100) + (_patch))
+
+/**
+ * Expands to GCC version used to compile / link.
+ *
+ * @return Current full GCC release number.
+ *
+ * @see
+ * - [GCC Common Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html)
+ */
+#define STROLL_GCC_VERSION \
+	STROLL_GCC_MAKE_VERSION(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
+
+/**
  * Tell compiler that a function, variable, type or (goto) label may possibly
  * be unused.
  *
@@ -357,8 +383,17 @@
  *
  * @see [GCC common function attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes)
  */
+#if STROLL_GCC_VERSION >= STROLL_GCC_MAKE_VERSION(11, 1, 0)
+
 #define __malloc(...) \
 	__attribute__((malloc(__VA_ARGS__)))
+
+#else  /* !(STROLL_GCC_VERSION >= STROLL_GCC_MAKE_VERSION(11, 1, 0)) */
+
+#define __malloc(...) \
+	__attribute__((malloc))
+
+#endif /* STROLL_GCC_VERSION >= STROLL_GCC_MAKE_VERSION(11, 1, 0) */
 
 /**
  * Declare a function to the compiler as a constructor.

@@ -102,6 +102,8 @@ internals and meant for application development purposes. These are:
       * :c:macro:`STROLL_CONST_ABS`
       * :c:macro:`STROLL_CONST_MAX`
       * :c:macro:`STROLL_CONST_MIN`
+      * :c:macro:`STROLL_GCC_MAKE_VERSION`
+      * :c:macro:`STROLL_GCC_VERSION`
       * :c:macro:`STROLL_STRING`
       * :c:macro:`STROLL_UNIQ`
       * :c:macro:`compile_assert`
@@ -1593,6 +1595,16 @@ STROLL_FBHEAP_INIT
 ******************
 
 .. doxygendefine:: STROLL_FBHEAP_INIT
+
+STROLL_GCC_MAKE_VERSION
+***********************
+
+.. doxygendefine:: STROLL_GCC_MAKE_VERSION
+
+STROLL_GCC_VERSION
+******************
+
+.. doxygendefine:: STROLL_GCC_VERSION
 
 STROLL_LVSTR_INIT
 *****************
