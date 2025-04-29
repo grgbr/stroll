@@ -49,7 +49,7 @@ stroll_assert_fail(const char * __restrict prefix,
  * @param[in] prefix  message prefix
  * @param[in] message assertion message to output
  */
-void
+extern void
 stroll_assert_fail_msg(const char * __restrict prefix,
                        const char * __restrict message) __nonull(1, 2)
                                                         __noreturn
