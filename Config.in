@@ -560,4 +560,18 @@ config STROLL_FALLOC
 	  allocate objects of constant size.
 	  See <stroll/falloc.h>.
 
+config STROLL_MESSAGE
+	bool "Message iterator"
+	default y
+	help
+	  Build Stroll library with support for message iterator.
+	  See <stroll/message.h>
+
+config STROLL_MESSAGE_SIZE_MAX
+	int "Maximum message capacity"
+	default 65536
+	help
+	  Set maximum message capacity. MUST be lower than SIZE_MAX.
+	  See <stroll/message.h>
+
 # ex: ft=kconfig:
