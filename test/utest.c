@@ -169,6 +169,9 @@ extern CUTE_SUITE_DECL(strollut_dlist_suite);
     defined(CONFIG_STROLL_BNHEAP)
 extern CUTE_SUITE_DECL(strollut_theap_suite);
 #endif
+#if defined(CONFIG_STROLL_MESSAGE)
+extern CUTE_SUITE_DECL(strollut_message_suite);
+#endif
 
 CUTE_GROUP(strollut_group) = {
 	CUTE_REF(strollut_cdefs_suite),
@@ -203,6 +206,9 @@ CUTE_GROUP(strollut_group) = {
     defined(CONFIG_STROLL_DPRHEAP) || \
     defined(CONFIG_STROLL_BNHEAP)
 	CUTE_REF(strollut_theap_suite),
+#endif
+#if defined(CONFIG_STROLL_MESSAGE)
+	CUTE_REF(strollut_message_suite),
 #endif
 };
 
