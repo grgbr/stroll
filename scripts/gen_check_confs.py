@@ -88,6 +88,13 @@ conf_syms = frozenset({
         frozenset({ 'CONFIG_STROLL_UTEST=y', 'CONFIG_STROLL_VALGRIND=y' }),
         frozenset({ 'CONFIG_STROLL_UTEST=y', 'CONFIG_STROLL_VALGRIND=n' })
     }),
+    frozenset({
+        frozenset({ 'CONFIG_STROLL_MESSAGE=n' }),
+        frozenset({ 'CONFIG_STROLL_MESSAGE=y',
+                    'CONFIG_STROLL_MESSAGE_SIZE_MAX=65536' }),
+        frozenset({ 'CONFIG_STROLL_MESSAGE=y',
+                    'CONFIG_STROLL_MESSAGE_SIZE_MAX=4294967296' }),
+    }),
 })
 
 
