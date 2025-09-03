@@ -31,6 +31,7 @@ you can refer to for further details :
 * `Sorting arrays`_,
 * `Linked lists`_,
 * `Object allocator`_.
+* `Message`_.
 
 Stroll_ sources are distributed under the :ref:`GNU Lesser General Public
 License <lgpl>` whereas documentation manuals are distributed under the
@@ -1210,6 +1211,50 @@ allocator and may be used as argument to the following functions:
 
 .. index:: API reference, reference
 
+Message
+=======
+
+When compiled with the :c:macro:`CONFIG_STROLL_MESSAGE` build configuration
+option enabled, the Stroll_ library provides support for :c:struct:`stroll_msg`
+message iterator.
+
+This framework ease the push and pull data from buffer.
+
+The following manipulations are available:
+
+.. hlist::
+
+   * Static initialization:
+
+      * :c:macro:`STROLL_MSG_INIT`
+      * :c:macro:`STROLL_MSG_INIT_EMPTY`
+      * :c:macro:`STROLL_MSG_INIT_WITH_BUSY`
+      * :c:macro:`STROLL_MSG_INIT_WITH_RESERVE`
+
+   * Initialization:
+
+      * :c:func:`stroll_msg_init`
+      * :c:func:`stroll_msg_init_empty`
+      * :c:func:`stroll_msg_init_with_busy`
+      * :c:func:`stroll_msg_init_with_reserve`
+
+   * Accessors:
+
+      * :c:func:`stroll_msg_get_busy`
+      * :c:func:`stroll_msg_get_data`
+      * :c:func:`stroll_msg_get_available_head`
+      * :c:func:`stroll_msg_get_available_tail`
+
+   * Push data:
+
+      * :c:func:`stroll_msg_push_head`
+      * :c:func:`stroll_msg_push_tail`
+
+   * Pull data:
+
+      * :c:func:`stroll_msg_pull_head`
+      * :c:func:`stroll_msg_pull_tail`
+
 Reference
 =========
 
@@ -1417,6 +1462,16 @@ CONFIG_STROLL_VALGRIND
 **********************
 
 .. doxygendefine:: CONFIG_STROLL_VALGRIND
+
+CONFIG_STROLL_MESSAGE
+**********************
+
+.. doxygendefine:: CONFIG_STROLL_MESSAGE
+
+CONFIG_STROLL_MESSAGE_SIZE_MAX
+******************************
+
+.. doxygendefine:: CONFIG_STROLL_MESSAGE_SIZE_MAX
 
 Macros
 ------
@@ -1681,6 +1736,26 @@ STROLL_UNIQ
 
 .. doxygendefine:: STROLL_UNIQ
 
+STROLL_MSG_INIT
+***************
+
+.. doxygendefine:: STROLL_MSG_INIT
+
+STROLL_MSG_INIT_EMPTY
+*********************
+
+.. doxygendefine:: STROLL_MSG_INIT_EMPTY
+
+STROLL_MSG_INIT_WITH_BUSY
+*************************
+
+.. doxygendefine:: STROLL_MSG_INIT_WITH_BUSY
+
+STROLL_MSG_INIT_WITH_RESERVE
+****************************
+
+.. doxygendefine:: STROLL_MSG_INIT_WITH_RESERVE
+
 stroll_array_nr
 ***************
 
@@ -1941,6 +2016,11 @@ stroll_slist_node
 *****************
 
 .. doxygenstruct:: stroll_slist_node
+
+stroll_msg
+*****************
+
+.. doxygenstruct:: stroll_msg
 
 Functions
 ---------
@@ -3131,3 +3211,63 @@ stroll_slist_withdraw
 *********************
 
 .. doxygenfunction:: stroll_slist_withdraw
+
+stroll_msg_init
+***************
+
+.. doxygenfunction:: stroll_msg_init
+
+stroll_msg_init_empty
+*********************
+
+.. doxygenfunction:: stroll_msg_init_empty
+
+stroll_msg_init_with_busy
+*************************
+
+.. doxygenfunction:: stroll_msg_init_with_busy
+
+stroll_msg_init_with_reserve
+****************************
+
+.. doxygenfunction:: stroll_msg_init_with_reserve
+
+stroll_msg_init_get_busy
+************************
+
+.. doxygenfunction:: stroll_msg_get_busy
+
+stroll_msg_init_get_data
+************************
+
+.. doxygenfunction:: stroll_msg_get_data
+
+stroll_msg_init_get_available_head
+**********************************
+
+.. doxygenfunction:: stroll_msg_get_available_head
+
+stroll_msg_init_get_available_tail
+**********************************
+
+.. doxygenfunction:: stroll_msg_get_available_tail
+
+stroll_msg_init_push_head
+*************************
+
+.. doxygenfunction:: stroll_msg_push_head
+
+stroll_msg_init_push_tail
+*************************
+
+.. doxygenfunction:: stroll_msg_push_tail
+
+stroll_msg_init_pull_head
+*************************
+
+.. doxygenfunction:: stroll_msg_pull_head
+
+stroll_msg_init_pull_tail
+*************************
+
+.. doxygenfunction:: stroll_msg_pull_tail
