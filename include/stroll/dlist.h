@@ -309,7 +309,7 @@ stroll_dlist_nqueue_back(struct stroll_dlist_node * __restrict list,
  * @param[inout] node Node to remove.
  *
  * @warning
- * Result is undefined if @p list has not been previously initialized.
+ * Result is undefined if @p node has not been previously initialized.
  *
  * @see
  * - stroll_dlist_remove_init()
@@ -334,7 +334,7 @@ stroll_dlist_remove(const struct stroll_dlist_node * __restrict node)
  * @param[inout] node Node to remove.
  *
  * @warning
- * Result is undefined if @p list has not been previously initialized.
+ * Result is undefined if @p node has not been previously initialized.
  *
  * @see
  * - stroll_dlist_remove()
@@ -959,18 +959,18 @@ stroll_dlist_splice_after(struct stroll_dlist_node * __restrict at,
 	     _entry = stroll_dlist_next_entry(_entry, _member))
 
 /**
- * Iterate over doubly linked list entries safely.
+ * Iterate safely over doubly linked list entries.
  *
  * @param[in]  _head   Dummy head stroll_dlist_node designating the list to
  *                     iterate over.
  * @param[out] _entry  Pointer to entry containing @p _head's current node.
- * @param      _member Member field of container structure holding the
+ * @param      _member Member field of @p *_entry structure holding the current
  *                     stroll_dlist_node @p _node.
  * @param[out] _tmp    Pointer to same type as @p _entry used for temporary
  *                     storage.
  *
  * Allows to iterate over stroll_dlist_node based list entries safely against
- * @p node removal.
+ * @p _entry removal.
  *
  * @warning
  * Result is undefined if @p _head has not been previously initialized.

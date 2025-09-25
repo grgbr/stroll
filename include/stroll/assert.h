@@ -39,7 +39,7 @@ stroll_assert_fail(const char * __restrict prefix,
                    unsigned int            line,
                    const char * __restrict func) __nonull(1, 2, 3, 5)
                                                  __noreturn
-						 __leaf;
+                                                 __leaf;
 
 /**
  * @internal
@@ -53,7 +53,7 @@ extern void
 stroll_assert_fail_msg(const char * __restrict prefix,
                        const char * __restrict message) __nonull(1, 2)
                                                         __noreturn
-						        __leaf;
+                                                        __leaf;
 
 /**
  * Check an assertion.
