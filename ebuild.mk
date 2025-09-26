@@ -27,6 +27,7 @@ headers   += $(call kconf_enabled,STROLL_DRPHEAP,stroll/drpheap.h)
 headers   += $(call kconf_enabled,STROLL_DPRHEAP,stroll/dprheap.h)
 headers   += $(call kconf_enabled,STROLL_PPRHEAP,stroll/pprheap.h)
 headers   += $(call kconf_enabled,STROLL_DBNHEAP,stroll/dbnheap.h)
+headers   += $(call kconf_enabled,STROLL_PALLOC,stroll/palloc.h)
 headers   += $(call kconf_enabled,STROLL_FALLOC,stroll/falloc.h)
 
 subdirs   := src

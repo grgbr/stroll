@@ -57,6 +57,7 @@ libstroll.so-objs    += $(call kconf_enabled,STROLL_DRPHEAP,shared/drpheap.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_DPRHEAP,shared/dprheap.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_PPRHEAP,shared/pprheap.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_DBNHEAP,shared/dbnheap.o)
+libstroll.so-objs    += $(call kconf_enabled,STROLL_PALLOC,shared/palloc.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_FALLOC,shared/falloc.o)
 libstroll.so-cflags  := $(filter-out -fpie -fPIE,$(common-cflags)) -fpic
 libstroll.so-ldflags := $(filter-out -pie -fpie -fPIE,$(common-ldflags)) \
