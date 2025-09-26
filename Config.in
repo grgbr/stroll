@@ -569,4 +569,21 @@ config STROLL_FALLOC
 	  allocate objects of constant size.
 	  See <stroll/falloc.h>.
 
+config STROLL_HLIST
+	bool "Hash list"
+	default y
+	help
+	  Build Stroll library with support for doubly linked list geared for
+	  hash table bucket implementation purposes.
+	  See <stroll/hlist.h>.
+
+config STROLL_HASH
+	bool "Content hashing"
+	default y
+	help
+	  Build Stroll library with support for non-cryptographic content
+	  hashing. This may be used as a building block to implement hash tables
+	  based upon hash lists.
+	  See <stroll/hash.h>.
+
 # ex: ft=kconfig:

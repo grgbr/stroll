@@ -13,6 +13,8 @@ Testing
 =======
 
 * falloc
+* stroll_hlist
+* stroll_hash
 * stroll_palloc
 
 Documentation
@@ -20,4 +22,6 @@ Documentation
 
 * stroll_dlist_kwmerge_sort(), stroll_dlist_kwmerge_presort ??
 * heaps
+* stroll_hlist
+* stroll_hash
 * stroll_palloc
