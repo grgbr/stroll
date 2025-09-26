@@ -40,7 +40,7 @@
 /**
  * @internal
  *
- * Primary stroll_palloc memory chunk.
+ * Primary #stroll_palloc memory chunk.
  */
 union stroll_palloc_chunk {
 	/**
@@ -57,7 +57,6 @@ union stroll_palloc_chunk {
 	char                        data[0];
 };
 
-
 /**
  * Pre-allocated fixed sized object allocator.
  *
@@ -69,7 +68,7 @@ union stroll_palloc_chunk {
  * - mitigate conventional memory heap fragmentation ;
  * - perform allocation in a more deterministic way.
  *
- * Basically, stroll_palloc is a primitive and lightweight allocator that
+ * Basically, #stroll_palloc is a primitive and lightweight allocator that
  * manages memory on heap thanks to calls to @man{malloc(3)} / @man{free(3)}.
  *
  * Memory objects, called *chunks*, are pre-allocated at allocator
@@ -84,13 +83,14 @@ union stroll_palloc_chunk {
  *
  * @note
  * All managed memory being allocated in a single call to @man{malloc(3)},
- * stroll_palloc is highly subject to object size restrictions and process
+ * #stroll_palloc is highly subject to object size restrictions and process
  * memory limits.
  * See @man{malloc(3)}, @man{mallopt(3)} and @man{setrlimit(2)} for further
  * details.
  *
  * @see
  * - stroll_palloc_init()
+ * - stroll_palloc_init_from_mem()
  * - stroll_palloc_fini()
  * - stroll_palloc_alloc()
  * - stroll_palloc_free()
@@ -103,7 +103,7 @@ struct stroll_palloc {
 	 * This points to the memory chunk returned by next call to
 	 * stroll_palloc_alloc().
 	 */
-	union stroll_palloc_chunk * next_free; /* Pointer to next free chunk */
+	union stroll_palloc_chunk * next_free;
 	/**
 	 * @internal
 	 *
@@ -120,7 +120,7 @@ struct stroll_palloc {
 	 * @internal
 	 *
 	 * Indicate wether this allocator owns the memory area pointed to by
-	 * stroll_palloc::chunks.
+	 * #stroll_palloc::chunks.
 	 */
 	bool                        own;
 };
@@ -132,6 +132,22 @@ struct stroll_palloc {
 		               sizeof((_alloc)->next_free))); \
 	stroll_palloc_assert_api((_alloc)->chunks)
 
+/**
+ * Release the allocated chunk of memory given in argument.
+ *
+ * @param[inout] alloc Pre-allocated fixed sized object allocator
+ * @param[inout] chunk Chunk of memory to free
+ *
+ * Free resources allocated by @p alloc allocator for the chunk of memory @p
+ * chunk.
+ *
+ * @p chunk *MUST* point to a chunk of memory returned by a call to
+ * stroll_palloc_alloc() using the same @p alloc allocator.
+ *
+ * @see
+ * - stroll_palloc_alloc()
+ * - #stroll_palloc
+ */
 static inline __stroll_nonull(1) __stroll_nothrow
 void
 stroll_palloc_free(struct stroll_palloc * __restrict alloc, void * chunk)
@@ -147,6 +163,24 @@ stroll_palloc_free(struct stroll_palloc * __restrict alloc, void * chunk)
 	}
 }
 
+/**
+ * Allocate a chunk of memory.
+ *
+ * @param[inout] alloc Pre-allocated fixed sized object allocator
+ *
+ * @return A pointer to the allocated chunk of memory
+ *
+ * Request the @p alloc allocator to allocate and return a chunk of memory.
+ * @p alloc *MUST* have been previously initialized using stroll_palloc_init().
+ *
+ * The chunk returned is, at least, as large as the @p chunk_size argument given
+ * to stroll_palloc_init() at initialization time.
+ * Its address and size are guaranteed to be aligned upon a machine word.
+ *
+ * @see
+ * - stroll_palloc_free()
+ * - #stroll_palloc
+ */
 static inline __stroll_nonull(1)
               __assume_align(sizeof(union stroll_palloc_chunk *))
               __stroll_nothrow
@@ -176,6 +210,41 @@ _stroll_palloc_init_from_mem(struct stroll_palloc * __restrict alloc,
                              bool                              owner)
 	__stroll_nonull(1, 2) __stroll_nothrow __leaf;
 
+/**
+ * Initialize a pre-allocated fixed sized object allocator with external memory
+ * area.
+ *
+ * @param[out] alloc      Pre-allocated fixed sized object allocator
+ * @param[in]  mem        Pointer to memory area allocated by caller
+ * @param[in]  chunk_nr   Number of chunks per primary memory block
+ * @param[in]  chunk_size Size of a single chunk of memory in bytes.
+ *
+ * Initialize a pre-allocated fixed sized object allocator so that it may
+ * further allocate @p chunk_size bytes long memory chunks thanks to the
+ * stroll_palloc_alloc() function.
+ *
+ * Unlinke the stroll_palloc_init() function, stroll_palloc_init_from_mem() do
+ * not allocate (neither own) its internal memory area used to store chunks.
+ * The caller is responsible for allocating a suitable memory area and passing
+ * it as the @p mem argument instead. See below for requirements related to
+ * the memory area size.
+ *
+ * @p chunk_nr specifies the minimum number of chunks that are allocated on heap
+ * in a single call to @man{malloc(3)}.
+ *
+ * @p chunk_size specify the size of a single *chunk* of memory in bytes and
+ * will be rounded up to the size of a machine word.
+ *
+ * @warning
+ * The size of the memory area pointed to by @p mem **MUST** be at least as
+ * large as @p chunk_nr rounded up to the size of a machine word multiplied by
+ * @p chunk_size.
+ *
+ * @see
+ * - stroll_palloc_init()
+ * - stroll_palloc_fini()
+ * - #stroll_palloc
+ */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
 stroll_palloc_init_from_mem(struct stroll_palloc * __restrict alloc,
@@ -186,12 +255,48 @@ stroll_palloc_init_from_mem(struct stroll_palloc * __restrict alloc,
 	_stroll_palloc_init_from_mem(alloc, mem, chunk_nr, chunk_size, false);
 }
 
+/**
+ * Initialize a pre-allocated fixed sized object allocator.
+ *
+ * @param[out] alloc      Pre-allocated fixed sized object allocator
+ * @param[in]  chunk_nr   Number of chunks per primary memory block
+ * @param[in]  chunk_size Size of a single chunk of memory in bytes.
+ *
+ * Initialize a pre-allocated fixed sized object allocator so that it may
+ * further allocate @p chunk_size bytes long memory chunks thanks to the
+ * stroll_palloc_alloc() function.
+ *
+ * @p chunk_nr specifies the minimum number of chunks that are allocated on heap
+ * in a single call to @man{malloc(3)}.
+ *
+ * @p chunk_size specify the size of a single *chunk* of memory in bytes and
+ * will be rounded up to the size of a machine word.
+ *
+ * @see
+ * - stroll_palloc_init_from_mem()
+ * - stroll_palloc_fini()
+ * - #stroll_palloc
+ */
 extern int
 stroll_palloc_init(struct stroll_palloc * __restrict alloc,
                    unsigned int                      chunk_nr,
                    size_t                            chunk_size)
 	__stroll_nonull(1) __stroll_nothrow;
 
+/**
+ * Release all resources allocated by a pre-allocated fixed sized object
+ * allocator.
+ *
+ * @param[out] alloc Pre-allocated fixed sized object allocator
+ *
+ * Release all memory *chunks* allocated by the @p alloc allocator given in
+ * argument.
+ *
+ * @see
+ * - stroll_palloc_init()
+ * - stroll_palloc_init_from_mem()
+ * - #stroll_palloc
+ */
 static inline __stroll_nonull(1) __stroll_nothrow
 void
 stroll_palloc_fini(struct stroll_palloc * __restrict alloc)

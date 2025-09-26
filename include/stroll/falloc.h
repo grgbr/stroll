@@ -36,6 +36,11 @@
  * @man{malloc(3)} calls. Objects, called *chunks*, are allocated by *blocks* to
  * minimize the number of calls to @man{malloc(3)} and @man{free(3)}.
  *
+ * The total number of allocated objects may dynamically grow or decrease during
+ * allocator lifetime, making it suitable for cases where the number of
+ * allocated object is not known in advance. If this is not desirable, refer to
+ * #stroll_palloc allocator.
+ *
  * For performance reasons, *blocks* of memory *chunks* are aligned on power of
  * 2 boundaries. The size and the minimum number of memory *chunks* per block
  * are specified at allocator initialization time thanks to a call to
@@ -92,7 +97,9 @@ struct stroll_falloc {
  * @p chunk *MUST* point to a chunk of memory returned by a call to
  * stroll_falloc_alloc() using the same @p alloc allocator.
  *
- * @see stroll_falloc_alloc()
+ * @see
+ * - stroll_falloc_alloc()
+ * - #stroll_falloc
  */
 extern void
 stroll_falloc_free(struct stroll_falloc * __restrict alloc,
@@ -115,7 +122,9 @@ union stroll_falloc_chunk;
  * to stroll_falloc_init() at initialization time.
  * Its address and size are guaranteed to be aligned upon a machine word.
  *
- * @see stroll_falloc_init()
+ * @see
+ * - stroll_falloc_free()
+ * - #stroll_falloc
  */
 extern void *
 stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
@@ -142,13 +151,12 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
  * since memory chunks are allocated by block, which address is a power of 2 and
  * size, a multiple of a machine word.
  *
- * @p chunk_size specify the size of a single *chunk* of memory in bytes and may
- * not be smaller than the size of a machine word.
+ * @p chunk_size specify the size of a single *chunk* of memory in bytes and
+ * will be rounded up to the size of a machine word.
  *
  * @see
  * - stroll_falloc_fini()
- * - stroll_falloc_alloc()
- * - stroll_falloc_free()
+ * - #stroll_falloc
  */
 extern void
 stroll_falloc_init(struct stroll_falloc * __restrict alloc,
@@ -159,7 +167,7 @@ stroll_falloc_init(struct stroll_falloc * __restrict alloc,
 /**
  * Release all resources allocated by a fixed sized object allocator.
  *
- * @param[out] alloc      Fixed sized object allocator
+ * @param[out] alloc Fixed sized object allocator
  *
  * Release all *blocks* of memory *chunks* allocated by the @p alloc allocator
  * given in argument.

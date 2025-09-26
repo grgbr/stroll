@@ -75,6 +75,7 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_FBMAP`
 * :c:macro:`CONFIG_STROLL_FWHEAP`
 * :c:macro:`CONFIG_STROLL_LVSTR`
+* :c:macro:`CONFIG_STROLL_PALLOC`
 * :c:macro:`CONFIG_STROLL_POW2`
 * :c:macro:`CONFIG_STROLL_SLIST`
 * :c:macro:`CONFIG_STROLL_SLIST_BUBBLE_SORT`
@@ -1195,10 +1196,21 @@ data structure.
 Object allocator
 ================
 
+Fixed sized objects
+-------------------
+
 When compiled with the :c:macro:`CONFIG_STROLL_FALLOC` build configuration
 option enabled, the Stroll_ library provides support for a fixed sized object
-*allocator* that may be used as a building block for implementing custom
-allocators.
+*allocator*.
+
+This may be used as a building block for implementing custom allocators where
+the size of memory objects is constant across the allocator lifetime and known
+at instantiation time.
+
+The number of allocated objects may dynamically grow or decrease during
+allocator lifetime, making it suitable for cases where the number of allocated
+object is not known in advance.
+If this is not desirable, refer to section `Pre-allocated fixed sized objects`.
 
 The :c:struct:`stroll_falloc` structure describes a fixed sized object
 allocator and may be used as argument to the following functions:
@@ -1207,6 +1219,28 @@ allocator and may be used as argument to the following functions:
 * :c:func:`stroll_falloc_fini`
 * :c:func:`stroll_falloc_alloc`
 * :c:func:`stroll_falloc_free`
+
+Pre-allocated fixed sized objects
+---------------------------------
+
+When compiled with the :c:macro:`CONFIG_STROLL_PALLOC` build configuration
+option enabled, the Stroll_ library provides support for fixed sized object
+allocation from pre-allocated memory area.
+
+This may be used as a building block for implementing custom allocators where:
+
+* the number of memory objects and their size are constant across the
+  allocator lifetime ;
+* and known at the time of allocator instantiation.
+
+The :c:struct:`stroll_palloc` structure describes a pre-allocated fixed sized
+object allocator and may be used as argument to the following functions:
+
+* :c:func:`stroll_palloc_init`
+* :c:func:`stroll_palloc_init_from_mem`
+* :c:func:`stroll_palloc_fini`
+* :c:func:`stroll_palloc_alloc`
+* :c:func:`stroll_palloc_free`
 
 .. index:: API reference, reference
 
@@ -1365,6 +1399,11 @@ CONFIG_STROLL_LVSTR
 *******************
 
 .. doxygendefine:: CONFIG_STROLL_LVSTR
+
+CONFIG_STROLL_PALLOC
+********************
+
+.. doxygendefine:: CONFIG_STROLL_PALLOC
 
 CONFIG_STROLL_POW2
 ******************
@@ -1931,6 +1970,11 @@ stroll_lvstr
 ************
 
 .. doxygenstruct:: stroll_lvstr
+
+stroll_palloc
+*************
+
+.. doxygenstruct:: stroll_palloc
 
 stroll_slist
 ************
@@ -2738,25 +2782,25 @@ stroll_dlist_withdraw
 
 .. doxygenfunction:: stroll_dlist_withdraw
 
-stroll_falloc_init
-******************
+stroll_falloc_alloc
+*******************
 
-.. doxygenfunction:: stroll_falloc_init
+.. doxygenfunction:: stroll_falloc_alloc
 
 stroll_falloc_fini
 ******************
 
 .. doxygenfunction:: stroll_falloc_fini
 
-stroll_falloc_alloc
-*******************
-
-.. doxygenfunction:: stroll_falloc_alloc
-
 stroll_falloc_free
 ******************
 
 .. doxygenfunction:: stroll_falloc_free
+
+stroll_falloc_init
+******************
+
+.. doxygenfunction:: stroll_falloc_init
 
 stroll_fbheap_build
 *******************
@@ -2981,6 +3025,31 @@ stroll_lvstr_nlend
 ******************
 
 .. doxygenfunction:: stroll_lvstr_nlend
+
+stroll_palloc_alloc
+*******************
+
+.. doxygenfunction:: stroll_palloc_alloc
+
+stroll_palloc_fini
+******************
+
+.. doxygenfunction:: stroll_palloc_fini
+
+stroll_palloc_free
+******************
+
+.. doxygenfunction:: stroll_palloc_free
+
+stroll_palloc_init
+******************
+
+.. doxygenfunction:: stroll_palloc_init
+
+stroll_palloc_init_from_mem
+***************************
+
+.. doxygenfunction:: stroll_palloc_init_from_mem
 
 stroll_pow2_low
 ***************

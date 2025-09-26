@@ -445,8 +445,6 @@ struct stroll_hlist {
  * @param[out] _hentry Pointer to entry containing @p _hlist's current node.
  * @param      _member Member field of @p *_hentry structure holding the current
  *                     stroll_hlist_node node.
- * @param[out] _tmp    Pointer to a stroll_hlist_node used for temporary
- *                     storage.
  *
  * Continue a previous iteration over stroll_hlist hashed list entries starting
  * at the entry following the current position pointed to by @p _hentry.

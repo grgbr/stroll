@@ -12,10 +12,10 @@ Implementation
 Testing
 =======
 
+* stroll_palloc
 * falloc
 * stroll_hlist
 * stroll_hash
-* stroll_palloc
 
 Documentation
 =============
@@ -24,4 +24,3 @@ Documentation
 * heaps
 * stroll_hlist
 * stroll_hash
-* stroll_palloc
