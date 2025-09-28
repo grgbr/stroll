@@ -6,7 +6,6 @@
  ******************************************************************************/
 
 #include "stroll/palloc.h"
-#include "stroll/pow2.h"
 
 #if defined(CONFIG_STROLL_ASSERT_INTERN)
 
@@ -68,18 +67,12 @@ stroll_palloc_init(struct stroll_palloc * __restrict alloc,
 	stroll_palloc_assert_api(chunk_size);
 
 	void * chunks;
-	int    err;
 
 	chunk_size = stroll_align_upper(chunk_size, sizeof(alloc->next_free));
 
-	err = posix_memalign(&chunks,
-	                     sizeof(alloc->next_free),
-	                     1UL << stroll_pow2_upul((size_t)chunk_nr *
-	                                             chunk_size));
-	if (err) {
-		stroll_palloc_assert_intern(err == ENOMEM);
+	chunks = malloc(chunk_nr * chunk_size);
+	if (!chunks)
 		return -ENOMEM;
-	}
 
 	_stroll_palloc_init_from_mem(alloc, chunks, chunk_nr, chunk_size, true);
 
