@@ -82,8 +82,8 @@ static inline
 unsigned int
 stroll_hash32(uint32_t key, unsigned int bits)
 {
-	stroll_hlist_assert_api(bits);
-	stroll_hlist_assert_api(bits <= 32);
+	stroll_hash_assert_api(bits);
+	stroll_hash_assert_api(bits <= 32);
 
 	/* High bits are more random, so use them. */
 	return _stroll_hash32(key) >> (32U - bits);
@@ -95,8 +95,8 @@ static inline
 unsigned int
 stroll_hash64(uint64_t key, unsigned int bits)
 {
-	stroll_hlist_assert_api(bits);
-	stroll_hlist_assert_api(bits <= 32);
+	stroll_hash_assert_api(bits);
+	stroll_hash_assert_api(bits <= 32);
 
 	/*
 	 * 64x64-bit multiply is efficient on all 64-bit processors.
@@ -111,8 +111,8 @@ static inline
 unsigned int
 stroll_hash64(uint64_t key, unsigned int bits)
 {
-	stroll_hlist_assert_api(bits);
-	stroll_hlist_assert_api(bits <= 32);
+	stroll_hash_assert_api(bits);
+	stroll_hash_assert_api(bits <= 32);
 
 	/* Hash 64 bits using only 32x32-bit multiply. */
 	uint32_t tmp = (uint32_t)key ^ _stroll_hash32(key >> 32);

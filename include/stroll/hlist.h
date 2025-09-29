@@ -115,7 +115,7 @@ stroll_hlist_init_node(struct stroll_hlist_node * __restrict hnode)
  * @see stroll_hlist_init_node()
  */
 static inline
-void
+bool
 stroll_hlist_node_hashed(const struct stroll_hlist_node * __restrict hnode)
 {
 	stroll_hlist_assert_api(hnode);
@@ -241,7 +241,7 @@ stroll_hlist_remove_node_init(struct stroll_hlist_node * __restrict hnode)
 	stroll_hlist_assert_api(hnode);
 	stroll_hlist_assert_api((hnode->prev != &hnode->next) || !hnode->next);
 
-	stroll_hlist_del(hnode);
+	stroll_hlist_remove_node(hnode);
 	stroll_hlist_init_node(hnode);
 }
 
@@ -263,7 +263,7 @@ struct stroll_hlist {
 	 *
 	 * Leading node of this hashed list.
 	 */
-	struct hlist_node * head;
+	struct stroll_hlist_node * head;
 };
 
 /**
