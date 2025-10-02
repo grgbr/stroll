@@ -20,6 +20,8 @@
 #define _STROLL_HLIST_H
 
 #include <stroll/cdefs.h>
+#include <stdbool.h>
+#include <stdlib.h>
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 
@@ -599,6 +601,48 @@ stroll_hlist_init(struct stroll_hlist * __restrict hlist)
 	stroll_hlist_assert_api(hlist);
 
 	hlist->head = NULL;
+}
+
+/**
+ * Initialize a stroll_hlist bucket array
+ *
+ * @param[out] buckets stroll_hlist buckets to initialize.
+ * @param[in]  bits    Log base 2 of number of buckets to initialize.
+ *
+ * @see stroll_hlist_init()
+ */
+extern void
+stroll_hlist_init_buckets(struct stroll_hlist * __restrict buckets,
+                          unsigned int                     bits);
+
+/**
+ * Create a stroll_hlist bucket array
+ *
+ * @param[in] bits Log base 2 of number of buckets to instantiate.
+ *
+ * @return stroll_hlist buckets if successful, `NULL` otherwise.
+ *
+ * @see
+ * - stroll_hlist_destroy_buckets()
+ * - stroll_hlist_init_buckets()
+ */
+extern struct stroll_hlist *
+stroll_hlist_create_buckets(unsigned int bits);
+
+/**
+ * Release resources allocated to a stroll_hlist bucket array
+ *
+ * @param[inout] buckets stroll_hlist buckets to destroy.
+ *
+ * @see stroll_hlist_create_buckets()
+ */
+static inline
+void
+stroll_hlist_destroy_buckets(struct stroll_hlist * __restrict buckets)
+{
+	stroll_hlist_assert_api(buckets);
+
+	free(buckets);
 }
 
 #endif /* _STROLL_HLIST_H */

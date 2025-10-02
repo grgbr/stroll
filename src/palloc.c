@@ -31,7 +31,7 @@ _stroll_palloc_init_from_mem(struct stroll_palloc * __restrict alloc,
 	stroll_palloc_assert_api(mem);
 	stroll_palloc_assert_api(stroll_aligned((unsigned long)mem,
 	                                        sizeof((alloc)->next_free)));
-	stroll_palloc_assert_api(chunk_nr > 1);
+	stroll_palloc_assert_api(chunk_nr);
 	stroll_palloc_assert_api(chunk_size);
 	stroll_palloc_assert_api(stroll_aligned(chunk_size,
 	                                        sizeof((alloc)->next_free)));
@@ -41,12 +41,12 @@ _stroll_palloc_init_from_mem(struct stroll_palloc * __restrict alloc,
 
 	chnk = mem;
 	last = (void *)chnk + ((chunk_nr - 1) * chunk_size);
-	do {
+	while (chnk < last) {
 		union stroll_palloc_chunk * next = (void *)chnk + chunk_size;
 
 		chnk->next_free = next;
 		chnk = next;
-	} while (chnk < last);
+	}
 
 	stroll_palloc_assert_intern(chnk == last);
 	chnk->next_free = NULL;
@@ -63,7 +63,7 @@ stroll_palloc_init(struct stroll_palloc * __restrict alloc,
                    size_t                            chunk_size)
 {
 	stroll_palloc_assert_api(alloc);
-	stroll_palloc_assert_api(chunk_nr > 1);
+	stroll_palloc_assert_api(chunk_nr);
 	stroll_palloc_assert_api(chunk_size);
 
 	void * chunks;

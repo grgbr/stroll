@@ -1,7 +1,7 @@
 Implementation
 ==============
 
-* hash list
+* hlist: gcc attributes support
 * move hwheel timer to using hash list instead of dlist
 * avl tree
 * red-black tree
@@ -22,5 +22,5 @@ Documentation
 
 * stroll_dlist_kwmerge_sort(), stroll_dlist_kwmerge_presort ??
 * heaps
-* stroll_hlist
-* stroll_hash
+* stroll_hlist (sphinx doc)
+* stroll_hash (sphinx doc)
