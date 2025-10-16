@@ -102,7 +102,8 @@ stroll_hash64(uint64_t key, unsigned int bits)
 	 * 64x64-bit multiply is efficient on all 64-bit processors.
 	 * High bits are more random, so use them.
 	 */
-	return (key * STROLL_HASH_GOLDEN_RATIO64) >> (64U - bits);
+	return (unsigned int)((key *
+	                       STROLL_HASH_GOLDEN_RATIO64) >> (64U - bits));
 }
 
 #else /* __WORDSIZE != 64 */
