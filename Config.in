@@ -595,6 +595,7 @@ config STROLL_MESSAGE
 
 config STROLL_MESSAGE_SIZE_MAX
 	int "Maximum message capacity"
+	depends on STROLL_MESSAGE
 	default 65536
 	help
 	  Set maximum message capacity. MUST be lower than SIZE_MAX.
