@@ -73,7 +73,7 @@ stroll-utest-objs    += $(call kconf_enabled,STROLL_ARRAY,array.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_HEAP,heap.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_SLIST,slist.o)
 stroll-utest-objs    += $(call kconf_enabled,STROLL_DLIST,dlist.o)
-stroll-utest-objs    += $(call kconf_enabled,STROLL_MESSAGE,message.o)
+stroll-utest-objs    += $(call kconf_enabled,STROLL_MSG,message.o)
 ifneq ($(filter y,$(prheap_kconf)),)
 stroll-utest-objs    += theap.o
 endif # ($(filter y,$(prheap_kconf)),)

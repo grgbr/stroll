@@ -586,19 +586,28 @@ config STROLL_HASH
 	  based upon hash lists.
 	  See <stroll/hash.h>.
 
-config STROLL_MESSAGE
-	bool "Message iterator"
-	default y
+config STROLL_BUFF
+	bool "Data buffer"
+	default n
 	help
-	  Build Stroll library with support for message iterator.
-	  See <stroll/message.h>
+	  Build Stroll library with support for data buffer.
+	  See <stroll/buffer.h>
 
-config STROLL_MESSAGE_SIZE_MAX
-	int "Maximum message capacity"
-	depends on STROLL_MESSAGE
+config STROLL_BUFF_CAPACITY_MAX
+	int "Maximum buffer capacity"
+	depends on STROLL_BUFF
+	range 8 4294967295
 	default 65536
 	help
-	  Set maximum message capacity. MUST be lower than SIZE_MAX.
+	  Set maximum buffer capacity. MUST be >= 8 and < 4GiB
+	  See <stroll/buffer.h>
+
+config STROLL_MSG
+	bool "Message iterator"
+	default y
+	select STROLL_BUFF
+	help
+	  Build Stroll library with support for message iterator.
 	  See <stroll/message.h>
 
 # ex: ft=kconfig:

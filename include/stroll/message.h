@@ -19,8 +19,7 @@
 #ifndef _STROLL_MESSAGE_H
 #define _STROLL_MESSAGE_H
 
-#include <stroll/cdefs.h>
-#include <stdint.h>
+#include <stroll/buffer.h>
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 
@@ -35,8 +34,6 @@
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
 
-compile_assert(CONFIG_STROLL_MESSAGE_SIZE_MAX <= SIZE_MAX);
-
 /**
  * Message iterator.
  *
@@ -44,42 +41,14 @@ compile_assert(CONFIG_STROLL_MESSAGE_SIZE_MAX <= SIZE_MAX);
  * the tail.
  */
 struct stroll_msg {
-	/**
-	 * @internal
-	 *
-	 * offset starting data.
-	 */
-	size_t   head_off;
-
-	/**
-	 * @internal
-	 *
-	 * length of busy data.
-	 */
-	size_t   busy_len;
-
-	/**
-	 * @internal
-	 *
-	 * data capacity.
-	 */
-	size_t   capacity;
-
-	/**
-	 * @internal
-	 *
-	 * pointer to data buffer.
-	 */
-	uint8_t *buffer;
+	struct stroll_buff buff;
+	uint8_t *          data;
 };
 
 #define stroll_msg_assert_msg_api(_msg) \
 	stroll_msg_assert_api(_msg); \
-	stroll_msg_assert_api(_msg->buffer); \
-	stroll_msg_assert_api(_msg->capacity < CONFIG_STROLL_MESSAGE_SIZE_MAX); \
-	stroll_msg_assert_api(_msg->head_off <= _msg->capacity); \
-	stroll_msg_assert_api(_msg->busy_len <= _msg->capacity); \
-	stroll_msg_assert_api(_msg->busy_len <= _msg->capacity - _msg->head_off);
+	stroll_buff_assert_head_api(&(_msg)->buff); \
+	stroll_msg_assert_api((_msg)->data)
 
 /**
  * stroll_msg constant initializer.
@@ -93,27 +62,17 @@ struct stroll_msg {
  * - STROLL_MSG_INIT_EMPTY()
  * - STROLL_MSG_INIT_WITH_BUSY()
  * - STROLL_MSG_INIT_WITH_RESERVE()
- * - stroll_msg_init()
- * - stroll_msg_init_empty()
- * - stroll_msg_init_with_busy()
- * - stroll_msg_init_with_reserve()
+ * - stroll_msg_setup()
+ * - stroll_msg_setup_empty()
+ * - stroll_msg_setup_with_busy()
+ * - stroll_msg_setup_with_reserve()
  */
 #define STROLL_MSG_INIT(_data, _capacity, _off, _len) \
 	{ \
-		.buffer   = compile_eval(_data != NULL, \
-		                         _data, \
-		                         "Data MUST not be NULL"), \
-		.capacity = compile_eval(_capacity < CONFIG_STROLL_MESSAGE_SIZE_MAX, \
-		                         _capacity, \
-		                         "Capacity MUST be lower than CONFIG_STROLL_MESSAGE_SIZE_MAX"), \
-		.head_off = compile_eval(_off <= _capacity, \
-		                         _off, \
-		                         "Offset MUST be lower than Capacity"), \
-		.busy_len = compile_eval(_len <= _capacity, \
-		                         compile_eval(_len <= _capacity - _off, \
-		                                      _len, \
-		                                      "Length + offset MUST be lower than Capacity"), \
-		                         "Length MUST be lower than Capacity"), \
+		.buff = STROLL_BUFF_INIT(_capacity, _off, _len), \
+		.data = compile_eval(_data != NULL, \
+		                     _data, \
+		                     "Invalid message data"), \
 	}
 
 /**
@@ -126,10 +85,10 @@ struct stroll_msg {
  * - STROLL_MSG_INIT()
  * - STROLL_MSG_INIT_WITH_BUSY()
  * - STROLL_MSG_INIT_WITH_RESERVE()
- * - stroll_msg_init()
- * - stroll_msg_init_empty()
- * - stroll_msg_init_with_busy()
- * - stroll_msg_init_with_reserve()
+ * - stroll_msg_setup()
+ * - stroll_msg_setup_empty()
+ * - stroll_msg_setup_with_busy()
+ * - stroll_msg_setup_with_reserve()
  */
 #define STROLL_MSG_INIT_EMPTY(_data, _capacity) \
 	STROLL_MSG_INIT(_data, _capacity, 0, 0)
@@ -145,10 +104,10 @@ struct stroll_msg {
  * - STROLL_MSG_INIT()
  * - STROLL_MSG_INIT_EMPTY()
  * - STROLL_MSG_INIT_WITH_RESERVE()
- * - stroll_msg_init()
- * - stroll_msg_init_empty()
- * - stroll_msg_init_with_busy()
- * - stroll_msg_init_with_reserve()
+ * - stroll_msg_setup()
+ * - stroll_msg_setup_empty()
+ * - stroll_msg_setup_with_busy()
+ * - stroll_msg_setup_with_reserve()
  */
 #define STROLL_MSG_INIT_WITH_BUSY(_data, _capacity, _len) \
 	STROLL_MSG_INIT(_data, _capacity, 0, _len)
@@ -164,10 +123,10 @@ struct stroll_msg {
  * - STROLL_MSG_INIT()
  * - STROLL_MSG_INIT_EMPTY()
  * - STROLL_MSG_INIT_WITH_BUSY()
- * - stroll_msg_init()
- * - stroll_msg_init_empty()
- * - stroll_msg_init_with_busy()
- * - stroll_msg_init_with_reserve()
+ * - stroll_msg_setup()
+ * - stroll_msg_setup_empty()
+ * - stroll_msg_setup_with_busy()
+ * - stroll_msg_setup_with_reserve()
  */
 #define STROLL_MSG_INIT_WITH_RESERVE(_data, _capacity, _off) \
 	STROLL_MSG_INIT(_data, _capacity, _off, 0)
@@ -182,9 +141,9 @@ struct stroll_msg {
  * @param[in]  len      stroll_msh busy length.
  *
  * @see
- * - stroll_msg_init_empty()
- * - stroll_msg_init_with_busy()
- * - stroll_msg_init_with_reserve()
+ * - stroll_msg_setup_empty()
+ * - stroll_msg_setup_with_busy()
+ * - stroll_msg_setup_with_reserve()
  * - STROLL_MSG_INIT()
  * - STROLL_MSG_INIT_EMPTY()
  * - STROLL_MSG_INIT_WITH_BUSY()
@@ -192,23 +151,17 @@ struct stroll_msg {
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
-stroll_msg_init(struct stroll_msg *msg,
-                uint8_t           *data,
-                size_t             capacity,
-                size_t             off,
-                size_t             len)
+stroll_msg_setup(struct stroll_msg * __restrict msg,
+                 uint8_t * __restrict           data,
+                 size_t                         capacity,
+                 size_t                         off,
+                 size_t                         len)
 {
 	stroll_msg_assert_api(msg);
 	stroll_msg_assert_api(data);
-	stroll_msg_assert_api(capacity < CONFIG_STROLL_MESSAGE_SIZE_MAX);
-	stroll_msg_assert_api(off <= capacity);
-	stroll_msg_assert_api(len <= capacity);
-	stroll_msg_assert_api(off + len <= capacity);
 
-	msg->head_off = off;
-	msg->busy_len = len;
-	msg->capacity = capacity;
-	msg->buffer   = data;
+	stroll_buff_setup(&msg->buff, capacity, off, len);
+	msg->data   = data;
 }
 
 /**
@@ -219,9 +172,9 @@ stroll_msg_init(struct stroll_msg *msg,
  * @param[in]  capacity stroll_msg capacity.
  *
  * @see
- * - stroll_msg_init()
- * - stroll_msg_init_with_busy()
- * - stroll_msg_init_with_reserve()
+ * - stroll_msg_setup()
+ * - stroll_msg_setup_with_busy()
+ * - stroll_msg_setup_with_reserve()
  * - STROLL_MSG_INIT()
  * - STROLL_MSG_INIT_EMPTY()
  * - STROLL_MSG_INIT_WITH_BUSY()
@@ -229,14 +182,14 @@ stroll_msg_init(struct stroll_msg *msg,
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
-stroll_msg_init_empty(struct stroll_msg *msg,
-                      uint8_t           *data,
-                      size_t             capacity)
+stroll_msg_setup_empty(struct stroll_msg * __restrict msg,
+                       uint8_t * __restrict           data,
+                       size_t                         capacity)
 {
 	stroll_msg_assert_api(msg);
 	stroll_msg_assert_api(data);
 
-	stroll_msg_init(msg, data, capacity, 0, 0);
+	stroll_msg_setup(msg, data, capacity, 0, 0);
 }
 
 /**
@@ -248,9 +201,9 @@ stroll_msg_init_empty(struct stroll_msg *msg,
  * @param[in]  len      stroll_msh busy length.
  *
  * @see
- * - stroll_msg_init()
- * - stroll_msg_init_empty()
- * - stroll_msg_init_with_reserve()
+ * - stroll_msg_setup()
+ * - stroll_msg_setup_empty()
+ * - stroll_msg_setup_with_reserve()
  * - STROLL_MSG_INIT()
  * - STROLL_MSG_INIT_EMPTY()
  * - STROLL_MSG_INIT_WITH_BUSY()
@@ -258,15 +211,15 @@ stroll_msg_init_empty(struct stroll_msg *msg,
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
-stroll_msg_init_with_busy(struct stroll_msg *msg,
-                          uint8_t           *data,
-                          size_t             capacity,
-                          size_t             len)
+stroll_msg_setup_with_busy(struct stroll_msg * __restrict msg,
+                          uint8_t * __restrict            data,
+                          size_t                          capacity,
+                          size_t                          len)
 {
 	stroll_msg_assert_api(msg);
 	stroll_msg_assert_api(data);
 
-	stroll_msg_init(msg, data, capacity, 0, len);
+	stroll_msg_setup(msg, data, capacity, 0, len);
 }
 
 /**
@@ -278,9 +231,9 @@ stroll_msg_init_with_busy(struct stroll_msg *msg,
  * @param[in]  off      stroll_msg start offset.
  *
  * @see
- * - stroll_msg_init()
- * - stroll_msg_init_empty()
- * - stroll_msg_init_with_busy()
+ * - stroll_msg_setup()
+ * - stroll_msg_setup_empty()
+ * - stroll_msg_setup_with_busy()
  * - STROLL_MSG_INIT()
  * - STROLL_MSG_INIT_EMPTY()
  * - STROLL_MSG_INIT_WITH_BUSY()
@@ -288,15 +241,15 @@ stroll_msg_init_with_busy(struct stroll_msg *msg,
  */
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
-stroll_msg_init_with_reserve(struct stroll_msg *msg,
-                             uint8_t           *data,
-                             size_t             capacity,
-                             size_t             off)
+stroll_msg_setup_with_reserve(struct stroll_msg * __restrict msg,
+                              uint8_t * __restrict           data,
+                              size_t                         capacity,
+                              size_t                         off)
 {
 	stroll_msg_assert_api(msg);
 	stroll_msg_assert_api(data);
 
-	stroll_msg_init(msg, data, capacity, off, 0);
+	stroll_msg_setup(msg, data, capacity, off, 0);
 }
 
 /**
@@ -306,33 +259,32 @@ stroll_msg_init_with_reserve(struct stroll_msg *msg,
  *
  * @return The busy length.
  */
-static inline __stroll_nonull(1) __stroll_nothrow
+static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
 size_t
-stroll_msg_get_busy(struct stroll_msg *msg)
+stroll_msg_get_busy(const struct stroll_msg * __restrict msg)
 {
 	stroll_msg_assert_msg_api(msg);
 
-	return msg->busy_len;
+	return stroll_buff_busy(&msg->buff);
 }
 
 /**
- * Get the current data ptr.
+ * Return pointer to start of data stored into message.
  *
  * @param[in] msg stroll_msg.
  *
- * @return The current data ptr.
- * @return NULL current header off is out of buffer.
+ * @return Pointer to start of data or `NULL` if no data stored.
  */
-static inline __stroll_nonull(1) __stroll_nothrow
+static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
 uint8_t *
-stroll_msg_get_data(struct stroll_msg *msg)
+stroll_msg_get_data(const struct stroll_msg * __restrict msg)
 {
 	stroll_msg_assert_msg_api(msg);
 
-	if (msg->head_off == msg->capacity)
+	if (!stroll_buff_busy(&msg->buff))
 		return NULL;
 
-	return &msg->buffer[msg->head_off];
+	return stroll_buff_data(&msg->buff, msg->data);
 }
 
 /**
@@ -342,33 +294,17 @@ stroll_msg_get_data(struct stroll_msg *msg)
  *
  * @return The available head size.
  */
-static inline __stroll_nonull(1) __stroll_nothrow
+static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
 size_t
-stroll_msg_get_available_head(struct stroll_msg *msg)
+stroll_msg_get_available_head(const struct stroll_msg * __restrict msg)
 {
 	stroll_msg_assert_msg_api(msg);
 
-	return msg->head_off;
+	return stroll_buff_avail_head(&msg->buff);
 }
 
 /**
- * Get the available tail size.
- *
- * @param[in] msg stroll_msg.
- *
- * @return The available tail size.
- */
-static inline __stroll_nonull(1) __stroll_nothrow
-size_t
-stroll_msg_get_available_tail(struct stroll_msg *msg)
-{
-	stroll_msg_assert_msg_api(msg);
-
-	return msg->capacity - msg->head_off - msg->busy_len;
-}
-
-/**
- * Get the push data to the head.
+ * Push data ahead of buffer.
  *
  * @param[in,out] msg stroll_msg.
  * @param[in]     len Data length to push.
@@ -378,42 +314,80 @@ stroll_msg_get_available_tail(struct stroll_msg *msg)
  */
 static inline __stroll_nonull(1) __stroll_nothrow __warn_result
 uint8_t *
-stroll_msg_push_head(struct stroll_msg *msg, size_t len)
+stroll_msg_push_head(struct stroll_msg * __restrict msg, size_t len)
 {
 	stroll_msg_assert_msg_api(msg);
 
-	if (len > stroll_msg_get_available_head(msg))
-		return NULL;
+	if (len && (len <= stroll_buff_avail_head(&msg->buff))) {
+		stroll_buff_shrink_head(&msg->buff, len);
 
-	msg->head_off -= len;
-	msg->busy_len += len;
-	return &msg->buffer[msg->head_off];
+		return stroll_buff_data(&msg->buff, msg->data);
+	}
+
+	return NULL;
 }
 
 /**
- * Get the pull data from the head.
+ * Consume data from buffer head.
  *
- * @param[in,out] msg stroll_msg.
- * @param[in]     len Data length to push.
+ * @param[in,out] msg Message
+ * @param[in]     len Data length to pull.
  *
- * @return pointer to the data.
- * @return NULL if length upper than busy length.
+ * @return Pointer to the original start of data or `NULL` if not enough stored
+ *         data.
  */
 static inline __stroll_nonull(1) __stroll_nothrow __warn_result
 uint8_t *
-stroll_msg_pull_head(struct stroll_msg *msg, size_t len)
+stroll_msg_pull_head(struct stroll_msg * __restrict msg, size_t len)
 {
 	stroll_msg_assert_msg_api(msg);
 
-	uint8_t * head = &msg->buffer[msg->head_off];
+	if (len && (len <= stroll_buff_busy(&msg->buff))) {
+		uint8_t * data = stroll_buff_data(&msg->buff, msg->data);
 
-	if (len > stroll_msg_get_busy(msg))
+		stroll_buff_grow_head(&msg->buff, len);
+
+		return data;
+	}
+
+	return NULL;
+}
+
+/**
+ * Get the available tail size.
+ *
+ * @param[in] msg stroll_msg.
+ *
+ * @return The available tail size.
+ */
+static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
+size_t
+stroll_msg_get_available_tail(const struct stroll_msg * __restrict msg)
+{
+	stroll_msg_assert_msg_api(msg);
+
+	return stroll_buff_avail_tail(&msg->buff);
+}
+
+/**
+ * Return pointer to tail of data stored into message.
+ *
+ * @param[in] msg stroll_msg.
+ *
+ * @return Pointer to tail of data or `NULL` if no more available tail space.
+ */
+static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
+uint8_t *
+stroll_msg_get_tail(const struct stroll_msg * __restrict msg)
+{
+	stroll_msg_assert_msg_api(msg);
+
+	if (!stroll_buff_avail_tail(&msg->buff))
 		return NULL;
 
-	msg->head_off += len;
-	msg->busy_len -= len;
-	return head;
+	return stroll_buff_tail(&msg->buff, msg->data);
 }
+
 
 /**
  * Get the push data to the tail.
@@ -426,17 +400,19 @@ stroll_msg_pull_head(struct stroll_msg *msg, size_t len)
  */
 static inline __stroll_nonull(1) __stroll_nothrow __warn_result
 uint8_t *
-stroll_msg_push_tail(struct stroll_msg *msg, size_t len)
+stroll_msg_push_tail(struct stroll_msg * __restrict msg, size_t len)
 {
 	stroll_msg_assert_msg_api(msg);
 
-	uint8_t * tail = &msg->buffer[msg->head_off + msg->busy_len];
+	if (len && (len <= stroll_buff_avail_tail(&msg->buff))) {
+		uint8_t * tail = stroll_buff_tail(&msg->buff, msg->data);
 
-	if (len > stroll_msg_get_available_tail(msg))
-		return NULL;
+		stroll_buff_grow_tail(&msg->buff, len);
 
-	msg->busy_len += len;
-	return tail;
+		return tail;
+	}
+
+	return NULL;
 }
 
 /**
@@ -450,15 +426,17 @@ stroll_msg_push_tail(struct stroll_msg *msg, size_t len)
  */
 static inline __stroll_nonull(1) __stroll_nothrow __warn_result
 uint8_t *
-stroll_msg_pull_tail(struct stroll_msg *msg, size_t len)
+stroll_msg_pull_tail(struct stroll_msg * __restrict msg, size_t len)
 {
 	stroll_msg_assert_msg_api(msg);
 
-	if (len > stroll_msg_get_busy(msg))
-		return NULL;
+	if (len && (len <= stroll_buff_busy(&msg->buff))) {
+		stroll_buff_shrink_tail(&msg->buff, len);
 
-	msg->busy_len -= len;
-	return &msg->buffer[msg->head_off + msg->busy_len];
+		return stroll_buff_tail(&msg->buff, msg->data);
+	}
+
+	return NULL;
 }
 
 #endif /* _STROLL_MESSAGE_H */

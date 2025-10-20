@@ -16,6 +16,8 @@ Testing
 * falloc
 * stroll_hlist
 * stroll_hash
+* message: test stroll_msg_get_tail()
+* buffer: write all tests
 
 Documentation
 =============
@@ -24,3 +26,5 @@ Documentation
 * heaps
 * stroll_hlist (sphinx doc)
 * stroll_hash (sphinx doc)
+* message: fix / refine
+* buffer
