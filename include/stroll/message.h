@@ -259,7 +259,7 @@ stroll_msg_setup_with_reserve(struct stroll_msg * __restrict msg,
  *
  * @return The busy length.
  */
-static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 size_t
 stroll_msg_get_busy(const struct stroll_msg * __restrict msg)
 {
@@ -275,7 +275,7 @@ stroll_msg_get_busy(const struct stroll_msg * __restrict msg)
  *
  * @return Pointer to start of data or `NULL` if no data stored.
  */
-static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 uint8_t *
 stroll_msg_get_data(const struct stroll_msg * __restrict msg)
 {
@@ -294,7 +294,7 @@ stroll_msg_get_data(const struct stroll_msg * __restrict msg)
  *
  * @return The available head size.
  */
-static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 size_t
 stroll_msg_get_available_head(const struct stroll_msg * __restrict msg)
 {
@@ -312,20 +312,9 @@ stroll_msg_get_available_head(const struct stroll_msg * __restrict msg)
  * @return pointer to the data.
  * @return NULL if length upper than available head.
  */
-static inline __stroll_nonull(1) __stroll_nothrow __warn_result
-uint8_t *
+extern uint8_t *
 stroll_msg_push_head(struct stroll_msg * __restrict msg, size_t len)
-{
-	stroll_msg_assert_msg_api(msg);
-
-	if (len && (len <= stroll_buff_avail_head(&msg->buff))) {
-		stroll_buff_shrink_head(&msg->buff, len);
-
-		return stroll_buff_data(&msg->buff, msg->data);
-	}
-
-	return NULL;
-}
+	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
 /**
  * Consume data from buffer head.
@@ -336,22 +325,9 @@ stroll_msg_push_head(struct stroll_msg * __restrict msg, size_t len)
  * @return Pointer to the original start of data or `NULL` if not enough stored
  *         data.
  */
-static inline __stroll_nonull(1) __stroll_nothrow __warn_result
-uint8_t *
+extern uint8_t *
 stroll_msg_pull_head(struct stroll_msg * __restrict msg, size_t len)
-{
-	stroll_msg_assert_msg_api(msg);
-
-	if (len && (len <= stroll_buff_busy(&msg->buff))) {
-		uint8_t * data = stroll_buff_data(&msg->buff, msg->data);
-
-		stroll_buff_grow_head(&msg->buff, len);
-
-		return data;
-	}
-
-	return NULL;
-}
+	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
 /**
  * Get the available tail size.
@@ -360,7 +336,7 @@ stroll_msg_pull_head(struct stroll_msg * __restrict msg, size_t len)
  *
  * @return The available tail size.
  */
-static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 size_t
 stroll_msg_get_available_tail(const struct stroll_msg * __restrict msg)
 {
@@ -376,7 +352,7 @@ stroll_msg_get_available_tail(const struct stroll_msg * __restrict msg)
  *
  * @return Pointer to tail of data or `NULL` if no more available tail space.
  */
-static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 uint8_t *
 stroll_msg_get_tail(const struct stroll_msg * __restrict msg)
 {
@@ -398,22 +374,9 @@ stroll_msg_get_tail(const struct stroll_msg * __restrict msg)
  * @return pointer to the data.
  * @return NULL if length upper than available tail.
  */
-static inline __stroll_nonull(1) __stroll_nothrow __warn_result
-uint8_t *
+extern uint8_t *
 stroll_msg_push_tail(struct stroll_msg * __restrict msg, size_t len)
-{
-	stroll_msg_assert_msg_api(msg);
-
-	if (len && (len <= stroll_buff_avail_tail(&msg->buff))) {
-		uint8_t * tail = stroll_buff_tail(&msg->buff, msg->data);
-
-		stroll_buff_grow_tail(&msg->buff, len);
-
-		return tail;
-	}
-
-	return NULL;
-}
+	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
 /**
  * Get the pull data from the tail.
@@ -424,19 +387,8 @@ stroll_msg_push_tail(struct stroll_msg * __restrict msg, size_t len)
  * @return pointer to the data.
  * @return NULL if length upper than busy length.
  */
-static inline __stroll_nonull(1) __stroll_nothrow __warn_result
-uint8_t *
+extern uint8_t *
 stroll_msg_pull_tail(struct stroll_msg * __restrict msg, size_t len)
-{
-	stroll_msg_assert_msg_api(msg);
-
-	if (len && (len <= stroll_buff_busy(&msg->buff))) {
-		stroll_buff_shrink_tail(&msg->buff, len);
-
-		return stroll_buff_tail(&msg->buff, msg->data);
-	}
-
-	return NULL;
-}
+	__stroll_nonull(1) __stroll_nothrow __warn_result;
 
 #endif /* _STROLL_MESSAGE_H */
