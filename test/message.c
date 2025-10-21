@@ -24,10 +24,10 @@ CUTE_TEST(strollut_message_init)
 	stroll_msg_setup(&msg, data, DATA_LEN, test_off, test_len);
 
 	cute_check_uint(test_len, equal, stroll_msg_get_busy(&msg));
-	cute_check_uint(test_off, equal, stroll_msg_get_available_head(&msg));
+	cute_check_uint(test_off, equal, stroll_msg_get_avail_head(&msg));
 	cute_check_uint(DATA_LEN - test_off - test_len,
 	                equal,
-	                stroll_msg_get_available_tail(&msg));
+	                stroll_msg_get_avail_tail(&msg));
 	cute_check_ptr(data + test_off, equal, stroll_msg_get_data(&msg));
 }
 
@@ -38,8 +38,8 @@ CUTE_TEST(strollut_message_init_empty)
 	stroll_msg_setup_empty(&msg, data, DATA_LEN);
 
 	cute_check_uint(0, equal, stroll_msg_get_busy(&msg));
-	cute_check_uint(0, equal, stroll_msg_get_available_head(&msg));
-	cute_check_uint(DATA_LEN, equal, stroll_msg_get_available_tail(&msg));
+	cute_check_uint(0, equal, stroll_msg_get_avail_head(&msg));
+	cute_check_uint(DATA_LEN, equal, stroll_msg_get_avail_tail(&msg));
 	cute_check_ptr(stroll_msg_get_data(&msg), equal, NULL);
 }
 
@@ -50,10 +50,10 @@ CUTE_TEST(strollut_message_init_with_busy)
 	stroll_msg_setup_with_busy(&msg, data, DATA_LEN, test_len);
 
 	cute_check_uint(test_len, equal, stroll_msg_get_busy(&msg));
-	cute_check_uint(0, equal, stroll_msg_get_available_head(&msg));
+	cute_check_uint(0, equal, stroll_msg_get_avail_head(&msg));
 	cute_check_uint(DATA_LEN - test_len,
 	                equal,
-		stroll_msg_get_available_tail(&msg));
+		stroll_msg_get_avail_tail(&msg));
 	cute_check_ptr(data, equal, stroll_msg_get_data(&msg));
 }
 
@@ -64,10 +64,10 @@ CUTE_TEST(strollut_message_init_with_reserve)
 	stroll_msg_setup_with_reserve(&msg, data, DATA_LEN, test_off);
 
 	cute_check_uint(0, equal, stroll_msg_get_busy(&msg));
-	cute_check_uint(test_off, equal, stroll_msg_get_available_head(&msg));
+	cute_check_uint(test_off, equal, stroll_msg_get_avail_head(&msg));
 	cute_check_uint(DATA_LEN - test_off,
 	                equal,
-	                stroll_msg_get_available_tail(&msg));
+	                stroll_msg_get_avail_tail(&msg));
 	cute_check_ptr(stroll_msg_get_data(&msg), equal, NULL);
 }
 
@@ -89,10 +89,10 @@ CUTE_TEST(strollut_message_pull_head)
 	                stroll_msg_get_busy(&msg));
 	cute_check_uint(test_off + test_len,
 	                equal,
-	                stroll_msg_get_available_head(&msg));
+	                stroll_msg_get_avail_head(&msg));
 	cute_check_uint(DATA_LEN - test_off - test_len,
 	                equal,
-	                stroll_msg_get_available_tail(&msg));
+	                stroll_msg_get_avail_tail(&msg));
 	cute_check_ptr(stroll_msg_get_data(&msg),
 	               equal,
 	               NULL);
@@ -113,10 +113,10 @@ CUTE_TEST(strollut_message_pull_tail)
 	               stroll_msg_pull_tail(&msg,
 	                                    stroll_msg_get_busy(&msg)));
 	cute_check_uint(0, equal, stroll_msg_get_busy(&msg));
-	cute_check_uint(test_off, equal, stroll_msg_get_available_head(&msg));
+	cute_check_uint(test_off, equal, stroll_msg_get_avail_head(&msg));
 	cute_check_uint(DATA_LEN - test_off,
 	                equal,
-	                stroll_msg_get_available_tail(&msg));
+	                stroll_msg_get_avail_tail(&msg));
 	cute_check_ptr(NULL, equal, stroll_msg_get_data(&msg));
 }
 
@@ -128,16 +128,16 @@ CUTE_TEST(strollut_message_push_head)
 	
 	cute_check_ptr(NULL, equal,
 		stroll_msg_push_head(&msg,
-		                     stroll_msg_get_available_head(&msg) + 1));
+		                     stroll_msg_get_avail_head(&msg) + 1));
 	cute_check_ptr(data, equal,
 		stroll_msg_push_head(&msg,
-		                     stroll_msg_get_available_head(&msg)));
+		                     stroll_msg_get_avail_head(&msg)));
 	cute_check_uint(test_off + test_len, equal,
 		stroll_msg_get_busy(&msg));
 	cute_check_uint(0, equal,
-		stroll_msg_get_available_head(&msg));
+		stroll_msg_get_avail_head(&msg));
 	cute_check_uint(DATA_LEN - test_off - test_len, equal,
-		stroll_msg_get_available_tail(&msg));
+		stroll_msg_get_avail_tail(&msg));
 	cute_check_ptr(data, equal,
 		stroll_msg_get_data(&msg));
 }
@@ -150,16 +150,16 @@ CUTE_TEST(strollut_message_push_tail)
 	
 	cute_check_ptr(NULL, equal,
 		stroll_msg_push_tail(&msg,
-		                     stroll_msg_get_available_tail(&msg) + 1));
+		                     stroll_msg_get_avail_tail(&msg) + 1));
 	cute_check_ptr(data, equal,
 		stroll_msg_push_tail(&msg,
-		                     stroll_msg_get_available_tail(&msg)));
+		                     stroll_msg_get_avail_tail(&msg)));
 	cute_check_uint(DATA_LEN, equal,
 		stroll_msg_get_busy(&msg));
 	cute_check_uint(0, equal,
-		stroll_msg_get_available_head(&msg));
+		stroll_msg_get_avail_head(&msg));
 	cute_check_uint(0, equal,
-		stroll_msg_get_available_tail(&msg));
+		stroll_msg_get_avail_tail(&msg));
 	cute_check_ptr(data, equal,
 		stroll_msg_get_data(&msg));
 }
@@ -253,9 +253,9 @@ strollut_message_assert_bad_struct(struct stroll_msg *msg)
 	size_t    sz __unused;
 
 	cute_expect_assertion(
-		sz = stroll_msg_get_available_head(msg));
+		sz = stroll_msg_get_avail_head(msg));
 	cute_expect_assertion(
-		sz = stroll_msg_get_available_tail(msg));
+		sz = stroll_msg_get_avail_tail(msg));
 	cute_expect_assertion(
 		sz = stroll_msg_get_busy(msg));
 	cute_expect_assertion(

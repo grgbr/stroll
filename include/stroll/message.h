@@ -7,9 +7,10 @@
 
 /**
  * @file
- * Power of 2 operations
+ * High-level buffer / message iterator.
  *
  * @author    Loïc Jourdheuil Sellin
+ * @author    Grégor Boirie <gregor.boirie@free.fr>
  * @date      1 Sep 2025
  * @copyright Copyright (C) 2017-2023 Loïc Jourdheuil Sellin.
  * @license   [GNU Lesser General Public License (LGPL) v3]
@@ -37,11 +38,43 @@
 /**
  * Message iterator.
  *
- * Describes a message iterator than can push and pull data from the head and
- * the tail.
+ * A high-level buffered message iterator that may be used to produce to
+ * and / or consume from an arbitrary fixed sized contiguous data memory block.
+ * Data production and consumption may happen at both front (head) and rear
+ * (tail) ends.
+ *
+ * @see
+ * - STROLL_MSG_INIT()
+ * - STROLL_MSG_INIT_EMPTY()
+ * - STROLL_MSG_INIT_WITH_BUSY()
+ * - STROLL_MSG_INIT_WITH_RESERVE()
+ * - stroll_msg_setup()
+ * - stroll_msg_setup_empty()
+ * - stroll_msg_setup_with_busy()
+ * - stroll_msg_setup_with_reserve()
+ * - stroll_msg_get_busy()
+ * - stroll_msg_get_data()
+ * - stroll_msg_get_avail_head()
+ * - stroll_msg_push_head()
+ * - stroll_msg_pull_head()
+ * - stroll_msg_get_avail_tail()
+ * - stroll_msg_get_tail()
+ * - stroll_msg_push_tail()
+ * - stroll_msg_pull_tail()
  */
 struct stroll_msg {
+	/**
+	 * @internal
+	 *
+	 * Internal buffer state.
+	 */
 	struct stroll_buff buff;
+
+	/**
+	 * @internal
+	 *
+	 * Pointer to user defined data area.
+	 */
 	uint8_t *          data;
 };
 
@@ -51,12 +84,12 @@ struct stroll_msg {
 	stroll_msg_assert_api((_msg)->data)
 
 /**
- * stroll_msg constant initializer.
+ * Message constant initializer.
  *
- * @param _data     stroll_msg buffer.
- * @param _capacity stroll_msg capacity.
- * @param _off      stroll_msg start offset.
- * @param _len      stroll_msg busy length.
+ * @param _data     Pointer to message contiguous memory block
+ * @param _capacity @p _data memory area size
+ * @param _off      Initial offset to head of user data within @p _data
+ * @param _len      Initial size of user data within @p _data
  *
  * @see
  * - STROLL_MSG_INIT_EMPTY()
@@ -76,10 +109,10 @@ struct stroll_msg {
 	}
 
 /**
- * stroll_msg constant initializer with empty data.
+ * Initialize a message with an empty data memory block.
  *
- * @param _data     stroll_msg buffer.
- * @param _capacity stroll_msg capacity.
+ * @param _data     Pointer to message contiguous memory block
+ * @param _capacity @p _data memory area size
  *
  * @see
  * - STROLL_MSG_INIT()
@@ -94,11 +127,11 @@ struct stroll_msg {
 	STROLL_MSG_INIT(_data, _capacity, 0, 0)
 
 /**
- * stroll_msg constant initializer with set data.
+ * Initialize a message with a non-empty data memory block.
  *
- * @param _data     stroll_msg buffer.
- * @param _capacity stroll_msg capacity.
- * @param _len      stroll_msg busy length.
+ * @param _data     Pointer to message contiguous memory block
+ * @param _capacity @p _data memory area size
+ * @param _len      Initial size of user data within @p _data
  *
  * @see
  * - STROLL_MSG_INIT()
@@ -113,11 +146,12 @@ struct stroll_msg {
 	STROLL_MSG_INIT(_data, _capacity, 0, _len)
 
 /**
- * stroll_msg constant initializer with header reserve.
+ * Initialize a message with an empty data memory block and an initial head
+ * offset.
  *
- * @param _data     stroll_msg buffer.
- * @param _capacity stroll_msg capacity.
- * @param _off      stroll_msg start offset.
+ * @param _data     Pointer to message contiguous memory block
+ * @param _capacity @p _data memory area size
+ * @param _off      Initial offset to head of user data within @p _data
  *
  * @see
  * - STROLL_MSG_INIT()
@@ -132,13 +166,13 @@ struct stroll_msg {
 	STROLL_MSG_INIT(_data, _capacity, _off, 0)
 
 /**
- * Initialize a stroll_message.
+ * Dynamically initialize a message.
  *
- * @param[out] msg      stroll_msg to initialize.
- * @param[in]  data     stroll_msg buffer.
- * @param[in]  capacity stroll_msg capacity.
- * @param[in]  off      stroll_msg start offset.
- * @param[in]  len      stroll_msh busy length.
+ * @param[out] msg      Message to initialize
+ * @param[in]  data     Pointer to message contiguous memory block
+ * @param[in]  capacity @p data memory area size
+ * @param[in]  off      Initial offset to head of user data within @p data
+ * @param[in]  len      Initial size of user data within @p data
  *
  * @see
  * - stroll_msg_setup_empty()
@@ -165,11 +199,11 @@ stroll_msg_setup(struct stroll_msg * __restrict msg,
 }
 
 /**
- * Initialize a stroll_message with empty data.
+ * Dynamically initialize a message with an empty data memory block.
  *
- * @param[out] msg      stroll_msg to initialize.
- * @param[in]  data     stroll_msg buffer.
- * @param[in]  capacity stroll_msg capacity.
+ * @param[out] msg      Message to initialize
+ * @param[in]  data     Pointer to message contiguous memory block
+ * @param[in]  capacity @p data memory area size
  *
  * @see
  * - stroll_msg_setup()
@@ -193,12 +227,12 @@ stroll_msg_setup_empty(struct stroll_msg * __restrict msg,
 }
 
 /**
- * Initialize a stroll_message with set data.
+ * Dynamically initialize a message with a non-empty data memory block.
  *
- * @param[out] msg      stroll_msg to initialize.
- * @param[in]  data     stroll_msg buffer.
- * @param[in]  capacity stroll_msg capacity.
- * @param[in]  len      stroll_msh busy length.
+ * @param[out] msg      Message to initialize
+ * @param[in]  data     Pointer to message contiguous memory block
+ * @param[in]  capacity @p data memory area size
+ * @param[in]  len      Initial size of user data within @p data
  *
  * @see
  * - stroll_msg_setup()
@@ -223,12 +257,13 @@ stroll_msg_setup_with_busy(struct stroll_msg * __restrict msg,
 }
 
 /**
- * Initialize a stroll_message header reserve.
+ * Dynamically initialize a message with an empty data memory block and an
+ * initial head offset.
  *
- * @param[out] msg      stroll_msg to initialize.
- * @param[in]  data     stroll_msg buffer.
- * @param[in]  capacity stroll_msg capacity.
- * @param[in]  off      stroll_msg start offset.
+ * @param[out] msg      Message to initialize
+ * @param[in]  data     Pointer to message contiguous memory block
+ * @param[in]  capacity @p data memory area size
+ * @param[in]  off      Initial offset to head of user data within @p data
  *
  * @see
  * - stroll_msg_setup()
@@ -253,11 +288,17 @@ stroll_msg_setup_with_reserve(struct stroll_msg * __restrict msg,
 }
 
 /**
- * Get the busy length.
+ * Return size of user data stored into a message.
  *
- * @param[in] msg stroll_msg.
+ * @param[in] msg Message to retrieve informations from
  *
- * @return The busy length.
+ * @return Size of user data.
+ *
+ * @see
+ * - stroll_msg_get_data()
+ * - stroll_msg_get_avail_head()
+ * - stroll_msg_get_avail_tail()
+ * - stroll_msg
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 size_t
@@ -269,11 +310,16 @@ stroll_msg_get_busy(const struct stroll_msg * __restrict msg)
 }
 
 /**
- * Return pointer to start of data stored into message.
+ * Return a pointer to start of user data stored into message.
  *
- * @param[in] msg stroll_msg.
+ * @param[in] msg Message to retrieve informations from
  *
  * @return Pointer to start of data or `NULL` if no data stored.
+ *
+ * @see
+ * - stroll_msg_get_busy()
+ * - stroll_msg_get_tail()
+ * - stroll_msg
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 uint8_t *
@@ -288,15 +334,22 @@ stroll_msg_get_data(const struct stroll_msg * __restrict msg)
 }
 
 /**
- * Get the available head size.
+ * Return offset to start of user data of a message.
  *
- * @param[in] msg stroll_msg.
+ * @param[in] msg Message to retrieve informations from
  *
- * @return The available head size.
+ * @return Size of (unused) area located ahead of user data.
+ *
+ * @see
+ * - stroll_msg_push_head()
+ * - stroll_msg_pull_head()
+ * - stroll_msg_get_busy()
+ * - stroll_msg_get_avail_tail()
+ * - stroll_msg
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 size_t
-stroll_msg_get_available_head(const struct stroll_msg * __restrict msg)
+stroll_msg_get_avail_head(const struct stroll_msg * __restrict msg)
 {
 	stroll_msg_assert_msg_api(msg);
 
@@ -304,41 +357,66 @@ stroll_msg_get_available_head(const struct stroll_msg * __restrict msg)
 }
 
 /**
- * Push data ahead of buffer.
+ * Reserve memory space ahead of message user data.
  *
- * @param[in,out] msg stroll_msg.
- * @param[in]     len Data length to push.
+ * @param[inout] msg Message to push data into.
+ * @param[in]    len Size of data to push.
  *
- * @return pointer to the data.
- * @return NULL if length upper than available head.
+ * As a consequence, the memory area available for storing additional data ahead
+ * of user data stored into @p msg decreases by an amount of @p len bytes.
+ *
+ * @return Pointer to new user data start (head) or `NULL` if memory available
+ *         ahead of user data is not large enough.
+ *
+ * @see
+ * - stroll_msg_get_avail_head()
+ * - stroll_msg_pull_head()
+ * - stroll_msg_push_tail()
+ * - stroll_msg
  */
 extern uint8_t *
 stroll_msg_push_head(struct stroll_msg * __restrict msg, size_t len)
 	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
 /**
- * Consume data from buffer head.
+ * Hand over memory space ahead of message user data.
  *
- * @param[in,out] msg Message
- * @param[in]     len Data length to pull.
+ * @param[inout] msg Message to pull data from.
+ * @param[in]    len Size of data to pull.
  *
- * @return Pointer to the original start of data or `NULL` if not enough stored
- *         data.
+ * As a consequence, the memory area available for storing additional data ahead
+ * of user data stored into @p msg increases by an amount of @p len bytes.
+ *
+ * @return Pointer to the original start of data or `NULL` if stored user data
+ *         is not large enough.
+ *
+ * @see
+ * - stroll_msg_get_busy()
+ * - stroll_msg_get_data()
+ * - stroll_msg_push_head()
+ * - stroll_msg_pull_tail()
+ * - stroll_msg
  */
 extern uint8_t *
 stroll_msg_pull_head(struct stroll_msg * __restrict msg, size_t len)
 	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
 /**
- * Get the available tail size.
+ * Return size of (unused) area located right after user data.
  *
- * @param[in] msg stroll_msg.
+ * @param[in] msg Message to retrieve informations from
  *
- * @return The available tail size.
+ * @return Size of (unused) area located at tail of user data.
+ *
+ * @see
+ * - stroll_msg_get_avail_head()
+ * - stroll_msg_get_tail()
+ * - stroll_msg_get_busy()
+ * - stroll_msg
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 size_t
-stroll_msg_get_available_tail(const struct stroll_msg * __restrict msg)
+stroll_msg_get_avail_tail(const struct stroll_msg * __restrict msg)
 {
 	stroll_msg_assert_msg_api(msg);
 
@@ -346,11 +424,19 @@ stroll_msg_get_available_tail(const struct stroll_msg * __restrict msg)
 }
 
 /**
- * Return pointer to tail of data stored into message.
+ * Return a pointer to (unused) area located right after user data.
  *
- * @param[in] msg stroll_msg.
+ * @param[in] msg Message to retrieve informations from
  *
- * @return Pointer to tail of data or `NULL` if no more available tail space.
+ * @return Pointer to (unused) area located at tail of user data or `NULL` if
+ *         there is no more available tail space.
+ *
+ * @see
+ * - stroll_msg_get_avail_tail()
+ * - stroll_msg_push_tail()
+ * - stroll_msg_pull_tail()
+ * - stroll_msg_get_data()
+ * - stroll_msg
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 uint8_t *
@@ -366,26 +452,48 @@ stroll_msg_get_tail(const struct stroll_msg * __restrict msg)
 
 
 /**
- * Get the push data to the tail.
+ * Reserve memory space right after user data.
  *
- * @param[in,out] msg stroll_msg.
- * @param[in]     len Data length to push.
+ * @param[inout] msg Message to push data into.
+ * @param[in]    len Size of data to push.
  *
- * @return pointer to the data.
- * @return NULL if length upper than available tail.
+ * As a consequence, the memory area available for storing additional data at
+ * the tail of user data stored into @p msg decreases by an amount of @p len
+ * bytes.
+ *
+ * @return Pointer to area located at the tail of user data or `NULL` if there
+ *         is no more available tail space.
+ *
+ * @see
+ * - stroll_msg_get_avail_tail()
+ * - stroll_msg_pull_tail()
+ * - stroll_msg_get_tail()
+ * - stroll_msg_push_head()
+ * - stroll_msg
  */
 extern uint8_t *
 stroll_msg_push_tail(struct stroll_msg * __restrict msg, size_t len)
 	__stroll_nonull(1) __stroll_nothrow __leaf __warn_result;
 
 /**
- * Get the pull data from the tail.
+ * Hand over memory space from the tail of message user data.
  *
- * @param[in,out] msg stroll_msg.
- * @param[in]     len Data length to push.
+ * @param[inout] msg Message to pull data from.
+ * @param[in]    len Size of data to pull.
  *
- * @return pointer to the data.
- * @return NULL if length upper than busy length.
+ * As a consequence, the memory area available for storing additional data at
+ * the tail of user data stored into @p msg increases by an amount of @p len
+ * bytes.
+ *
+ * @return Pointer to newly (unused) area located at tail of user data or `NULL`
+ *         if stored user data is not large enough.
+ *
+ * @see
+ * - stroll_msg_get_busy()
+ * - stroll_msg_get_tail()
+ * - stroll_msg_push_tail()
+ * - stroll_msg_pull_head()
+ * - stroll_msg
  */
 extern uint8_t *
 stroll_msg_pull_tail(struct stroll_msg * __restrict msg, size_t len)
