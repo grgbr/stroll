@@ -113,7 +113,16 @@ stroll_buff_setup(struct stroll_buff * __restrict buffer,
 	buffer->capacity = capacity;
 }
 
-static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
+size_t
+stroll_buff_capacity(const struct stroll_buff * __restrict buffer)
+{
+	stroll_buff_assert_head_api(buffer);
+
+	return buffer->capacity;
+}
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 size_t
 stroll_buff_busy(const struct stroll_buff * __restrict buffer)
 {
@@ -122,7 +131,7 @@ stroll_buff_busy(const struct stroll_buff * __restrict buffer)
 	return buffer->busy_len;
 }
 
-static inline __stroll_nonull(1, 2) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1, 2) __stroll_pure __stroll_nothrow __warn_result
 uint8_t *
 stroll_buff_data(const struct stroll_buff * __restrict buffer,
                  const uint8_t * __restrict            base)
@@ -136,7 +145,7 @@ STROLL_IGNORE_WARN("-Wcast-qual")
 STROLL_RESTORE_WARN
 }
 
-static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 size_t
 stroll_buff_avail_head(const struct stroll_buff * __restrict buffer)
 {
@@ -169,7 +178,7 @@ stroll_buff_shrink_head(struct stroll_buff * __restrict buffer,
 	buffer->busy_len += bytes;
 }
 
-static inline __stroll_nonull(1, 2) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1, 2) __stroll_pure __stroll_nothrow __warn_result
 uint8_t *
 stroll_buff_head(const struct stroll_buff * __restrict buffer,
                  const uint8_t * __restrict            base,
@@ -184,7 +193,7 @@ STROLL_IGNORE_WARN("-Wcast-qual")
 STROLL_RESTORE_WARN
 }
 
-static inline __stroll_nonull(1) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 size_t
 stroll_buff_avail_tail(const struct stroll_buff * __restrict buffer)
 {
@@ -216,7 +225,7 @@ stroll_buff_shrink_tail(struct stroll_buff * __restrict buffer,
 	buffer->busy_len -= bytes;
 }
 
-static inline __stroll_nonull(1, 2) __pure __stroll_nothrow __warn_result
+static inline __stroll_nonull(1, 2) __stroll_pure __stroll_nothrow __warn_result
 uint8_t *
 stroll_buff_tail(const struct stroll_buff * __restrict buffer,
                  const uint8_t * __restrict            base)
