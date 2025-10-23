@@ -288,6 +288,28 @@ stroll_msg_setup_with_reserve(struct stroll_msg * __restrict msg,
 }
 
 /**
+ * Return overall storage capacity of a message.
+ *
+ * @param[in] msg Message to retrieve informations from
+ *
+ * @return Capacity in bytes
+ *
+ * @see
+ * - stroll_msg_get_busy()
+ * - stroll_msg_get_avail_head()
+ * - stroll_msg_get_avail_tail()
+ * - stroll_msg
+ */
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
+size_t
+stroll_msg_get_capacity(const struct stroll_msg * __restrict msg)
+{
+	stroll_msg_assert_msg_api(msg);
+
+	return stroll_buff_capacity(&msg->buff);
+}
+
+/**
  * Return size of user data stored into a message.
  *
  * @param[in] msg Message to retrieve informations from
@@ -296,6 +318,7 @@ stroll_msg_setup_with_reserve(struct stroll_msg * __restrict msg,
  *
  * @see
  * - stroll_msg_get_data()
+ * - stroll_msg_get_capacity()
  * - stroll_msg_get_avail_head()
  * - stroll_msg_get_avail_tail()
  * - stroll_msg
@@ -344,6 +367,7 @@ stroll_msg_get_data(const struct stroll_msg * __restrict msg)
  * - stroll_msg_push_head()
  * - stroll_msg_pull_head()
  * - stroll_msg_get_busy()
+ * - stroll_msg_get_capacity()
  * - stroll_msg_get_avail_tail()
  * - stroll_msg
  */
@@ -412,6 +436,7 @@ stroll_msg_pull_head(struct stroll_msg * __restrict msg, size_t len)
  * - stroll_msg_get_avail_head()
  * - stroll_msg_get_tail()
  * - stroll_msg_get_busy()
+ * - stroll_msg_get_capacity()
  * - stroll_msg
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result

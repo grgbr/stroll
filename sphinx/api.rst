@@ -1275,6 +1275,7 @@ The following manipulations are available:
 
    * Accessors:
 
+      * :c:func:`stroll_msg_get_capacity`
       * :c:func:`stroll_msg_get_busy`
       * :c:func:`stroll_msg_get_data`
       * :c:func:`stroll_msg_get_avail_head`
@@ -3122,6 +3123,11 @@ stroll_msg_get_busy
 *******************
 
 .. doxygenfunction:: stroll_msg_get_busy
+
+stroll_msg_get_capacity
+***********************
+
+.. doxygenfunction:: stroll_msg_get_capacity
 
 stroll_msg_get_data
 *******************
