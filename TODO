@@ -12,8 +12,9 @@ Implementation
 Testing
 =======
 
-* stroll_palloc
+* palloc
 * falloc
+* lalloc
 * stroll_hlist
 * stroll_hash
 * message: test stroll_msg_get_tail()

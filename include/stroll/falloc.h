@@ -20,6 +20,7 @@
 #define _STROLL_FALLOC_H
 
 #include <stroll/dlist.h>
+#include <stroll/priv/alloc.h>
 
 /**
  * Fixed sized object allocator.
@@ -106,8 +107,6 @@ stroll_falloc_free(struct stroll_falloc * __restrict alloc,
                    void * __restrict                 chunk)
 	__stroll_nonull(1) __stroll_nothrow __leaf;
 
-union stroll_falloc_chunk;
-
 /**
  * Allocate a chunk of memory.
  *
@@ -130,7 +129,7 @@ extern void *
 stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
 	__stroll_nonull(1)
 	__malloc(stroll_falloc_free, 2)
-	__assume_align(sizeof(union stroll_falloc_chunk *))
+	__assume_align(sizeof(union stroll_alloc_chunk *))
 	__stroll_nothrow
 	__leaf
 	__warn_result;
@@ -167,7 +166,7 @@ stroll_falloc_init(struct stroll_falloc * __restrict alloc,
 /**
  * Release all resources allocated by a fixed sized object allocator.
  *
- * @param[out] alloc Fixed sized object allocator
+ * @param[inout] alloc Fixed sized object allocator
  *
  * Release all *blocks* of memory *chunks* allocated by the @p alloc allocator
  * given in argument.

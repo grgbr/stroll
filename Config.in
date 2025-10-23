@@ -550,23 +550,39 @@ config STROLL_DLIST_KWMERGE_SORT
 
 endif # STROLL_LIST
 
+config STROLL_ALLOC
+	bool
+	default n
+
 config STROLL_PALLOC
-	bool "Fixed sized object pre-allocator"
+	bool "Small fixed sized object pre-allocator"
+	select STROLL_ALLOC
 	select STROLL_POW2
 	default y
 	help
-	  Build Stroll library with support for a primitive allocator allowing to
-	  pre-allocate a fixed number of objects of constant size.
+	  Build Stroll library with support for a primitive allocator allowing
+	  to pre-allocate a fixed number of objects of constant size.
 	  See <stroll/palloc.h>.
+
+config STROLL_LALLOC
+	bool "Large fixed sized objects pre-allocator"
+	select STROLL_ALLOC
+	select STROLL_POW2
+	default y
+	help
+	  Build Stroll library with support for a primitive allocator allowing
+	  to pre-allocate a fixed number of objects of large constant size.
+	  See <stroll/lalloc.h>.
 
 config STROLL_FALLOC
 	bool "Fixed sized object allocator"
+	select STROLL_ALLOC
 	select STROLL_DLIST
 	select STROLL_POW2
 	default y
 	help
 	  Build Stroll library with support for a simple allocator allowing to
-	  allocate objects of constant size.
+	  allocate a variable number of constant sized objects.
 	  See <stroll/falloc.h>.
 
 config STROLL_HLIST

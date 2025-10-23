@@ -36,13 +36,13 @@ _stroll_palloc_init_from_mem(struct stroll_palloc * __restrict alloc,
 	stroll_palloc_assert_api(stroll_aligned(chunk_size,
 	                                        sizeof((alloc)->next_free)));
 
-	union stroll_palloc_chunk * chnk;
-	union stroll_palloc_chunk * last;
+	union stroll_alloc_chunk * chnk;
+	union stroll_alloc_chunk * last;
 
 	chnk = mem;
 	last = (void *)chnk + ((chunk_nr - 1) * chunk_size);
 	while (chnk < last) {
-		union stroll_palloc_chunk * next = (void *)chnk + chunk_size;
+		union stroll_alloc_chunk * next = (void *)chnk + chunk_size;
 
 		chnk->next_free = next;
 		chnk = next;
@@ -53,7 +53,6 @@ _stroll_palloc_init_from_mem(struct stroll_palloc * __restrict alloc,
 
 	alloc->next_free = mem;
 	alloc->chunks = mem;
-	alloc->chunk_sz = chunk_size;
 	alloc->own = owner;
 }
 

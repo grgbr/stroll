@@ -10,7 +10,7 @@
  * Pre-allocated fixed sized object allocator interface
  *
  * @author    Grégor Boirie <gregor.boirie@free.fr>
- * @date      25 Dec 2025
+ * @date      26 Sep 2025
  * @copyright Copyright (C) 2017-2025 Grégor Boirie.
  * @license   [GNU Lesser General Public License (LGPL) v3]
  *            (https://www.gnu.org/licenses/lgpl+gpl-3.0.txt)
@@ -20,6 +20,7 @@
 #define _STROLL_PALLOC_H
 
 #include <stroll/cdefs.h>
+#include <stroll/priv/alloc.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -36,26 +37,6 @@
 #define stroll_palloc_assert_api(_expr)
 
 #endif /* defined(CONFIG_STROLL_ASSERT_API) */
-
-/**
- * @internal
- *
- * Primary #stroll_palloc memory chunk.
- */
-union stroll_palloc_chunk {
-	/**
-	 * @internal
-	 *
-	 * Link to next chunk within the free chunk list.
-	 */
-	union stroll_palloc_chunk * next_free;
-	/**
-	 * @internal
-	 *
-	 * Chunk data area.
-	 */
-	char                        data[0];
-};
 
 /**
  * Pre-allocated fixed sized object allocator.
@@ -79,14 +60,18 @@ union stroll_palloc_chunk {
  * This makes this allocator suitable for workload where:
  * - the number of memory objects and their size are constant across the
  *   allocator lifetime ;
+ * - all memory objects may be allocated thanks to a single call to
+ *   @man{malloc(3)} ;
  * - and known at the time of allocator instantiation.
  *
  * @note
  * All managed memory being allocated in a single call to @man{malloc(3)},
- * #stroll_palloc is highly subject to object size restrictions and process
- * memory limits.
+ * #stroll_palloc is highly subject to number of objects, object size and / or
+ * process memory restrictions.
  * See @man{malloc(3)}, @man{mallopt(3)} and @man{setrlimit(2)} for further
  * details.
+ * When stroll_palloc_init() fails to perform allocation because of these
+ * restrictions, #stroll_lalloc may provide a suitable alternative.
  *
  * @see
  * - stroll_palloc_init()
@@ -103,33 +88,24 @@ struct stroll_palloc {
 	 * This points to the memory chunk returned by next call to
 	 * stroll_palloc_alloc().
 	 */
-	union stroll_palloc_chunk * next_free;
+	union stroll_alloc_chunk * next_free;
 	/**
 	 * @internal
 	 *
 	 * Memory area holding chunks.
 	 */
-	void *                      chunks;
-	/**
-	 * @internal
-	 *
-	 * Size of a single memory chunk.
-	 */
-	size_t                      chunk_sz;
+	void *                     chunks;
 	/**
 	 * @internal
 	 *
 	 * Indicate wether this allocator owns the memory area pointed to by
 	 * #stroll_palloc::chunks.
 	 */
-	bool                        own;
+	bool                       own;
 };
 
 #define stroll_palloc_assert_alloc_api(_alloc) \
 	stroll_palloc_assert_api(_alloc); \
-	stroll_palloc_assert_api( \
-		stroll_aligned((_alloc)->chunk_sz, \
-		               sizeof((_alloc)->next_free))); \
 	stroll_palloc_assert_api((_alloc)->chunks)
 
 /**
@@ -156,7 +132,7 @@ stroll_palloc_free(struct stroll_palloc * __restrict alloc, void * chunk)
 	stroll_palloc_assert_api(chunk >= alloc->chunks);
 
 	if (chunk) {
-		union stroll_palloc_chunk * chnk = chunk;
+		union stroll_alloc_chunk * chnk = chunk;
 
 		chnk->next_free = alloc->next_free;
 		alloc->next_free = chnk;
@@ -182,7 +158,7 @@ stroll_palloc_free(struct stroll_palloc * __restrict alloc, void * chunk)
  * - #stroll_palloc
  */
 static inline __stroll_nonull(1)
-              __assume_align(sizeof(union stroll_palloc_chunk *))
+              __assume_align(sizeof(union stroll_alloc_chunk *))
               __stroll_nothrow
               __warn_result
 void *
@@ -190,7 +166,7 @@ stroll_palloc_alloc(struct stroll_palloc * __restrict alloc)
 {
 	stroll_palloc_assert_alloc_api(alloc);
 
-	union stroll_palloc_chunk * chnk = alloc->next_free;
+	union stroll_alloc_chunk * chnk = alloc->next_free;
 
 	if (chnk) {
 		alloc->next_free = chnk->next_free;
@@ -281,13 +257,13 @@ extern int
 stroll_palloc_init(struct stroll_palloc * __restrict alloc,
                    unsigned int                      chunk_nr,
                    size_t                            chunk_size)
-	__stroll_nonull(1) __stroll_nothrow;
+	__stroll_nonull(1) __stroll_nothrow __warn_result;
 
 /**
  * Release all resources allocated by a pre-allocated fixed sized object
  * allocator.
  *
- * @param[out] alloc Pre-allocated fixed sized object allocator
+ * @param[inout] alloc Pre-allocated fixed sized object allocator
  *
  * Release all memory *chunks* allocated by the @p alloc allocator given in
  * argument.

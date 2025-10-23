@@ -75,7 +75,9 @@ may eventually refer to the corresponding C macros listed below:
 * :c:macro:`CONFIG_STROLL_FBHEAP`
 * :c:macro:`CONFIG_STROLL_FBMAP`
 * :c:macro:`CONFIG_STROLL_FWHEAP`
+* :c:macro:`CONFIG_STROLL_LALLOC`
 * :c:macro:`CONFIG_STROLL_LVSTR`
+* :c:macro:`CONFIG_STROLL_MSG`
 * :c:macro:`CONFIG_STROLL_PALLOC`
 * :c:macro:`CONFIG_STROLL_POW2`
 * :c:macro:`CONFIG_STROLL_SLIST`
@@ -1221,12 +1223,12 @@ allocator and may be used as argument to the following functions:
 * :c:func:`stroll_falloc_alloc`
 * :c:func:`stroll_falloc_free`
 
-Pre-allocated fixed sized objects
----------------------------------
+Small pre-allocated fixed sized objects
+---------------------------------------
 
 When compiled with the :c:macro:`CONFIG_STROLL_PALLOC` build configuration
-option enabled, the Stroll_ library provides support for fixed sized object
-allocation from pre-allocated memory area.
+option enabled, the Stroll_ library provides support for small fixed sized
+object allocation from a single pre-allocated memory area.
 
 This may be used as a building block for implementing custom allocators where:
 
@@ -1243,7 +1245,32 @@ object allocator and may be used as argument to the following functions:
 * :c:func:`stroll_palloc_alloc`
 * :c:func:`stroll_palloc_free`
 
-.. index:: API reference, reference
+Large pre-allocated fixed sized objects
+---------------------------------------
+
+When compiled with the :c:macro:`CONFIG_STROLL_LALLOC` build configuration
+option enabled, the Stroll_ library provides support for large fixed sized
+object allocation. Unlike the :c:struct:`stroll_palloc` allocator,
+:c:struct:`stroll_lalloc` performs one memory pre-allocation per object.
+
+This may be used as a building block for implementing custom allocators where:
+
+* the number of memory objects and their size are constant across the
+  allocator lifetime ;
+* and known at the time of allocator instantiation ;
+* the number of objects, object size and / or process memory restrictions don't
+  allow pre-allocation to be performed from a single call to
+  :manpage:`malloc(3)`.
+
+The :c:struct:`stroll_lalloc` structure describes a pre-allocated large fixed
+sized object allocator and may be used as argument to the following functions:
+
+* :c:func:`stroll_lalloc_init`
+* :c:func:`stroll_lalloc_fini`
+* :c:func:`stroll_lalloc_alloc`
+* :c:func:`stroll_lalloc_free`
+
+.. index:: message, buffer iteration
 
 Message
 =======
@@ -1291,6 +1318,8 @@ The following manipulations are available:
 
       * :c:func:`stroll_msg_pull_head`
       * :c:func:`stroll_msg_pull_tail`
+
+.. index:: API reference, reference
 
 Reference
 =========
@@ -1442,6 +1471,11 @@ CONFIG_STROLL_FWHEAP
 ********************
 
 .. doxygendefine:: CONFIG_STROLL_FWHEAP
+
+CONFIG_STROLL_LALLOC
+********************
+
+.. doxygendefine:: CONFIG_STROLL_LALLOC
 
 CONFIG_STROLL_LVSTR
 *******************
@@ -2043,6 +2077,11 @@ stroll_fwheap
 *************
 
 .. doxygenstruct:: stroll_fwheap
+
+stroll_lalloc
+*************
+
+.. doxygenstruct:: stroll_lalloc
 
 stroll_lvstr
 ************
@@ -3019,6 +3058,26 @@ stroll_fbmap_toggle_all
 ***********************
 
 .. doxygenfunction:: stroll_fbmap_toggle_all
+
+stroll_lalloc_alloc
+*******************
+
+.. doxygenfunction:: stroll_lalloc_alloc
+
+stroll_lalloc_fini
+******************
+
+.. doxygenfunction:: stroll_lalloc_fini
+
+stroll_lalloc_free
+******************
+
+.. doxygenfunction:: stroll_lalloc_free
+
+stroll_lalloc_init
+******************
+
+.. doxygenfunction:: stroll_lalloc_init
 
 stroll_lvstr_cede
 *****************

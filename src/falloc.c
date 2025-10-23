@@ -33,7 +33,7 @@
 	stroll_falloc_assert_api(_alloc); \
 	stroll_falloc_assert_api( \
 		stroll_aligned((_alloc)->chunk_sz, \
-		               sizeof_member(union stroll_falloc_chunk, \
+		               sizeof_member(union stroll_alloc_chunk, \
 		                             next_free))); \
 	stroll_falloc_assert_api((_alloc)->chunk_nr > 1); \
 	stroll_falloc_assert_api( \
@@ -48,7 +48,7 @@
 	stroll_falloc_assert_intern(_alloc); \
 	stroll_falloc_assert_intern( \
 		stroll_aligned((_alloc)->chunk_sz, \
-		               sizeof_member(union stroll_falloc_chunk, \
+		               sizeof_member(union stroll_alloc_chunk, \
 		                             next_free))); \
 	stroll_falloc_assert_intern((_alloc)->chunk_nr > 1); \
 	stroll_falloc_assert_intern( \
@@ -59,16 +59,11 @@
 		(_alloc)->block_al == \
 		(1UL << stroll_pow2_upul((_alloc)->block_sz)))
 
-union stroll_falloc_chunk {
-	union stroll_falloc_chunk * next_free;
-	char                        data[0];
-};
-
 struct stroll_falloc_block {
-	unsigned int                busy_cnt;  /* Count of allocated chunks */
-	union stroll_falloc_chunk * next_free; /* Pointer to next free chunk */
-	struct stroll_dlist_node    node;
-	union stroll_falloc_chunk   chunks[0];
+	unsigned int               busy_cnt;  /* Count of allocated chunks */
+	union stroll_alloc_chunk * next_free; /* Pointer to next free chunk */
+	struct stroll_dlist_node   node;
+	union stroll_alloc_chunk   chunks[0];
 };
 
 #define stroll_falloc_assert_block(_block, _alloc) \
@@ -89,7 +84,7 @@ struct stroll_falloc_block {
 
 static __stroll_nonull(1)
        __malloc(stroll_falloc_free, 2)
-       __assume_align(sizeof(union stroll_falloc_chunk *))
+       __assume_align(sizeof(union stroll_alloc_chunk *))
        __stroll_nothrow
        __warn_result
 void *
@@ -127,7 +122,7 @@ stroll_falloc_free_block(struct stroll_falloc_block * __restrict block)
 
 static __stroll_nonull(1, 2)
        __malloc(stroll_falloc_free, 2)
-       __assume_align(sizeof(union stroll_falloc_chunk *))
+       __assume_align(sizeof(union stroll_alloc_chunk *))
        __stroll_nothrow
        __warn_result
 void *
@@ -186,11 +181,11 @@ stroll_falloc_free(struct stroll_falloc * __restrict alloc,
 
 	if (chunk) {
 		struct stroll_falloc_block * blk;
-		union stroll_falloc_chunk *  chnk;
+		union stroll_alloc_chunk *   chnk;
 
 		blk = (struct stroll_falloc_block *)
 		      stroll_align_lower((unsigned long)chunk, alloc->block_al);
-		chnk = (union stroll_falloc_chunk *)chunk;
+		chnk = (union stroll_alloc_chunk *)chunk;
 
 		/*
 		 * Insert chunk to free at the head of free chunk list.
@@ -226,7 +221,7 @@ stroll_falloc_init(struct stroll_falloc * __restrict alloc,
 
 	chunk_size = stroll_align_upper(
 		chunk_size,
-		sizeof_member(union stroll_falloc_chunk, next_free));
+		sizeof_member(union stroll_alloc_chunk, next_free));
 	blk_sz = sizeof(struct stroll_falloc_block) + (chunk_nr * chunk_size);
 
 	stroll_dlist_init(&alloc->blocks);
