@@ -34,7 +34,7 @@ headers   += $(call kconf_enabled,STROLL_FALLOC,stroll/falloc.h)
 headers   += $(call kconf_enabled,STROLL_HLIST,stroll/hlist.h)
 headers   += $(call kconf_enabled,STROLL_HASH,stroll/hash.h)
 headers   += $(call kconf_enabled,STROLL_BUFF,stroll/buffer.h)
-headers   += $(call kconf_enabled,STROLL_MMSG,stroll/message.h)
+headers   += $(call kconf_enabled,STROLL_MSG,stroll/message.h)
 
 subdirs   := src
 
