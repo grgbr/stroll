@@ -612,10 +612,10 @@ config STROLL_BUFF
 config STROLL_BUFF_CAPACITY_MAX
 	int "Maximum buffer capacity"
 	depends on STROLL_BUFF
-	range 8 4294967295
+	range 8 2147483647
 	default 65536
 	help
-	  Set maximum buffer capacity. MUST be >= 8 and < 4GiB
+	  Set maximum buffer capacity. MUST be >= 8 and < 2GiB
 	  See <stroll/buffer.h>
 
 config STROLL_MSG

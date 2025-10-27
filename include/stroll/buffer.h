@@ -66,13 +66,18 @@ struct stroll_buff {
 };
 
 #define STROLL_BUFF_CAPACITY_MIN (8U)
+#if CONFIG_STROLL_BUFF_CAPACITY_MAX > SSIZE_MAX
+#error Invalid CONFIG_STROLL_BUFF_CAPACITY_MAX value (must be <= SSIZE_MAX) !
+#endif
+#define STROLL_BUFF_CAPACITY_MAX \
+	STROLL_CONCAT(CONFIG_STROLL_BUFF_CAPACITY_MAX, U)
 
 #define stroll_buff_assert_head_api(_buff) \
 	stroll_buff_assert_api(_buff); \
 	stroll_buff_assert_api((_buff)->capacity >= \
 	                         STROLL_BUFF_CAPACITY_MIN); \
 	stroll_buff_assert_api((_buff)->capacity <= \
-	                         CONFIG_STROLL_BUFF_CAPACITY_MAX); \
+	                         STROLL_BUFF_CAPACITY_MAX); \
 	stroll_buff_assert_api((_buff)->head_off <= (_buff)->capacity); \
 	stroll_buff_assert_api((_buff)->busy_len <= (_buff)->capacity); \
 	stroll_buff_assert_api(((_buff)->head_off + (_buff)->busy_len) <= \
@@ -81,9 +86,9 @@ struct stroll_buff {
 #define STROLL_BUFF_INIT(_capacity, _off, _len) \
 	{ \
 		.capacity = compile_eval( \
-			(_capacity) <= CONFIG_STROLL_BUFF_CAPACITY_MAX, \
+			(_capacity) <= STROLL_BUFF_CAPACITY_MAX, \
 			_capacity, \
-			"Capacity MUST be <= CONFIG_STROLL_BUFF_CAPACITY_MAX"), \
+			"Capacity MUST be <= STROLL_BUFF_CAPACITY_MAX"), \
 		.head_off = compile_eval((_off) <= (_capacity), \
 		                         _off, \
 		                         "Offset MUST be <= capacity"), \
@@ -103,7 +108,7 @@ stroll_buff_setup(struct stroll_buff * __restrict buffer,
                   size_t                          len)
 {
 	stroll_buff_assert_api(buffer);
-	stroll_buff_assert_api(capacity <= CONFIG_STROLL_BUFF_CAPACITY_MAX);
+	stroll_buff_assert_api(capacity <= STROLL_BUFF_CAPACITY_MAX);
 	stroll_buff_assert_api(off <= capacity);
 	stroll_buff_assert_api(len <= capacity);
 	stroll_buff_assert_api((off + len) <= capacity);
@@ -209,7 +214,7 @@ stroll_buff_grow_tail(struct stroll_buff * __restrict buffer,
 {
 	stroll_buff_assert_head_api(buffer);
 	stroll_buff_assert_api((buffer->head_off + buffer->busy_len + bytes)
-	                         <= buffer->capacity);
+	                       <= buffer->capacity);
 
 	buffer->busy_len += bytes;
 }
