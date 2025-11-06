@@ -65,3 +65,79 @@ free:
 
 	return -ENOMEM;
 }
+
+#if defined(CONFIG_STROLL_ALLOC)
+
+#include "alloc.h"
+
+struct stroll_lalloc_impl {
+	struct stroll_alloc  iface;
+	struct stroll_lalloc lalloc;
+};
+
+static __stroll_nonull(1) __stroll_nothrow
+void
+stroll_lalloc_impl_free(struct stroll_alloc * __restrict alloc,
+                        void * __restrict                chunk)
+{
+	stroll_lalloc_assert_intern(alloc);
+
+	return stroll_lalloc_free(&((struct stroll_lalloc_impl *)alloc)->lalloc,
+	                          chunk);
+}
+
+static __stroll_nonull(1)
+       __malloc(stroll_lalloc_impl_free, 2)
+       __assume_align(sizeof(union stroll_alloc_chunk *))
+       __stroll_nothrow
+       __warn_result
+void *
+stroll_lalloc_impl_alloc(struct stroll_alloc * __restrict alloc)
+{
+	stroll_lalloc_assert_intern(alloc);
+
+	return stroll_lalloc_alloc(
+		&((struct stroll_lalloc_impl *)alloc)->lalloc);
+}
+
+static __stroll_nonull(1) __stroll_nothrow
+void
+stroll_lalloc_impl_fini(struct stroll_alloc * __restrict alloc)
+{
+	stroll_lalloc_assert_intern(alloc);
+
+	stroll_lalloc_fini(&((struct stroll_lalloc_impl *)alloc)->lalloc);
+}
+
+static const struct stroll_alloc_ops stroll_lalloc_impl_ops = {
+	.alloc = stroll_lalloc_impl_alloc,
+	.free  = stroll_lalloc_impl_free,
+	.fini  = stroll_lalloc_impl_fini
+};
+
+struct stroll_alloc *
+stroll_lalloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
+{
+	stroll_lalloc_assert_api(chunk_nr);
+	stroll_lalloc_assert_api(chunk_size);
+
+	struct stroll_lalloc_impl * alloc;
+	int                         err;
+
+	alloc = malloc(sizeof(*alloc));
+	if (!alloc)
+		return NULL;
+
+	err = stroll_lalloc_init(&alloc->lalloc, chunk_nr, chunk_size);
+	if (!err) {
+		alloc->iface.ops = &stroll_lalloc_impl_ops;
+		return &alloc->iface;
+	}
+
+	free(alloc);
+
+	errno = -err;
+	return NULL;
+}
+
+#endif /* defined(CONFIG_STROLL_ALLOC) */
