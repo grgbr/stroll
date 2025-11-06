@@ -277,28 +277,28 @@ CUTE_TEST(strollut_message_assert)
 		.buff.capacity = DATA_LEN,
 		.buff.head_off = 0,
 		.buff.busy_len = 0,
-		.data          = NULL,
+		.mem           = NULL,
 	};
 	struct stroll_msg bad_capacity = {
-		.data          = data,
+		.mem           = data,
 		.buff.capacity = DATA_LEN + 1,
 		.buff.head_off = 0,
 		.buff.busy_len = 0,
 	};
 	struct stroll_msg bad_head = {
-		.data          = data,
+		.mem           = data,
 		.buff.capacity = DATA_LEN,
 		.buff.head_off = DATA_LEN + 1,
 		.buff.busy_len = 0,
 	};
 	struct stroll_msg bad_busy = {
-		.data          = data,
+		.mem           = data,
 		.buff.capacity = DATA_LEN,
 		.buff.head_off = 0,
 		.buff.busy_len = DATA_LEN + 1,
 	};
 	struct stroll_msg bad_head_and_busy = {
-		.data          = data,
+		.mem           = data,
 		.buff.capacity = DATA_LEN,
 		.buff.head_off = DATA_LEN / 2 + 1,
 		.buff.busy_len = DATA_LEN / 2 + 1,
