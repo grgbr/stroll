@@ -20,7 +20,7 @@
 #define _STROLL_PALLOC_H
 
 #include <stroll/cdefs.h>
-#include <stroll/priv/alloc.h>
+#include <stroll/priv/alloc_chunk.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -282,5 +282,24 @@ stroll_palloc_fini(struct stroll_palloc * __restrict alloc)
 	if (alloc->own)
 		free(alloc->chunks);
 }
+
+#if defined(CONFIG_STROLL_ALLOC)
+
+#include <stroll/alloc.h>
+
+extern struct stroll_alloc *
+stroll_palloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
+	__malloc(stroll_alloc_destroy, 1) __stroll_nothrow __warn_result;
+
+extern struct stroll_alloc *
+stroll_palloc_create_alloc_from_mem(void * __restrict mem,
+                                    unsigned int      chunk_nr,
+                                    size_t            chunk_size)
+	__stroll_nonull(1)
+	__malloc(stroll_alloc_destroy, 1)
+	__stroll_nothrow
+	__warn_result;
+
+#endif /* defined(CONFIG_STROLL_ALLOC) */
 
 #endif /* _STROLL_PALLOC_H */

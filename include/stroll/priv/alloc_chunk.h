@@ -18,8 +18,8 @@
  *            (https://www.gnu.org/licenses/lgpl+gpl-3.0.txt)
  */
 
-#ifndef _STROLL_PRIV_ALLOC_H
-#define _STROLL_PRIV_ALLOC_H
+#ifndef _STROLL_PRIV_ALLOC_CHUNK_H
+#define _STROLL_PRIV_ALLOC_CHUNK_H
 
 /**
  * @internal
@@ -41,4 +41,4 @@ union stroll_alloc_chunk {
 	char                       data[0];
 };
 
-#endif /* _STROLL_PRIV_ALLOC_H */
+#endif /* _STROLL_PRIV_ALLOC_CHUNK_H */

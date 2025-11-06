@@ -20,7 +20,7 @@
 #define _STROLL_LALLOC_H
 
 #include <stroll/cdefs.h>
-#include <stroll/priv/alloc.h>
+#include <stroll/priv/alloc_chunk.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <errno.h>

@@ -20,7 +20,7 @@
 #define _STROLL_FALLOC_H
 
 #include <stroll/dlist.h>
-#include <stroll/priv/alloc.h>
+#include <stroll/priv/alloc_chunk.h>
 
 /**
  * Fixed sized object allocator.

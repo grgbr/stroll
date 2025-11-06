@@ -550,13 +550,29 @@ config STROLL_DLIST_KWMERGE_SORT
 
 endif # STROLL_LIST
 
+menuconfig STROLL_CUSTOM_ALLOC
+	bool "Custom memory allocators"
+	default y
+
+if STROLL_CUSTOM_ALLOC
+
 config STROLL_ALLOC
+	bool "Allocator interface"
+	select STROLL_PROVIDES_LIBS
+	default y
+	help
+	  Build Stroll library with support for a polymorphic allocator
+	  interface allowing to allocate objects of constant size according to
+	  arbitrary strategies.
+	  See <stroll/alloc.h>.
+
+config STROLL_ALLOC_CHUNK
 	bool
 	default n
 
 config STROLL_PALLOC
 	bool "Small fixed sized object pre-allocator"
-	select STROLL_ALLOC
+	select STROLL_ALLOC_CHUNK
 	select STROLL_POW2
 	default y
 	help
@@ -566,7 +582,7 @@ config STROLL_PALLOC
 
 config STROLL_LALLOC
 	bool "Large fixed sized objects pre-allocator"
-	select STROLL_ALLOC
+	select STROLL_ALLOC_CHUNK
 	select STROLL_POW2
 	default y
 	help
@@ -576,7 +592,7 @@ config STROLL_LALLOC
 
 config STROLL_FALLOC
 	bool "Fixed sized object allocator"
-	select STROLL_ALLOC
+	select STROLL_ALLOC_CHUNK
 	select STROLL_DLIST
 	select STROLL_POW2
 	default y
@@ -584,6 +600,8 @@ config STROLL_FALLOC
 	  Build Stroll library with support for a simple allocator allowing to
 	  allocate a variable number of constant sized objects.
 	  See <stroll/falloc.h>.
+
+endif # STROLL_CUSTOM_ALLOC
 
 config STROLL_HLIST
 	bool "Hash list"
