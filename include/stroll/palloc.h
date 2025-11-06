@@ -287,9 +287,28 @@ stroll_palloc_fini(struct stroll_palloc * __restrict alloc)
 
 #include <stroll/alloc.h>
 
+struct stroll_palloc_impl {
+	struct stroll_alloc  iface;
+	struct stroll_palloc palloc;
+};
+
+extern int
+stroll_palloc_init_alloc(struct stroll_palloc_impl * __restrict alloc,
+                         unsigned int                           chunk_nr,
+                         size_t                                 chunk_size)
+	__stroll_nonull(1) __stroll_nothrow __warn_result;
+
 extern struct stroll_alloc *
 stroll_palloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
 	__malloc(stroll_alloc_destroy, 1) __stroll_nothrow __warn_result;
+
+extern void
+stroll_palloc_init_alloc_from_mem(
+	struct stroll_palloc_impl * __restrict alloc,
+	void * __restrict                      mem,
+	unsigned int                           chunk_nr,
+	size_t                                 chunk_size)
+	__stroll_nonull(1, 2) __stroll_nothrow;
 
 extern struct stroll_alloc *
 stroll_palloc_create_alloc_from_mem(void * __restrict mem,

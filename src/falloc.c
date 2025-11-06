@@ -251,11 +251,6 @@ stroll_falloc_fini(struct stroll_falloc * __restrict alloc)
 
 #include "alloc.h"
 
-struct stroll_falloc_impl {
-	struct stroll_alloc  iface;
-	struct stroll_falloc falloc;
-};
-
 static __stroll_nonull(1) __stroll_nothrow
 void
 stroll_falloc_impl_free(struct stroll_alloc * __restrict alloc,
@@ -296,6 +291,20 @@ static const struct stroll_alloc_ops stroll_falloc_impl_ops = {
 	.fini  = stroll_falloc_impl_fini
 };
 
+void
+stroll_falloc_init_alloc(struct stroll_falloc_impl * __restrict alloc,
+                         unsigned int                           chunk_nr,
+                         size_t                                 chunk_size)
+{
+	stroll_falloc_assert_api(alloc);
+	stroll_falloc_assert_api(chunk_nr);
+	stroll_falloc_assert_api(chunk_size);
+
+	stroll_falloc_init(&alloc->falloc, chunk_nr, chunk_size);
+
+	alloc->iface.ops = &stroll_falloc_impl_ops;
+}
+
 struct stroll_alloc *
 stroll_falloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
 {
@@ -308,9 +317,7 @@ stroll_falloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
 	if (!alloc)
 		return NULL;
 
-	stroll_falloc_init(&alloc->falloc, chunk_nr, chunk_size);
-
-	alloc->iface.ops = &stroll_falloc_impl_ops;
+	stroll_falloc_init_alloc(alloc, chunk_nr, chunk_size);
 
 	return &alloc->iface;
 }

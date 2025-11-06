@@ -82,6 +82,16 @@ stroll_alloc(struct stroll_alloc * __restrict allocator)
 	return allocator->ops->alloc(allocator);
 }
 
+static inline __stroll_nonull(1)
+void
+stroll_alloc_fini(struct stroll_alloc * __restrict allocator)
+{
+	stroll_alloc_assert_api(allocator);
+	stroll_alloc_assert_ops_api(allocator->ops);
+
+	allocator->ops->fini(allocator);
+}
+
 extern void
 stroll_alloc_destroy(struct stroll_alloc * __restrict allocator)
 	__stroll_nonull(1);
