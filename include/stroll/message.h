@@ -52,6 +52,8 @@
  * - stroll_msg_setup_empty()
  * - stroll_msg_setup_with_busy()
  * - stroll_msg_setup_with_reserve()
+ * - stroll_msg_get_capacity()
+ * - stroll_msg_get_mem()
  * - stroll_msg_get_busy()
  * - stroll_msg_get_data()
  * - stroll_msg_get_avail_head()
@@ -73,23 +75,23 @@ struct stroll_msg {
 	/**
 	 * @internal
 	 *
-	 * Pointer to user defined data area.
+	 * Pointer to user defined memory area.
 	 */
-	uint8_t *          data;
+	uint8_t *          mem;
 };
 
 #define stroll_msg_assert_msg_api(_msg) \
 	stroll_msg_assert_api(_msg); \
 	stroll_buff_assert_head_api(&(_msg)->buff); \
-	stroll_msg_assert_api((_msg)->data)
+	stroll_msg_assert_api((_msg)->mem)
 
 /**
  * Message constant initializer.
  *
- * @param _data     Pointer to message contiguous memory block
- * @param _capacity @p _data memory area size
- * @param _off      Initial offset to head of user data within @p _data
- * @param _len      Initial size of user data within @p _data
+ * @param _mem      Pointer to message contiguous memory block
+ * @param _capacity @p _mem memory area size
+ * @param _off      Initial offset to head of user data within @p _mem
+ * @param _len      Initial size of user data within @p _mem
  *
  * @see
  * - STROLL_MSG_INIT_EMPTY()
@@ -100,19 +102,19 @@ struct stroll_msg {
  * - stroll_msg_setup_with_busy()
  * - stroll_msg_setup_with_reserve()
  */
-#define STROLL_MSG_INIT(_data, _capacity, _off, _len) \
+#define STROLL_MSG_INIT(_mem, _capacity, _off, _len) \
 	{ \
 		.buff = STROLL_BUFF_INIT(_capacity, _off, _len), \
-		.data = compile_eval(_data != NULL, \
-		                     _data, \
-		                     "Invalid message data"), \
+		.mem  = compile_eval(_mem != NULL, \
+		                     _mem, \
+		                     "Invalid message memory area"), \
 	}
 
 /**
- * Initialize a message with an empty data memory block.
+ * Initialize a message with an empty memory block.
  *
- * @param _data     Pointer to message contiguous memory block
- * @param _capacity @p _data memory area size
+ * @param _mem      Pointer to message contiguous memory block
+ * @param _capacity @p _mem  memory area size
  *
  * @see
  * - STROLL_MSG_INIT()
@@ -123,15 +125,15 @@ struct stroll_msg {
  * - stroll_msg_setup_with_busy()
  * - stroll_msg_setup_with_reserve()
  */
-#define STROLL_MSG_INIT_EMPTY(_data, _capacity) \
-	STROLL_MSG_INIT(_data, _capacity, 0, 0)
+#define STROLL_MSG_INIT_EMPTY(_mem , _capacity) \
+	STROLL_MSG_INIT(_mem , _capacity, 0, 0)
 
 /**
- * Initialize a message with a non-empty data memory block.
+ * Initialize a message with a non-empty memory block.
  *
- * @param _data     Pointer to message contiguous memory block
- * @param _capacity @p _data memory area size
- * @param _len      Initial size of user data within @p _data
+ * @param _mem      Pointer to message contiguous memory block
+ * @param _capacity @p _mem  memory area size
+ * @param _len      Initial size of user data within @p _mem
  *
  * @see
  * - STROLL_MSG_INIT()
@@ -142,16 +144,16 @@ struct stroll_msg {
  * - stroll_msg_setup_with_busy()
  * - stroll_msg_setup_with_reserve()
  */
-#define STROLL_MSG_INIT_WITH_BUSY(_data, _capacity, _len) \
-	STROLL_MSG_INIT(_data, _capacity, 0, _len)
+#define STROLL_MSG_INIT_WITH_BUSY(_mem, _capacity, _len) \
+	STROLL_MSG_INIT(_mem, _capacity, 0, _len)
 
 /**
- * Initialize a message with an empty data memory block and an initial head
+ * Initialize a message with an empty memory block and an initial head
  * offset.
  *
- * @param _data     Pointer to message contiguous memory block
- * @param _capacity @p _data memory area size
- * @param _off      Initial offset to head of user data within @p _data
+ * @param _mem      Pointer to message contiguous memory block
+ * @param _capacity @p _mem memory area size
+ * @param _off      Initial offset to head of user data within @p _mem
  *
  * @see
  * - STROLL_MSG_INIT()
@@ -162,17 +164,17 @@ struct stroll_msg {
  * - stroll_msg_setup_with_busy()
  * - stroll_msg_setup_with_reserve()
  */
-#define STROLL_MSG_INIT_WITH_RESERVE(_data, _capacity, _off) \
-	STROLL_MSG_INIT(_data, _capacity, _off, 0)
+#define STROLL_MSG_INIT_WITH_RESERVE(_mem, _capacity, _off) \
+	STROLL_MSG_INIT(_mem, _capacity, _off, 0)
 
 /**
  * Dynamically initialize a message.
  *
  * @param[out] msg      Message to initialize
- * @param[in]  data     Pointer to message contiguous memory block
- * @param[in]  capacity @p data memory area size
- * @param[in]  off      Initial offset to head of user data within @p data
- * @param[in]  len      Initial size of user data within @p data
+ * @param[in]  mem      Pointer to message contiguous memory block
+ * @param[in]  capacity @p mem memory area size
+ * @param[in]  off      Initial offset to head of user data within @p mem
+ * @param[in]  len      Initial size of user data within @p mem
  *
  * @see
  * - stroll_msg_setup_empty()
@@ -186,24 +188,24 @@ struct stroll_msg {
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
 stroll_msg_setup(struct stroll_msg * __restrict msg,
-                 uint8_t * __restrict           data,
+                 uint8_t * __restrict           mem,
                  size_t                         capacity,
                  size_t                         off,
                  size_t                         len)
 {
 	stroll_msg_assert_api(msg);
-	stroll_msg_assert_api(data);
+	stroll_msg_assert_api(mem);
 
 	stroll_buff_setup(&msg->buff, capacity, off, len);
-	msg->data   = data;
+	msg->mem   = mem;
 }
 
 /**
- * Dynamically initialize a message with an empty data memory block.
+ * Dynamically initialize a message with an empty memory block.
  *
  * @param[out] msg      Message to initialize
- * @param[in]  data     Pointer to message contiguous memory block
- * @param[in]  capacity @p data memory area size
+ * @param[in]  mem      Pointer to message contiguous memory block
+ * @param[in]  capacity @p mem memory area size
  *
  * @see
  * - stroll_msg_setup()
@@ -217,22 +219,22 @@ stroll_msg_setup(struct stroll_msg * __restrict msg,
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
 stroll_msg_setup_empty(struct stroll_msg * __restrict msg,
-                       uint8_t * __restrict           data,
+                       uint8_t * __restrict           mem,
                        size_t                         capacity)
 {
 	stroll_msg_assert_api(msg);
-	stroll_msg_assert_api(data);
+	stroll_msg_assert_api(mem);
 
-	stroll_msg_setup(msg, data, capacity, 0, 0);
+	stroll_msg_setup(msg, mem, capacity, 0, 0);
 }
 
 /**
- * Dynamically initialize a message with a non-empty data memory block.
+ * Dynamically initialize a message with a non-empty memory block.
  *
  * @param[out] msg      Message to initialize
- * @param[in]  data     Pointer to message contiguous memory block
- * @param[in]  capacity @p data memory area size
- * @param[in]  len      Initial size of user data within @p data
+ * @param[in]  mem      Pointer to message contiguous memory block
+ * @param[in]  capacity @p mem memory area size
+ * @param[in]  len      Initial size of user data within @p mem
  *
  * @see
  * - stroll_msg_setup()
@@ -246,24 +248,24 @@ stroll_msg_setup_empty(struct stroll_msg * __restrict msg,
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
 stroll_msg_setup_with_busy(struct stroll_msg * __restrict msg,
-                          uint8_t * __restrict            data,
+                          uint8_t * __restrict            mem,
                           size_t                          capacity,
                           size_t                          len)
 {
 	stroll_msg_assert_api(msg);
-	stroll_msg_assert_api(data);
+	stroll_msg_assert_api(mem);
 
-	stroll_msg_setup(msg, data, capacity, 0, len);
+	stroll_msg_setup(msg, mem, capacity, 0, len);
 }
 
 /**
- * Dynamically initialize a message with an empty data memory block and an
+ * Dynamically initialize a message with an empty memory block and an
  * initial head offset.
  *
  * @param[out] msg      Message to initialize
- * @param[in]  data     Pointer to message contiguous memory block
- * @param[in]  capacity @p data memory area size
- * @param[in]  off      Initial offset to head of user data within @p data
+ * @param[in]  mem      Pointer to message contiguous memory block
+ * @param[in]  capacity @p mem memory area size
+ * @param[in]  off      Initial offset to head of user data within @p mem
  *
  * @see
  * - stroll_msg_setup()
@@ -277,14 +279,14 @@ stroll_msg_setup_with_busy(struct stroll_msg * __restrict msg,
 static inline __stroll_nonull(1, 2) __stroll_nothrow
 void
 stroll_msg_setup_with_reserve(struct stroll_msg * __restrict msg,
-                              uint8_t * __restrict           data,
+                              uint8_t * __restrict           mem,
                               size_t                         capacity,
                               size_t                         off)
 {
 	stroll_msg_assert_api(msg);
-	stroll_msg_assert_api(data);
+	stroll_msg_assert_api(mem);
 
-	stroll_msg_setup(msg, data, capacity, off, 0);
+	stroll_msg_setup(msg, mem, capacity, off, 0);
 }
 
 /**
@@ -307,6 +309,27 @@ stroll_msg_get_capacity(const struct stroll_msg * __restrict msg)
 	stroll_msg_assert_msg_api(msg);
 
 	return stroll_buff_capacity(&msg->buff);
+}
+
+/**
+ * Return a pointer to the memory block used to store user data into message.
+ *
+ * @param[in] msg Message to retrieve informations from
+ *
+ * @return Pointer to start of memory block
+ *
+ * @see
+ * - stroll_msg_get_data()
+ * - stroll_msg_get_tail()
+ * - stroll_msg
+ */
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
+uint8_t *
+stroll_msg_get_mem(const struct stroll_msg * __restrict msg)
+{
+	stroll_msg_assert_msg_api(msg);
+
+	return msg->mem;
 }
 
 /**
@@ -342,6 +365,7 @@ stroll_msg_get_busy(const struct stroll_msg * __restrict msg)
  * @see
  * - stroll_msg_get_busy()
  * - stroll_msg_get_tail()
+ * - stroll_msg_get_mem()
  * - stroll_msg
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
@@ -353,7 +377,7 @@ stroll_msg_get_data(const struct stroll_msg * __restrict msg)
 	if (!stroll_buff_busy(&msg->buff))
 		return NULL;
 
-	return stroll_buff_data(&msg->buff, msg->data);
+	return stroll_buff_data(&msg->buff, msg->mem);
 }
 
 /**
@@ -461,6 +485,7 @@ stroll_msg_get_avail_tail(const struct stroll_msg * __restrict msg)
  * - stroll_msg_push_tail()
  * - stroll_msg_pull_tail()
  * - stroll_msg_get_data()
+ * - stroll_msg_get_mem()
  * - stroll_msg
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
@@ -472,7 +497,7 @@ stroll_msg_get_tail(const struct stroll_msg * __restrict msg)
 	if (!stroll_buff_avail_tail(&msg->buff))
 		return NULL;
 
-	return stroll_buff_tail(&msg->buff, msg->data);
+	return stroll_buff_tail(&msg->buff, msg->mem);
 }
 
 
