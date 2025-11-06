@@ -246,3 +246,73 @@ stroll_falloc_fini(struct stroll_falloc * __restrict alloc)
 		                        node));
 	}
 }
+
+#if defined(CONFIG_STROLL_ALLOC)
+
+#include "alloc.h"
+
+struct stroll_falloc_impl {
+	struct stroll_alloc  iface;
+	struct stroll_falloc falloc;
+};
+
+static __stroll_nonull(1) __stroll_nothrow
+void
+stroll_falloc_impl_free(struct stroll_alloc * __restrict alloc,
+                        void * __restrict                chunk)
+{
+	stroll_falloc_assert_intern(alloc);
+
+	return stroll_falloc_free(&((struct stroll_falloc_impl *)alloc)->falloc,
+	                          chunk);
+}
+
+static __stroll_nonull(1)
+       __malloc(stroll_falloc_impl_free, 2)
+       __assume_align(sizeof(union stroll_alloc_chunk *))
+       __stroll_nothrow
+       __warn_result
+void *
+stroll_falloc_impl_alloc(struct stroll_alloc * __restrict alloc)
+{
+	stroll_falloc_assert_intern(alloc);
+
+	return stroll_falloc_alloc(
+		&((struct stroll_falloc_impl *)alloc)->falloc);
+}
+
+static __stroll_nonull(1) __stroll_nothrow
+void
+stroll_falloc_impl_fini(struct stroll_alloc * __restrict alloc)
+{
+	stroll_falloc_assert_intern(alloc);
+
+	stroll_falloc_fini(&((struct stroll_falloc_impl *)alloc)->falloc);
+}
+
+static const struct stroll_alloc_ops stroll_falloc_impl_ops = {
+	.alloc = stroll_falloc_impl_alloc,
+	.free  = stroll_falloc_impl_free,
+	.fini  = stroll_falloc_impl_fini
+};
+
+struct stroll_alloc *
+stroll_falloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
+{
+	stroll_falloc_assert_api(chunk_nr > 1);
+	stroll_falloc_assert_api(chunk_size);
+
+	struct stroll_falloc_impl * alloc;
+
+	alloc = malloc(sizeof(*alloc));
+	if (!alloc)
+		return NULL;
+
+	stroll_falloc_init(&alloc->falloc, chunk_nr, chunk_size);
+
+	alloc->iface.ops = &stroll_falloc_impl_ops;
+
+	return &alloc->iface;
+}
+
+#endif /* defined(CONFIG_STROLL_ALLOC) */

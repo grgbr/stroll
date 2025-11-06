@@ -179,4 +179,14 @@ extern void
 stroll_falloc_fini(struct stroll_falloc * __restrict alloc)
 	__stroll_nonull(1) __stroll_nothrow __leaf;
 
+#if defined(CONFIG_STROLL_ALLOC)
+
+#include <stroll/alloc.h>
+
+extern struct stroll_alloc *
+stroll_falloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
+	__malloc(stroll_alloc_destroy, 1) __stroll_nothrow __warn_result;
+
+#endif /* defined(CONFIG_STROLL_ALLOC) */
+
 #endif /* _STROLL_FALLOC_H */
