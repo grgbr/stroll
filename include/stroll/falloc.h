@@ -63,6 +63,18 @@ struct stroll_falloc {
 	/**
 	 * @internal
 	 *
+	 * Current number of allocated chunks.
+	 */
+	unsigned int             chunk_cnt;
+	/**
+	 * @internal
+	 *
+	 * Maximum number of allocatable chunks.
+	 */
+	unsigned int             chunk_nr;
+	/**
+	 * @internal
+	 *
 	 * Alignment of a single block of memory chunks.
 	 */
 	unsigned long            block_al;
@@ -71,7 +83,7 @@ struct stroll_falloc {
 	 *
 	 * Number of memory chunks per block.
 	 */
-	unsigned int             chunk_nr;
+	unsigned int             chunk_per_block;
 	/**
 	 * @internal
 	 *
@@ -134,21 +146,27 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
 	__leaf
 	__warn_result;
 
+#define STROLL_FALLOC_UNBOUND_CHUNK_NR (UINT_MAX)
+
 /**
  * Initialize a fixed sized object allocator.
  *
- * @param[out] alloc      Fixed sized object allocator
- * @param[in]  chunk_nr   Number of chunks per primary memory block
- * @param[in]  chunk_size Size of a single chunk of memory in bytes.
+ * @param[out] alloc           Fixed sized object allocator
+ * @param[in]  chunk_nr        Maximum number of allocatable chunks
+ * @param[in]  chunk_per_block Number of chunks per primary memory block
+ * @param[in]  chunk_size      Size of a single chunk of memory in bytes
  *
  * Initialize a fixed sized object allocator so that it may further allocate
  * @p chunk_size bytes long memory chunks thanks to the stroll_falloc_alloc()
  * function.
  *
- * @p chunk_nr specifies the minimum number of chunks that are allocated on heap
- * in a single call to @man{malloc(3)}. The @p chunk_nr is a hint only
- * since memory chunks are allocated by block, which address is a power of 2 and
- * size, a multiple of a machine word.
+ * @p chunk_nr specifies the maximum number of chunks that may be allocated from
+ * this allocator instance.
+ *
+ * @p chunk_per_block specifies the minimum number of chunks that are allocated
+ * on heap in a single call to @man{malloc(3)}. The @p chunk_per_block is a hint
+ * only since memory chunks are allocated by block, which address is a power of
+ * 2 and size, a multiple of a machine word.
  *
  * @p chunk_size specify the size of a single *chunk* of memory in bytes and
  * will be rounded up to the size of a machine word.
@@ -160,6 +178,7 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
 extern void
 stroll_falloc_init(struct stroll_falloc * __restrict alloc,
                    unsigned int                      chunk_nr,
+                   unsigned int                      chunk_per_block,
                    size_t                            chunk_size)
 	__stroll_nonull(1) __stroll_nothrow __leaf;
 
@@ -191,11 +210,14 @@ struct stroll_falloc_impl {
 extern void
 stroll_falloc_init_alloc(struct stroll_falloc_impl * __restrict alloc,
                          unsigned int                           chunk_nr,
+                         unsigned int                           chunk_per_block,
                          size_t                                 chunk_size)
 	__stroll_nonull(1) __stroll_nothrow;
 
 extern struct stroll_alloc *
-stroll_falloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
+stroll_falloc_create_alloc(unsigned int chunk_nr,
+                           unsigned int chunk_per_block,
+                           size_t       chunk_size)
 	__malloc(stroll_alloc_destroy, 1) __stroll_nothrow __warn_result;
 
 #endif /* defined(CONFIG_STROLL_ALLOC) */
