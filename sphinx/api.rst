@@ -1176,12 +1176,12 @@ The following API is available:
       * :c:func:`stroll_fbheap_peek()`
 
    * Capacity :
-     
+
       * :c:func:`stroll_fbheap_count()`
       * :c:func:`stroll_fbheap_isempty()`
       * :c:func:`stroll_fbheap_isfull()`
       * :c:func:`stroll_fbheap_nr()`
-        
+
    * Finalization:
 
       * :c:func:`stroll_fbheap_destroy()`
@@ -1724,6 +1724,11 @@ STROLL_DLIST_INIT
 *****************
 
 .. doxygendefine:: STROLL_DLIST_INIT
+
+STROLL_FALLOC_UNBOUND_CHUNK_NR
+******************************
+
+.. doxygendefine:: STROLL_FALLOC_UNBOUND_CHUNK_NR
 
 STROLL_FBHEAP_INIT
 ******************

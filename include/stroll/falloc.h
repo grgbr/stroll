@@ -52,6 +52,7 @@
  * - stroll_falloc_fini()
  * - stroll_falloc_alloc()
  * - stroll_falloc_free()
+ * - STROLL_FALLOC_UNBOUND_CHUNK_NR
  */
 struct stroll_falloc {
 	/**
@@ -146,6 +147,14 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
 	__leaf
 	__warn_result;
 
+/**
+ * Disable restriction of number of chunk allocations through falloc
+ *
+ * When given as @p chunk_nr argument to stroll_falloc_init(), this macro allows
+ * unlimited number of memory chunk allocations.
+ *
+ * @see stroll_falloc_init
+ */
 #define STROLL_FALLOC_UNBOUND_CHUNK_NR (UINT_MAX)
 
 /**
@@ -161,7 +170,9 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
  * function.
  *
  * @p chunk_nr specifies the maximum number of chunks that may be allocated from
- * this allocator instance.
+ * this allocator instance. @p chunk_nr may be given as
+ * #STROLL_FALLOC_UNBOUND_CHUNK_NR to request unlimited chunk allocation, i.e.,
+ * up to process memory limits or available system memory.
  *
  * @p chunk_per_block specifies the minimum number of chunks that are allocated
  * on heap in a single call to @man{malloc(3)}. The @p chunk_per_block is a hint
@@ -173,6 +184,7 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
  *
  * @see
  * - stroll_falloc_fini()
+ * - STROLL_FALLOC_UNBOUND_CHUNK_NR
  * - #stroll_falloc
  */
 extern void
