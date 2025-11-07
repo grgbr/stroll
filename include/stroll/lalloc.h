@@ -206,17 +206,6 @@ stroll_lalloc_fini(struct stroll_lalloc * __restrict alloc)
 
 #include <stroll/alloc.h>
 
-struct stroll_lalloc_impl {
-	struct stroll_alloc  iface;
-	struct stroll_lalloc lalloc;
-};
-
-extern int
-stroll_lalloc_init_alloc(struct stroll_lalloc_impl * __restrict alloc,
-                         unsigned int                           chunk_nr,
-                         size_t                                 chunk_size)
-	__stroll_nonull(1) __stroll_nothrow __warn_result;
-
 extern struct stroll_alloc *
 stroll_lalloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
 	__malloc(stroll_alloc_destroy, 1) __stroll_nothrow __warn_result;

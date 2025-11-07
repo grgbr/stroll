@@ -70,6 +70,11 @@ free:
 
 #include "alloc.h"
 
+struct stroll_lalloc_impl {
+	struct stroll_alloc  iface;
+	struct stroll_lalloc lalloc;
+};
+
 static __stroll_nonull(1) __stroll_nothrow
 void
 stroll_lalloc_impl_free(struct stroll_alloc * __restrict alloc,
@@ -110,26 +115,6 @@ static const struct stroll_alloc_ops stroll_lalloc_impl_ops = {
 	.fini  = stroll_lalloc_impl_fini
 };
 
-int
-stroll_lalloc_init_alloc(struct stroll_lalloc_impl * __restrict alloc,
-                         unsigned int                           chunk_nr,
-                         size_t                                 chunk_size)
-{
-	stroll_lalloc_assert_api(alloc);
-	stroll_lalloc_assert_api(chunk_nr);
-	stroll_lalloc_assert_api(chunk_size);
-
-	int err;
-
-	err = stroll_lalloc_init(&alloc->lalloc, chunk_nr, chunk_size);
-	if (!err) {
-		alloc->iface.ops = &stroll_lalloc_impl_ops;
-		return 0;
-	}
-
-	return err;
-}
-
 struct stroll_alloc *
 stroll_lalloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
 {
@@ -143,9 +128,11 @@ stroll_lalloc_create_alloc(unsigned int chunk_nr, size_t chunk_size)
 	if (!alloc)
 		return NULL;
 
-	err = stroll_lalloc_init_alloc(alloc, chunk_nr, chunk_size);
-	if (!err)
+	err = stroll_lalloc_init(&alloc->lalloc, chunk_nr, chunk_size);
+	if (!err) {
+		alloc->iface.ops = &stroll_lalloc_impl_ops;
 		return &alloc->iface;
+	}
 
 	free(alloc);
 

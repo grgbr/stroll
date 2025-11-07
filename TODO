@@ -15,6 +15,7 @@ Testing
 * palloc
 * falloc
 * lalloc
+* stroll_alloc interface
 * stroll_hlist
 * stroll_hash
 * message: test stroll_msg_get_tail()
@@ -29,3 +30,4 @@ Documentation
 * stroll_hash (sphinx doc)
 * message: fix / refine
 * buffer
+* stroll_alloc interface
