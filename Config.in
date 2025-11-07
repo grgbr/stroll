@@ -5,13 +5,8 @@
 # Copyright (C) 2017-2023 Grégor Boirie <gregor.boirie@free.fr>
 ################################################################################
 
-config STROLL_PROVIDES_LIBS
-       bool
-       default n
-
 config STROLL_ASSERT
 	bool "Assertion"
-	select STROLL_PROVIDES_LIBS
 	default n
 	help
 	  Build Stroll library assertion framework exposing a programmatic
@@ -71,7 +66,6 @@ config STROLL_POW2
 	bool "Power of 2 operations"
 	default y
 	select STROLL_BOPS
-	select STROLL_PROVIDES_LIBS
 	help
 	  Build Stroll library basic power of 2 operations framework exposing
 	  functions to find closes lower / upper power of 2 of a word.
@@ -96,7 +90,6 @@ config STROLL_FBMAP
 	bool "Fixed sized bitmap"
 	default y
 	select STROLL_BOPS
-	select STROLL_PROVIDES_LIBS
 	help
 	  Build Stroll library with a bitmap framework allowing to manipulate
 	  bitmaps stored into memory area of arbitrary fixed sizes.
@@ -109,7 +102,6 @@ config STROLL_FBMAP
 
 config STROLL_LVSTR
 	bool "Length-Value String"
-	select STROLL_PROVIDES_LIBS
 	default y
 	help
 	  Build Stroll library with length-value string framework meant to ease
@@ -118,7 +110,6 @@ config STROLL_LVSTR
 
 menuconfig STROLL_HEAP
 	bool "Heaps"
-	select STROLL_PROVIDES_LIBS
 	default y
 
 if STROLL_HEAP
@@ -208,14 +199,12 @@ endif # STROLL_HEAP
 
 menuconfig STROLL_ARRAY
 	bool "Array based algorithms"
-	select STROLL_PROVIDES_LIBS
 	default y
 
 if STROLL_ARRAY
 
 config STROLL_ARRAY_BISECT_SEARCH
 	bool "Bisection / dichotomic search"
-	select STROLL_PROVIDES_LIBS
 	default y
 	help
 	  Build Stroll library with support for bisection / dichotomic search
@@ -224,7 +213,6 @@ config STROLL_ARRAY_BISECT_SEARCH
 
 config STROLL_ARRAY_BUBBLE_SORT
 	bool "Bubble sort"
-	select STROLL_PROVIDES_LIBS
 	default n
 	help
 	  Build Stroll library with support for the bubble sort algorithm over
@@ -234,7 +222,6 @@ config STROLL_ARRAY_BUBBLE_SORT
 
 config STROLL_ARRAY_SELECT_SORT
 	bool "Selection sort"
-	select STROLL_PROVIDES_LIBS
 	default n
 	help
 	  Build Stroll library with support for the selection sort algorithm
@@ -244,7 +231,6 @@ config STROLL_ARRAY_SELECT_SORT
 
 config STROLL_ARRAY_INSERT_SORT
 	bool "Insertion sort"
-	select STROLL_PROVIDES_LIBS
 	default y
 	help
 	  Build Stroll library with support for the insertion sort algorithm
@@ -253,7 +239,6 @@ config STROLL_ARRAY_INSERT_SORT
 
 config STROLL_ARRAY_QUICK_SORT_UTILS
 	bool
-	select STROLL_PROVIDES_LIBS
 	default n
 
 config STROLL_ARRAY_QUICK_SORT
@@ -391,7 +376,6 @@ endif # STROLL_ARRAY
 
 menuconfig STROLL_LIST
 	bool "Linked list based algorithms"
-	select STROLL_PROVIDES_LIBS
 	default y
 
 if STROLL_LIST
@@ -473,7 +457,6 @@ config STROLL_SLIST_KWMERGE_SORT
 
 config STROLL_DLIST
 	bool "Doubly linked list"
-	select STROLL_PROVIDES_LIBS
 	default y
 	help
 	  Build Stroll library with support for doubly linked lists where
@@ -558,7 +541,6 @@ if STROLL_CUSTOM_ALLOC
 
 config STROLL_ALLOC
 	bool "Allocator interface"
-	select STROLL_PROVIDES_LIBS
 	default y
 	help
 	  Build Stroll library with support for a polymorphic allocator

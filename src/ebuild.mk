@@ -37,8 +37,8 @@ common-cflags         := $(filter-out -DNDEBUG,$(common-cflags))
 common-ldflags        := $(filter-out -DNDEBUG,$(common-ldflags))
 endif # ($(filter y,$(CONFIG_STROLL_ASSERT_API) $(CONFIG_STROLL_ASSERT_INTERN)),)
 
-ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
 solibs               := libstroll.so
+libstroll.so-objs    := shared/page.o
 libstroll.so-objs    += $(call kconf_enabled,STROLL_ASSERT,shared/assert.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_POW2,shared/pow2.o)
 libstroll.so-objs    += $(call kconf_enabled,STROLL_FBMAP,shared/fbmap.o)
@@ -68,6 +68,7 @@ libstroll.so-ldflags := $(filter-out -pie -fpie -fPIE,$(common-ldflags)) \
                         -shared -Bsymbolic -fpic -Wl,-soname,libstroll.so
 
 arlibs               := libstroll.a
+libstroll.a-objs     := static/page.o
 libstroll.a-objs     += $(call kconf_enabled,STROLL_ASSERT,static/assert.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_POW2,static/pow2.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_FBMAP,static/fbmap.o)
@@ -93,6 +94,5 @@ libstroll.a-objs     += $(call kconf_enabled,STROLL_LALLOC,static/lalloc.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_FALLOC,static/falloc.o)
 libstroll.a-objs     += $(call kconf_enabled,STROLL_MSG,static/message.o)
 libstroll.a-cflags   := $(common-cflags)
-endif # ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
 
 # ex: filetype=make :

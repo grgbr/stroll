@@ -10,7 +10,7 @@ config-h   := stroll/config.h
 config-obj := config.o
 
 HEADERDIR := $(CURDIR)/include
-headers    = stroll/cdefs.h
+headers    = stroll/cdefs.h stroll/page.h
 headers   += $(call kconf_enabled,STROLL_ASSERT,stroll/assert.h)
 headers   += $(call kconf_enabled,STROLL_BOPS,stroll/bops.h)
 headers   += $(call kconf_enabled,STROLL_POW2,stroll/pow2.h)
@@ -44,12 +44,10 @@ subdirs   += test
 test-deps := src
 endif # ($(CONFIG_STROLL_UTEST),y)
 
-ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
 override libstroll_pkgconf_libs := Libs: -L$${libdir} \
                                          -Wl,--push-state,--as-needed \
                                          -lstroll \
                                          -Wl,--pop-state
-endif # ifeq ($(CONFIG_STROLL_PROVIDES_LIBS),y)
 
 define libstroll_pkgconf_tmpl
 prefix=$(PREFIX)

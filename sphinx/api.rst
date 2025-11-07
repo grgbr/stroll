@@ -114,25 +114,6 @@ internals and meant for application development purposes. These are:
       * :c:macro:`compile_choose`
       * :c:macro:`compile_eval`
 
-   * Branch prediction and prefetching :
-
-      * :c:macro:`STROLL_PREFETCH_ACCESS_RO`
-      * :c:macro:`STROLL_PREFETCH_ACCESS_RW`
-      * :c:macro:`STROLL_PREFETCH_LOCALITY_TMP`
-      * :c:macro:`STROLL_PREFETCH_LOCALITY_LOW`
-      * :c:macro:`STROLL_PREFETCH_LOCALITY_FAIR`
-      * :c:macro:`STROLL_PREFETCH_LOCALITY_HIGH`
-      * :c:macro:`stroll_likely`
-      * :c:macro:`stroll_prefetch`
-      * :c:macro:`stroll_unlikely`
-
-   * Various
-
-      * :c:macro:`stroll_array_nr`
-      * :c:macro:`stroll_abs`
-      * :c:macro:`stroll_min`
-      * :c:macro:`stroll_max`
-
    * Attribute wrappers :
 
       * :c:macro:`__align`
@@ -156,6 +137,27 @@ internals and meant for application development purposes. These are:
       * :c:macro:`__returns_nonull`
       * :c:macro:`__unused`
       * :c:macro:`__warn_result`
+
+   * Branch prediction and prefetching :
+
+      * :c:macro:`STROLL_PREFETCH_ACCESS_RO`
+      * :c:macro:`STROLL_PREFETCH_ACCESS_RW`
+      * :c:macro:`STROLL_PREFETCH_LOCALITY_TMP`
+      * :c:macro:`STROLL_PREFETCH_LOCALITY_LOW`
+      * :c:macro:`STROLL_PREFETCH_LOCALITY_FAIR`
+      * :c:macro:`STROLL_PREFETCH_LOCALITY_HIGH`
+      * :c:macro:`stroll_likely`
+      * :c:macro:`stroll_prefetch`
+      * :c:macro:`stroll_unlikely`
+
+   * Various :
+
+      * :c:macro:`stroll_array_nr`
+      * :c:macro:`stroll_abs`
+      * :c:macro:`stroll_min`
+      * :c:macro:`stroll_max`
+      * :c:func:`stroll_page_size`
+
 
 .. index:: assertions
 
@@ -3243,6 +3245,11 @@ stroll_msg_setup_with_reserve
 *****************************
 
 .. doxygenfunction:: stroll_msg_setup_with_reserve
+
+stroll_page_size
+****************
+
+.. doxygenfunction:: stroll_page_size
 
 stroll_palloc_alloc
 *******************
