@@ -436,7 +436,7 @@ struct stroll_hlist {
 	for (_hentry = stroll_hlist_entry_or_null((_hlist)->head, \
 	                                          typeof(*(_hentry)), \
 	                                          _member); \
-	     _hentry && ({ _tmp = (_hentry)->member.next; true; }); \
+	     _hentry && ({ _tmp = (_hentry)->_member.next; true; }); \
 	     _hentry = stroll_hlist_entry_or_null(_tmp, \
 	                                          typeof(*(_hentry)), \
 	                                          _member))
@@ -491,7 +491,7 @@ struct stroll_hlist {
 	for (_hentry = stroll_hlist_entry_or_null((_hentry)->_member.next, \
 	                                          typeof(*(_hentry)), \
 	                                          _member); \
-	     _hentry && ({ _tmp = (_hentry)->member.next; true; }); \
+	     _hentry && ({ _tmp = (_hentry)->_member.next; true; }); \
 	     _hentry = stroll_hlist_entry_or_null(_tmp, \
 	                                          typeof(*(_hentry)), \
 	                                          _member))
@@ -604,12 +604,142 @@ stroll_hlist_init(struct stroll_hlist * __restrict hlist)
 }
 
 /**
+ * Iterate over nodes of a stroll_hlist bucket array.
+ *
+ * @param[in]  _buckets stroll_hlist bucket array to iterate over
+ * @param[in]  _bits    Log base 2 of number of buckets within @p _buckets
+ * @param[in]  _buck    Integer index of current bucket
+ * @param[out] _hnode   Pointer to current stroll_hlist_node node of current
+ *                      bucket
+ *
+ * @warning
+ * - Result is undefined if @p _buckets has not been previously initialized.
+ * - Behavior is undefined when @p _hnode is modified while iterating over
+ *   @p _hlist.
+ *
+ * @see
+ * - stroll_hlist_foreach_buckets_entry()
+ * - stroll_hlist_foreach_buckets_node_safe()
+ * - stroll_hlist_foreach_node()
+ * - stroll_hlist_init_buckets()
+ */
+#define stroll_hlist_foreach_buckets_node(_buckets, _bits, _buck, _hnode) \
+	for ((_buck) = 0, (_hnode) = NULL; \
+	     ((_hnode) == NULL) && ((_buck) < (1U << (_bits))); \
+	     (_buck)++) \
+		stroll_hlist_foreach_node(&(_buckets)[_buck], _hnode)
+
+/**
+ * Iterate safely over nodes of a stroll_hlist bucket array.
+ *
+ * @param[in]  _buckets stroll_hlist bucket array to iterate over
+ * @param[in]  _bits    Log base 2 of number of buckets within @p _buckets
+ * @param[in]  _buck    Integer index of current bucket
+ * @param[out] _hnode   Pointer to current stroll_hlist_node node of current
+ *                      bucket
+ * @param[out] _tmp     Pointer to another stroll_hlist_node used for temporary
+ *                      storage.
+ *
+ * Allows to iterate over stroll_hlist hashed list bucket array nodes safely
+ * against @p _hnode removal.
+ *
+ * @warning
+ * - Result is undefined if @p _buckets has not been previously initialized.
+ *
+ * @see
+ * - stroll_hlist_foreach_buckets_entry_safe()
+ * - stroll_hlist_foreach_buckets_node()
+ * - stroll_hlist_init_buckets()
+ * - stroll_hlist_foreach_node_safe()
+ */
+#define stroll_hlist_foreach_buckets_node_safe(_buckets, \
+                                               _bits, \
+                                               _buck, \
+                                               _hnode, \
+                                               _tmp) \
+	for ((_buck) = 0, (_hnode) = NULL; \
+	     ((_hnode) == NULL) && ((_buck) < (1U << (_bits))); \
+	     (_buck)++) \
+		stroll_hlist_foreach_node_safe(&(_buckets)[_buck], _hnode, _tmp)
+
+/**
+ * Iterate over entries of a stroll_hlist bucket array.
+ *
+ * @param[in]  _buckets stroll_hlist bucket array to iterate over
+ * @param[in]  _bits    Log base 2 of number of buckets within @p _buckets
+ * @param[in]  _buck    Integer index of current bucket
+ * @param[out] _hentry  Pointer to current entry of current bucket
+ * @param      _member  Member field of @p *_hentry structure holding the
+ *                      current stroll_hlist_node node of current bucket
+ *
+ * @warning
+ * - Result is undefined if @p _buckets has not been previously initialized.
+ * - Behavior is undefined when @p _hentry is modified while iterating over
+ *   @p _hlist.
+ *
+ * @see
+ * - stroll_hlist_foreach_buckets_entry_safe()
+ * - stroll_hlist_foreach_buckets_node()
+ * - stroll_hlist_init_buckets()
+ * - stroll_hlist_foreach_entry()
+ */
+#define stroll_hlist_foreach_buckets_entry(_buckets, \
+                                           _bits, \
+                                           _buck, \
+                                           _hentry, \
+                                           _member) \
+	for ((_buck) = 0, (_hentry) = NULL; \
+	     ((_hentry) == NULL) && ((_buck) < (1U << (_bits))); \
+	     (_buck)++) \
+		stroll_hlist_foreach_entry(&(_buckets)[_buck], _hentry, _member)
+
+/**
+ * Iterate safely over entries of a stroll_hlist bucket array.
+ *
+ * @param[in]  _buckets stroll_hlist bucket array to iterate over
+ * @param[in]  _bits    Log base 2 of number of buckets within @p _buckets
+ * @param[in]  _buck    Integer index of current bucket
+ * @param[out] _hentry  Pointer to current entry of current bucket
+ * @param      _member  Member field of @p *_hentry structure holding the
+ *                      current stroll_hlist_node node of current bucket
+ * @param[out] _tmp     Pointer to a stroll_hlist_node used for temporary
+ *                      storage.
+ *
+ * Allows to iterate over stroll_hlist hashed list bucket array entries safely
+ * against @p _hentry removal.
+ *
+ * @warning
+ * - Result is undefined if @p _buckets has not been previously initialized.
+ *
+ * @see
+ * - stroll_hlist_foreach_buckets_entry()
+ * - stroll_hlist_foreach_buckets_node_safe()
+ * - stroll_hlist_init_buckets()
+ * - stroll_hlist_foreach_entry_safe()
+ */
+#define stroll_hlist_foreach_buckets_entry_safe(_buckets, \
+                                                _bits, \
+                                                _buck, \
+                                                _hentry, \
+                                                _member, \
+                                                _tmp) \
+	for ((_buck) = 0, (_hentry) = NULL; \
+	     ((_hentry) == NULL) && ((_buck) < (1U << (_bits))); \
+	     (_buck)++) \
+		stroll_hlist_foreach_entry_safe(&(_buckets)[_buck], \
+		                                _hentry, \
+		                                _member, \
+		                                _tmp)
+
+/**
  * Initialize a stroll_hlist bucket array
  *
  * @param[out] buckets stroll_hlist buckets to initialize.
  * @param[in]  bits    Log base 2 of number of buckets to initialize.
  *
- * @see stroll_hlist_init()
+ * @see
+ * - stroll_hlist_init()
+ * - stroll_hlist_create_buckets()
  */
 extern void
 stroll_hlist_init_buckets(struct stroll_hlist * __restrict buckets,
@@ -623,8 +753,8 @@ stroll_hlist_init_buckets(struct stroll_hlist * __restrict buckets,
  * @return stroll_hlist buckets if successful, `NULL` otherwise.
  *
  * @see
- * - stroll_hlist_destroy_buckets()
  * - stroll_hlist_init_buckets()
+ * - stroll_hlist_destroy_buckets()
  */
 extern struct stroll_hlist *
 stroll_hlist_create_buckets(unsigned int bits);
@@ -634,7 +764,8 @@ stroll_hlist_create_buckets(unsigned int bits);
  *
  * @param[inout] buckets stroll_hlist buckets to destroy.
  *
- * @see stroll_hlist_create_buckets()
+ * @see
+ * - stroll_hlist_create_buckets()
  */
 static inline
 void
