@@ -1330,11 +1330,6 @@ Reference
 Configuration macros
 --------------------
 
-CONFIG_STROLL_ASSERT
-********************
-
-.. doxygendefine:: CONFIG_STROLL_ASSERT
-
 CONFIG_STROLL_ARRAY_3WQUICK_SORT
 ********************************
 
@@ -1399,6 +1394,11 @@ CONFIG_STROLL_ARRAY_SELECT_SORT
 *******************************
 
 .. doxygendefine:: CONFIG_STROLL_ARRAY_SELECT_SORT
+
+CONFIG_STROLL_ASSERT
+********************
+
+.. doxygendefine:: CONFIG_STROLL_ASSERT
 
 CONFIG_STROLL_ASSERT_API
 ************************

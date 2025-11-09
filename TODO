@@ -30,4 +30,4 @@ Documentation
 * stroll_hash (sphinx doc)
 * message: fix / refine
 * buffer
-* stroll_alloc interface
+* stroll_alloc interface (+ per allocator instantiations)
