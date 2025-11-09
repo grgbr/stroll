@@ -2912,6 +2912,11 @@ stroll_dlist_withdraw
 
 .. doxygenfunction:: stroll_dlist_withdraw
 
+stroll_falloc_align_chunk_size
+******************************
+
+.. doxygenfunction:: stroll_falloc_align_chunk_size
+
 stroll_falloc_alloc
 *******************
 

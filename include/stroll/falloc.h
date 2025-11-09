@@ -22,6 +22,19 @@
 #include <stroll/dlist.h>
 #include <stroll/priv/alloc_chunk.h>
 
+#if defined(CONFIG_STROLL_ASSERT_API)
+
+#include "stroll/assert.h"
+
+#define stroll_falloc_assert_api(_expr) \
+	stroll_assert("stroll:falloc", _expr)
+
+#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
+
+#define stroll_falloc_assert_api(_expr)
+
+#endif /* defined(CONFIG_STROLL_ASSERT_API) */
+
 /**
  * Fixed sized object allocator.
  *
@@ -53,6 +66,7 @@
  * - stroll_falloc_alloc()
  * - stroll_falloc_free()
  * - STROLL_FALLOC_UNBOUND_CHUNK_NR
+ * - stroll_falloc_align_chunk_size()
  */
 struct stroll_falloc {
 	/**
@@ -158,6 +172,25 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
 #define STROLL_FALLOC_UNBOUND_CHUNK_NR (UINT_MAX)
 
 /**
+ * Compute chunk size according to internal alignment requirements.
+ *
+ * @param[in] size Size of chunk
+ *
+ * @return Aligned size
+ *
+ * @see stroll_falloc_init
+ */
+static inline
+size_t
+stroll_falloc_align_chunk_size(size_t size)
+{
+	stroll_falloc_assert_api(size);
+
+	return stroll_align_upper(size, sizeof_member(union stroll_alloc_chunk,
+	                                              next_free));
+}
+
+/**
  * Initialize a fixed sized object allocator.
  *
  * @param[out] alloc           Fixed sized object allocator
@@ -185,6 +218,7 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
  * @see
  * - stroll_falloc_fini()
  * - STROLL_FALLOC_UNBOUND_CHUNK_NR
+ * - stroll_falloc_align_chunk_size()
  * - #stroll_falloc
  */
 extern void

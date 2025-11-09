@@ -3,19 +3,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#if defined(CONFIG_STROLL_ASSERT_API)
-
-#include "stroll/assert.h"
-
-#define stroll_falloc_assert_api(_expr) \
-	stroll_assert("stroll:falloc", _expr)
-
-#else  /* !defined(CONFIG_STROLL_ASSERT_API) */
-
-#define stroll_falloc_assert_api(_expr)
-
-#endif /* defined(CONFIG_STROLL_ASSERT_API) */
-
 #if defined(CONFIG_STROLL_ASSERT_INTERN)
 
 #include "stroll/assert.h"
