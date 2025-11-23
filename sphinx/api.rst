@@ -1220,7 +1220,11 @@ If this is not desirable, refer to section `Pre-allocated fixed sized objects`.
 The :c:struct:`stroll_falloc` structure describes a fixed sized object
 allocator and may be used as argument to the following functions:
 
-* :c:func:`stroll_falloc_init`
+* :c:func:`stroll_falloc_chunk_nr`
+* :c:func:`stroll_falloc_chunk_size`
+* :c:func:`stroll_falloc_align_chunk_size`
+* :c:func:`stroll_falloc_init_per_block`
+* :c:func:`stroll_falloc_init_block_size`
 * :c:func:`stroll_falloc_fini`
 * :c:func:`stroll_falloc_alloc`
 * :c:func:`stroll_falloc_free`
@@ -2922,6 +2926,16 @@ stroll_falloc_alloc
 
 .. doxygenfunction:: stroll_falloc_alloc
 
+stroll_falloc_chunk_nr
+**********************
+
+.. doxygenfunction:: stroll_falloc_chunk_nr
+
+stroll_falloc_chunk_size
+************************
+
+.. doxygenfunction:: stroll_falloc_chunk_size
+
 stroll_falloc_fini
 ******************
 
@@ -2932,10 +2946,15 @@ stroll_falloc_free
 
 .. doxygenfunction:: stroll_falloc_free
 
-stroll_falloc_init
-******************
+stroll_falloc_init_block_size
+*****************************
 
-.. doxygenfunction:: stroll_falloc_init
+.. doxygenfunction:: stroll_falloc_init_block_size
+
+stroll_falloc_init_per_block
+****************************
+
+.. doxygenfunction:: stroll_falloc_init_per_block
 
 stroll_fbheap_build
 *******************

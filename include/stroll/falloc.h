@@ -20,7 +20,7 @@
 #define _STROLL_FALLOC_H
 
 #include <stroll/dlist.h>
-#include <stroll/priv/alloc_chunk.h>
+#include <stroll/priv/falloc.h>
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 
@@ -58,15 +58,18 @@
  * For performance reasons, *blocks* of memory *chunks* are aligned on power of
  * 2 boundaries. The size and the minimum number of memory *chunks* per block
  * are specified at allocator initialization time thanks to a call to
- * stroll_falloc_init().
+ * stroll_falloc_init_per_block() or stroll_falloc_init_block_size().
  *
  * @see
- * - stroll_falloc_init()
+ * - stroll_falloc_init_per_block()
+ * - stroll_falloc_init_block_size()
+ * - stroll_falloc_chunk_nr()
+ * - stroll_falloc_chunk_size()
+ * - stroll_falloc_align_chunk_size()
+ * - STROLL_FALLOC_UNBOUND_CHUNK_NR
  * - stroll_falloc_fini()
  * - stroll_falloc_alloc()
  * - stroll_falloc_free()
- * - STROLL_FALLOC_UNBOUND_CHUNK_NR
- * - stroll_falloc_align_chunk_size()
  */
 struct stroll_falloc {
 	/**
@@ -142,10 +145,12 @@ stroll_falloc_free(struct stroll_falloc * __restrict alloc,
  * @return A pointer to the allocated chunk of memory
  *
  * Request the @p alloc allocator to allocate and return a chunk of memory.
- * @p alloc *MUST* have been previously initialized using stroll_falloc_init().
+ * @p alloc *MUST* have been previously initialized using
+ * stroll_falloc_init_per_block() or stroll_falloc_init_block_size().
  *
  * The chunk returned is, at least, as large as the @p chunk_size argument given
- * to stroll_falloc_init() at initialization time.
+ * to stroll_falloc_init_per_block() or stroll_falloc_init_block_size() at
+ * initialization time.
  * Its address and size are guaranteed to be aligned upon a machine word.
  *
  * @see
@@ -164,21 +169,69 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
 /**
  * Disable restriction of number of chunk allocations through falloc
  *
- * When given as @p chunk_nr argument to stroll_falloc_init(), this macro allows
- * unlimited number of memory chunk allocations.
+ * When given as @p chunk_nr argument to stroll_falloc_init_per_block() or
+ * stroll_falloc_init_block_size(), this macro allows unlimited number of memory
+ * chunk allocations.
  *
- * @see stroll_falloc_init
+ * @see
+ * - stroll_falloc_init_per_block()
+ * - stroll_falloc_init_block_size()
  */
 #define STROLL_FALLOC_UNBOUND_CHUNK_NR (UINT_MAX)
+
+/**
+ * Return Maximum number of allocatable chunks.
+ *
+ * @param[int] alloc Fixed sized object allocator
+ *
+ * @return Number of allocatable chunks
+ *
+ * @see
+ * - stroll_falloc_chunk_size()
+ * - stroll_falloc_init_per_block()
+ * - stroll_falloc_init_block_size()
+ */
+static inline
+unsigned int
+stroll_falloc_chunk_nr(const struct stroll_falloc * __restrict alloc)
+{
+	stroll_falloc_assert_alloc_api(alloc);
+
+	return alloc->chunk_nr;
+}
+
+/**
+ * Return size of allocation chunk.
+ *
+ * @param[int] alloc Fixed sized object allocator
+ *
+ * @return Chunk size
+ *
+ * @see
+ * - stroll_falloc_chunk_nr()
+ * - stroll_falloc_init_per_block()
+ * - stroll_falloc_init_block_size()
+ */
+static inline
+size_t
+stroll_falloc_chunk_size(const struct stroll_falloc * __restrict alloc)
+{
+	stroll_falloc_assert_alloc_api(alloc);
+
+	return alloc->chunk_sz;
+}
 
 /**
  * Compute chunk size according to internal alignment requirements.
  *
  * @param[in] size Size of chunk
  *
- * @return Aligned size
+ * @return Aligned chunk size
  *
- * @see stroll_falloc_init
+ * @see
+ * - stroll_falloc_chunk_size()
+ * - stroll_falloc_init_per_block()
+ * - stroll_falloc_init_block_size()
  */
 static inline
 size_t
@@ -191,12 +244,12 @@ stroll_falloc_align_chunk_size(size_t size)
 }
 
 /**
- * Initialize a fixed sized object allocator.
+ * Initialize a fixed sized object allocator on a chunks per block count basis.
  *
  * @param[out] alloc           Fixed sized object allocator
  * @param[in]  chunk_nr        Maximum number of allocatable chunks
- * @param[in]  chunk_per_block Number of chunks per primary memory block
  * @param[in]  chunk_size      Size of a single chunk of memory in bytes
+ * @param[in]  chunk_per_block Number of chunks per primary memory block
  *
  * Initialize a fixed sized object allocator so that it may further allocate
  * @p chunk_size bytes long memory chunks thanks to the stroll_falloc_alloc()
@@ -207,25 +260,63 @@ stroll_falloc_align_chunk_size(size_t size)
  * #STROLL_FALLOC_UNBOUND_CHUNK_NR to request unlimited chunk allocation, i.e.,
  * up to process memory limits or available system memory.
  *
+ * @p chunk_size specify the size of a single *chunk* of memory in bytes and
+ * will be rounded up to the size of a machine word.
+ *
  * @p chunk_per_block specifies the minimum number of chunks that are allocated
  * on heap in a single call to @man{malloc(3)}. The @p chunk_per_block is a hint
  * only since memory chunks are allocated by block, which address is a power of
  * 2 and size, a multiple of a machine word.
  *
- * @p chunk_size specify the size of a single *chunk* of memory in bytes and
- * will be rounded up to the size of a machine word.
- *
  * @see
+ * - stroll_falloc_init_block_size()
  * - stroll_falloc_fini()
  * - STROLL_FALLOC_UNBOUND_CHUNK_NR
  * - stroll_falloc_align_chunk_size()
  * - #stroll_falloc
  */
 extern void
-stroll_falloc_init(struct stroll_falloc * __restrict alloc,
-                   unsigned int                      chunk_nr,
-                   unsigned int                      chunk_per_block,
-                   size_t                            chunk_size)
+stroll_falloc_init_per_block(struct stroll_falloc * __restrict alloc,
+                             unsigned int                      chunk_nr,
+                             size_t                            chunk_size,
+                             unsigned int                      chunk_per_block)
+	__stroll_nonull(1) __stroll_nothrow __leaf;
+
+/**
+ * Initialize a fixed sized object allocator on a per block size basis.
+ *
+ * @param[out] alloc      Fixed sized object allocator
+ * @param[in]  chunk_nr   Maximum number of allocatable chunks
+ * @param[in]  chunk_size Size of a single chunk of memory in bytes
+ * @param[in]  block_size Size of an allocation block of chunks in bytes
+ *
+ * Initialize a fixed sized object allocator so that it may further allocate
+ * @p chunk_size bytes long memory chunks thanks to the stroll_falloc_alloc()
+ * function.
+ *
+ * @p chunk_nr specifies the maximum number of chunks that may be allocated from
+ * this allocator instance. @p chunk_nr may be given as
+ * #STROLL_FALLOC_UNBOUND_CHUNK_NR to request unlimited chunk allocation, i.e.,
+ * up to process memory limits or available system memory.
+ *
+ * @p chunk_size specify the size of a single *chunk* of memory in bytes and
+ * will be rounded up to the size of a machine word.
+ *
+ * @p block_size specifies the size of the primary memory block used to allocate
+ * multiple chunks on heap in a single call to @man{malloc(3)}.
+ *
+ * @see
+ * - stroll_falloc_init_per_block()
+ * - stroll_falloc_fini()
+ * - STROLL_FALLOC_UNBOUND_CHUNK_NR
+ * - stroll_falloc_align_chunk_size()
+ * - #stroll_falloc
+ */
+extern void
+stroll_falloc_init_block_size(struct stroll_falloc * __restrict alloc,
+                              unsigned int                      chunk_nr,
+                              size_t                            chunk_size,
+                              size_t                            block_size)
 	__stroll_nonull(1) __stroll_nothrow __leaf;
 
 /**
@@ -237,7 +328,8 @@ stroll_falloc_init(struct stroll_falloc * __restrict alloc,
  * given in argument.
  *
  * @see
- * - stroll_falloc_init()
+ * - stroll_falloc_init_per_block()
+ * - stroll_falloc_init_block_size()
  * - #stroll_falloc
  */
 extern void
@@ -249,9 +341,15 @@ stroll_falloc_fini(struct stroll_falloc * __restrict alloc)
 #include <stroll/alloc.h>
 
 extern struct stroll_alloc *
-stroll_falloc_create_alloc(unsigned int chunk_nr,
-                           unsigned int chunk_per_block,
-                           size_t       chunk_size)
+stroll_falloc_create_alloc_per_block(unsigned int chunk_nr,
+                                     size_t       chunk_size,
+                                     unsigned int chunk_per_block)
+	__malloc(stroll_alloc_destroy, 1) __stroll_nothrow __warn_result;
+
+extern struct stroll_alloc *
+stroll_falloc_create_alloc_block_size(unsigned int chunk_nr,
+                                      size_t       chunk_size,
+                                      size_t       block_size)
 	__malloc(stroll_alloc_destroy, 1) __stroll_nothrow __warn_result;
 
 #endif /* defined(CONFIG_STROLL_ALLOC) */
