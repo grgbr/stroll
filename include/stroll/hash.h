@@ -116,7 +116,7 @@ stroll_hash64(uint64_t key, unsigned int bits)
 	stroll_hash_assert_api(bits <= 32);
 
 	/* Hash 64 bits using only 32x32-bit multiply. */
-	uint32_t tmp = (uint32_t)key ^ _stroll_hash32(key >> 32);
+	uint32_t tmp = (uint32_t)key ^ _stroll_hash32((uint32_t)(key >> 32));
 
 	return stroll_hash32(tmp, bits);
 }
