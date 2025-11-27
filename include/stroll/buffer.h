@@ -65,7 +65,6 @@ struct stroll_buff {
 	size_t capacity;
 };
 
-#define STROLL_BUFF_CAPACITY_MIN (8U)
 #if CONFIG_STROLL_BUFF_CAPACITY_MAX > SSIZE_MAX
 #error Invalid CONFIG_STROLL_BUFF_CAPACITY_MAX value (must be <= SSIZE_MAX) !
 #endif
@@ -74,8 +73,7 @@ struct stroll_buff {
 
 #define stroll_buff_assert_head_api(_buff) \
 	stroll_buff_assert_api(_buff); \
-	stroll_buff_assert_api((_buff)->capacity >= \
-	                         STROLL_BUFF_CAPACITY_MIN); \
+	stroll_buff_assert_api((_buff)->capacity); \
 	stroll_buff_assert_api((_buff)->capacity <= \
 	                         STROLL_BUFF_CAPACITY_MAX); \
 	stroll_buff_assert_api((_buff)->head_off <= (_buff)->capacity); \
