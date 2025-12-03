@@ -18,7 +18,6 @@ Stroll library macros.
 Type `help stroll' for more informations.
 end
 
-
 define _stroll_out
 output $arg0
 printf "\n"
@@ -246,5 +245,7 @@ set history remove-duplicates 16
 
 set print symbol-filename on
 set print array on
+# Restrict the number of elements to print for string chars and arrays.
+set print elements 32
 
 # ex: filetype=gdb
