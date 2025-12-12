@@ -260,6 +260,45 @@ stroll_fbmap_test_all(const struct stroll_fbmap * __restrict bmap)
 	return _stroll_fbmap_test_all(bmap->bits, bmap->nr);
 }
 
+extern unsigned int
+_stroll_fbmap_ffs(unsigned long * __restrict bits, unsigned int nr)
+	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
+unsigned int
+stroll_fbmap_ffs(const struct stroll_fbmap * __restrict bmap)
+{
+	stroll_fbmap_assert_map_api(bmap);
+
+	return _stroll_fbmap_ffs(bmap->bits, bmap->nr);
+}
+
+extern unsigned int
+_stroll_fbmap_fls(unsigned long * __restrict bits, unsigned int nr)
+	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
+unsigned int
+stroll_fbmap_fls(const struct stroll_fbmap * __restrict bmap)
+{
+	stroll_fbmap_assert_map_api(bmap);
+
+	return _stroll_fbmap_fls(bmap->bits, bmap->nr);
+}
+
+extern unsigned int
+_stroll_fbmap_ffc(unsigned long * __restrict bits, unsigned int nr)
+	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
+unsigned int
+stroll_fbmap_ffc(const struct stroll_fbmap * __restrict bmap)
+{
+	stroll_fbmap_assert_map_api(bmap);
+
+	return _stroll_fbmap_ffc(bmap->bits, bmap->nr);
+}
+
 static inline __stroll_nonull(1) __stroll_nothrow
 void
 _stroll_fbmap_set(unsigned long * __restrict bits, unsigned int bit_no)

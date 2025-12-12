@@ -121,6 +121,54 @@ _stroll_fbmap_toggle_all(unsigned long * __restrict bits, unsigned int nr)
 		bits[w] = ~bits[w];
 }
 
+unsigned int
+_stroll_fbmap_ffs(unsigned long * __restrict bits, unsigned int nr)
+{
+	stroll_fbmap_assert_bits_api(bits, nr);
+
+	unsigned int w;
+
+	for (w = 0; w < (stroll_fbmap_word_nr(nr) - 1); w++) {
+		if (bits[w])
+			return (w << STROLL_WORD_SHIFT) +
+			       stroll_bops_ffsul(bits[w]);
+	}
+
+	return 0;
+}
+
+unsigned int
+_stroll_fbmap_fls(unsigned long * __restrict bits, unsigned int nr)
+{
+	stroll_fbmap_assert_bits_api(bits, nr);
+
+	unsigned int w = stroll_fbmap_word_nr(nr);
+
+	while (w--) {
+		if (bits[w])
+			return (w << STROLL_WORD_SHIFT) +
+			       stroll_bops_flsul(bits[w]);
+	}
+
+	return 0;
+}
+
+unsigned int
+_stroll_fbmap_ffc(unsigned long * __restrict bits, unsigned int nr)
+{
+	stroll_fbmap_assert_bits_api(bits, nr);
+
+	unsigned int w;
+
+	for (w = 0; w < (stroll_fbmap_word_nr(nr) - 1); w++) {
+		if (bits[w] != ULONG_MAX)
+			return (w << STROLL_WORD_SHIFT) +
+			       stroll_bops_ffcul(bits[w]);
+	}
+
+	return 0;
+}
+
 unsigned long *
 _stroll_fbmap_create_bits_clear(unsigned int bit_nr)
 {
