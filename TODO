@@ -2,7 +2,6 @@ Implementation
 ==============
 
 * hlist: gcc attributes support
-* bmap: implement ffs(), fls(), ffc()
 * avl tree
 * red-black tree
 * tournament trees (win and loose)
@@ -20,6 +19,8 @@ Testing
 * stroll_hash
 * message: test stroll_msg_get_tail()
 * buffer: write all tests
+* fbmap: ffs / fls / ffc
+* map: ffs / fls / ffc
 
 Documentation
 =============
@@ -31,6 +32,5 @@ Documentation
 * message: fix / refine
 * buffer
 * stroll_alloc interface (+ per allocator instantiations)
-* stroll fbmap: document _stroll_fbmap_ffs() stroll_fbmap_ffs(),
-  _stroll_fbmap_fls(), stroll_fbmap_fls(), _stroll_fbmap_ffc(),
-  stroll_fbmap_ffc().
+* fbmap: ffs / fls / ffc
+* map: ffs / fls / ffc

@@ -1303,6 +1303,174 @@ stroll_bmap_test_allul(unsigned long bmap)
 #endif
 
 /**
+ * Find First (least-significant) bit Set over 32 bits bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_ffs32(uint32_t bmap)
+{
+	return stroll_bops_ffs32(bmap);
+}
+
+/**
+ * Find First (least-significant) bit Set over 64 bits bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_ffs64(uint64_t bmap)
+{
+	return stroll_bops_ffs64(bmap);
+}
+
+/**
+ * Find First (least-significant) bit Set over unsigned integer bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_ffs(unsigned int bmap)
+{
+	return stroll_bops_ffs(bmap);
+}
+
+/**
+ * Find First (least-significant) bit Set over unsigned long integer bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_ffsul(unsigned long bmap)
+{
+	return stroll_bops_ffsul(bmap);
+}
+
+/**
+ * Find Last (most-significant) bit Set over 32 bits bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_fls32(uint32_t bmap)
+{
+	return bmap ? stroll_bops_fls32(bmap) : 0;
+}
+
+/**
+ * Find Last (most-significant) bit Set over 64 bits bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_fls64(uint64_t bmap)
+{
+	return bmap ? stroll_bops_fls64(bmap) : 0;
+}
+
+/**
+ * Find Last (most-significant) bit Set over unsigned integer bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_fls(unsigned int bmap)
+{
+	return bmap ? stroll_bops_fls(bmap) : 0;
+}
+
+/**
+ * Find Last (most-significant) bit Set over unsigned long integer bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_flsul(unsigned long bmap)
+{
+	return bmap ? stroll_bops_flsul(bmap) : 0;
+}
+
+/**
+ * Find First (least-significant) bit Cleared over 32 bits bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_ffc32(uint32_t bmap)
+{
+	return stroll_bops_ffc32(bmap);
+}
+
+/**
+ * Find First (least-significant) bit Cleared over 64 bits bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_ffc64(uint64_t bmap)
+{
+	return stroll_bops_ffc64(bmap);
+}
+
+/**
+ * Find First (least-significant) bit Cleared over unsigned integer bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_ffc(unsigned int bmap)
+{
+	return stroll_bops_ffc(bmap);
+}
+
+/**
+ * Find First (least-significant) bit Cleared over unsigned long integer bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ */
+static inline __const __nothrow __warn_result
+unsigned int
+stroll_bmap_ffcul(unsigned long bmap)
+{
+	return stroll_bops_ffcul(bmap);
+}
+
+/**
  * Set bits of 32-bits word bitmap according to mask given in argument.
  *
  * @param[inout] bmap Bitmap to set
