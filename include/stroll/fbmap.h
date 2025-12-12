@@ -260,7 +260,7 @@ stroll_fbmap_test_all(const struct stroll_fbmap * __restrict bmap)
 	return _stroll_fbmap_test_all(bmap->bits, bmap->nr);
 }
 
-extern unsigned int
+extern int
 _stroll_fbmap_ffs(unsigned long * __restrict bits, unsigned int nr)
 	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
 
@@ -276,7 +276,7 @@ _stroll_fbmap_ffs(unsigned long * __restrict bits, unsigned int nr)
  * - stroll_fbmap_ffc()
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
-unsigned int
+int
 stroll_fbmap_ffs(const struct stroll_fbmap * __restrict bmap)
 {
 	stroll_fbmap_assert_map_api(bmap);
@@ -284,7 +284,7 @@ stroll_fbmap_ffs(const struct stroll_fbmap * __restrict bmap)
 	return _stroll_fbmap_ffs(bmap->bits, bmap->nr);
 }
 
-extern unsigned int
+extern int
 _stroll_fbmap_fls(unsigned long * __restrict bits, unsigned int nr)
 	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
 
@@ -300,7 +300,7 @@ _stroll_fbmap_fls(unsigned long * __restrict bits, unsigned int nr)
  * - stroll_fbmap_ffc()
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
-unsigned int
+int
 stroll_fbmap_fls(const struct stroll_fbmap * __restrict bmap)
 {
 	stroll_fbmap_assert_map_api(bmap);
@@ -308,7 +308,7 @@ stroll_fbmap_fls(const struct stroll_fbmap * __restrict bmap)
 	return _stroll_fbmap_fls(bmap->bits, bmap->nr);
 }
 
-extern unsigned int
+extern int
 _stroll_fbmap_ffc(unsigned long * __restrict bits, unsigned int nr)
 	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
 
@@ -317,14 +317,14 @@ _stroll_fbmap_ffc(unsigned long * __restrict bits, unsigned int nr)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no set bits were found.
+ * @return Index of bit starting from 1, 0 when no cleared bits were found.
  *
  * @see
  * - stroll_fbmap_ffs()
  * - stroll_fbmap_fls()
  */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
-unsigned int
+int
 stroll_fbmap_ffc(const struct stroll_fbmap * __restrict bmap)
 {
 	stroll_fbmap_assert_map_api(bmap);

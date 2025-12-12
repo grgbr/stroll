@@ -3123,7 +3123,6 @@ stroll_fbmap_ffs
 
 .. doxygenfunction:: stroll_fbmap_ffs
 
-
 stroll_fbmap_fini
 *****************
 

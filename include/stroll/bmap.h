@@ -1307,13 +1307,13 @@ stroll_bmap_test_allul(unsigned long bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no set bits were found.
+ * @return Index of bit starting from 0, -1 when no set bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_ffs32(uint32_t bmap)
 {
-	return stroll_bops_ffs32(bmap);
+	return (int)stroll_bops_ffs32(bmap) - 1;
 }
 
 /**
@@ -1321,13 +1321,13 @@ stroll_bmap_ffs32(uint32_t bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no set bits were found.
+ * @return Index of bit starting from 0, -1 when no set bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_ffs64(uint64_t bmap)
 {
-	return stroll_bops_ffs64(bmap);
+	return (int)stroll_bops_ffs64(bmap) - 1;
 }
 
 /**
@@ -1335,13 +1335,13 @@ stroll_bmap_ffs64(uint64_t bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no set bits were found.
+ * @return Index of bit starting from 0, -1 when no set bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_ffs(unsigned int bmap)
 {
-	return stroll_bops_ffs(bmap);
+	return (int)stroll_bops_ffs(bmap) - 1;
 }
 
 /**
@@ -1349,13 +1349,13 @@ stroll_bmap_ffs(unsigned int bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no set bits were found.
+ * @return Index of bit starting from 0, -1 when no set bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_ffsul(unsigned long bmap)
 {
-	return stroll_bops_ffsul(bmap);
+	return (int)stroll_bops_ffsul(bmap) - 1;
 }
 
 /**
@@ -1363,13 +1363,13 @@ stroll_bmap_ffsul(unsigned long bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no set bits were found.
+ * @return Index of bit starting from 0, -1 when no set bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_fls32(uint32_t bmap)
 {
-	return bmap ? stroll_bops_fls32(bmap) : 0;
+	return bmap ? (int)stroll_bops_fls32(bmap) - 1 : -1;
 }
 
 /**
@@ -1377,13 +1377,13 @@ stroll_bmap_fls32(uint32_t bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no set bits were found.
+ * @return Index of bit starting from 0, -1 when no set bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_fls64(uint64_t bmap)
 {
-	return bmap ? stroll_bops_fls64(bmap) : 0;
+	return bmap ? (int)stroll_bops_fls64(bmap) - 1 : -1;
 }
 
 /**
@@ -1391,13 +1391,13 @@ stroll_bmap_fls64(uint64_t bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no set bits were found.
+ * @return Index of bit starting from 0, -1 when no set bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_fls(unsigned int bmap)
 {
-	return bmap ? stroll_bops_fls(bmap) : 0;
+	return bmap ? (int)stroll_bops_fls(bmap) - 1 : -1;
 }
 
 /**
@@ -1405,13 +1405,13 @@ stroll_bmap_fls(unsigned int bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no set bits were found.
+ * @return Index of bit starting from 0, -1 when no set bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_flsul(unsigned long bmap)
 {
-	return bmap ? stroll_bops_flsul(bmap) : 0;
+	return bmap ? (int)stroll_bops_flsul(bmap) - 1 : -1;
 }
 
 /**
@@ -1419,13 +1419,13 @@ stroll_bmap_flsul(unsigned long bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ * @return Index of bit starting from 0, -1 when no cleared bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_ffc32(uint32_t bmap)
 {
-	return stroll_bops_ffc32(bmap);
+	return (int)stroll_bops_ffc32(bmap) - 1;
 }
 
 /**
@@ -1433,13 +1433,13 @@ stroll_bmap_ffc32(uint32_t bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ * @return Index of bit starting from 0, -1 when no cleared bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_ffc64(uint64_t bmap)
 {
-	return stroll_bops_ffc64(bmap);
+	return (int)stroll_bops_ffc64(bmap) - 1;
 }
 
 /**
@@ -1447,13 +1447,13 @@ stroll_bmap_ffc64(uint64_t bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ * @return Index of bit starting from 0, -1 when no cleared bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_ffc(unsigned int bmap)
 {
-	return stroll_bops_ffc(bmap);
+	return (int)stroll_bops_ffc(bmap) - 1;
 }
 
 /**
@@ -1461,13 +1461,13 @@ stroll_bmap_ffc(unsigned int bmap)
  *
  * @param[in] bmap Bitmap to test
  *
- * @return Index of bit starting from 1, 0 when no cleared bits were found.
+ * @return Index of bit starting from 0, -1 when no cleared bits were found.
  */
 static inline __const __nothrow __warn_result
-unsigned int
+int
 stroll_bmap_ffcul(unsigned long bmap)
 {
-	return stroll_bops_ffcul(bmap);
+	return (int)stroll_bops_ffcul(bmap) - 1;
 }
 
 /**
