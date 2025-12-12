@@ -32,5 +32,3 @@ Documentation
 * message: fix / refine
 * buffer
 * stroll_alloc interface (+ per allocator instantiations)
-* fbmap: ffs / fls / ffc
-* map: ffs / fls / ffc

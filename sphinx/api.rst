@@ -320,6 +320,27 @@ These are:
       * :c:func:`stroll_bmap_xor_range64`
       * :c:func:`stroll_bmap_xor_rangeul`
 
+   * Find First bit Set:
+
+      * :c:func:`stroll_bmap_ffs`
+      * :c:func:`stroll_bmap_ffs32`
+      * :c:func:`stroll_bmap_ffs64`
+      * :c:func:`stroll_bmap_ffsul`
+
+   * Find Last bit Set:
+
+      * :c:func:`stroll_bmap_fls`
+      * :c:func:`stroll_bmap_fls32`
+      * :c:func:`stroll_bmap_fls64`
+      * :c:func:`stroll_bmap_flsul`
+
+   * Find First bit Cleared:
+
+      * :c:func:`stroll_bmap_ffc`
+      * :c:func:`stroll_bmap_ffc32`
+      * :c:func:`stroll_bmap_ffc64`
+      * :c:func:`stroll_bmap_ffcul`
+
    * Test set bit(s):
 
       * :c:func:`stroll_bmap_test`
@@ -429,6 +450,12 @@ sizes. These are:
       * :c:func:`stroll_fbmap_test`
       * :c:func:`stroll_fbmap_test_range`
       * :c:func:`stroll_fbmap_test_all`
+
+   * Find bit:
+
+      * :c:func:`stroll_fbmap_ffs`
+      * :c:func:`stroll_fbmap_fls`
+      * :c:func:`stroll_fbmap_ffc`
 
    * Iteration:
 
@@ -2288,6 +2315,66 @@ stroll_bmap_clear_rangeul
 
 .. doxygenfunction:: stroll_bmap_clear_rangeul
 
+stroll_bmap_ffc
+***************
+
+.. doxygenfunction:: stroll_bmap_ffc
+
+stroll_bmap_ffc32
+*****************
+
+.. doxygenfunction:: stroll_bmap_ffc32
+
+stroll_bmap_ffc64
+*****************
+
+.. doxygenfunction:: stroll_bmap_ffc64
+
+stroll_bmap_ffcul
+*****************
+
+.. doxygenfunction:: stroll_bmap_ffcul
+
+stroll_bmap_ffs
+***************
+
+.. doxygenfunction:: stroll_bmap_ffs
+
+stroll_bmap_ffs32
+*****************
+
+.. doxygenfunction:: stroll_bmap_ffs32
+
+stroll_bmap_ffs64
+*****************
+
+.. doxygenfunction:: stroll_bmap_ffs64
+
+stroll_bmap_ffsul
+*****************
+
+.. doxygenfunction:: stroll_bmap_ffsul
+
+stroll_bmap_fls
+***************
+
+.. doxygenfunction:: stroll_bmap_fls
+
+stroll_bmap_fls32
+*****************
+
+.. doxygenfunction:: stroll_bmap_fls32
+
+stroll_bmap_fls64
+*****************
+
+.. doxygenfunction:: stroll_bmap_fls64
+
+stroll_bmap_flsul
+*****************
+
+.. doxygenfunction:: stroll_bmap_flsul
+
 stroll_bmap_hweight
 *******************
 
@@ -3026,10 +3113,26 @@ stroll_fbmap_clear_all
 
 .. doxygenfunction:: stroll_fbmap_clear_all
 
+stroll_fbmap_ffc
+****************
+
+.. doxygenfunction:: stroll_fbmap_ffc
+
+stroll_fbmap_ffs
+****************
+
+.. doxygenfunction:: stroll_fbmap_ffs
+
+
 stroll_fbmap_fini
 *****************
 
 .. doxygenfunction:: stroll_fbmap_fini
+
+stroll_fbmap_fls
+****************
+
+.. doxygenfunction:: stroll_fbmap_fls
 
 stroll_fbmap_hweight
 ********************

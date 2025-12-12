@@ -264,6 +264,17 @@ extern unsigned int
 _stroll_fbmap_ffs(unsigned long * __restrict bits, unsigned int nr)
 	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
 
+/**
+ * Find First (least-significant) bit Set over fixed sized bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ *
+ * @see
+ * - stroll_fbmap_fls()
+ * - stroll_fbmap_ffc()
+ */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 unsigned int
 stroll_fbmap_ffs(const struct stroll_fbmap * __restrict bmap)
@@ -277,6 +288,17 @@ extern unsigned int
 _stroll_fbmap_fls(unsigned long * __restrict bits, unsigned int nr)
 	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
 
+/**
+ * Find Last (most-significant) bit Set over fixed sized bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ *
+ * @see
+ * - stroll_fbmap_ffs()
+ * - stroll_fbmap_ffc()
+ */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 unsigned int
 stroll_fbmap_fls(const struct stroll_fbmap * __restrict bmap)
@@ -290,6 +312,17 @@ extern unsigned int
 _stroll_fbmap_ffc(unsigned long * __restrict bits, unsigned int nr)
 	__stroll_nonull(1) __stroll_pure __stroll_nothrow __leaf __warn_result;
 
+/**
+ * Find First (least-significant) bit Cleared over fixed sized bitmap.
+ *
+ * @param[in] bmap Bitmap to test
+ *
+ * @return Index of bit starting from 1, 0 when no set bits were found.
+ *
+ * @see
+ * - stroll_fbmap_ffs()
+ * - stroll_fbmap_fls()
+ */
 static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __warn_result
 unsigned int
 stroll_fbmap_ffc(const struct stroll_fbmap * __restrict bmap)

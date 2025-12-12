@@ -182,7 +182,7 @@ stroll_falloc_alloc(struct stroll_falloc * __restrict alloc)
 /**
  * Return Maximum number of allocatable chunks.
  *
- * @param[int] alloc Fixed sized object allocator
+ * @param[in] alloc Fixed sized object allocator
  *
  * @return Number of allocatable chunks
  *
@@ -203,7 +203,7 @@ stroll_falloc_chunk_nr(const struct stroll_falloc * __restrict alloc)
 /**
  * Return size of allocation chunk.
  *
- * @param[int] alloc Fixed sized object allocator
+ * @param[in] alloc Fixed sized object allocator
  *
  * @return Chunk size
  *
