@@ -220,7 +220,8 @@ static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow __returns_nonull
 struct stroll_slist_node *
 stroll_slist_last(const struct stroll_slist * __restrict list)
 {
-	stroll_slist_assert_api(!stroll_slist_empty(list));
+	stroll_slist_assert_api(list);
+	stroll_slist_assert_api(list->tail);
 
 	return list->tail;
 }
