@@ -175,31 +175,6 @@ stroll_fwheap_isleft_child(unsigned int                     index,
 }
 
 /*
- * Return index of the so-called distinguished ancestor of node specified by
- * index.
- *
- * The distinguished ancestor of a node located at "index" is the parent of
- * "index" if "index" points to a right child, and the distinguished ancestor of
- * the parent of "index" if "index" is a left child.
- */
-static inline __stroll_nonull(2) __stroll_pure __stroll_nothrow
-unsigned int
-stroll_fwheap_dancestor(unsigned int                     index,
-                        const unsigned long * __restrict rbits)
-{
-	/* Root has no ancestor... */
-	stroll_fwheap_assert_intern(index);
-	stroll_fwheap_assert_intern(rbits);
-
-	/* Move up untill index points to a right child. */
-	while (stroll_fwheap_isleft_child(index, rbits))
-		index = stroll_fwheap_parent(index);
-
-	/* Then return its parent. */
-	return stroll_fwheap_parent(index);
-}
-
-/*
  * Compute index of the distinguished ancestor of node specified by index in an
  * optimized manner.
  *
@@ -466,6 +441,31 @@ stroll_array_fwheap_sort(void * __restrict     array,
 #endif /* defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT) */
 
 #if defined(CONFIG_STROLL_FWHEAP)
+
+/*
+ * Return index of the so-called distinguished ancestor of node specified by
+ * index.
+ *
+ * The distinguished ancestor of a node located at "index" is the parent of
+ * "index" if "index" points to a right child, and the distinguished ancestor of
+ * the parent of "index" if "index" is a left child.
+ */
+static inline __stroll_nonull(2) __stroll_pure __stroll_nothrow
+unsigned int
+stroll_fwheap_dancestor(unsigned int                     index,
+                        const unsigned long * __restrict rbits)
+{
+	/* Root has no ancestor... */
+	stroll_fwheap_assert_intern(index);
+	stroll_fwheap_assert_intern(rbits);
+
+	/* Move up untill index points to a right child. */
+	while (stroll_fwheap_isleft_child(index, rbits))
+		index = stroll_fwheap_parent(index);
+
+	/* Then return its parent. */
+	return stroll_fwheap_parent(index);
+}
 
 #define STROLL_FWHEAP_JOIN_MIN(_func, _swap, _type) \
 	static inline __stroll_nonull(3, 4, 5) \
