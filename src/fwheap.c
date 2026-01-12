@@ -162,18 +162,6 @@ stroll_fwheap_right_child(unsigned int                     index,
 	return (2 * index) + 1 - (unsigned int)_stroll_fbmap_test(rbits, index);
 }
 
-static inline __stroll_nonull(2) __stroll_pure __stroll_nothrow
-bool
-stroll_fwheap_isleft_child(unsigned int                     index,
-                           const unsigned long * __restrict rbits)
-{
-	stroll_fwheap_assert_intern(index);
-	stroll_fwheap_assert_intern(rbits);
-
-	return (!!(index & 1)) ==
-	       _stroll_fbmap_test(rbits, stroll_fwheap_parent(index));
-}
-
 /*
  * Compute index of the distinguished ancestor of node specified by index in an
  * optimized manner.
@@ -441,6 +429,18 @@ stroll_array_fwheap_sort(void * __restrict     array,
 #endif /* defined(CONFIG_STROLL_ARRAY_FWHEAP_SORT) */
 
 #if defined(CONFIG_STROLL_FWHEAP)
+
+static inline __stroll_nonull(2) __stroll_pure __stroll_nothrow
+bool
+stroll_fwheap_isleft_child(unsigned int                     index,
+                           const unsigned long * __restrict rbits)
+{
+	stroll_fwheap_assert_intern(index);
+	stroll_fwheap_assert_intern(rbits);
+
+	return (!!(index & 1)) ==
+	       _stroll_fbmap_test(rbits, stroll_fwheap_parent(index));
+}
 
 /*
  * Return index of the so-called distinguished ancestor of node specified by
