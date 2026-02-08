@@ -1065,7 +1065,7 @@
 	_Pragma(_STROLL_STRING(GCC diagnostic ignored _warn))
 
 #define STROLL_RESTORE_WARN \
-	_Pragma("GCC diagnostic pop") \
+	_Pragma("GCC diagnostic pop")
 
 #define containerof(_ptr, _type, _member) \
 	({ \

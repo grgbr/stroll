@@ -48,7 +48,7 @@
  * @param[in] value word to search
  *
  * @return Index of bit starting from 1, 0 when no set bits were found.
-  */
+ */
 static inline unsigned int __const __nothrow
 stroll_bops_ffs32(uint32_t value)
 {
