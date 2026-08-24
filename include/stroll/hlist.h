@@ -87,7 +87,7 @@ struct stroll_hlist_node {
 	}
 
 /**
- * Initialize a stroll_dlist_node
+ * Initialize a stroll_hlist_node
  *
  * @param[out] hnode stroll_hlist_node to initialize.
  *
@@ -271,12 +271,20 @@ struct stroll_hlist {
 /**
  * stroll_hlist constant initializer.
  *
- * @param _hlist stroll_hlist variable to initialize.
- *
  * @see stroll_hlist_init()
  */
-#define STROLL_HLIST_INIT(_hlist) \
+#define STROLL_HLIST_INIT \
 	{ .head = NULL }
+
+/**
+ * stroll_hlist bucket array constant initializer.
+ *
+ * @param _bucks stroll_hlist bucket array to initialize.
+ *
+ * @see stroll_hlist_init_buckets()
+ */
+#define STROLL_HLIST_INIT_BUCKETS(_bucks) \
+	{ [0 ... stroll_array_nr(_bucks)] = STROLL_HLIST_INIT }
 
 /**
  * Iterate over hashed list nodes.
@@ -740,6 +748,7 @@ stroll_hlist_init(struct stroll_hlist * __restrict hlist)
  * @see
  * - stroll_hlist_init()
  * - stroll_hlist_create_buckets()
+ * - STROLL_HLIST_INIT_BUCKETS()
  */
 extern void
 stroll_hlist_init_buckets(struct stroll_hlist * __restrict buckets,
