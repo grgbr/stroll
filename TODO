@@ -33,3 +33,4 @@ Documentation
 * message: fix / refine
 * buffer
 * stroll_alloc interface (+ per allocator instantiations)
+* stroll_hash_salt_str()

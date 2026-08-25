@@ -20,6 +20,7 @@
 #define _STROLL_HASH_H
 
 #include <stroll/cdefs.h>
+#include <stdint.h>
 
 #if defined(CONFIG_STROLL_ASSERT_API)
 
@@ -156,5 +157,14 @@ stroll_hash_ptr(const void * __restrict ptr, unsigned int bits)
 {
 	return stroll_hashul((unsigned long)ptr, bits);
 }
+
+#if defined(CONFIG_STROLL_HASH_STR)
+
+extern unsigned int
+stroll_hash_salt_str(unsigned long              salt,
+                     const uint8_t * __restrict string,
+                     size_t                     length);
+
+#endif /* defined(CONFIG_STROLL_HASH_STR) */
 
 #endif /*  _STROLL_HASH_H */

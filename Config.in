@@ -602,6 +602,16 @@ config STROLL_HASH
 	  based upon hash lists.
 	  See <stroll/hash.h>.
 
+config STROLL_HASH_STR
+	bool "String content hashing"
+	default n
+	depends on STROLL_HASH
+	help
+	  Build Stroll library with support for non-cryptographic string content
+	  hashing. This may be used as a building block to implement hash tables
+	  based upon hash lists.
+	  See <stroll/hash.h>.
+
 config STROLL_BUFF
 	bool "Data buffer"
 	default n
