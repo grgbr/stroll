@@ -72,14 +72,14 @@
 #define STROLL_HASH_GOLDEN_RATIO32 UINT32_C(0x61C88647)
 #define STROLL_HASH_GOLDEN_RATIO64 UINT64_C(0x61C8864680B583EB)
 
-static inline
+static inline __const __nothrow
 uint32_t
 _stroll_hash32(uint32_t key)
 {
 	return key * STROLL_HASH_GOLDEN_RATIO32;
 }
 
-static inline
+static inline __const __nothrow
 unsigned int
 stroll_hash32(uint32_t key, unsigned int bits)
 {
@@ -92,7 +92,7 @@ stroll_hash32(uint32_t key, unsigned int bits)
 
 #if __WORDSIZE == 64
 
-static inline
+static inline __const __nothrow
 unsigned int
 stroll_hash64(uint64_t key, unsigned int bits)
 {
@@ -109,7 +109,7 @@ stroll_hash64(uint64_t key, unsigned int bits)
 
 #else /* __WORDSIZE != 64 */
 
-static inline
+static inline __const __nothrow
 unsigned int
 stroll_hash64(uint64_t key, unsigned int bits)
 {
@@ -124,7 +124,7 @@ stroll_hash64(uint64_t key, unsigned int bits)
 
 #endif /* __WORDSIZE == 64 */
 
-static inline
+static inline __const __nothrow
 unsigned int
 stroll_hash(unsigned int key, unsigned int bits)
 {
@@ -133,7 +133,7 @@ stroll_hash(unsigned int key, unsigned int bits)
 
 #if __WORDSIZE == 64
 
-static inline
+static inline __const __nothrow
 unsigned int
 stroll_hashul(unsigned long key, unsigned int bits)
 {
@@ -142,7 +142,7 @@ stroll_hashul(unsigned long key, unsigned int bits)
 
 #else /* __WORDSIZE != 64 */
 
-static inline
+static inline __const __nothrow
 unsigned int
 stroll_hashul(unsigned long key, unsigned int bits)
 {
@@ -151,7 +151,7 @@ stroll_hashul(unsigned long key, unsigned int bits)
 
 #endif /* __WORDSIZE == 64 */
 
-static inline
+static inline __const __nothrow
 unsigned int
 stroll_hash_ptr(const void * __restrict ptr, unsigned int bits)
 {
@@ -163,7 +163,8 @@ stroll_hash_ptr(const void * __restrict ptr, unsigned int bits)
 extern unsigned int
 stroll_hash_salt_str(unsigned long              salt,
                      const uint8_t * __restrict string,
-                     size_t                     length);
+                     size_t                     length)
+	__stroll_nonull(2) __stroll_pure __stroll_nothrow __leaf;
 
 #endif /* defined(CONFIG_STROLL_HASH_STR) */
 

@@ -11,6 +11,7 @@
 
 #include "stroll/bops.h"
 #include <string.h>
+#include <endian.h>
 
 #if __WORDSIZE == 64
 
@@ -49,8 +50,15 @@
 	 x += y, y = stroll_bops_rotl64(y, 45), \
 	 y *= 9)
 
+static inline __const __nothrow
+unsigned long
+stroll_hash_leultoh(unsigned long value)
+{
+	return le64toh(value);
+}
+
 /* Fold two longs into one 32-bit hash value. */
-static inline
+static inline __const __nothrow
 unsigned int
 stroll_hash_fold(unsigned long x, unsigned long y)
 {
@@ -78,7 +86,14 @@ stroll_hash_fold(unsigned long x, unsigned long y)
 	 x += y, y = stroll_bops_rotl32(y, 20), \
 	 y *= 9)
 
-static inline
+static inline __const __nothrow
+unsigned long
+stroll_hash_leultoh(unsigned long value)
+{
+	return le32toh(value);
+}
+
+static inline __const __nothrow
 unsigned int
 stroll_hash_fold(unsigned long x, unsigned long y)
 {
@@ -104,35 +119,22 @@ stroll_hash_salt_str(unsigned long              salt,
 	stroll_hash_assert_intern(string);
 	stroll_hash_assert_intern(length);
 
-	size_t   len;
 	unsigned long a;
 	unsigned long x = 0;
 	unsigned long y = salt;
 
-	len = (size_t)((unsigned long)string & stroll_align_mask(a, sizeof(a)));
-	if (len) {
-		/* String is not aligned upon unsigned long boundaries. */
-		a = 0;
-		len = stroll_min(sizeof(a) - len, length);
-		memcpy(&a, string, len);
-
-		x ^= a;
-		string += len;
-	}
-
-	length -= len;
-	while (length >= sizeof(unsigned long)) {
-		a = *(const unsigned long *)string;
+	while (length >= sizeof(a)) {
+		memcpy(&a, string, sizeof(a));
 		STROLL_HASH_MIX(x, y, a);
 
-		string += sizeof(unsigned long);
-		length -= sizeof(unsigned long);
+		string += sizeof(a);
+		length -= sizeof(a);
 	}
 
 	if (length) {
 		a = 0;
 		memcpy(&a, string, length);
-		x ^= a;
+		x ^= stroll_hash_leultoh(a);
 	}
 
 	return stroll_hash_fold(x, y);
