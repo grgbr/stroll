@@ -161,10 +161,21 @@ stroll_hash_ptr(const void * __restrict ptr, unsigned int bits)
 #if defined(CONFIG_STROLL_HASH_STR)
 
 extern unsigned int
+_stroll_hash_salt_str(unsigned long              salt,
+                      const uint8_t * __restrict string,
+                      size_t                     length)
+	__stroll_nonull(2) __stroll_pure __stroll_nothrow __leaf;
+
+static inline __stroll_nonull(2) __stroll_pure __stroll_nothrow
+unsigned int
 stroll_hash_salt_str(unsigned long              salt,
                      const uint8_t * __restrict string,
-                     size_t                     length)
-	__stroll_nonull(2) __stroll_pure __stroll_nothrow __leaf;
+                     size_t                     length,
+                     unsigned int               bits)
+{
+	/* High bits are more random, so use them. */
+	return _stroll_hash_salt_str(salt, string, length) >> (32 - bits);
+}
 
 #endif /* defined(CONFIG_STROLL_HASH_STR) */
 

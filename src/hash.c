@@ -13,6 +13,13 @@
 #include <string.h>
 #include <endian.h>
 
+/*
+ * Non-cryptographic string hashing implementation.
+ *
+ * Cowardly copied from Linux kernel <linux>/fs/namei.c:full_name_hash()
+ * function.
+ */
+
 #if __WORDSIZE == 64
 
 /*
@@ -103,18 +110,12 @@ stroll_hash_fold(unsigned long x, unsigned long y)
 #endif /* __WORDSIZE == 64 */
 
 /*
- * Return the hash of a string of known length.  This is carfully
- * designed to match hash_name(), which is the more critical function.
- * In particular, we must end by hashing a final word containing 0..7
- * payload bytes, to match the way that hash_name() iterates until it
- * finds the delimiter after the name.
- *
- * See full_name_hash() implementation.
+ * Return the hash of a string of known length.
  */
 unsigned int
-stroll_hash_salt_str(unsigned long              salt,
-                     const uint8_t * __restrict string,
-                     size_t                     length)
+_stroll_hash_salt_str(unsigned long              salt,
+                      const uint8_t * __restrict string,
+                      size_t                     length)
 {
 	stroll_hash_assert_intern(string);
 	stroll_hash_assert_intern(length);
