@@ -21,6 +21,7 @@ Testing
 * buffer: write all tests
 * fbmap: ffs / fls / ffc
 * map: ffs / fls / ffc
+* bops: left / right rotations
 
 Documentation
 =============

@@ -392,4 +392,190 @@ stroll_bops_hweightul(unsigned long value)
 
 #endif
 
+/**
+ * Left rotate bits of a 32 bits word.
+ *
+ * @param[in] value word to rotate
+ * @param[in] count number of bits to rotate
+ *
+ * @return Word with bits rotated left.
+ *
+ * Returns a new value being equivalent to :
+ * (@p value << @p count) | (@p value >> (32 - @p count))
+ */
+static inline uint32_t __const __nothrow
+stroll_bops_rotl32(uint32_t value, unsigned int count)
+{
+	stroll_bops_assert_api(count < 32);
+
+#if STROLL_GCC_VERSION >= STROLL_GCC_MAKE_VERSION(15, 1, 0)
+	return __builtin_stdc_rotate_left(value, count);
+#else
+	return (value << count) | (value >> (32 - count));
+#endif
+}
+
+/**
+ * Left rotate bits of an integer.
+ *
+ * @param[in] value word to rotate
+ * @param[in] count number of bits to rotate
+ *
+ * @return Word with bits rotated left.
+ *
+ * Returns a new value being equivalent to :
+ * (@p value << @p count) | (@p value >> (32 - @p count))
+ */
+static inline unsigned int __const __nothrow
+stroll_bops_rotl(unsigned int value, unsigned int count)
+{
+	return stroll_bops_rotl32(value, count);
+}
+
+/**
+ * Left rotate bits of a 64 bits word.
+ *
+ * @param[in] value word to rotate
+ * @param[in] count number of bits to rotate
+ *
+ * @return Word with bits rotated left.
+ *
+ * Returns a new value being equivalent to :
+ * (@p value << @p count) | (@p value >> (64 - @p count))
+ */
+static inline uint64_t __const __nothrow
+stroll_bops_rotl64(uint64_t value, unsigned int count)
+{
+	stroll_bops_assert_api(count < 64);
+
+#if STROLL_GCC_VERSION >= STROLL_GCC_MAKE_VERSION(15, 1, 0)
+	return __builtin_stdc_rotate_left(value, count);
+#else
+	return (value << count) | (value >> (64 - count));
+#endif
+}
+
+/**
+ * Left rotate bits of a machine word.
+ *
+ * @param[in] value word to rotate
+ * @param[in] count number of bits to rotate
+ *
+ * @return Word with bits rotated left.
+ *
+ * Returns a new value being equivalent to :
+ * (@p value << @p count) | (@p value >> (*machine bit width* - @p count))
+ */
+
+#if __WORDSIZE == 64
+
+static inline unsigned long __const __nothrow
+stroll_bops_rotlul(unsigned long value, unsigned int count)
+{
+	return stroll_bops_rotl64(value, count);
+}
+
+#elif __WORDSIZE == 32
+
+static inline unsigned long __const __nothrow
+stroll_bops_rotlul(unsigned long value, unsigned int count)
+{
+	return stroll_bops_rotl32(value, count);
+}
+
+#endif
+
+/**
+ * Right rotate bits of a 32 bits word.
+ *
+ * @param[in] value word to rotate
+ * @param[in] count number of bits to rotate
+ *
+ * @return Word with bits rotated right.
+ *
+ * Returns a new value being equivalent to :
+ * (@p value >> @p count) | (@p value << (32 - @p count))
+ */
+static inline uint32_t __const __nothrow
+stroll_bops_rotr32(uint32_t value, unsigned int count)
+{
+	stroll_bops_assert_api(count < 32);
+
+#if STROLL_GCC_VERSION >= STROLL_GCC_MAKE_VERSION(15, 1, 0)
+	return __builtin_stdc_rotate_right(value, count);
+#else
+	return (value >> count) | (value << (32 - count));
+#endif
+}
+
+/**
+ * Right rotate bits of an integer.
+ *
+ * @param[in] value word to rotate
+ * @param[in] count number of bits to rotate
+ *
+ * @return Word with bits rotated right.
+ *
+ * Returns a new value being equivalent to :
+ * (@p value >> @p count) | (@p value << (32 - @p count))
+ */
+static inline unsigned int __const __nothrow
+stroll_bops_rotr(unsigned int value, unsigned int count)
+{
+	return stroll_bops_rotr32(value, count);
+}
+
+/**
+ * Right rotate bits of a 64 bits word.
+ *
+ * @param[in] value word to rotate
+ * @param[in] count number of bits to rotate
+ *
+ * @return Word with bits rotated right.
+ *
+ * Returns a new value being equivalent to :
+ * (@p value >> @p count) | (@p value << (64 - @p count))
+ */
+static inline uint64_t __const __nothrow
+stroll_bops_rotr64(uint64_t value, unsigned int count)
+{
+	stroll_bops_assert_api(count < 64);
+
+#if STROLL_GCC_VERSION >= STROLL_GCC_MAKE_VERSION(15, 1, 0)
+	return __builtin_stdc_rotate_right(value, count);
+#else
+	return (value >> count) | (value << (64 - count));
+#endif
+}
+
+/**
+ * Right rotate bits of a machine word.
+ *
+ * @param[in] value word to rotate
+ * @param[in] count number of bits to rotate
+ *
+ * @return Word with bits rotated right.
+ *
+ * Returns a new value being equivalent to :
+ * (@p value >> @p count) | (@p value << (*machine bit width* - @p count))
+ */
+
+#if __WORDSIZE == 64
+
+static inline unsigned long __const __nothrow
+stroll_bops_rotrul(unsigned long value, unsigned int count)
+{
+	return stroll_bops_rotr64(value, count);
+}
+
+#elif __WORDSIZE == 32
+
+static inline unsigned long __const __nothrow
+stroll_bops_rotrul(unsigned long value, unsigned int count)
+{
+	return stroll_bops_rotr32(value, count);
+}
+
+#endif
+
 #endif /* _STROLL_BOPS_H */

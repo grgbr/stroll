@@ -207,6 +207,20 @@ operations. These are:
       * :c:func:`stroll_bops_hweight64`
       * :c:func:`stroll_bops_hweightul`
 
+   * ROTate bits Left:
+
+      * :c:func:`stroll_bops_rotl`
+      * :c:func:`stroll_bops_rotl32`
+      * :c:func:`stroll_bops_rotl64`
+      * :c:func:`stroll_bops_rotlul`
+
+   * ROTate bits Right:
+
+      * :c:func:`stroll_bops_rotr`
+      * :c:func:`stroll_bops_rotr32`
+      * :c:func:`stroll_bops_rotr64`
+      * :c:func:`stroll_bops_rotrul`
+
 .. index:: power of 2 operations, pow2
 
 Power of 2 operations
@@ -2854,6 +2868,46 @@ stroll_bops_hweightul
 *********************
 
 .. doxygenfunction:: stroll_bops_hweightul
+
+stroll_bops_rotl
+****************
+
+.. doxygenfunction:: stroll_bops_rotl
+
+stroll_bops_rotl32
+******************
+
+.. doxygenfunction:: stroll_bops_rotl32
+
+stroll_bops_rotl64
+******************
+
+.. doxygenfunction:: stroll_bops_rotl64
+
+stroll_bops_rotlul
+******************
+
+.. doxygenfunction:: stroll_bops_rotlul
+
+stroll_bops_rotr
+****************
+
+.. doxygenfunction:: stroll_bops_rotr
+
+stroll_bops_rotr32
+******************
+
+.. doxygenfunction:: stroll_bops_rotr32
+
+stroll_bops_rotr64
+******************
+
+.. doxygenfunction:: stroll_bops_rotr64
+
+stroll_bops_rotrul
+******************
+
+.. doxygenfunction:: stroll_bops_rotrul
 
 stroll_dlist_append
 *******************
