@@ -158,25 +158,77 @@ stroll_hash_ptr(const void * __restrict ptr, unsigned int bits)
 	return stroll_hashul((unsigned long)ptr, bits);
 }
 
-#if defined(CONFIG_STROLL_HASH_STR)
+#if defined(CONFIG_STROLL_HASH_DJB2)
 
-extern unsigned int
-_stroll_hash_salt_str(unsigned long              salt,
-                      const uint8_t * __restrict string,
-                      size_t                     length)
-	__stroll_nonull(2) __stroll_pure __stroll_nothrow __leaf;
+/*
+ * Dan Bernstein's DJB2 string content hashing:
+ * - efficient and really fast for SMALL string keys ;
+ * - even when compared to SDBM, FNV-1, FNV-1a, XXH3 and MurMur3.
+ *
+ * Warning !
+ * This is not robust to hash table collision attacks ! Use something like
+ * SipHash or CityHash where you may face situations such as HashDoS...
+ */
 
-static inline __stroll_nonull(2) __stroll_pure __stroll_nothrow
+#define STROLL_HASH_DJB2_MAGIC (5381UL)
+
+/* _hash = (_hash * 33) + _char */
+#define STROLL_HASH_DJB2_MIX(_hash, _char) \
+	((((_hash) << 5) + (_hash)) + (unsigned long)(_char))
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
 unsigned int
-stroll_hash_salt_str(unsigned long              salt,
-                     const uint8_t * __restrict string,
-                     size_t                     length,
-                     unsigned int               bits)
+_stroll_hash_nstr_djb2(const uint8_t * __restrict string, size_t length)
 {
-	/* High bits are more random, so use them. */
-	return _stroll_hash_salt_str(salt, string, length) >> (32 - bits);
+	stroll_hash_assert_api(string);
+	stroll_hash_assert_api(length);
+
+	unsigned long h = STROLL_HASH_DJB2_MAGIC;
+
+	while (length--)
+		h = STROLL_HASH_DJB2_MIX(h, *string++);
+
+	return h;
 }
 
-#endif /* defined(CONFIG_STROLL_HASH_STR) */
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
+unsigned int
+_stroll_hash_str_djb2(const uint8_t * __restrict string)
+{
+	stroll_hash_assert_api(string);
+
+	unsigned long h = STROLL_HASH_DJB2_MAGIC;
+
+	while (*string)
+		h = STROLL_HASH_DJB2_MIX(h, *string++);
+
+	return h;
+}
+
+static inline __const __nothrow
+unsigned int
+stroll_hash_fold_djb2(unsigned long hash, unsigned int bits)
+{
+	return (unsigned int)(hash & ((1UL << bits) - 1));
+}
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
+unsigned int
+stroll_hash_nstr_djb2(const uint8_t * __restrict string,
+                      size_t                     length,
+                      unsigned                   bits)
+{
+	return stroll_hash_fold_djb2(_stroll_hash_nstr_djb2(string, length),
+	                             bits);
+}
+
+static inline __stroll_nonull(1) __stroll_pure __stroll_nothrow
+unsigned int
+stroll_hash_str_djb2(const uint8_t * __restrict string, unsigned int bits)
+{
+	return stroll_hash_fold_djb2(_stroll_hash_str_djb2(string), bits);
+}
+
+#endif /* defined(CONFIG_STROLL_HASH_DJB2) */
 
 #endif /*  _STROLL_HASH_H */

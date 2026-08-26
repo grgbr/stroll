@@ -602,14 +602,18 @@ config STROLL_HASH
 	  based upon hash lists.
 	  See <stroll/hash.h>.
 
-config STROLL_HASH_STR
-	bool "String content hashing"
-	default n
+config STROLL_HASH_DJB2
+	bool "DJB2 string content hashing"
+	default STROLL_HASH
 	depends on STROLL_HASH
 	help
-	  Build Stroll library with support for non-cryptographic string content
-	  hashing. This may be used as a building block to implement hash tables
-	  based upon hash lists.
+	  Build Stroll library with support for Dan Bernstein's
+	  non-cryptographic string content hashing algorithm. Simple, efficient
+	  and lightning fast for SMALL string keys.
+	  Mind that it is not robust to collision attacks ! Use something like
+	  SipHash instead if you may face hash flooding / HashDoS situations.
+	  This may be used as a building block to implement hash tables based
+	  upon hash lists.
 	  See <stroll/hash.h>.
 
 config STROLL_BUFF
