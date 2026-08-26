@@ -612,6 +612,25 @@ stroll_hlist_init(struct stroll_hlist * __restrict hlist)
 }
 
 /**
+ * Test wether a stroll_hlist is empty or not.
+ * Test wether a stroll_hlist bucket array is empty or not.
+ *
+ * @param[in] buckets stroll_hlist bucket array to test.
+ * @param[in] bits    Log base 2 of number of buckets within @p buckets
+ *
+ * @retval true  empty
+ * @retval false not empty
+ *
+ * @warning
+ * Result is undefined if @p buckets has not been previously initialized.
+ *
+ * @see stroll_hlist_init_buckets()
+ */
+extern bool
+stroll_hlist_buckets_empty(const struct stroll_hlist * __restrict buckets,
+                           unsigned int                           bits);
+
+/**
  * Iterate over nodes of a stroll_hlist bucket array.
  *
  * @param[in]  _buckets stroll_hlist bucket array to iterate over

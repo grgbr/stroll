@@ -1,5 +1,21 @@
 #include "stroll/hlist.h"
 
+bool
+stroll_hlist_buckets_empty(const struct stroll_hlist * __restrict buckets,
+                           unsigned int                           bits)
+{
+	stroll_hlist_assert_api(buckets);
+	stroll_hlist_assert_api(bits <= 32);
+
+	unsigned int b;
+
+	for (b = 0; b < (1U << bits); b++)
+		if (!stroll_hlist_empty(&buckets[b]))
+			return false;
+
+	return true;
+}
+
 void
 stroll_hlist_init_buckets(struct stroll_hlist * __restrict buckets,
                           unsigned int                     bits)
