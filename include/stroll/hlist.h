@@ -284,7 +284,7 @@ struct stroll_hlist {
  * @see stroll_hlist_init_buckets()
  */
 #define STROLL_HLIST_INIT_BUCKETS(_bucks) \
-	{ [0 ... stroll_array_nr(_bucks)] = STROLL_HLIST_INIT }
+	{ [0 ... (stroll_array_nr(_bucks) - 1)] = STROLL_HLIST_INIT }
 
 /**
  * Iterate over hashed list nodes.
