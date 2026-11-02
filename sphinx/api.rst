@@ -128,6 +128,7 @@ internals and meant for application development purposes. These are:
       * :c:macro:`__export_public`
       * :c:macro:`__leaf`
       * :c:macro:`__malloc`
+      * :c:macro:`__may_alias`
       * :c:macro:`__nonull`
       * :c:macro:`__noreturn`
       * :c:macro:`__nothrow`
@@ -1659,6 +1660,11 @@ __malloc
 ********
 
 .. doxygendefine:: __malloc
+
+__may_alias
+***********
+
+.. doxygendefine:: __may_alias
 
 __nonull
 ********

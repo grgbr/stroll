@@ -287,6 +287,22 @@
 #endif /* defined(CONFIG_STROLL_ASSERT_API) || \
           defined(CONFIG_STROLL_ASSERT_INTERN) */
 
+
+/**
+ * Declare a type to the compiler as alias'able.
+ *
+ * When assigned to a type, tell the compiler that accesses through pointers to
+ * this type are not subject to type-based alias analysis, but are instead
+ * assumed to be able to alias any other type of objects.
+ * Note that an object of a type with this attribute does not have any special
+ * semantics.
+ *
+ * @see
+ * - [Type Rules for Aliasing](https://www.gnu.org/software/c-intro-and-ref/manual/html_node/Aliasing-Type-Rules.html)
+ * - [GCC type attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html#Common-Type-Attributes)
+ */
+#define __may_alias __attribute__((may_alias))
+
 /**
  * Declare a variable or type to the compiler as packed.
  *
